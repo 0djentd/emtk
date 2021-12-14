@@ -38,24 +38,6 @@ class ModifiersListUtils():
     def __init_subclass__(cls):
         cls._additional_info_log = []
 
-    # def _modifier_exists(self, mod):
-    #     """
-    #     Looking for modifier by index, name, or reference.
-    #     Dont look in nested clusters.
-    #     Returns True, if modifier exists in this list.
-    #     Returns False, if cant find one.
-    #     """
-
-    #     if type(mod) is str:
-    #         return self.modifier_get_by_name(mod)
-    #     if type(mod) is int:
-    #         return self._modifiers_list[mod]
-    #     if self.has_modifier(mod):
-    #         return True
-    #     if self.has_cluster(mod):
-    #         return True
-    #     return False
-
     def _modifier_info(self, mod):
         """
         Returns list of strings with info about modifier or cluster.

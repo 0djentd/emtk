@@ -18,7 +18,7 @@
 
 import bpy
 
-from ..modifiers_cluster import ModifierCluster
+from .modifiers_cluster import ModifierCluster
 
 
 class DefaultModifierCluster(ModifierCluster):

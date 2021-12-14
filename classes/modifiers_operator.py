@@ -19,9 +19,7 @@
 from .lists.extended_modifiers_list import ExtendedModifiersList
 from .lists.object_modifiers_clusters_list import ObjectModifiersClustersList
 from .lists.object_modifiers_list import ObjectModifiersList
-from .modifiers_cluster import ModifierCluster
-from .clusters_layer import ClustersLayer
-from .clusters.default_modifier_cluster import DefaultModifierCluster
+from .clusters import ModifierCluster, ClustersLayer, DefaultModifierCluster
 
 
 class ModifiersOperator():

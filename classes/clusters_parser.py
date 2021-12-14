@@ -20,8 +20,7 @@ import copy
 
 import bpy
 
-from .clusters.default_modifier_cluster import DefaultModifierCluster
-from .modifiers_cluster import ModifierCluster
+from .clusters import DefaultModifierCluster, ModifierCluster
 
 
 class ClustersParser():

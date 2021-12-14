@@ -21,7 +21,7 @@
 import bpy
 
 # from .lists.object_modifiers_list import ObjectModifiersList
-from .lists.modifiers_list import ModifiersList
+from ..lists.modifiers_list import ModifiersList
 # from .lists.modifiers_list_active_modifier import ModifiersListActiveModifier
 
 

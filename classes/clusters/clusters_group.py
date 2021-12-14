@@ -16,7 +16,7 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-from ..clusters_layer import ClustersLayer
+from .clusters_layer import ClustersLayer
 
 
 class ClustersGroup(ClustersLayer):
