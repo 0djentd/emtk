@@ -54,6 +54,9 @@ class DummyBlenderObj():
     """
 
     def __init__(self, modifiers=None):
+        if modifiers is None:
+            modifiers = []
+
         if not isinstance(modifiers, list):
             raise TypeError
 
@@ -61,10 +64,7 @@ class DummyBlenderObj():
             if not isinstance(x, DummyBlenderModifier):
                 raise TypeError
 
-        if modifiers is not None:
-            self.modifiers = modifiers
-        else:
-            self.modifiers = []
+        self.modifiers = modifiers
 
     def modifier_add(self, m_name, m_type):
         """

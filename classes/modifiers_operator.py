@@ -19,9 +19,8 @@
 from .lists.extended_modifiers_list import ExtendedModifiersList
 from .lists.object_modifiers_clusters_list import ObjectModifiersClustersList
 from .lists.object_modifiers_list import ObjectModifiersList
-from .clusters.beveled_boolean import BeveledBooleanCluster
-from .clusters.double_bevel import TripleBevel
-from .clusters.bevel_cluster import BevelCluster
+from .modifiers_cluster import ModifierCluster
+from .clusters_layer import ClustersLayer
 from .clusters.default_modifier_cluster import DefaultModifierCluster
 
 
@@ -75,11 +74,36 @@ class ModifiersOperator():
             clusters = []
             cluster = DefaultModifierCluster()
             clusters.append(cluster)
-            cluster = BeveledBooleanCluster(20)
+
+            cluster = ModifierCluster(cluster_name='Beveled Boolean',
+                                      cluster_type='BEVELED_BOOLEAN',
+                                      modifiers_by_type=[
+                                          ['BOOLEAN'], ['BEVEL']],
+                                      modifiers_by_name=[['ANY'], ['ANY']],
+                                      cluster_priority=0,
+                                      cluster_createable=True,
+                                      )
             clusters.append(cluster)
-            cluster = TripleBevel(30)
+
+            cluster = ModifierCluster(cluster_name='Triple Bevel',
+                                      cluster_type='TRIPLE_BEVEL',
+                                      modifiers_by_type=[
+                                          ['BEVEL'], ['BEVEL'], ['BEVEL']],
+                                      modifiers_by_name=[
+                                          ['ANY'], ['ANY'], ['ANY']],
+                                      cluster_priority=0,
+                                      cluster_createable=True,
+                                      )
             clusters.append(cluster)
-            cluster = BevelCluster(40)
+
+            cluster = ClustersLayer(cluster_name='Double Triple Bevel Cluster',
+                                    cluster_type='BEVEL_CLUSTER',
+                                    modifiers_by_type=[
+                                        ['TRIPLE_BEVEL'], ['TRIPLE_BEVEL']],
+                                    modifiers_by_name=[['ANY'], ['ANY']],
+                                    cluster_priority=0,
+                                    cluster_createable=True,
+                                    )
             clusters.append(cluster)
 
             for obj in context.view_layer.objects.selected:

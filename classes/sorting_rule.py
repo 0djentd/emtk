@@ -31,7 +31,8 @@ class SortingRule():
                  before_clusters=None,
                  last_cluster=None,
                  first_cluster=None,
-                 sorting_rule_is_sane=None
+                 sorting_rule_is_sane=None,
+                 *args, **kwargs
                  ):
 
         # Sorting rule name. Should be unique.

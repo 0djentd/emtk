@@ -49,22 +49,22 @@ class ModifierCluster(
     set as modifiers in ModifierCluster instance.
     """
 
-    # Number used to identify this ModifiersCluster when parsing clusters
-    # modcluster_index = None
-
     def __init__(self, *,
                  cluster_name=None,
                  cluster_type=None,
-                 cluster_tags=None,
                  modifiers_by_type=None,
+
+                 # Arguments that can be skipped
                  modifiers_by_name=None,
+                 cluster_tags=None,
                  cluster_priority=None,
                  cluster_is_sane=None,
                  cluster_createable=None,
                  dont_define_cluster=None,
-                 **kwargs
+                 *args, **kwargs
                  ):
-        super().__init__(**kwargs)
+
+        super().__init__(*args, **kwargs)
 
         # ===============================================================
         # This is variables that should be defined in ModifiersCluster type.
@@ -142,6 +142,8 @@ class ModifierCluster(
                     if not isinstance(x, str):
                         raise TypeError
                 self._MODCLUSTER_DEFAULT_TAGS = cluster_tags
+            elif cluster_tags is None:
+                self._MODCLUSTER_DEFAULT_TAGS = []
             else:
                 raise TypeError
 
@@ -170,12 +172,18 @@ class ModifierCluster(
                         else:
                             raise TypeError
                 self._MODCLUSTER_MODIFIERS_BY_TYPE = modifiers_by_name
+            elif modifiers_by_name is None:
+                self._MODCLUSTER_MODIFIERS_BY_POSSIBLE_NAMES = []
+                for x in self._MODCLUSTER_MODIFIERS_BY_TYPE:
+                    self._MODCLUSTER_MODIFIERS_BY_POSSIBLE_NAMES.append('ANY')
             else:
                 raise TypeError
 
             # Set cluster priority for parser.
             if isinstance(cluster_priority, int):
                 self._MODCLUSTER_PRIORITY = cluster_priority
+            elif cluster_priority is None:
+                self._MODCLUSTER_PRIORITY = 0
             else:
                 raise TypeError
 
