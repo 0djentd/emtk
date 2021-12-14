@@ -140,6 +140,9 @@ class ModifierCluster(
         # Modifiers list
         self._modifiers_list = []
 
+        # Sorting rules
+        self._sorting_rules = []
+
         # Should this cluster content be shown collapsed in ui?
         # Also stops recursive active_modifier_get_deep()
         self.modcluster_collapsed = True

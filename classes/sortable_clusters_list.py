@@ -60,10 +60,13 @@ class SortableClustersList():
         if isinstance(sorting_rules, SortingRule):
             x = sorting_rules
             sorting_rules = [x]
-        if isinstance(sorting_rules, list):
+        elif isinstance(sorting_rules, list):
             for x in sorting_rules:
                 if not isinstance(x, SortingRule):
-                    raise TypeError
+                    raise TypeError(f'{x} should be a SortingRule.')
+        else:
+            raise TypeError(f'{sorting_rules} should be a SortingRules list.')
+
         i = 0
         for x in self.get_list():
             for y in sorting_rules:

@@ -16,6 +16,8 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+import random
+
 
 class SortingRule():
     """
@@ -34,7 +36,8 @@ class SortingRule():
 
         # Sorting rule name. Should be unique.
         if s_name is None:
-            self.name = 'DefaultSortingRuleName'
+            r = random.randint(0, 99999999)
+            self.name = f'DefaultSortingRuleName{r}'
         else:
             self.name = s_name
 

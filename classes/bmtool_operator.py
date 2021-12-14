@@ -193,7 +193,7 @@ class BMToolMod(ModifiersOperator):
         # Sort modifiers
         elif (event.type == self.bmtool_kbs['sort'])\
                 & (event.value == 'PRESS'):
-            self.m_list.sort_modifiers()
+            layer.apply_sorting_rules()
 
         # Add new modifier of the same type and switch to it
         elif (event.type == self.bmtool_kbs['add_new'])\
@@ -767,8 +767,6 @@ class BMToolMod(ModifiersOperator):
                 {'INFO'},
                 f"_BMTOOL_UI_STATUSBAR {self._BMTOOL_UI_STATUSBAR}")
         self.report({'INFO'}, f"_BMTOOL_V {self._BMTOOL_V}")
-
-
 
     # --------------------------------
     # Operator-specific modal method 1
