@@ -24,12 +24,6 @@
 from .lists.modifiers_list import ModifiersList
 # from .lists.modifiers_list_active_modifier import ModifiersListActiveModifier
 
-# Modifiers List utils
-# Modifiers List
-# ----------------
-# Modifiers Cluster
-# ----------------
-
 
 class ModifierCluster(
                       # ModifiersListActiveModifier,
@@ -179,6 +173,25 @@ class ModifierCluster(
     # ============================
     # Methods reserved for objects
     # ============================
+    def create_basic_cluster_type(self,
+                                  modifiers_by_type,
+                                  modifiers_by_name, *,
+                                  collapsed=True,
+                                  sorting_rules
+                                  ):
+        """
+        Creates new modifiers cluster type with specified
+        cluster defenition.
+        """
+        if (not self.clear_this_cluster()) or (self._modcluster_initialized):
+            return False
+
+        self._MODCLUSTER_MODIFIERS_BY_TYPE = modifiers_by_type
+        self._MODCLUSTER_MODIFIERS_BY_POSSIBLE_NAMES = modifiers_by_name
+        self.collapsed = collapsed
+        self._sorting_rules = sorting rules
+        return True
+
     def modcluster_extra_availability_check(self, modifiers):
         """
         Additional method reserved for custom types.
@@ -206,6 +219,7 @@ class ModifierCluster(
     # ModifiersClustersList actions
     # ============================
     # TODO: rework this
+    # TODO: does this actually require full clusters list?
     def cluster_being_moved(self, modifiers_clusters_list, direction):
         """
         Method reserved for object-specific actions on cluster move in

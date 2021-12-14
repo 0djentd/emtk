@@ -135,11 +135,19 @@ class ObjectModifiersClustersList(ClustersList):
             for actual_modifier in modifiers_to_be_moved:
                 ui_t.append(f"Moving {actual_modifier}")
                 if direction == 'UP':
-                    bpy.ops.object.modifier_move_up(
-                            modifier=actual_modifier.name)
+                    if self._ModifiersList__DUMMY_MODIFIERS:
+                        self._dummy_modifiers.modifier_move_up(
+                                modifier=actual_modifier.name)
+                    else:
+                        bpy.ops.object.modifier_move_up(
+                                modifier=actual_modifier.name)
                 elif direction == 'DOWN':
-                    bpy.ops.object.modifier_move_down(
-                            modifier=actual_modifier.name)
+                    if self._ModifiersList__DUMMY_MODIFIERS:
+                        self._dummy_modifiers.modifier_move_down(
+                                modifier=actual_modifier.name)
+                    else:
+                        bpy.ops.object.modifier_move_down(
+                                modifier=actual_modifier.name)
 
         # Move modifier in list.
         moved_mod = self._modifiers_list.pop(x)

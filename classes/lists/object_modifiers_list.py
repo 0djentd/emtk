@@ -38,6 +38,7 @@ class ObjectModifiersList(ModifiersList):
     within Blender modifiers stack.
     """
     def __init__(self):
+        self.__DUMMY_MODIFIERS = False
         super().__init__()
 
     # ===================================
@@ -83,11 +84,19 @@ class ObjectModifiersList(ModifiersList):
         ui_t.append("Moving modifiers.")
 
         if direction == 'UP':
-            bpy.ops.object.modifier_move_up(
-                    modifier=mod.name)
+            if self._ModifiersList__DUMMY_MODIFIERS:
+                self._dummy_modifiers.modifier_move_up(
+                        modifier=mod.name)
+            else:
+                bpy.ops.object.modifier_move_up(
+                        modifier=mod.name)
         if direction == 'DOWN':
-            bpy.ops.object.modifier_move_down(
-                    modifier=mod.name)
+            if self._ModifiersList__DUMMY_MODIFIERS:
+                self._dummy_modifiers.modifier_move_down(
+                        modifier=mod.name)
+            else:
+                bpy.ops.object.modifier_move_down(
+                        modifier=mod.name)
 
         # Move modifier in list.
         moved_mod = self._modifiers_list.pop(x)

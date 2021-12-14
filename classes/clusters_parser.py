@@ -581,7 +581,7 @@ class ClustersParser():
 
     def _clean_restored_clusters(self, clusters):
         """
-        Remove restored cluster attributes that are
+        Remove restored clusters attributes that are
         only required during parse.
         """
         for x in clusters:

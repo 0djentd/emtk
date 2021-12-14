@@ -16,7 +16,7 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-import copy
+# import copy
 
 from .modifiers_list import ModifiersList
 
