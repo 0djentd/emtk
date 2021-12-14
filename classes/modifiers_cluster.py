@@ -336,6 +336,7 @@ class ModifierCluster(
         else:
             return False
 
+    # TODO: this is not correct implementation
     def remove_tag_from_this_cluster(self, custom_tag):
         """
         Remove this ModifierCluster's custom tags.
@@ -423,7 +424,6 @@ class ModifierCluster(
 
             modifiers_by_type = self._MODCLUSTER_MODIFIERS_BY_TYPE
 
-            # TODO: same thing as with modifiers with specified names.
             # Check modifiers by types
             if (modifiers_by_type[y] != ['ANY'])\
                     and (modifiers_by_type[y] != 'ANY'):

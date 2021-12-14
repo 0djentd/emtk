@@ -39,10 +39,6 @@ class ModifiersOperator():
     # selected objects, including active object
     selected_objects = None
 
-    # Display additional info
-    # TODO: not used
-    _MODIFIERS_OPERATOR_V = True
-
     # Can be used with modifiers clusters
     _MODIFIERS_OPERATOR_MODIFIER_CLUSTERS = True
 
@@ -98,15 +94,10 @@ class ModifiersOperator():
                     if self._MODIFIERS_OPERATOR_MODIFIER_CLUSTERS:
 
                         for y in clusters:
-                            if obj_mod_list.update_cluster_types_list(y):
-                                self.report({'INFO'}, "Added new modcluster type")
-                            else:
-                                self.report({'INFO'}, "Failed to add new modcluster type")
-
-                        parser = obj_mod_list._clusters_parser
-
-                        self.report({'INFO'}, f" Modcluster types count {len(parser._available_cluster_types)}")
-                        self.report({'INFO'}, f" Nested Modcluster types count {len(parser._available_layer_types)}")
+                            if not obj_mod_list.update_cluster_types_list(y):
+                                self.report(
+                                        {'INFO'},
+                                        "Failed to add new modcluster type")
 
                     # Create modifiers list for object and parse it
                     result = obj_mod_list.create_modifiers_list(obj)
@@ -123,10 +114,10 @@ class ModifiersOperator():
                         obj_mod_list = ObjectModifiersClustersList()
                         obj_mod_list._MODIFIER_CLUSTERS = True
                         for y in clusters:
-                            if obj_mod_list.update_cluster_types_list(y):
-                                self.report({'INFO'}, "Added new modcluster type")
-                            else:
-                                self.report({'INFO'}, "Failed to add new modcluster type")
+                            if not obj_mod_list.update_cluster_types_list(y):
+                                self.report(
+                                        {'INFO'},
+                                        "Failed to add new modcluster type")
                     else:
                         # Create usual modifiers list
                         obj_mod_list = ObjectModifiersList()
