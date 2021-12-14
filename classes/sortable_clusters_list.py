@@ -55,6 +55,7 @@ class SortableClustersList():
         """
         Removes sorting_rules from all clusters on this layer.
         Argument can be SortingRule or list of SortingRules.
+
         Returns number of rules removed.
         """
         if isinstance(sorting_rules, SortingRule):
