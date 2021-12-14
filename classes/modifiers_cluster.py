@@ -388,8 +388,8 @@ class ModifierCluster(
         if not isinstance(modifiers, list):
             raise TypeError
         for x in modifiers:
-            if not isinstance(modifiers[x], bpy.types.Modifier)\
-                    or not isinstance(modifiers[x], ModifierCluster):
+            if not isinstance(x, bpy.types.Modifier)\
+                    and not isinstance(x, ModifierCluster):
                 raise TypeError
 
         # If havent set modifiers already
