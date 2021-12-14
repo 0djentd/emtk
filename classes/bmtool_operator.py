@@ -90,6 +90,7 @@ class BMToolMod(ModifiersOperator):
 
     # ------------------------------------------------------------
     # Some variables that are created when operator is initialized
+    # by modifiers_operator
     # ------------------------------------------------------------
     # GUI draw handler
     # bmtool_ui_draw_handler
@@ -253,6 +254,8 @@ class BMToolMod(ModifiersOperator):
 
             if layer.deconstruct_cluster(cluster):
                 self.report({'INFO'}, "Deconstructed cluster")
+            else:
+                self.report({'ERROR'}, "Cant deconstruct cluster")
 
             # Select currently active cluster.
             cluster = self.m_list.get_cluster()
@@ -265,6 +268,8 @@ class BMToolMod(ModifiersOperator):
             if self._selecting_clusters:
                 if layer.construct_cluster_from_selection():
                     self.report({'INFO'}, "Constructed cluster")
+                else:
+                    self.report({'ERROR'}, "Cant create cluster")
                 layer.clear_cluster_selection()
                 self._selecting_clusters = False
             else:
@@ -272,6 +277,8 @@ class BMToolMod(ModifiersOperator):
                 layer.add_cluster_to_selection(cluster)
                 if layer.construct_cluster_from_selection():
                     self.report({'INFO'}, "Constructed cluster")
+                else:
+                    self.report({'ERROR'}, "Cant create cluster")
                 layer.clear_cluster_selection()
 
             # Select currently active cluster.
@@ -681,10 +688,6 @@ class BMToolMod(ModifiersOperator):
                     f"m_list is {len(self.m_list.get_list())} modifiers")
             for line in self.m_list._modifiers_list_info():
                 self.report({'INFO'}, f"{line}")
-            if self.m_list.active_modifier_get() is not None:
-                self.report(
-                        {'INFO'},
-                        f"{self.m_list.active_modifier_get()}")
 
         # ==========================================
         # Create or select modifier on active object
