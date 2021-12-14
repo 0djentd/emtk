@@ -18,7 +18,7 @@
 
 # import copy
 
-# import bpy
+import bpy
 
 # from .lists.object_modifiers_list import ObjectModifiersList
 from .lists.modifiers_list import ModifiersList
@@ -326,7 +326,10 @@ class ModifierCluster(
         Sets cluster custom cluster name.
         Returns True or False, if cluster is not editable.
         """
-        self._modcluster_custom_name = cluster_name
+        if isinstance(cluster_name, str):
+            self._modcluster_custom_name = cluster_name
+        else:
+            raise TypeError
 
     # ===========================
     # Cluster tags
@@ -343,11 +346,14 @@ class ModifierCluster(
         Takes string as an argument.
         Returns True if successfully added tag.
         """
-        if custom_tag not in self._modcluster_custom_tags:
-            self._modcluster_custom_tags.append(custom_tag)
-            return True
+        if isinstance(custom_tag, str):
+            if custom_tag not in self._modcluster_custom_tags:
+                self._modcluster_custom_tags.append(custom_tag)
+                return True
+            else:
+                return False
         else:
-            return False
+            raise TypeError
 
     # TODO: this is not correct implementation
     def remove_tag_from_this_cluster(self, custom_tag):
@@ -378,9 +384,13 @@ class ModifierCluster(
         Returns True or False, if cluster is not editable
         """
 
-        # If not a list
+        # If not a list of clusters or actual modifiers
         if not isinstance(modifiers, list):
-            return False
+            raise TypeError
+        for x in modifiers:
+            if not isinstance(modifiers[x], bpy.types.Modifier)\
+                    or not isinstance(modifiers[x], ModifierCluster):
+                raise TypeError
 
         # If havent set modifiers already
         if self._modcluster_initialized is False:
