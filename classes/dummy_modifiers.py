@@ -17,12 +17,18 @@
 # ##### END GPL LICENSE BLOCK #####
 
 
-class DummyModifier():
+class DummyBlenderModifier():
     """
     Object that represents modifier.
     """
 
     def __init__(self, m_name, m_type):
+        if not isinstance(m_name, str):
+            raise TypeError
+
+        if not isinstance(m_type, str):
+            raise TypeError
+
         self.name = m_name
         self.m_type = m_type
 
@@ -42,26 +48,77 @@ class DummyModifier():
             raise TypeError
 
 
-class DummyModifiers():
+class DummyBlenderObj():
     """
-    Object that can be used to replace modifiers stack in ModifiersList.
+    Object that can be used to replace Blender obj in ModifiersList for
+    unittests, debug, dry modifiers stack editing, storing changes to
+    modifiers list and other purposes.
     """
-    modifiers = []
 
-    def __init__(self, modifiers):
-        self.modifiers = modifiers
+    def __init__(self, modifiers=None):
+        if not isinstance(modifiers, list):
+            raise TypeError
 
-    def modifier_move_up(self, modifier=None):
+        for x in modifiers:
+            if not isinstance(x, DummyBlenderModifier):
+                raise TypeError
+
+        if modifiers is not None:
+            self.modifiers = modifiers
+        else:
+            self.modifiers = []
+
+    def modifier_add(self, m_name, m_type):
+        """
+        Creates new modifier.
+        """
+        i = 0
+
+        if not isinstance(m_name, str):
+            raise TypeError
+
+        if not isinstance(m_type, str):
+            raise TypeError
+
+        for x in self.modifiers:
+            if m_name == x.name:
+                i += 1
+        m_name_2 = m_name + f'{i}'
+
+        mod = DummyBlenderModifier(m_name_2, m_type)
+        self.modifiers.append(mod)
+        return mod
+
+    def modifier_remove(self, m_name):
+        """
+        Removes modifier.
+        """
+        if not isinstance(m_name, str):
+            raise TypeError
+
+        mod_to_remove = None
+        for x in self.modifiers:
+            if x.name == m_name:
+                mod_to_remove = x
+        if mod_to_remove is not None:
+            self.modifiers.remove(mod_to_remove)
+            return True
+        return False
+
+    def modifier_move_up(self, m_name=None):
         """
         Moves modifier up.
         Returns True or False.
         """
+        if not isinstance(m_name, str):
+            raise TypeError
+
         if len(self.modifiers) < 2:
             return False
 
         mod = None
         for x in self.modifiers:
-            if x.name == modifier:
+            if x.name == m_name:
                 mod = x
 
         if mod is None:
@@ -73,17 +130,20 @@ class DummyModifiers():
             self.modifiers.insert(i+1, x)
         return True
 
-    def modifier_move_down(self, modifier=None):
+    def modifier_move_down(self, m_name=None):
         """
         Moves modifier down.
         Returns True or False.
         """
+        if not isinstance(m_name, str):
+            raise TypeError
+
         if len(self.modifiers) < 2:
             return False
 
         mod = None
         for x in self.modifiers:
-            if x.name == modifier:
+            if x.name == m_name:
                 mod = x
 
         if mod is None:
