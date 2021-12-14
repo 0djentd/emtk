@@ -119,11 +119,11 @@ class ModifiersList(ModifiersListUtils):
     def actual_modifier_get_name(self, mod):
         """
         Returns modifier name
-        Returns False, if no such modifier
         """
         if mod in self._modifiers_list:
             return mod.name
-        return False
+        else:
+            raise ValueError
 
     def actual_modifier_get_type(self, mod):
         """
@@ -132,7 +132,8 @@ class ModifiersList(ModifiersListUtils):
         """
         if mod in self._modifiers_list:
             return mod.type
-        return False
+        else:
+            raise ValueError
 
     # ==============================================
     # This methods work on _modifiers_list's level.
@@ -226,10 +227,6 @@ class ModifiersList(ModifiersListUtils):
             if self.modifier_get_type(x) == m_type:
                 y.append(x)
         return y
-
-    # TODO: remove this method.
-    def modifier_get_by_index(self, i):
-        return self.get_by_index(i)
 
     def get_by_index(self, i):
         """

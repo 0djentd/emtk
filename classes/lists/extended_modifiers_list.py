@@ -98,7 +98,7 @@ class ExtendedModifiersList(ModifiersListActiveModifier,
         # Select first modifier, if found any modifiers
         if isinstance(self._modifiers_list, list):
             if len(self._modifiers_list) > 0:
-                self._mod = self.modifier_get_by_index(0)
+                self._mod = self._modifiers_list[0]
         else:
             self._additional_info_log.append("This is not a list")
 

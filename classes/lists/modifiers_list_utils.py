@@ -49,7 +49,7 @@ class ModifiersListUtils():
         if type(mod) is str:
             return self.modifier_get_by_name(mod)
         if type(mod) is int:
-            return self.modifier_get_by_index(mod)
+            return self._modifiers_list[mod]
         if self.has_modifier(mod):
             return True
         if self.has_cluster(mod):
