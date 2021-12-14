@@ -16,6 +16,9 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+from ..sorting_rule import SortingRule
+
+
 class SortableClustersList():
     """
     Base class for ClusterLists that should be able to sort clusters.
@@ -23,13 +26,49 @@ class SortableClustersList():
 
     def get_all_sorting_rules(self):
         """
-        Returns all sorting rules for this layer.
+        Returns all cluster names with all their sorting rules for this layer.
+
+        Result looks like this:
+        [['Bevel.123', sorting_rule],
+         ['Bevel.124', sorting_rule]]
         """
         sorting_rules = []
         for x in self.get_list():
             for rule in x.get_sorting_rules():
                 sorting_rules.append(x.name, rule)
         return sorting_rules
+
+    def check_all_sorting_rules_sanity(self):
+        """
+        Checks all sorting rules sanity and returns list of rules
+        that failed it.
+        """
+
+        result = []
+        for x in self.get_all_sorting_rules():
+            if not x[1].check_sorting_rule_sanity():
+                result.append(x)
+        return result
+
+    def remove_sorting_rules_from_all_clusters(self, sorting_rules):
+        """
+        Removes sorting_rules from all clusters on this layer.
+        Argument can be SortingRule or list of SortingRule.
+        Returns number of rules removed.
+        """
+        if isinstance(sorting_rules, SortingRule):
+            x = sorting_rules
+            sorting_rules = [x]
+        if isinstance(sorting_rules, list):
+            for x in sorting_rules:
+                if not isinstance(x, SortingRule):
+                    raise TypeError
+        i = 0
+        for x in self.get_list():
+            for y in sorting_rules:
+                x.remove_sorting_rule(y)
+                i += 1
+        return i
 
     def apply_sorting_rules(self):
         """
