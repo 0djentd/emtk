@@ -19,6 +19,7 @@
 # import copy
 
 from .modifiers_list import ModifiersList
+from ..sortable_clusters_list import SortableClustersList
 
 # Modifiers List utils
 # Modifiers List
@@ -28,7 +29,7 @@ from .modifiers_list import ModifiersList
 # ----------------------
 
 
-class ClustersList(ModifiersList):
+class ClustersList(ModifiersList, SortableClustersList):
     """
     Simple list of Modifiers Clusters with, or without modifiers.
 
