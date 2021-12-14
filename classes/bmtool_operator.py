@@ -43,6 +43,7 @@ class BMToolMod(ModifiersOperator):
     _BMTOOL_DEFAULT_MODE = "Please select BMTool mode"
 
     # If False, can only operate on _DEFAULT_M_TYPE.
+    # TODO: rename this thing.
     _BMTOOLM = False
 
     # Default name and type for operators that are
@@ -613,25 +614,7 @@ class BMToolMod(ModifiersOperator):
 
         # Displays info about operator variables on invoke
         if self._BMTOOL_V:
-            self.report({'INFO'}, "BMTool is created")
-            self.report({'INFO'}, f"_BMTOOLM {self._BMTOOLM}")
-            self.report({'INFO'}, f"_DEFAULT_M_NAME {self._DEFAULT_M_NAME}")
-            self.report({'INFO'}, f"_DEFAULT_M_TYPE {self._DEFAULT_M_TYPE}")
-            self.report(
-                    {'INFO'},
-                    f"_BMTOOL_DEFAULT_MODE {self._BMTOOL_DEFAULT_MODE}")
-            self.report({'INFO'}, f"_BMTOOL_EDITMODE {self._BMTOOL_EDITMODE}")
-            self.report(
-                    {'INFO'},
-                    f"_BMTOOL_MODIFIER_CREATE {self._BMTOOL_MODIFIER_CREATE}")
-            self.report(
-                    {'INFO'},
-                    f"_BMTOOL_SINGLE_OBJECT {self._BMTOOL_SINGLE_OBJECT}")
-            self.report({'INFO'}, f"_BMTOOL_UI {self._BMTOOL_UI}")
-            self.report(
-                    {'INFO'},
-                    f"_BMTOOL_UI_STATUSBAR {self._BMTOOL_UI_STATUSBAR}")
-            self.report({'INFO'}, f"_BMTOOL_V {self._BMTOOL_V}")
+            self.display_additional_info_about_bmtool(context)
 
         # ------------------------------
         # Operator-specific
@@ -651,6 +634,8 @@ class BMToolMod(ModifiersOperator):
 
         # Default modal editing mode
         # TODO: implement through enum or whatever
+        # TODO: does this thing actually used?
+        # Can it be replaced by editor mode?
         self.bmtool_mode = self._BMTOOL_DEFAULT_MODE
 
         # ================================
@@ -689,15 +674,11 @@ class BMToolMod(ModifiersOperator):
             mod_new = self.m_list.create_modifier(
                     self._DEFAULT_M_NAME, self._DEFAULT_M_TYPE)
             self.m_list.active_modifier_set(mod_new)
-            if self._BMTOOL_V:
-                self.report({'INFO'}, "_BMTOOL_MODIFIER_CREATE")
 
         # if operator specified _DEFAULT_M_NAME
         # and _DEFAULT_M_TYPE on initialisation
         # and is not _BMTOOLM
         elif not self._BMTOOLM:
-            if self._BMTOOL_V:
-                self.report({'INFO'}, "_BMTOOLM is False")
 
             # select existing
             if self.m_list.has_modifier_by_type(
@@ -708,10 +689,6 @@ class BMToolMod(ModifiersOperator):
                 list_by_type\
                         = self.m_list.get_list_by_type(self._DEFAULT_M_TYPE)
                 self.m_list.active_modifier_set(list_by_type[-1])
-                if self._BMTOOL_V:
-                    self.report({'INFO'}, "Selected existing modifier")
-                    self.report(
-                            {'INFO'}, f"{self.m_list.active_modifier_get()}")
 
             # create new
             else:
@@ -719,6 +696,7 @@ class BMToolMod(ModifiersOperator):
                         self._DEFAULT_M_NAME, self._DEFAULT_M_TYPE)
                 self.m_list.active_modifier_set(mod_new)
                 self.bmtool_modifier_defaults(context)
+
                 if self._BMTOOL_V:
                     self.report({'INFO'}, "Creating new modifier")
                     self.report(
@@ -728,16 +706,9 @@ class BMToolMod(ModifiersOperator):
         # select first
         elif self.m_list.get_list_length() > 0:
             self.m_list.active_modifier_set(self.m_list.get_first())
-            if self._BMTOOL_V:
-                self.report({'INFO'}, "Selecting first modifier")
-                self.report({'INFO'}, f"{self.m_list.active_modifier_get()}")
-                for line in self.m_list._modifiers_list_info():
-                    self.report({'INFO'}, f"{line}")
 
         # If not usual modifier operator and no modifiers
         else:
-            for line in self.m_list._additional_info_log:
-                self.report({'INFO'}, f"{line}")
             self.report({'ERROR'}, "Cant create modifier or select one.")
             self.clear(context)
             return {'CANCELLED'}
@@ -748,14 +719,7 @@ class BMToolMod(ModifiersOperator):
         # Trigger active modifier change
         self.bmtool_modifier_update(context)
 
-        if self._BMTOOL_V:
-            self.report(
-                    {'INFO'},
-                    f"active modifier is {self.m_list.active_modifier_get()}")
-            self.report(
-                    {'INFO'},
-                    f"its type is {self.m_list.active_modifier_get_type()}")
-            self.report({'INFO'}, "Finished initializing operator")
+        self.report({'INFO'}, "Finished initializing operator")
 
         self.first_x = event.mouse_x
         self.first_y = event.mouse_y
@@ -763,21 +727,28 @@ class BMToolMod(ModifiersOperator):
         context.window_manager.modal_handler_add(self)
         return {'RUNNING_MODAL'}
 
-    def _additional_modifier_info(self, modifier):
-        """
-        Displays and compares info about ModifiersList
-        Returns True if active modifier is correct.
-        Returns False if active modifier was wrong.
-        """
-
+    def display_additional_info_about_bmtool(self, context):
+        self.report({'INFO'}, "BMTool is created")
+        self.report({'INFO'}, f"_BMTOOLM {self._BMTOOLM}")
+        self.report({'INFO'}, f"_DEFAULT_M_NAME {self._DEFAULT_M_NAME}")
+        self.report({'INFO'}, f"_DEFAULT_M_TYPE {self._DEFAULT_M_TYPE}")
         self.report(
                 {'INFO'},
-                " ============= BMTOOL MODIFIERS LIST INFO ==============")
+                f"_BMTOOL_DEFAULT_MODE {self._BMTOOL_DEFAULT_MODE}")
+        self.report({'INFO'}, f"_BMTOOL_EDITMODE {self._BMTOOL_EDITMODE}")
+        self.report(
+                {'INFO'},
+                f"_BMTOOL_MODIFIER_CREATE {self._BMTOOL_MODIFIER_CREATE}")
+        self.report(
+                {'INFO'},
+                f"_BMTOOL_SINGLE_OBJECT {self._BMTOOL_SINGLE_OBJECT}")
+        self.report({'INFO'}, f"_BMTOOL_UI {self._BMTOOL_UI}")
+        self.report(
+                {'INFO'},
+                f"_BMTOOL_UI_STATUSBAR {self._BMTOOL_UI_STATUSBAR}")
+        self.report({'INFO'}, f"_BMTOOL_V {self._BMTOOL_V}")
 
-        # Get ModifierList info
-        for line in self.m_list.modifiers_list_info_get():
-            self.report({'INFO'}, f"{line}")
-        return True
+
 
     # --------------------------------
     # Operator-specific modal method 1
@@ -790,9 +761,9 @@ class BMToolMod(ModifiersOperator):
         return
 
     # --------------------------------
-    # Operator-specific modal method 2
+    # Operator-specific modal method 2.
     # --------------------------------
-    # All modal editing should be here
+    # All modal editing should be here.
     def bmtool_modal_2(self, context, event):
         """
         This method is called after BMToolMod modal method.
@@ -800,7 +771,7 @@ class BMToolMod(ModifiersOperator):
         return
 
     # -------------------------------
-    # Operator-specific modifier add method
+    # Operator-specific modifier add method.
     # -------------------------------
     def bmtool_modifier_add(self, context):
         """
@@ -810,8 +781,9 @@ class BMToolMod(ModifiersOperator):
         return
 
     # ------------------------------
-    # Default operator modifier-specific settings
+    # Default operator modifier-specific settings.
     # TODO: what even is this?
+    # TODO: should require modifier.
     # ------------------------------
     def bmtool_modifier_defaults(self, context):
         """
@@ -821,7 +793,7 @@ class BMToolMod(ModifiersOperator):
         return
 
     # ------------------------------
-    # Operator-specific modifier update
+    # Operator-specific modifier update.
     # ------------------------------
     def bmtool_modifier_update(self, context):
         """
@@ -831,9 +803,9 @@ class BMToolMod(ModifiersOperator):
         return
 
     # ------------------------------
-    # Operator-specific inv. method
+    # Operator-specific inv. method.
     # ------------------------------
-    # TODO: this method should be renamed
+    # TODO: this method should be renamed.
     def bmtool_modifier_inv(self, context, event):
         """
         This method is called before BMToolMod invoke.
@@ -843,7 +815,7 @@ class BMToolMod(ModifiersOperator):
     # -------------------------------
     # Operator-specific remove method
     # -------------------------------
-    # TODO: this method should be renamed
+    # TODO: this method should be renamed.
     def bmtool_modifier_remove(self, context):
         """
         This method is called when encountered FINISHED or CANCELLED in
