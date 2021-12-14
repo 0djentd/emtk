@@ -32,7 +32,3 @@ class VIEW_3D_MT_PIE_bmtools_pie_1(Menu):
         pie.operator("object.bmtoolm", text="BMToolM", icon="CUBE")
         pie.operator("object.bmtoole", text="BMToolE", icon="CUBE")
         pie.operator("object.bmtoole2", text="BMToolE2", icon="CUBE")
-        # pie.operator("object.bmt_weightednormal",
-        #              text="Weighted Normal",
-        #              icon="CUBE"
-        #              )

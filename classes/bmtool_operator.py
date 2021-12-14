@@ -298,6 +298,16 @@ class BMToolMod(ModifiersOperator):
         elif (event.type == self.bmtool_kbs['apply_remove'])\
                 & (event.value == 'PRESS'):
 
+            # TODO: this only moves object to new collection, should create
+            # a backup instead.
+            if self.backup_mesh_on_modifier_apply_remove:
+                objCollections = self.m_list._object.users_collection
+
+                if self.backup_collection not in objCollections:
+                    self.backup_collection.objects.link(self.m_list._object)
+                    for x in objCollections:
+                        x.object.unlink(self.m_list._object)
+
             # Remove cluster.
             if self._selecting_clusters is True:
                 modifier_removed = self.m_list.remove_clusters_selection()
@@ -316,12 +326,6 @@ class BMToolMod(ModifiersOperator):
                     self.report({'INFO'}, f"{line}")
                 self.clear(context)
                 return {'FINISHED'}
-
-            # Check if it was last actual modifier.
-            # If so, finish operator.
-            # if len(self.m_list.get_full_actual_modifiers_list()) == 0:
-            #     self.clear(context)
-            #     return {'FINISHED'}
 
             # Select currently active cluster.
             cluster = self.m_list.get_cluster()
@@ -637,6 +641,22 @@ class BMToolMod(ModifiersOperator):
         # TODO: does this thing actually used?
         # Can it be replaced by editor mode?
         self.bmtool_mode = self._BMTOOL_DEFAULT_MODE
+
+        # Backup collection.
+        addon_prefs = bpy.context.preferences.addons['bmtools'].preferences
+        b = addon_prefs.backup_mesh_on_modifier_apply_remove
+        self.backup_mesh_on_modifier_apply_remove = b
+        if b:
+            c = addon_prefs.backup_collection_name
+            self.backup_collection_name = c
+            # TODO: different collections for different objects in
+            # that backup collection.
+            if c not in bpy.data.collections:
+                backups = bpy.data.collections.new(name=c)
+                bpy.context.scene.collection.children.link(backups)
+            else:
+                backups = bpy.data.collections[c]
+            self.backup_collection = backups
 
         # ================================
         # Create instances of ModifierList

@@ -18,8 +18,6 @@
 
 import bpy
 
-# from bpy.props import StringProperty
-
 from . operators.bmtoolm import BMTOOL_OT_bmtoolm
 from . operators.bmtoole import BMTOOL_OT_bmtoole
 from . operators.bmtoole2 import BMTOOL_OT_bmtoole2
@@ -27,9 +25,6 @@ from . operators.old.bmtoolm_lite import BMTOOL_OT_bmtoolm_2
 from . operators.old.bmtool_bevel import BMTBevel
 from . utils.bmtool_preferences import BMToolPreferences
 from . ui.bmtools_pie import VIEW_3D_MT_PIE_bmtools_pie_1
-
-# from . operators.old.bmtool_bevel_2 import BMTBevel_2
-# from . operators.old.bmtool_weighted_normal import BMTWeightedNormal
 
 bl_info = {
     "name": "BMTools",
@@ -44,8 +39,6 @@ bl_info = {
 classes = [
     BMToolPreferences,
     BMTBevel,
-    # BMTBevel_2,
-    # BMTWeightedNormal,
     BMTOOL_OT_bmtoolm,
     BMTOOL_OT_bmtoole,
     BMTOOL_OT_bmtoole2,

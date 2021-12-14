@@ -16,8 +16,9 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-from ..classes.bmtool_editor import ModifierEditor
 import bpy
+
+from ..classes.bmtool_editor import ModifierEditor
 
 
 # Weighted Normal modifier editor

@@ -16,17 +16,12 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-from bpy.props import BoolProperty, IntProperty, FloatProperty
+from bpy.props import BoolProperty, IntProperty, FloatProperty, StringProperty
 from bpy.types import AddonPreferences
 
 
 class BMToolPreferences(AddonPreferences):
     bl_idname = "bmtools"
-
-    bmtool_additional_info: BoolProperty(
-            name="Show additional info in modal operators",
-            default=True
-            )
 
     save_clusters: BoolProperty(
             name="Save clusters on operator finish",
@@ -38,8 +33,21 @@ class BMToolPreferences(AddonPreferences):
             default=True
             )
 
+    backup_mesh_on_modifier_apply_remove: BoolProperty(
+            name="Backup mesh on modifier apply or remove.",
+            default=True
+            )
+
+    backup_collection_name: StringProperty(
+            name="Name of collection that will be used for mesh backup.",
+            default='BMToolM mesh backup'
+            )
+
     def draw(self, context):
         layout = self.layout
         layout.label(text="BMTool options")
-        layout.prop(self, "bmtool_additional_info")
         layout.prop(self, "save_clusters")
+        layout.prop(self, "save_clusters_backup")
+        layout.prop(self, "backup_mesh_on_modifier_apply_remove")
+        if self.backup_mesh_on_modifier_apply_remove:
+            layout.prop(self, "backup_collection_name")
