@@ -173,25 +173,6 @@ class ModifierCluster(
     # ============================
     # Methods reserved for objects
     # ============================
-    def create_basic_cluster_type(self,
-                                  modifiers_by_type,
-                                  modifiers_by_name, *,
-                                  collapsed=True,
-                                  sorting_rules
-                                  ):
-        """
-        Creates new modifiers cluster type with specified
-        cluster defenition.
-        """
-        if (not self.clear_this_cluster()) or (self._modcluster_initialized):
-            return False
-
-        self._MODCLUSTER_MODIFIERS_BY_TYPE = modifiers_by_type
-        self._MODCLUSTER_MODIFIERS_BY_POSSIBLE_NAMES = modifiers_by_name
-        self.collapsed = collapsed
-        self._sorting_rules = sorting rules
-        return True
-
     def modcluster_extra_availability_check(self, modifiers):
         """
         Additional method reserved for custom types.
@@ -396,6 +377,54 @@ class ModifierCluster(
 
         else:
             return False
+
+    # ===========================
+    # Clusters sorting
+    # ===========================
+    def add_sorting_rule(self, sorting_rule):
+        """
+        Add new sorting rule for this cluster or
+        replace existing one.
+
+        Returns True or False, if cluster not sortable.
+        """
+
+        if 'NO_SORT' in self.get_this_cluster_tags():
+            return False
+
+        self.remove_sorting_rule(sorting_rule.name)
+
+        self._sorting_rules.append(sorting_rule)
+        return True
+
+    def remove_sorting_rule(self, sorting_rule_name):
+        """
+        Removes sorting rule by name.
+
+        Returns True or False, if no such sorting
+        rule.
+        """
+
+        removed_sorting_rule = False
+        r = []
+        for x in self._sorting_rules:
+            if x.name == sorting_rule_name:
+                r += x
+        for x in r:
+            self._sorting_rules.remove(x)
+            removed_sorting_rule = True
+        return removed_sorting_rule
+
+    def get_sorting_rules(self):
+        """
+        Returns sorting rules for this cluster.
+        Returns empty list, if cluster disabled
+        sorting.
+        """
+        if 'NO_SORT' in self.get_this_cluster_tags():
+            return []
+        else:
+            return self._sorting_rules
 
     # ==========
     # Parsing
@@ -669,6 +698,26 @@ class ModifierCluster(
         self._modcluster_initialized = False
         return True
 
+    def create_basic_cluster_type(self,
+                                  modifiers_by_type,
+                                  modifiers_by_name, *,
+                                  collapsed=True,
+                                  sorting_rules
+                                  ):
+        """
+        Creates new modifiers cluster type with specified
+        cluster defenition.
+        """
+        if (not self.clear_this_cluster()) or (self._modcluster_initialized):
+            return False
+
+        self._MODCLUSTER_MODIFIERS_BY_TYPE = modifiers_by_type
+        self._MODCLUSTER_MODIFIERS_BY_POSSIBLE_NAMES = modifiers_by_name
+        self.collapsed = collapsed
+        self._sorting_rules = sorting_rules
+        return True
+
+    # TODO: can be removed
     def _modcluster_info(self):
         """
         Returns list of strings with info about this cluster.
