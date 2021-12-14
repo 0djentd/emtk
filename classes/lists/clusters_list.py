@@ -19,7 +19,7 @@
 # import copy
 
 from .modifiers_list import ModifiersList
-from ..sortable_clusters_list import SortableClustersList
+from .sortable_clusters_list import SortableClustersList
 
 # Modifiers List utils
 # Modifiers List
