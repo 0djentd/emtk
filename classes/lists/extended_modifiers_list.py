@@ -100,6 +100,6 @@ class ExtendedModifiersList(ModifiersListActiveModifier,
             if len(self._modifiers_list) > 0:
                 self._mod = self._modifiers_list[0]
         else:
-            self._additional_info_log.append("This is not a list")
+            raise TypeError
 
         return modified

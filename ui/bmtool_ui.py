@@ -29,35 +29,42 @@ def bmtool_modifier_ui_draw(self, context):
         font_id = 0
         blf.position(font_id, 30, 450 + offset, 0)
 
+        e = False
+
         if isinstance(x, str):
             blf.size(font_id, 32, 30)
             blf.color(font_id, 0.95, 0.95, 0.95, 1)
             blf.draw(font_id, x)
             offset -= 18
 
-        elif len(x) == 2:
-            if x[1] == 2:
-                blf.size(font_id, 32, 30)
-                blf.color(font_id, 0.8, 0.7, 0.7, 1)
-                blf.draw(font_id, x[0])
-                offset -= 18
-            elif x[1] == 1:
-                blf.size(font_id, 32, 30)
-                blf.color(font_id, 0.95, 0.95, 0.95, 1)
-                blf.draw(font_id, x[0])
-                offset -= 18
-            elif x[1] == 3:
-                blf.size(font_id, 32, 30)
-                blf.color(font_id, 0.8, 0.8, 0.95, 1)
-                blf.draw(font_id, x[0])
-                offset -= 18
-            elif x[1] == 10:
-                blf.size(font_id, 32, 30)
-                blf.color(font_id, 0.8, 0.8, 0.5, 1)
-                blf.draw(font_id, x[0])
-                offset -= 18
-
+        elif isinstance(x, list):
+            if len(x) == 2:
+                if x[1] == 2:
+                    blf.size(font_id, 32, 30)
+                    blf.color(font_id, 0.8, 0.7, 0.7, 1)
+                    blf.draw(font_id, x[0])
+                    offset -= 18
+                elif x[1] == 1:
+                    blf.size(font_id, 32, 30)
+                    blf.color(font_id, 0.95, 0.95, 0.95, 1)
+                    blf.draw(font_id, x[0])
+                    offset -= 18
+                elif x[1] == 3:
+                    blf.size(font_id, 32, 30)
+                    blf.color(font_id, 0.8, 0.8, 0.95, 1)
+                    blf.draw(font_id, x[0])
+                    offset -= 18
+                elif x[1] == 10:
+                    blf.size(font_id, 32, 30)
+                    blf.color(font_id, 0.8, 0.8, 0.5, 1)
+                    blf.draw(font_id, x[0])
+                    offset -= 18
+            else:
+                e = True
         else:
+            e = True
+
+        if e:
             blf.size(font_id, 32, 30)
             blf.color(font_id, 0.95, 0.95, 0.2, 1)
             blf.draw(font_id, "Encountered error while drawing text")
@@ -129,17 +136,6 @@ class BMToolUi:
             for x in self.bmtool_ui_modifiers_list(self.m_list):
                 ui_t.append(x)
             ui_t.append(" ")
-
-        if self._BMTOOL_UI_V:
-            # TODO: doesnt work 
-            # # Modifier settings
-            # for x in self.bmtool_ui_modifier_stats(context):
-            #     ui_t.append(x)
-            # ui_t.append(" ")
-
-            # Modifier visibility
-            for x in self.bmtool_ui_modifier_visibility(self.m_list):
-                ui_t.append(x)
         return ui_t
 
     # -----------------------------------
@@ -241,7 +237,6 @@ class BMToolUi:
             line += " "
         return line
 
-
     def bmtool_ui_modifier_visibility(self, m_list):
         """
         Returns list of strings with info about m_list's active modifier
@@ -250,9 +245,6 @@ class BMToolUi:
 
         ui_t = []
         ui_t.append("Not implemented for modifiers clusters")
-        # ui_t.append(f"Editmode (B) {mod.show_in_editmode}")
-        # ui_t.append(f"Viewport (V) {mod.show_viewport}")
-        # ui_t.append(f"Render (shift+V) {mod.show_render}")
         return ui_t
 
     # TODO: should be in utils

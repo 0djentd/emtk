@@ -88,7 +88,6 @@ class BMTOOL_OT_bmtoole2(ModifiersOperator, Operator):
 
         self.report({'INFO'}, f"{self.m_list.get_first()}")
 
-
         for line in self.m_list.modifiers_list_info_get():
             self.report({'INFO'}, line)
 

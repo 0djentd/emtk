@@ -159,19 +159,23 @@ class ModifiersListActiveModifier():
         Returns list of clusters that were selected on this layer.
         """
 
-        result = self.get_list_in_range_inclusive(
-                self._cluster_to_select_from, self._mod)
+        # Get usual selection.
+        if self._cluster_to_select_from is not None:
+            result = self.get_list_in_range_inclusive(
+                    self._cluster_to_select_from, self._mod)
+        else:
+            result = None
 
+        # Get per-cluster selection.
         if self._selected_clusters is not None:
             if result is not None:
                 result += self._selected_clusters
             else:
                 result = self._selected_clusters
 
+        # If no selection, return empty list.
         if result is None:
-            x = []
-            return x
-
+            result = []
         return result
 
     # ================================
