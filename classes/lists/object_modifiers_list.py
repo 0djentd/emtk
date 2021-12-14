@@ -38,7 +38,6 @@ class ObjectModifiersList(ModifiersList):
     within Blender modifiers stack.
     """
     def __init__(self):
-        self.__DUMMY_MODIFIERS = False
         super().__init__()
 
     # ===================================
