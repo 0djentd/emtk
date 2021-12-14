@@ -36,8 +36,8 @@ class ClustersLayer(ModifiersListActiveModifier,
     Base class for modifiers clusters that contain other clusters
     in them.
     """
-    def __init__(self):
-        super().__init__()
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
     def has_clusters(self):
         """

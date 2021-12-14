@@ -86,6 +86,7 @@ class ModifierCluster(
     _MODCLUSTER_MODIFIERS_BY_POSSIBLE_NAMES = [[]]
 
     # Can cluster's modifiers list be changed after initialization?
+    # why tho
     _MODCLUSTER_DYNAMIC = False
 
     # TODO: why
@@ -100,6 +101,7 @@ class ModifierCluster(
     # TODO: remove this
     _MODIFIER_CLUSTERS_LITE = False
     # TODO: why
+    # why tho
 
     # Default modifier return index
     # Should be none. Cluster considered simple, if any number.
@@ -118,34 +120,106 @@ class ModifierCluster(
     # Additional info log
     _MODCLUSTER_V = False
 
-    # =====================
-    # MODCLUSTER PROPERTIES
-    # =====================
-    # This is variables that can be changed without re-parsing clusters list
-    def __init__(self):
+    def __init__(self, *,
+                 cluster_name=None,
+                 cluster_type=None,
+                 cluster_tags=None,
+                 modifiers_by_type=None,
+                 modifiers_by_name=None,
+                 cluster_is_sane=None,
+                 **kwargs
+                 ):
+        super().__init__(**kwargs)
 
-        super().__init__()
+        # -------------------------------------------
+        # Set cluster type name.
+        if isinstance(cluster_name, str):
+            if len(cluster_name) == 0:
+                raise ValueError
+            self._MODCLUSTER_NAME = cluster_name
+        else:
+            raise TypeError
 
+        # Set cluster type.
+        if isinstance(cluster_type, str):
+            if len(cluster_type) == 0:
+                raise ValueError
+            self._MODCLUSTER_TYPE = cluster_type
+        else:
+            raise TypeError
+
+        # Set cluster type default tags.
+        if isinstance(cluster_tags, list):
+            for x in cluster_tags:
+                if not isinstance(x, str):
+                    raise TypeError
+            self._MODCLUSTER_DEFAULT_TAGS = cluster_tags
+        else:
+            raise TypeError
+
+        # Set cluster type modifiers by type.
+        if isinstance(modifiers_by_type, list):
+            for x in modifiers_by_type:
+                if not isinstance(x, str):
+                    if isinstance(x, list):
+                        for y in x:
+                            if not isinstance(y, str):
+                                raise TypeError
+                    else:
+                        raise TypeError
+            self._MODCLUSTER_MODIFIERS_BY_TYPE = modifiers_by_type
+        else:
+            raise TypeError
+
+        # Set cluster type modifiers by names.
+        if isinstance(modifiers_by_name, list):
+            for x in modifiers_by_name:
+                if not isinstance(x, str):
+                    if isinstance(x, list):
+                        for y in x:
+                            if not isinstance(y, str):
+                                raise TypeError
+                    else:
+                        raise TypeError
+            self._MODCLUSTER_MODIFIERS_BY_TYPE = modifiers_by_name
+        else:
+            raise TypeError
+
+        # Allow cluster to skip sanity check.
+        if cluster_is_sane is True:
+            self._MODCLUSTER_IS_SANE = True
+        else:
+            self._MODCLUSTER_IS_SANE = False
+
+        # -------------------------------------------
+
+        # Modifiers names that can be sometimes used
+        # instead of default ones.
         self._modcluster_specified_modifier_names = []
 
-        # Custom name that can be changed in runtime
+        # Custom name that can be changed in runtime.
         self._modcluster_custom_name = None
 
-        # Custom tags that can be changed in runtime
+        # Custom tags that can be changed in runtime.
         self._modcluster_custom_tags = []
 
-        # Initialized
+        # Initialized.
         self._modcluster_initialized = False
 
-        # Modifiers list
+        # Modifiers list.
         self._modifiers_list = []
 
-        # Sorting rules
+        # Sorting rules.
         self._sorting_rules = []
 
         # Should this cluster content be shown collapsed in ui?
         # Also stops recursive active_modifier_get_deep()
         self.modcluster_collapsed = True
+
+        # Check cluster sanity.
+        if not self._MODCLUSTER_IS_SANE:
+            if not self.check_this_cluster_sanity():
+                raise ValueError
 
     def __str__(self):
         result = f"{self.get_this_cluster_default_name()} cluster, "

@@ -19,6 +19,7 @@
 from ..clusters_layer import ClustersLayer
 
 
+# TODO: this class should be removed
 class BevelCluster(ClustersLayer):
 
     _MODCLUSTER_ID = 1300

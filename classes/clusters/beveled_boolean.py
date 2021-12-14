@@ -20,6 +20,7 @@ from ..modifiers_cluster import ModifierCluster
 # from ..clusters_layer import ClustersLayer
 
 
+# TODO: this class should be removed
 class BeveledBooleanCluster(ModifierCluster):
 
     _MODCLUSTER_ID = 1000
