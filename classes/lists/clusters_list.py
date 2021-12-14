@@ -93,12 +93,7 @@ class ClustersList(ModifiersList, SortableClustersList):
     _MODIFIERS_LIST_V = True
 
     def __init__(self):
-
         super().__init__()
-
-        self._modifiers_list = []
-
-        self._additional_info_log = []
 
     # =====================================
     # THIS METHODS WORK ONLY WITH CLUSTERS.

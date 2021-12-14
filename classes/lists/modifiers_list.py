@@ -164,6 +164,7 @@ class ModifiersList(ModifiersListUtils):
         return self._modifiers_list
 
     # TODO: does it work?
+    # TODO: it doesnt work
     def get_list_in_range_not_inclusive(self, mod1, mod2):
         """
         Returns list of objects between two objects.
@@ -196,7 +197,7 @@ class ModifiersList(ModifiersListUtils):
         """
 
         if (mod1 is None) or (mod2 is None):
-            return None
+            raise TypeError
 
         x = self.get_index(mod1)
         y = self.get_index(mod2)
@@ -427,7 +428,7 @@ class ModifiersList(ModifiersListUtils):
             if y >= m_list_len:
                 y = y - m_list_len
             if self.modifier_get_type(self._modifiers_list[y]) == m_type:
-                return self.modifier_get_by_index(y)
+                return self._modifiers_list[y]
             x += 1
 
     def find_previous_any_loop(self, mod):
@@ -444,9 +445,9 @@ class ModifiersList(ModifiersListUtils):
         x = self.get_index(mod)
         y = self.get_list_length()
         if x > 0:
-            return self.modifier_get_by_index(x-1)
+            return self._modifiers_list[x-1]
         else:
-            return self.modifier_get_by_index(y-1)
+            return self._modifiers_list[y-1]
 
     def find_next_any_loop(self, mod):
         return self.find_next_modifier_any_loop(mod)
@@ -461,6 +462,6 @@ class ModifiersList(ModifiersListUtils):
         x = self.get_index(mod)
         y = self.get_list_length()
         if x < (y - 1):
-            return self.modifier_get_by_index(x + 1)
+            return self._modifiers_list[x + 1]
         else:
-            return self.modifier_get_by_index(0)
+            return self._modifiers_list[0]

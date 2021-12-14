@@ -23,10 +23,8 @@ class DummyBlenderModifier():
     """
 
     def __init__(self, m_name, m_type):
-        if not isinstance(m_name, str):
-            raise TypeError
-
-        if not isinstance(m_type, str):
+        if not isinstance(m_name, str)\
+                or not isinstance(m_type, str):
             raise TypeError
 
         self.name = m_name
