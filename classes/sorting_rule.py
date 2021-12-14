@@ -22,30 +22,70 @@ class SortingRule():
     Base class for cluster sorting rules.
     """
 
-    def __init__(self, s_name=None):
+    def __init__(self,
+                 s_name=None, *,
+                 sorting_rule_priority=None,
+                 after_clusters=None,
+                 before_clusters=None,
+                 last_cluster=None,
+                 first_cluster=None,
+                 sorting_rule_is_sane=None
+                 ):
+
+        # Sorting rule name. Should be unique.
         if s_name is None:
-            self.name = 'DefaultSortingRule'
+            self.name = 'DefaultSortingRuleName'
         else:
             self.name = s_name
 
         # Skip sanity checks for this rule
-        self.__SORTING_RULE_IS_SANE = False
-
-        # Names of cluster types this cluster should be placed after.
-        self.after_clusters = []
-
-        # Names of cluster types this cluster should be placed before.
-        self.before_clusters = []
+        if sorting_rule_is_sane:
+            self.__SORTING_RULE_IS_SANE = True
+        else:
+            self.__SORTING_RULE_IS_SANE = False
 
         # Sorting priority, used when some of the rules conflict
         # with each other.
-        self.sorting_rule_priority = 0
+        if sorting_rule_priority is None:
+            self.sorting_rule_priority = 0
+        elif isinstance(sorting_rule_priority, int):
+            self.sorting_rule_priority = sorting_rule_priority
+        else:
+            raise TypeError
 
-        # Should this cluster be placed last in the list?
-        self.last_cluster = False
+        # Names of cluster types this cluster should be placed after.
+        if after_clusters is None:
+            self.after_clusters = []
+        elif isinstance(after_clusters, list):
+            for x in after_clusters:
+                if not isinstance(x, str):
+                    raise TypeError
+            self.after_clusters = after_clusters
+        else:
+            raise TypeError
+
+        # Names of cluster types this cluster should be placed before.
+        if before_clusters is None:
+            self.before_clusters = []
+        elif isinstance(before_clusters, list):
+            for x in before_clusters:
+                if not isinstance(x, str):
+                    raise TypeError
+            self.before_clusters = before_clusters
+        else:
+            raise TypeError
 
         # Should this cluster be placed first in the list?
-        self.first_cluster = False
+        if first_cluster:
+            self.first_cluster = True
+        else:
+            self.first_cluster = False
+
+        # Should this cluster be placed last in the list?
+        if last_cluster:
+            self.last_cluster = True
+        else:
+            self.last_cluster = False
 
     @property
     def name(self):

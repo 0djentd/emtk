@@ -45,6 +45,7 @@ class BMToolEditorBevel(ModifierEditor):
             self, context, event, m_list, selected_objects):
         mod = m_list.active_modifier_get().get_by_index(0)
         if event.type == 'MOUSEMOVE':
+
             # Modal editing
             if self.bmtool_mode == "width":
                 mod.width = self.delta_d(context, event) * 0.000008
