@@ -155,6 +155,7 @@ class ModifierCluster(
         result = result + f"tags {self.get_this_cluster_tags()}, "
         return result
 
+    # Collapsed
     @property
     def collapsed(self):
         return self.modcluster_collapsed
@@ -169,6 +170,20 @@ class ModifierCluster(
     @collapsed.deleter
     def collapsed(self, collapsed_val):
         del(self.modcluster_collapsed)
+
+    # Cluster name
+    @property
+    def name(self):
+        return self.get_this_cluster_name()
+
+    @name.setter
+    def name(self, cluster_name):
+        return self.set_this_cluster_custom_name(cluster_name)
+
+    # Cluster type
+    @property
+    def type(self):
+        return self.get_this_cluster_type()
 
     # ============================
     # Methods reserved for objects

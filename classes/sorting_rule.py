@@ -54,6 +54,7 @@ class SortingRule():
             raise TypeError
 
         # Names of cluster types this cluster should be placed after.
+        # THIS SHOULD BE _MODCLUSTER_TYPE, NOT _MODCLUSTER_NAME
         if after_clusters is None:
             self.after_clusters = []
         elif isinstance(after_clusters, list):
