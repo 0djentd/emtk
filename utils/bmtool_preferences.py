@@ -43,11 +43,34 @@ class BMToolPreferences(AddonPreferences):
             default='BMToolM mesh backup'
             )
 
+    # TODO: not implemented
+    custom_cluster_types: BoolProperty(
+            name="Use custom cluster types.",
+            default=True
+            )
+
+    # TODO: not implemented
+    always_add_custom_cluster_types: BoolProperty(
+            name="Always add custom cluster types.",
+            default=True
+            )
+
+    # TODO: not implemented
+    saved_cluster_types: StringProperty(
+            name="Saved cluster types.",
+            default=""
+            )
+
     def draw(self, context):
         layout = self.layout
         layout.label(text="BMTool options")
         layout.prop(self, "save_clusters")
-        layout.prop(self, "save_clusters_backup")
+        if self.save_clusters_backup:
+            layout.prop(self, "save_clusters_backup")
         layout.prop(self, "backup_mesh_on_modifier_apply_remove")
         if self.backup_mesh_on_modifier_apply_remove:
             layout.prop(self, "backup_collection_name")
+        layout.prop(self, "custom_cluster_types")
+        if self.custom_cluster_types:
+            layout.prop(self, "always_add_custom_cluster_types")
+            layout.prop(self, "saved_cluster_types")
