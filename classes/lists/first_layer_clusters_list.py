@@ -24,9 +24,10 @@ import bpy
 
 from .clusters_list import ClustersList
 from ..clusters_parser import ClustersParser
+from ..sortable_clusters_list import SortableClustersList
 
 
-class FirstLayerClustersList(ClustersList):
+class FirstLayerClustersList(ClustersList, SortableClustersList):
     """
     This is class with methods used for 'first layer' of
     clusters. Basically, any layers in it should consist of
