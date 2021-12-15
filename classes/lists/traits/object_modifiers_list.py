@@ -29,8 +29,8 @@ class ObjectModifiersListTrait():
     Have methods for adding, removing, moving and sorting modifiers
     within Blender modifiers stack.
     """
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     # ===================================
     # Changing modifiers_list of an object

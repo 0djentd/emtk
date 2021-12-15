@@ -17,10 +17,12 @@
 # ##### END GPL LICENSE BLOCK #####
 
 from .traits.first_layer_clusters_list import FirstLayerClustersListTrait
+from .clusters_list import ClustersList
 
 
 class ExtendedModifiersList(
                             FirstLayerClustersListTrait,
+                            ClustersList
                             ):
     """
     List of object modifiers with 'active modifier' that can be useful
@@ -35,4 +37,3 @@ class ExtendedModifiersList(
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-

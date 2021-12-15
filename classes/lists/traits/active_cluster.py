@@ -71,6 +71,7 @@ class ActiveClusterTrait():
     def active_modifier_set(self, modifier):
         """
         Set active modifier by reference
+
         Returns True if successfully found modifier.
         Returns False if modifier is not in list.
         """
