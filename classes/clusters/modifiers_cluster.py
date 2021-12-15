@@ -17,6 +17,7 @@
 # ##### END GPL LICENSE BLOCK #####
 
 # import copy
+import json
 
 import bpy
 
@@ -802,6 +803,21 @@ class ModifiersCluster(
     # =======================================
     # Utility
     # =======================================
+    def serialize_this_cluster_type(self):
+        x = []
+        x.append(self.__class__)
+        x.append(self._MODCLUSTER_NAME)
+        x.append(self._MODCLUSTER_TYPE)
+        x.append(self._MODCLUSTER_MODIFIERS_BY_TYPE)
+        x.append(self._MODCLUSTER_MODIFIERS_BY_POSSIBLE_NAMES)
+        x.append(self._MODCLUSTER_DEFAULT_TAGS)
+        x.append(self._MODCLUSTER_PRIORITY)
+        x.append(self._MODCLUSTER_IS_SANE)
+        x.append(self._MODCLUSTER_CREATEABLE)
+        result = json.dumps(x)
+        return result
+
+    # TODO: can be removed
     def clear_this_cluster(self):
         """
         Resets all unnecessary for cluster type
