@@ -16,25 +16,18 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-from .object_modifiers_clusters_list import ObjectModifiersClustersList
 from .first_layer_clusters_list import FirstLayerClustersList
-from .modifiers_list_active_modifier import ModifiersListActiveModifier
+
+# Traits
+from .traits.object_clusters_list import ObjectClustersListTrait
+from .traits.active_cluster import ActiveClusterTrait
 
 
-# Modifiers List utils
-# Modifiers List
-# Modifiers Clusters parser
-# Clusters List
-# Object Modifiers Clusters List
-# FirstLayerClustersList
-# ModifiersListActiveModifier
-# ----------------------
-# Extended Modifiers List
-# ----------------------
-
-class ExtendedModifiersList(ModifiersListActiveModifier,
+class ExtendedModifiersList(
+                            ActiveClusterTrait,
                             FirstLayerClustersList,
-                            ObjectModifiersClustersList):
+                            ObjectClustersListTrait
+                            ):
     """
     List of object modifiers with 'active modifier' that can be useful
     in modal operators.
@@ -67,39 +60,3 @@ class ExtendedModifiersList(ModifiersListActiveModifier,
         interface that uses ExtendedModifiersList.
         """
         return self.get_active_cluster_layer()
-
-    def create_modifiers_list(self, obj):
-        """
-        Creates and parses modifiers list for obj and
-        selects first modifier as active.
-
-        This method exists for both object and extended modifiers lists.
-
-        Returns True, if found any modifiers.
-        Returns False, if no modifiers found.
-        """
-        return self._create_extended_modifiers_list(obj)
-
-    # TODO: this methods dont work with nested clusters
-    def _create_extended_modifiers_list(self, obj):
-        """
-        Creates and parses modifiers list for obj and
-        selects first modifier as active.
-
-        Wrapper for ObjectModifiersClustersList's resfresh method.
-
-        Returns True, if found any modifiers.
-        Returns False, if no modifiers found.
-        """
-
-        # Update modifiers list
-        modified = self._create_modifiers_list(obj)
-
-        # Select first modifier, if found any modifiers
-        if isinstance(self._modifiers_list, list):
-            if len(self._modifiers_list) > 0:
-                self._mod = self._modifiers_list[0]
-        else:
-            raise TypeError
-
-        return modified
