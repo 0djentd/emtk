@@ -43,9 +43,9 @@ class FirstLayerClustersList(ClustersList):
     # version.
     _EXTENDED_MODIFIERS_LIST_NO_COMPAT = [(0, 2, 0), (0, 0, 5)]
 
-    def __init__(self):
-        super().__init__()
-        self._clusters_parser = ClustersParser()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._clusters_parser = ClustersParser(*args, **kwargs)
 
     def __init_subclass__(cls):
         cls._clusters_parser = ClustersParser()

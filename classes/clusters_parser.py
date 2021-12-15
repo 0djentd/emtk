@@ -33,7 +33,9 @@ class ClustersParser():
 
     def __init__(self, *,
                  skip_parser=None,
-                 default_cluster=None,
+                 cluster_types=None,
+                 only_default_cluster=None,
+                 no_default_cluster=None,
                  parser_sanity_checks=None,
                  replace_on_update=None,
                  simple_clusters=None,
@@ -47,7 +49,7 @@ class ClustersParser():
             self.__SKIP_PARSE = False
 
         # Only use default cluster, but dont skip parser.
-        if default_cluster:
+        if only_default_cluster:
             self.__DEFAULT_CLUSTERS = True
         else:
             self.__DEFAULT_CLUSTERS = False
@@ -96,6 +98,16 @@ class ClustersParser():
 
         # Last new cluster type index.
         self._last_cluster_type_index = 1
+
+        # Dont use default cluster.
+        if not no_default_cluster:
+            default_modififer_cluster = DefaultModifierCluster()
+            self.update_cluster_types_list(default_modififer_cluster)
+
+        # Available cluster types.
+        if isinstance(cluster_types, list):
+            for x in cluster_types:
+                self.update_cluster_types_list(x)
 
     # =============================
     # Parse_result is a list
@@ -218,8 +230,10 @@ class ClustersParser():
         Returns False if cant be added
         """
 
+        if not isinstance(cluster_type_to_add, ModifiersCluster):
+            raise TypeError
+
         cluster_type = copy.deepcopy(cluster_type_to_add)
-        # cluster_type = cluster_type_to_add
 
         ui_t = []
         ui_t.append("-----------------------------------")

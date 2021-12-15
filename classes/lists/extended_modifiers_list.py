@@ -19,14 +19,15 @@
 from .object_modifiers_clusters_list import ObjectModifiersClustersList
 from .first_layer_clusters_list import FirstLayerClustersList
 from .modifiers_list_active_modifier import ModifiersListActiveModifier
-from ..clusters_parser import ClustersParser
 
 
 # Modifiers List utils
 # Modifiers List
 # Modifiers Clusters parser
-# Modifiers Clusters List
+# Clusters List
 # Object Modifiers Clusters List
+# FirstLayerClustersList
+# ModifiersListActiveModifier
 # ----------------------
 # Extended Modifiers List
 # ----------------------
@@ -45,9 +46,8 @@ class ExtendedModifiersList(ModifiersListActiveModifier,
     Can work with modifiers cluster lists as well.
     """
 
-    def __init__(self):
-        super().__init__()
-        self._clusters_parser = ClustersParser()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     def get_cluster(self):
         """

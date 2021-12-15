@@ -24,7 +24,8 @@ from .modifiers_cluster import ModifiersCluster
 class DefaultModifierCluster(ModifiersCluster):
     """
     Cluster type for default modifiers without custom behaviour, tags, or name.
-    Consist of one modifier.
+    Consist of one modifier. Returns actual Blender modifier name and type to
+    clusters list.
     """
 
     def __init__(self, *args, **kwargs):
@@ -37,15 +38,19 @@ class DefaultModifierCluster(ModifiersCluster):
                          cluster_createable=True,
                          *args, **kwargs)
 
+        self._MODCLUSTER_DYNAMIC = False
+
     def get_this_cluster_name(self):
-        if len(self._modifiers_list) != 1:
-            return self._MODCLUSTER_NAME
-        return self._modifiers_list[0].name
+        if not self._modcluster_initialized:
+            return self.get_this_cluster_default_name()
+        else:
+            return self._modifiers_list[0].name
 
     def get_this_cluster_type(self):
-        if len(self._modifiers_list) != 1:
-            return self._MODCLUSTER_TYPE
-        return self._modifiers_list[0].type
+        if not self._modcluster_initialized:
+            return self.get_this_cluster_default_type()
+        else:
+            return self._modifiers_list[0].type
 
     # Check if passed argument are actually Blender modifier
     def modcluster_extra_availability_check(self, mod):

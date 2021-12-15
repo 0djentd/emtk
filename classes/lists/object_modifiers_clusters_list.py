@@ -48,8 +48,10 @@ class ObjectModifiersClustersList(ClustersList):
     # Reference to object.
     # _object
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, obj=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        if obj is not None:
+            self._object = obj
 
     # ===================================
     # Changing modifiers_list of an object
