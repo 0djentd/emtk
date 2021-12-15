@@ -28,16 +28,20 @@ def deserialize_cluster_type(serialized_cluster_type, **kwargs):
     Returns cluster type instance.
     """
     x = json.loads(serialized_cluster_type)
-    if x[0] == 'ModifiersCluster':
+
+    if not isinstance(x, dict):
+        raise TypeError
+
+    if x['cluster_class'] == 'ModifiersCluster':
         result = ModifiersCluster(
-                                  cluster_name=x[1],
-                                  cluster_type=x[2],
-                                  modifiers_by_type=x[3],
-                                  modifiers_by_name=x[4],
-                                  cluster_tags=x[5],
-                                  cluster_priority=x[6],
-                                  cluster_is_sane=x[7],
-                                  cluster_createable=x[8],
+                                  cluster_name=x['cluster_name'],
+                                  cluster_type=x['cluster_type'],
+                                  modifiers_by_type=x['modifiers_by_types'],
+                                  modifiers_by_name=x['modifiers_by_names'],
+                                  cluster_tags=x['cluster_tags'],
+                                  cluster_priority=x['cluster_priority'],
+                                  cluster_is_sane=x['cluster_is_sane'],
+                                  cluster_createable=x['cluster_createable'],
                                   dont_define_cluster=False,
                                   **kwargs
                                   )

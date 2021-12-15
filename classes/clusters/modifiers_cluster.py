@@ -804,16 +804,17 @@ class ModifiersCluster(
     # Utility
     # =======================================
     def serialize_this_cluster_type(self):
-        x = []
-        x.append(self.__class__)
-        x.append(self._MODCLUSTER_NAME)
-        x.append(self._MODCLUSTER_TYPE)
-        x.append(self._MODCLUSTER_MODIFIERS_BY_TYPE)
-        x.append(self._MODCLUSTER_MODIFIERS_BY_POSSIBLE_NAMES)
-        x.append(self._MODCLUSTER_DEFAULT_TAGS)
-        x.append(self._MODCLUSTER_PRIORITY)
-        x.append(self._MODCLUSTER_IS_SANE)
-        x.append(self._MODCLUSTER_CREATEABLE)
+        x = {}
+        x.update({'cluster_class': self.__class__})
+        x.update({'cluster_name': self._MODCLUSTER_NAME})
+        x.update({'cluster_type': self._MODCLUSTER_TYPE})
+        x.update({'modifiers_by_types': self._MODCLUSTER_MODIFIERS_BY_TYPE})
+        x.update({'modifiers_by_names':
+                 self._MODCLUSTER_MODIFIERS_BY_POSSIBLE_NAMES})
+        x.update({'cluster_tags': self._MODCLUSTER_DEFAULT_TAGS})
+        x.update({'cluster_priority': self._MODCLUSTER_PRIORITY})
+        x.update({'cluster_is_sane': self._MODCLUSTER_IS_SANE})
+        x.update({'cluster_createable': self._MODCLUSTER_CREATEABLE})
         result = json.dumps(x)
         return result
 
