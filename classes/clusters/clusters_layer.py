@@ -19,6 +19,7 @@
 from .modifiers_cluster import ModifiersCluster
 from ..lists.object_modifiers_clusters_list import ObjectModifiersClustersList
 from ..lists.modifiers_list_active_modifier import ModifiersListActiveModifier
+from ..lists.clusters_list import ClustersList
 
 # Modifiers List utils
 # Modifiers List -> Modifiers Clusters
@@ -31,6 +32,7 @@ from ..lists.modifiers_list_active_modifier import ModifiersListActiveModifier
 
 class ClustersLayer(ModifiersListActiveModifier,
                     ObjectModifiersClustersList,
+                    ClustersList,
                     ModifiersCluster):
     """
     Base class for modifiers clusters that contain other clusters

@@ -27,9 +27,6 @@ class ModifiersListUtils():
 
     _MODIFIER_CLUSTERS = False
 
-    # TODO: this can be removed
-    _MODCLUSTER_DEFAULT_MODIFIER = None
-
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

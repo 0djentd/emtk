@@ -24,24 +24,27 @@ class SortingRule():
 
     def __init__(self,
                  s_name=None,
+                 *args,
                  sorting_rule_priority=None,
                  after_clusters=None,
                  before_clusters=None,
                  last_cluster=None,
                  first_cluster=None,
                  sorting_rule_is_sane=None,
-                 *args, **kwargs
+                 **kwargs
                  ):
         """
         s_name should be unique sorting rule name.
+
         sorting_rule_priority is a variable that decides what to
         do if some rules are incompatible.
+
         after_clusters and before_clusters is lists of cluster names
         that cluster should be placed after or before.
-        before_clusters is list of cluster names cluster should
-        be placed before.
+
         If last_cluster or first_cluster is true, cluster should
         be placed in the end or beginning of the list.
+
         If sorting_rule_is_sane, it will skip most of sanity
         checks in ExtendedModifiersList.
         """

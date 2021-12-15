@@ -31,7 +31,7 @@ class ClustersParser():
     # Additional info.
     _MODIFIERS_LIST_V = True
 
-    def __init__(self, *,
+    def __init__(self, *args,
                  skip_parser=None,
                  cluster_types=None,
                  only_default_cluster=None,
@@ -39,8 +39,10 @@ class ClustersParser():
                  parser_sanity_checks=None,
                  replace_on_update=None,
                  simple_clusters=None,
-                 max_iterations=None
-                 ):
+                 max_iterations=None,
+                 **kwargs):
+
+        super().__init__(*args, **kwargs)
 
         # Skip parser and sanity checks, only use default cluster.
         if skip_parser:
