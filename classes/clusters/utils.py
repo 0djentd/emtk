@@ -22,6 +22,11 @@ from .modifiers_cluster import ModifiersCluster
 
 
 def deserialize_cluster_type(serialized_cluster_type, **kwargs):
+    """
+    Takes string with info about cluster type as argument.
+
+    Returns cluster type instance.
+    """
     x = json.loads(serialized_cluster_type)
     if x[0] == 'ModifiersCluster':
         result = ModifiersCluster(
@@ -42,6 +47,11 @@ def deserialize_cluster_type(serialized_cluster_type, **kwargs):
 
 
 def serialize_cluster_type(cluster_type):
+    """
+    Returns string with info about cluster_type that
+    is enough to create new cluster_type instance
+    through deserialize_cluster_type.
+    """
     if not isinstance(cluster_type, ModifiersCluster):
         raise TypeError
     return cluster_type.serialize_this_cluster_type()
