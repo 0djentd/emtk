@@ -67,9 +67,10 @@ class DummyBlenderObj():
             if not isinstance(x, DummyBlenderModifier):
                 raise TypeError
 
-        super().__init__(*args, **kwargs)
-
         self.modifiers = modifiers
+        self._check_modifiers_names()
+
+        super().__init__(*args, **kwargs)
 
     def modifier_add(self, m_name, m_type):
         """
@@ -90,7 +91,16 @@ class DummyBlenderObj():
 
         mod = DummyBlenderModifier(m_name_2, m_type)
         self.modifiers.append(mod)
+        self._check_modifiers_names()
         return mod
+
+    def _check_modifiers_names(self):
+        y = []
+        for x in self.modifiers:
+            if x.name not in y:
+                y.append(x.name)
+            else:
+                raise ValueError
 
     def modifier_remove(self, m_name):
         """
@@ -106,6 +116,7 @@ class DummyBlenderObj():
         if mod_to_remove is not None:
             self.modifiers.remove(mod_to_remove)
             return True
+        self._check_modifiers_names()
         return False
 
     def modifier_move_up(self, m_name=None):
@@ -131,6 +142,7 @@ class DummyBlenderObj():
         if i < len(self.modifiers) - 1:
             x = self.modifiers.pop(mod)
             self.modifiers.insert(i+1, x)
+        self._check_modifiers_names()
         return True
 
     def modifier_move_down(self, m_name=None):
@@ -156,4 +168,5 @@ class DummyBlenderObj():
         if i > 0:
             x = self.modifiers.pop(mod)
             self.modifiers.insert(i-1, x)
+        self._check_modifiers_names()
         return True
