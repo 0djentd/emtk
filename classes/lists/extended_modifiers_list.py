@@ -25,14 +25,9 @@ class ExtendedModifiersList(
                             ClustersList
                             ):
     """
-    List of object modifiers with 'active modifier' that can be useful
-    in modal operators.
-
-    Can have only one active modifier at the time.
-    Cant have no active modifier, if any modifier exists.
-    Active modifier can be set with index, name, or reference.
-
-    Can work with modifiers cluster lists as well.
+    First layer of clusters list with methods for editing, adding, removing,
+    sorting and parsing clusters or modifiers on multiple clusters layers of
+    same Blender object.
     """
 
     def __init__(self, *args, **kwargs):
