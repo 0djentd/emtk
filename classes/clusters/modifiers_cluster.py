@@ -23,7 +23,7 @@ import bpy
 # from .lists.modifiers_list_active_modifier import ModifiersListActiveModifier
 # from .lists.object_modifiers_list import ObjectModifiersList
 from ..lists.modifiers_list import ModifiersList
-from ..dummy_modifiers import DummyModifier
+from ..dummy_modifiers import DummyBlenderModifier
 
 
 class ModifiersCluster(
@@ -568,7 +568,7 @@ class ModifiersCluster(
                 pass
             elif isinstance(mod, ModifiersCluster):
                 pass
-            elif isinstance(mod, DummyModifier):
+            elif isinstance(mod, DummyBlenderModifier):
                 pass
             else:
                 raise TypeError(f'{mod} is not a modifier or cluster.')
