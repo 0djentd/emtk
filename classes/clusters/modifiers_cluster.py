@@ -20,9 +20,10 @@
 
 import bpy
 
+# from .lists.modifiers_list_active_modifier import ModifiersListActiveModifier
 # from .lists.object_modifiers_list import ObjectModifiersList
 from ..lists.modifiers_list import ModifiersList
-# from .lists.modifiers_list_active_modifier import ModifiersListActiveModifier
+from ..dummy_modifiers import DummyModifier
 
 
 class ModifiersCluster(
@@ -33,20 +34,20 @@ class ModifiersCluster(
     """
     Base class for modifiers cluster type
 
-    What is ModifierCluster?
+    What is ModifiersCluster?
     It is a representation of any number of modifiers or clusters, that can
     have its own custom modifier type (when used with ModifiersList), methods,
     and attributes.
     Method check_availability decides if modifiers can be considered as
     a modifier cluster.
-    Instance of ModifierCluster can be indexed, moved, selected as active
+    Instance of ModifiersCluster can be indexed, moved, selected as active
     modifier, sorted and saved in ClustersList.
 
     Examples:
     Modifier cluster, consisting of wireframe modifier and bevel with custom
     name. If one of conditions (type, name or position in stack) is false,
     check_availability will return false. Else, this two modifiers can be
-    set as modifiers in ModifierCluster instance.
+    set as modifiers in ModifiersCluster instance.
     """
 
     def __init__(self, *,
@@ -86,7 +87,7 @@ class ModifiersCluster(
         self._MODCLUSTER_DEFAULT_TAGS = []
 
         # List of lists of possible modifier types that this
-        # ModifierCluster should consists of
+        # ModifiersCluster should consists of
         # Takes modifier order into consideration
         # If not at index 0, can be 'ANY'
         self._MODCLUSTER_MODIFIERS_BY_TYPE = [[]]
@@ -171,7 +172,8 @@ class ModifiersCluster(
                                     raise TypeError
                         else:
                             raise TypeError
-                self._MODCLUSTER_MODIFIERS_BY_TYPE = modifiers_by_name
+                self._MODCLUSTER_MODIFIERS_BY_POSSIBLE_NAMES\
+                    = modifiers_by_name
             elif modifiers_by_name is None:
                 self._MODCLUSTER_MODIFIERS_BY_POSSIBLE_NAMES = []
                 for x in self._MODCLUSTER_MODIFIERS_BY_TYPE:
@@ -224,10 +226,10 @@ class ModifiersCluster(
         self.modcluster_collapsed = True
 
         # Check cluster sanity.
-        # if not dont_define_cluster\
-        #         and not self._MODCLUSTER_IS_SANE\
-        #         and not self.check_this_cluster_sanity():
-        #     raise ValueError
+        if not dont_define_cluster\
+                and not self._MODCLUSTER_IS_SANE\
+                and not self.check_this_cluster_sanity():
+            raise ValueError
 
     def __str__(self):
         result = f"{self.get_this_cluster_default_name()} cluster, "
@@ -277,12 +279,12 @@ class ModifiersCluster(
         """
         Additional method reserved for custom types.
         Checks if modifiers can be considered as
-        ModifierCluster of this type.
+        ModifiersCluster of this type.
 
         Returns CONTINUE if can potentially be available,
         but missing some modifiers that can be found later.
         Returns FOUND if modifiers can be considered
-        ModifierCluster of this type.
+        ModifiersCluster of this type.
         Returns False, if not usable.
         Returns None, if no decision.
         """
@@ -351,7 +353,7 @@ class ModifiersCluster(
         return True
 
     # ===========================
-    # ModifierCluster methods
+    # ModifiersCluster methods
     # ===========================
     def is_complex(self):
         """
@@ -376,13 +378,13 @@ class ModifiersCluster(
 
     def get_this_cluster_type(self):
         """
-        Returns this ModifierCluster's type
+        Returns this ModifiersCluster's type
         """
         return self._MODCLUSTER_TYPE
 
     def get_this_cluster_name(self):
         """
-        Returns this ModifierCluster's custom name, or default name.
+        Returns this ModifiersCluster's custom name, or default name.
         """
         if self._modcluster_custom_name is not None:
             return self._modcluster_custom_name
@@ -391,13 +393,13 @@ class ModifiersCluster(
 
     def get_this_cluster_custom_name(self):
         """
-        Returns this ModifierCluster's custom name.
+        Returns this ModifiersCluster's custom name.
         """
         return self._modcluster_custom_name
 
     def get_this_cluster_default_name(self):
         """
-        Returns this ModifierCluster's default name.
+        Returns this ModifiersCluster's default name.
         """
         return self._MODCLUSTER_NAME
 
@@ -416,13 +418,13 @@ class ModifiersCluster(
     # ===========================
     def get_this_cluster_tags(self):
         """
-        Returns this ModifierCluster's custom tags, or default tags.
+        Returns this ModifiersCluster's custom tags, or default tags.
         """
         return self._MODCLUSTER_DEFAULT_TAGS + self._modcluster_custom_tags
 
     def add_tag_to_this_cluster(self, custom_tag):
         """
-        Set this ModifierCluster's custom tags.
+        Set this ModifiersCluster's custom tags.
         Takes string as an argument.
         Returns True if successfully added tag.
         """
@@ -438,7 +440,7 @@ class ModifiersCluster(
     # TODO: this is not correct implementation
     def remove_tag_from_this_cluster(self, custom_tag):
         """
-        Remove this ModifierCluster's custom tags.
+        Remove this ModifiersCluster's custom tags.
         Takes string as an argument.
         Returns True if successfully removed tag.
         Returns False if no such tag or cant remove.
@@ -469,7 +471,7 @@ class ModifiersCluster(
             raise TypeError
         for x in modifiers:
             if not isinstance(x, bpy.types.Modifier)\
-                    and not isinstance(x, ModifierCluster):
+                    and not isinstance(x, ModifiersCluster):
                 raise TypeError
 
         # If havent set modifiers already
@@ -552,14 +554,24 @@ class ModifiersCluster(
     def check_availability(self, modifiers):
         """
         Checks if sequence of modifiers or clusters can be
-        considered ModifierCluster of this type.
+        considered ModifiersCluster of this type.
 
         Returns CONTINUE if can potentially be available,
         but missing some modifiers that can be found later.
         Returns FOUND if modifiers or clusters can be considered
-        ModifierCluster of this type.
+        ModifiersCluster of this type.
         Returns False, if not usable.
         """
+
+        for mod in modifiers:
+            if isinstance(mod, bpy.types.Modifier):
+                pass
+            elif isinstance(mod, ModifiersCluster):
+                pass
+            elif isinstance(mod, DummyModifier):
+                pass
+            else:
+                raise TypeError(f'{mod} is not a modifier or cluster.')
 
         # How many modifiers are correct?
         x = 0
@@ -580,7 +592,7 @@ class ModifiersCluster(
                     and (modifiers_by_type[y] != 'ANY'):
 
                 # Check modifier type
-                if isinstance(mod, ModifierCluster):
+                if isinstance(mod, ModifiersCluster):
                     if mod.type not in modifiers_by_type[y]:
                         return 'WRONG CLUSTER TYPE'
                 else:
@@ -600,7 +612,7 @@ class ModifiersCluster(
                     and (modifiers_by_names[y] != 'ANY'):
 
                 # Check modifiers names
-                if isinstance(mod, ModifierCluster):
+                if isinstance(mod, ModifiersCluster):
                     if isinstance(modifiers_by_names[y], list):
                         if mod.name\
                                 not in modifiers_by_names[y]:
@@ -652,30 +664,37 @@ class ModifiersCluster(
         if not self.check_this_cluster_sanity_custom():
             return False
 
-        # If class that cluster is sane
+        # If specified that cluster is sane
         if self._MODCLUSTER_IS_SANE:
             return True
 
-        len_1 = len(self._MODCLUSTER_MODIFIERS_BY_TYPE)
+        l_1 = self._MODCLUSTER_MODIFIERS_BY_TYPE
+        len_1 = len(l_1)
 
-        len_2 = len(self._MODCLUSTER_MODIFIERS_BY_POSSIBLE_NAMES)
+        l_2 = self._MODCLUSTER_MODIFIERS_BY_POSSIBLE_NAMES
+        len_2 = len(l_2)
 
         if len(self._modcluster_specified_modifier_names) > 0:
             if len_2 != len(self._modcluster_specified_modifier_names):
-                return False
-
+                raise ValueError(
+                        'Length of specified modifiers names is wrong.')
         if len_1 != len_2:
-            return False
+            raise ValueError(
+                    f'Length of types ({l_1}) and names ({l_2}) is different.')
         if len_1 == 0:
-            return False
+            raise ValueError(
+                    'Length of modifiers types cant be 0.')
         if self._MODCLUSTER_MODIFIERS_BY_TYPE[0] == ['ANY']:
-            return False
+            raise ValueError(
+                    'First modifier cant be any, specify modifier type.')
         for mod_types in self._MODCLUSTER_MODIFIERS_BY_TYPE:
-            if len(mod_types) == 0:
-                return False
+            if isinstance(mod_types, list):
+                if len(mod_types) == 0:
+                    raise ValueError('Modifier types length is 0.')
         for mod_names in self._MODCLUSTER_MODIFIERS_BY_POSSIBLE_NAMES:
-            if len(mod_names) == 0:
-                return False
+            if isinstance(mod_names, list):
+                if len(mod_names) == 0:
+                    raise ValueError('Modifier names length is 0.')
         return True
 
     # ===================

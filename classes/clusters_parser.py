@@ -36,6 +36,7 @@ class ClustersParser():
                  default_cluster=None,
                  parser_sanity_checks=None,
                  replace_on_update=None,
+                 simple_clusters=None,
                  max_iterations=None
                  ):
 
@@ -66,6 +67,14 @@ class ClustersParser():
             self.__REPLACE_ON_UPDATE = True
         else:
             self.__REPLACE_ON_UPDATE = False
+
+        # Replace available cluster types when updaing existing one.
+        if simple_clusters is None:
+            self.__SIMPLE_CLUSTERS = False
+        elif simple_clusters:
+            self.__SIMPLE_CLUSTERS = True
+        else:
+            self.__SIMPLE_CLUSTERS = False
 
         # Max amount of iterations for _parse_modifiers_recursively
         # Can also be interpreted as max amount of layers.

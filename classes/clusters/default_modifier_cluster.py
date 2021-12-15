@@ -27,20 +27,27 @@ class DefaultModifierCluster(ModifiersCluster):
     Consist of one modifier.
     """
 
-    _MODCLUSTER_NAME = "Default Modifier"
+    # _MODCLUSTER_NAME = "Default Modifier"
 
-    _MODCLUSTER_TYPE = "DEFAULT_MODIFIER_CLUSTER"
+    # _MODCLUSTER_TYPE = "DEFAULT_MODIFIER_CLUSTER"
 
-    _MODCLUSTER_IS_SANE = True
+    # _MODCLUSTER_IS_SANE = True
 
-    _MODCLUSTER_MODIFIERS_BY_TYPE = [['ANY']]
+    # _MODCLUSTER_MODIFIERS_BY_TYPE = [['ANY']]
 
-    _MODCLUSTER_MODIFIERS_BY_POSSIBLE_NAMES = [['ANY']]
+    # _MODCLUSTER_MODIFIERS_BY_POSSIBLE_NAMES = [['ANY']]
 
-    _MODCLUSTER_CREATEABLE = True
+    # _MODCLUSTER_CREATEABLE = True
 
     def __init__(self, *args, **kwargs):
-        super().__init__(dont_define_cluster=True, *args, **kwargs)
+        super().__init__(
+                         cluster_type="DEFAULT_MODIFIER_CLUSTER",
+                         cluster_name="Default Modifier",
+                         modifiers_by_type=['ANY'],
+                         modifiers_by_name=['ANY'],
+                         cluster_is_sane=True,
+                         cluster_createable=True,
+                         *args, **kwargs)
 
     def get_this_cluster_name(self):
         if len(self._modifiers_list) != 1:
