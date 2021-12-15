@@ -28,7 +28,10 @@ class ClustersGroup(ClustersLayer):
     words, folder, to simplify manipulating multiple clusters.
     """
 
-    _MODCLUSTER_DYNAMIC = True
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self._MODCLUSTER_DYNAMIC = True
 
     def add_cluster_to_this_group(self, cluster, direction='DOWN'):
         """
@@ -40,7 +43,7 @@ class ClustersGroup(ClustersLayer):
         Returns True or False, if add cluster.
         """
         if not self.recursive_has_cluster(cluster):
-            if self._modcluster_initialized:
+            if self._modcluster_initialized and self._MODCLUSTER_DYNAMIC:
                 if direction == 'DOWN':
                     self._modifiers_list.append(cluster)
                 elif direction == 'UP':

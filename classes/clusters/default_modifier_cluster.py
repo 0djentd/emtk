@@ -27,18 +27,6 @@ class DefaultModifierCluster(ModifiersCluster):
     Consist of one modifier.
     """
 
-    # _MODCLUSTER_NAME = "Default Modifier"
-
-    # _MODCLUSTER_TYPE = "DEFAULT_MODIFIER_CLUSTER"
-
-    # _MODCLUSTER_IS_SANE = True
-
-    # _MODCLUSTER_MODIFIERS_BY_TYPE = [['ANY']]
-
-    # _MODCLUSTER_MODIFIERS_BY_POSSIBLE_NAMES = [['ANY']]
-
-    # _MODCLUSTER_CREATEABLE = True
-
     def __init__(self, *args, **kwargs):
         super().__init__(
                          cluster_type="DEFAULT_MODIFIER_CLUSTER",
@@ -79,15 +67,17 @@ class DefaultModifierCluster(ModifiersCluster):
 
         # If not a list
         if not isinstance(modifiers, list):
-            raise TypeError
+            modifiers = [modifiers]
 
         # If there is not exactly one modifier
         if len(modifiers) != 1:
-            return ValueError
+            return ValueError(
+                    'DefaultModifierCluster can work only with one modifier.')
 
         # If it is not an actual modifier
         if not isinstance(modifiers[0], bpy.types.Modifier):
-            raise TypeError
+            raise TypeError(
+                    'DefaultModifierCluster needs actual Blender modifier.')
 
         # If havent set modifiers already
         if self._modcluster_initialized is False:
@@ -100,4 +90,4 @@ class DefaultModifierCluster(ModifiersCluster):
             self._modifiers_list = modifiers
             return True
         else:
-            raise ValueError
+            raise ValueError('Cant change modifiers, cluster is not dynamic')
