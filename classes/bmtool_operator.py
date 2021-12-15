@@ -28,15 +28,7 @@ from ..ui.bmtool_ui import bmtool_modifier_ui_draw
 class BMToolMod(ModifiersOperator):
     """
     Base class for modal operators that use Blender modifier stack
-    through ModifiersList and classes based on it.
-
-    Have 'active modifier' through ExtendedModifiersList
-
-    Can use BMToolUI, a simple UI for modal operators.
-    Can be used for operators that dont use modifiers.
-    Can be used for modifier-specific operators.
-    Can be used for operators that can use multiple modifiers.
-    Can be used with ClustersList.
+    through ModififersOperator and ExtendedModifiersList.
     """
 
     # Default bmtool modal editing mode.

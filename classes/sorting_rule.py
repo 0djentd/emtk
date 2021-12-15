@@ -137,6 +137,7 @@ class SortingRule():
             return False
 
         for x in self.after_clusters:
-            if x in self.before_clusters:
-                return False
+            for y in self.before_clusters:
+                if x == y:
+                    return False
         return True

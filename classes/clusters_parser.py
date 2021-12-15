@@ -546,7 +546,6 @@ class ClustersParser():
     # ===================
     # Loading clusters state
     # ====================
-    # TODO: move to util
     def _unwrap_saved_clusters_state(self, clusters_state):
         """
         Returns clusters instances that are specified
