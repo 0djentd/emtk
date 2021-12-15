@@ -23,14 +23,14 @@ class SortingRule():
     """
 
     def __init__(self,
-                 s_name=None, *,
+                 s_name=None,
                  sorting_rule_priority=None,
                  after_clusters=None,
                  before_clusters=None,
                  last_cluster=None,
                  first_cluster=None,
                  sorting_rule_is_sane=None,
-                 **kwargs
+                 *args, **kwargs
                  ):
         """
         s_name should be unique sorting rule name.
@@ -45,6 +45,8 @@ class SortingRule():
         If sorting_rule_is_sane, it will skip most of sanity
         checks in ExtendedModifiersList.
         """
+
+        super().__init__(*args, **kwargs)
 
         # Sorting rule name. Should be unique.
         if isinstance(s_name, str):
