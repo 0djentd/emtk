@@ -32,18 +32,25 @@ class SortingRule():
                  sorting_rule_is_sane=None,
                  **kwargs
                  ):
+        """
+        s_name should be unique sorting rule name.
+        sorting_rule_priority is a variable that decides what to
+        do if some rules are incompatible.
+        after_clusters and before_clusters is lists of cluster names
+        that cluster should be placed after or before.
+        before_clusters is list of cluster names cluster should
+        be placed before.
+        If last_cluster or first_cluster is true, cluster should
+        be placed in the end or beginning of the list.
+        If sorting_rule_is_sane, it will skip most of sanity
+        checks in ExtendedModifiersList.
+        """
 
         # Sorting rule name. Should be unique.
         if isinstance(s_name, str):
             self.name = s_name
         else:
             raise TypeError
-
-        # Skip sanity checks for this rule
-        if sorting_rule_is_sane:
-            self.__SORTING_RULE_IS_SANE = True
-        else:
-            self.__SORTING_RULE_IS_SANE = False
 
         # Sorting priority, used when some of the rules conflict
         # with each other.
@@ -88,6 +95,12 @@ class SortingRule():
             self.last_cluster = True
         else:
             self.last_cluster = False
+
+        # Skip sanity checks for this rule
+        if sorting_rule_is_sane:
+            self.__SORTING_RULE_IS_SANE = True
+        else:
+            self.__SORTING_RULE_IS_SANE = False
 
     @property
     def name(self):

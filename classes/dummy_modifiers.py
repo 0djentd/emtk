@@ -22,10 +22,12 @@ class DummyBlenderModifier():
     Object that represents modifier.
     """
 
-    def __init__(self, m_name, m_type):
+    def __init__(self, m_name, m_type, *args, **kwargs):
         if not isinstance(m_name, str)\
                 or not isinstance(m_type, str):
             raise TypeError
+
+        super().__init__(*args, **kwargs)
 
         self.name = m_name
         self.m_type = m_type
@@ -53,7 +55,8 @@ class DummyBlenderObj():
     modifiers list and other purposes.
     """
 
-    def __init__(self, modifiers=None):
+    def __init__(self, modifiers=None, *args, **kwargs):
+
         if modifiers is None:
             modifiers = []
 
@@ -63,6 +66,8 @@ class DummyBlenderObj():
         for x in modifiers:
             if not isinstance(x, DummyBlenderModifier):
                 raise TypeError
+
+        super().__init__(*args, **kwargs)
 
         self.modifiers = modifiers
 

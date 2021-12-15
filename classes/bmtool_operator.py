@@ -84,7 +84,7 @@ class BMToolMod(ModifiersOperator):
                   'toogle_selection': 'G',
                   'up': 'E',
                   'down': 'F',
-                  'collapse': 'G',
+                  'collapse': 'R',
                   'exit': 'Q'
                   }
 
@@ -103,6 +103,9 @@ class BMToolMod(ModifiersOperator):
 
     # TODO: rename Modifier-specific to modifier-specific operator, as
     # it better represents functionality
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     # Check if modifier can be used
     @classmethod

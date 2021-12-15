@@ -150,7 +150,7 @@ class ClustersList(ModifiersList, SortableClustersList):
         for x in self.get_full_actual_modifiers_list():
             if x.name == m_name:
                 return x
-        return None
+        raise ValueError
 
     def get_first_actual_modifier(self):
         """
@@ -202,6 +202,16 @@ class ClustersList(ModifiersList, SortableClustersList):
         """
         for x in self.get_list():
             if x.get_this_cluster_name() == m_name:
+                return True
+        return False
+
+    def has_cluster_by_tag(self, tag):
+        """
+        Returns True if there is cluster with this tag in this cluster list.
+        Returns False.
+        """
+        for x in self.get_list():
+            if tag in x.get_this_cluster_tags():
                 return True
         return False
 
@@ -374,12 +384,17 @@ class ClustersList(ModifiersList, SortableClustersList):
         Also returns this ModifiersClustersList.
         Looks in all clusters.
         """
+        if not isinstance(cluster, ModifiersList):
+            raise TypeError
+
         if cluster in self.get_list():
             return self
+
         y = self.get_clusters_clusters_list()
         for x in y:
             if cluster in x.get_list():
                 return x
+        raise ValueError
 
     # ==============================
     # Methods based on get_deep_list
@@ -447,13 +462,20 @@ class ClustersList(ModifiersList, SortableClustersList):
 
         Returns True or False.
         """
+        if not isinstance(cluster, ModifiersList):
+            raise TypeError
+
+        if not isinstance(new_cluster_name, str):
+            raise TypeError
+
         # TODO: not tested
-        if self.recursive_has_cluster(cluster):
+        elif self.recursive_has_cluster(cluster):
             if isinstance(new_cluster_name, str):
                 cluster.set_this_cluster_custom_name(new_cluster_name)
                 self._cluster_number_format(cluster, self.get_full_list())
                 return True
-        return False
+        else:
+            raise ValueError
 
     # =======================
     # Clusters methods
@@ -466,16 +488,22 @@ class ClustersList(ModifiersList, SortableClustersList):
         If cluster has actual modifiers, it will be replaced with
         simpler clusters.
         """
-        if self.recursive_has_cluster(cluster):
+        if not isinstance(cluster, ModifiersList):
+            raise TypeError
+
+        elif self.recursive_has_cluster(cluster):
             layer = self.get_cluster_cluster_belongs_to(cluster)
             clusters_index = layer.get_index(cluster)
             removing_active = False
+
             if layer.active_modifier_get() == cluster:
                 removing_active = True
+
             # TODO: cluster being deconstructed
             if not cluster.cluster_being_deconstructed(self):
                 return False
             y = cluster.get_list()
+
             if cluster.has_clusters():
                 for x in reversed(y):
                     layer._modifiers_list.insert(clusters_index, x)
@@ -487,10 +515,12 @@ class ClustersList(ModifiersList, SortableClustersList):
                 layer._modifiers_list.remove(cluster)
                 for x in reversed(parse_result):
                     layer._modifiers_list.insert(clusters_index, x)
+
             if removing_active:
                 layer.active_modifier_set_by_index(clusters_index)
             return True
-        return False
+        else:
+            raise ValueError
 
     def recursive_get_first_actual_modifier(self, cluster):
         """

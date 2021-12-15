@@ -19,7 +19,9 @@
 import copy
 import bpy
 
+from .modifiers_list import ModifiersList
 from .clusters_list import ClustersList
+# from ..clusters import ModifiersCluster
 
 # Modifiers List utils
 # Modifiers List
@@ -82,6 +84,9 @@ class ObjectModifiersClustersList(ClustersList):
         stack. Direction should be either UP or DOWN.
         """
 
+        if not isinstance(mod, ModifiersList):
+            raise TypeError
+
         ui_t = []
 
         # Index of cluster in this list.
@@ -94,6 +99,8 @@ class ObjectModifiersClustersList(ClustersList):
         elif direction == 'DOWN':
             if x == self.get_list_length() - 1:
                 return False
+        else:
+            raise ValueError
 
         # Info
         for line in self._modifiers_list_info():
@@ -171,6 +178,8 @@ class ObjectModifiersClustersList(ClustersList):
 
         Returns True or False.
         """
+        if not isinstance(clusters, list):
+            raise TypeError
 
         # Dont move, if modifier is last or first.
         if direction == 'UP':
@@ -181,6 +190,8 @@ class ObjectModifiersClustersList(ClustersList):
             x = self.get_index(clusters[-1])
             if x == self.get_list_length() - 1:
                 return False
+        else:
+            raise ValueError
 
         clusters_to_move = copy.copy(clusters)
 

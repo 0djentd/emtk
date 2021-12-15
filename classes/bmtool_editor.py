@@ -34,11 +34,11 @@ class ModifierEditor():
     # Type of modifiers that this editor should be associated with
     _DEFAULT_M_TYPE = None
 
+    # TODO: remove this
     # Can modifier be created from within editor using _DEFAULT_M_TYPE?
-    # TODO: modifier should be createable not only from already running editor
     _MODIFIER_CREATEABLE = False
 
-    # TODO: Can be used with modifier clusters
+    # Can be used with modifier clusters
     _MODIFIERS_CLUSTER_EDITOR = False
 
     # TODO: Allow using editor with any modifier
@@ -51,6 +51,9 @@ class ModifierEditor():
     _BMTOOL_EDITOR_OPERATOR = True
 
     bmtool_mode = _DEFAULT_EDITOR_MODE
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
     # ==========================================
     # Editor method placeholders

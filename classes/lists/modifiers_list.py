@@ -170,6 +170,9 @@ class ModifiersList(ModifiersListUtils):
         Not inclusive.
         """
 
+        if (mod1 is None) or (mod2 is None):
+            raise TypeError
+
         e = []
         x = self.get_index(mod1)
         y = self.get_index(mod2)
