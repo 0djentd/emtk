@@ -587,28 +587,49 @@ class FirstLayerClustersList(ClustersList):
             result.append(cluster)
         return result
 
-    def save_clusters_state(self):
+    def save_clusters_state(self, prop_name=None):
         """
         Saves current object actual clusters info
-        to object props.
+        to object's property with prop_name.
         """
+        if prop_name is None:
+            name = 'PreviousClusters'
+        elif isinstance(prop_name, str):
+            if len(prop_name) > 0:
+                name = prop_name
+            else:
+                raise ValueError
+        else:
+            raise TypeError
+
         t_1 = time.time()
         y = self.get_clusters_state()
         x = json.dumps(y)
-        self._object['PreviousClusters'] = x
+        self._object[name] = x
         t_2 = time.time()
         t_3 = t_2 - t_1
         self._additional_info_log.append(f"Saved clusters, {t_3}")
 
-    def load_clusters_state(self):
+    def load_clusters_state(self, prop_name=None):
         """
-        Returns previous object actual clusters info
-        from object props.
-        If no saved clusters, returns False
+        Returns previous object clusters info
+        from object property with prop_name.
+        If no saved clusters, returns False.
         """
         t_1 = time.time()
+
+        if prop_name is None:
+            name = 'PreviousClusters'
+        elif isinstance(prop_name, str):
+            if len(prop_name) > 0:
+                name = prop_name
+            else:
+                raise ValueError
+        else:
+            raise TypeError
+
         try:
-            previous_clusters = self._object['PreviousClusters']
+            previous_clusters = self._object[name]
         except KeyError:
             previous_clusters = False
 
@@ -636,23 +657,44 @@ class FirstLayerClustersList(ClustersList):
             y.append([i, mod.name, mod.type])
         return y
 
-    def save_modifiers_state(self):
+    def save_modifiers_state(self, prop_name=None):
         """
         Saves current object actual modifiers info
-        to object props.
+        to object property with prop_name.
         """
+        if prop_name is None:
+            name = 'PreviousModifiers'
+        elif isinstance(prop_name, str):
+            if len(prop_name) > 0:
+                name = prop_name
+            else:
+                raise ValueError
+        else:
+            raise TypeError
+
         y = self.get_modifiers_state()
         x = json.dumps(y)
-        self._object['PreviousModifiers'] = x
+        self._object[name] = x
 
-    def load_modifiers_state(self):
+    def load_modifiers_state(self, prop_name=None):
         """
         Returns previous object actual modifiers info
-        from object props.
-        If no saved modifiers, returns False
+        from object property with prop_name.
+
+        If no saved modifiers, returns False.
         """
+        if prop_name is None:
+            name = 'PreviousModifiers'
+        elif isinstance(prop_name, str):
+            if len(prop_name) > 0:
+                name = prop_name
+            else:
+                raise ValueError
+        else:
+            raise TypeError
+
         try:
-            previous_modifiers = self._object['PreviousModifiers']
+            previous_modifiers = self._object[name]
         except KeyError:
             previous_modifiers = False
         return previous_modifiers
@@ -672,7 +714,7 @@ class FirstLayerClustersList(ClustersList):
 
         y = self.get_modifiers_state()
 
-        # if length is different, dont even
+        # if length is different, dont
         # compare list elements.
         if len(x) != len(y):
             return True
