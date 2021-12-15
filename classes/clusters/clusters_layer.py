@@ -16,7 +16,7 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-from .modifiers_cluster import ModifierCluster
+from .modifiers_cluster import ModifiersCluster
 from ..lists.object_modifiers_clusters_list import ObjectModifiersClustersList
 from ..lists.modifiers_list_active_modifier import ModifiersListActiveModifier
 
@@ -31,7 +31,7 @@ from ..lists.modifiers_list_active_modifier import ModifiersListActiveModifier
 
 class ClustersLayer(ModifiersListActiveModifier,
                     ObjectModifiersClustersList,
-                    ModifierCluster):
+                    ModifiersCluster):
     """
     Base class for modifiers clusters that contain other clusters
     in them.

@@ -20,8 +20,6 @@
 
 # import bpy
 
-# from ..modifiers_cluster import ModifiersCluster
-# from ..modifiers_clusters_parser import ModifiersClustersParser
 from .modifiers_list_utils import ModifiersListUtils
 
 

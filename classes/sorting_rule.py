@@ -36,11 +36,10 @@ class SortingRule():
                  ):
 
         # Sorting rule name. Should be unique.
-        if s_name is None:
-            r = random.randint(0, 99999999)
-            self.name = f'DefaultSortingRuleName{r}'
-        else:
+        if isinstance(s_name, str):
             self.name = s_name
+        else:
+            raise TypeError
 
         # Skip sanity checks for this rule
         if sorting_rule_is_sane:

@@ -18,8 +18,6 @@
 
 import copy
 
-import bpy
-
 
 class ModifiersListUtils():
     """

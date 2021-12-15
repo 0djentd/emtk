@@ -19,7 +19,7 @@
 from .lists.extended_modifiers_list import ExtendedModifiersList
 from .lists.object_modifiers_clusters_list import ObjectModifiersClustersList
 from .lists.object_modifiers_list import ObjectModifiersList
-from .clusters import ModifierCluster, ClustersLayer, DefaultModifierCluster
+from .clusters import ModifiersCluster, ClustersLayer, DefaultModifierCluster
 
 
 class ModifiersOperator():
@@ -42,10 +42,10 @@ class ModifiersOperator():
     # Dont use extended modifiers list, use object modifiers list
     _MODIFIERS_OPERATOR_DONT_USE_EXTENDED = False
 
-    def create_objects_modifiers_lists(self, context):
+    def create_objects_modifiers_lists(self, context, cluster_types=None):
         """
-        Update lists of modifiers for selected objects
-        on active view layer
+        Updates lists of modifiers for selected objects
+        on active view layer.
         Should be used on operator initialisation and
         after changing selected objects/switching active object
         Returns False if no objects selected
@@ -53,6 +53,17 @@ class ModifiersOperator():
 
         for x in range(50):
             self.report({'INFO'}, " ")
+
+        if cluster_types is None:
+            clusters = []
+        elif isinstance(cluster_types, list):
+            for x in cluster_types:
+                if isinstance(x, ModifiersCluster):
+                    clusters.append(x)
+                else:
+                    raise TypeError
+        else:
+            TypeError
 
         self.report({'INFO'}, "================================")
         self.report({'INFO'}, "  MODIFIERS OPERATOR STARTED")
@@ -73,25 +84,25 @@ class ModifiersOperator():
             cluster = DefaultModifierCluster()
             clusters.append(cluster)
 
-            cluster = ModifierCluster(cluster_name='Beveled Boolean',
-                                      cluster_type='BEVELED_BOOLEAN',
-                                      modifiers_by_type=[
-                                          ['BOOLEAN'], ['BEVEL']],
-                                      modifiers_by_name=[['ANY'], ['ANY']],
-                                      cluster_priority=0,
-                                      cluster_createable=True,
-                                      )
+            cluster = ModifiersCluster(cluster_name='Beveled Boolean',
+                                       cluster_type='BEVELED_BOOLEAN',
+                                       modifiers_by_type=[
+                                           ['BOOLEAN'], ['BEVEL']],
+                                       modifiers_by_name=[['ANY'], ['ANY']],
+                                       cluster_priority=0,
+                                       cluster_createable=True,
+                                       )
             clusters.append(cluster)
 
-            cluster = ModifierCluster(cluster_name='Triple Bevel',
-                                      cluster_type='TRIPLE_BEVEL',
-                                      modifiers_by_type=[
-                                          ['BEVEL'], ['BEVEL'], ['BEVEL']],
-                                      modifiers_by_name=[
-                                          ['ANY'], ['ANY'], ['ANY']],
-                                      cluster_priority=0,
-                                      cluster_createable=True,
-                                      )
+            cluster = ModifiersCluster(cluster_name='Triple Bevel',
+                                       cluster_type='TRIPLE_BEVEL',
+                                       modifiers_by_type=[
+                                           ['BEVEL'], ['BEVEL'], ['BEVEL']],
+                                       modifiers_by_name=[
+                                           ['ANY'], ['ANY'], ['ANY']],
+                                       cluster_priority=0,
+                                       cluster_createable=True,
+                                       )
             clusters.append(cluster)
 
             cluster = ClustersLayer(cluster_name='Double Triple Bevel Cluster',

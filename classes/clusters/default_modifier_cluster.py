@@ -18,10 +18,10 @@
 
 import bpy
 
-from .modifiers_cluster import ModifierCluster
+from .modifiers_cluster import ModifiersCluster
 
 
-class DefaultModifierCluster(ModifierCluster):
+class DefaultModifierCluster(ModifiersCluster):
     """
     Cluster type for default modifiers without custom behaviour, tags, or name.
     Consist of one modifier.

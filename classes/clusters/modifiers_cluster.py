@@ -25,7 +25,7 @@ from ..lists.modifiers_list import ModifiersList
 # from .lists.modifiers_list_active_modifier import ModifiersListActiveModifier
 
 
-class ModifierCluster(
+class ModifiersCluster(
                       # ModifiersListActiveModifier,
                       # ObjectModifiersList,
                       ModifiersList
