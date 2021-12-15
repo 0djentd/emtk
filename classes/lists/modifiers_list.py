@@ -84,10 +84,6 @@ class ModifiersList(ModifiersListUtils):
         self._modifiers_list = []
         self._additional_info_log = []
 
-    def __init_subclass__(cls):
-        cls._modifiers_list = []
-        cls._additional_info_log = []
-
     def __len__(self):
         return len(self._modifiers_list)
 

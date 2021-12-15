@@ -43,16 +43,6 @@ class ModifiersListActiveModifier():
         # Active modifier
         self._mod = None
 
-    def __init_subclass__(cls):
-        # Cluster that selection started from
-        cls._cluster_to_select_from = None
-
-        # Additional cluster selection
-        cls._selected_clusters = None
-
-        # Active modifier
-        cls._mod = None
-
     # ===============
     # Active modifier
     # ===============

@@ -47,9 +47,6 @@ class FirstLayerClustersList(ClustersList):
         super().__init__(*args, **kwargs)
         self._clusters_parser = ClustersParser(*args, **kwargs)
 
-    def __init_subclass__(cls):
-        cls._clusters_parser = ClustersParser()
-
     def create_modifiers_list(self, obj):
         """
         Creates modifiers list for object.
