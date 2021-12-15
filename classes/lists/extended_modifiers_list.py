@@ -16,6 +16,7 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+from .object_modifiers_clusters_list import ObjectModifiersClustersList
 from .first_layer_clusters_list import FirstLayerClustersList
 from .modifiers_list_active_modifier import ModifiersListActiveModifier
 
@@ -33,7 +34,7 @@ from .modifiers_list_active_modifier import ModifiersListActiveModifier
 
 class ExtendedModifiersList(ModifiersListActiveModifier,
                             FirstLayerClustersList,
-                            ):
+                            ObjectModifiersClustersList):
     """
     List of object modifiers with 'active modifier' that can be useful
     in modal operators.

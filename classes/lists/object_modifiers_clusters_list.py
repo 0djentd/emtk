@@ -20,7 +20,8 @@ import copy
 import bpy
 
 from .modifiers_list import ModifiersList
-# from .clusters_list import ClustersList
+from .clusters_list import ClustersList
+# from ..clusters import ModifiersCluster
 
 # Modifiers List utils
 # Modifiers List
@@ -31,7 +32,7 @@ from .modifiers_list import ModifiersList
 # ----------------------
 
 
-class ObjectModifiersClustersList():
+class ObjectModifiersClustersList(ClustersList):
     """
     ModfifiersClustersList of an object.
 
@@ -47,13 +48,10 @@ class ObjectModifiersClustersList():
     # Reference to object.
     # _object
 
-    def __init__(self, *args, obj=None, **kwargs):
+    def __init__(self, obj=None, *args, **kwargs):
         super().__init__(*args, **kwargs)
         if obj is not None:
             self._object = obj
-        else:
-            raise ValueError(
-                    f'Clusters list cant be created with this arguments {args}')
 
     # ===================================
     # Changing modifiers_list of an object

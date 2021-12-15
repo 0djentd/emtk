@@ -115,13 +115,13 @@ class ModifiersOperator():
                                     )
             clusters.append(cluster)
 
-            for b_obj in context.view_layer.objects.selected:
+            for obj in context.view_layer.objects.selected:
 
                 # Create extended modlist for active object
-                if b_obj == context.view_layer.objects.active:
+                if obj == context.view_layer.objects.active:
 
                     # Create extended modifiers list and initialize it for obj
-                    obj_mod_list = ExtendedModifiersList(obj=b_obj)
+                    obj_mod_list = ExtendedModifiersList()
 
                     # If using clusters
                     if self._MODIFIERS_OPERATOR_MODIFIER_CLUSTERS:
@@ -133,33 +133,33 @@ class ModifiersOperator():
                                         "Failed to add new modcluster type")
 
                     # Create modifiers list for object and parse it
-                    result = obj_mod_list.create_modifiers_list()
+                    result = obj_mod_list.create_modifiers_list(obj)
 
                     # Add modifiers list references
                     self.selected_objects.append(obj_mod_list)
                     self.m_list = self.selected_objects[x]
                     if result is False or result is None:
                         return False
-                # else:
-                    # if self._MODIFIERS_OPERATOR_MODIFIER_CLUSTERS:
+                else:
+                    if self._MODIFIERS_OPERATOR_MODIFIER_CLUSTERS:
 
-                    #     # Create clusters list
-                    #     obj_mod_list = ObjectModifiersClustersList(obj)
-                    #     obj_mod_list._MODIFIER_CLUSTERS = True
-                    #     for y in clusters:
-                    #         if not obj_mod_list.update_cluster_types_list(y):
-                    #             self.report(
-                    #                     {'INFO'},
-                    #                     "Failed to add new modcluster type")
-                    # else:
-                    #     # Create usual modifiers list
-                    #     obj_mod_list = ObjectModifiersList(obj)
+                        # Create clusters list
+                        obj_mod_list = ObjectModifiersClustersList()
+                        obj_mod_list._MODIFIER_CLUSTERS = True
+                        for y in clusters:
+                            if not obj_mod_list.update_cluster_types_list(y):
+                                self.report(
+                                        {'INFO'},
+                                        "Failed to add new modcluster type")
+                    else:
+                        # Create usual modifiers list
+                        obj_mod_list = ObjectModifiersList()
 
-                    # # Create modifiers list for object and parse it
-                    # result = obj_mod_list.create_modifiers_list(obj)
-                    # if result is False or result is None:
-                    #     return False
-                    # self.selected_objects.append(obj_mod_list)
+                    # Create modifiers list for object and parse it
+                    result = obj_mod_list.create_modifiers_list(obj)
+                    if result is False or result is None:
+                        return False
+                    self.selected_objects.append(obj_mod_list)
                 x += 1
             self.report({'INFO'}, "Finished creating modifier lists")
             return True

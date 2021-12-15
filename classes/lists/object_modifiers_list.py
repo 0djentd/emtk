@@ -37,12 +37,8 @@ class ObjectModifiersList(ModifiersList):
     Have methods for adding, removing, moving and sorting modifiers
     within Blender modifiers stack.
     """
-    def __init__(self, obj, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if obj is not None:
-            self._object = obj
-        else:
-            raise ValueError
+    def __init__(self):
+        super().__init__()
 
     # ===================================
     # Changing modifiers_list of an object

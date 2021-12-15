@@ -51,7 +51,7 @@ class ModifiersCluster(
     set as modifiers in ModifiersCluster instance.
     """
 
-    def __init__(self, *args,
+    def __init__(self, *,
                  cluster_name=None,
                  cluster_type=None,
                  modifiers_by_type=None,
@@ -66,7 +66,7 @@ class ModifiersCluster(
                  **kwargs
                  ):
 
-        super().__init__(*args, **kwargs)
+        super().__init__(**kwargs)
 
         # ===============================================================
         # This is variables that should be defined in ModifiersCluster type.

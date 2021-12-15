@@ -24,10 +24,9 @@ import bpy
 
 from .clusters_list import ClustersList
 from ..clusters_parser import ClustersParser
-from .object_modifiers_clusters_list import ObjectModifiersClustersList
 
 
-class FirstLayerClustersList(ObjectModifiersClustersList, ClustersList):
+class FirstLayerClustersList(ClustersList):
     """
     This is class with methods used for 'first layer' of
     clusters. Basically, any layers in it should consist of
@@ -47,29 +46,42 @@ class FirstLayerClustersList(ObjectModifiersClustersList, ClustersList):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._clusters_parser = ClustersParser(*args, **kwargs)
-        # self._clusters_parser = ClustersParser()
 
-    def create_modifiers_list(self, obj, *args, **kwargs):
+    def create_modifiers_list(self, obj):
         """
         Creates modifiers list for object.
         Parses modifiers, if needed.
         Returns True, if found any modifiers
         and False if not
         """
-        return self._create_modifiers_list(obj, *args, **kwargs)
+        return self._create_modifiers_list(obj)
 
-    def _create_modifiers_list(self, obj, *args, **kwargs):
+    def _create_modifiers_list(self, obj):
         ui_t = []
 
         ui_t.append("======================")
         ui_t.append("Creating modifiers list")
         ui_t.append("======================")
 
+        # Modifiers list.
+        # self._modifiers_list = []
+
+        self._object = obj
+
+        # Are modifiers sorted already?
+        self._modifiers_sorted = False
+
+        # some methods reqire it.
+        self._modifiers_list_obj_list = True
+
         # Was create_modifiers_list able to find any modifiers?
         modified = False
 
         # Was clusters parsed before?
         already_parsed = False
+
+        # Set parser's object
+        self._clusters_parser._object = self._object
 
         parse_result = []
 

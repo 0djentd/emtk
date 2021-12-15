@@ -55,7 +55,7 @@ class DummyBlenderObj():
     modifiers list and other purposes.
     """
 
-    def __init__(self, *args, modifiers=None, **kwargs):
+    def __init__(self, modifiers=None, *args, **kwargs):
 
         if modifiers is None:
             modifiers = []
