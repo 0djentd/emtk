@@ -78,8 +78,8 @@ class ModifiersList(ModifiersListUtils):
     # Additional info
     _MODIFIERS_LIST_V = True
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.__DUMMY_MODIFIERS = False
         self._modifiers_list = []
         self._additional_info_log = []

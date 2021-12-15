@@ -24,6 +24,9 @@ class SortableClustersList():
     Base class for ClusterLists that should be able to sort clusters.
     """
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     def get_all_sorting_rules(self):
         """
         Returns all cluster names with all their sorting rules for this layer.

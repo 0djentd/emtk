@@ -39,8 +39,8 @@ class DefaultModifierCluster(ModifiersCluster):
 
     _MODCLUSTER_CREATEABLE = True
 
-    def __init__(self, **kwargs):
-        super().__init__(dont_define_cluster=True, **kwargs)
+    def __init__(self, *args, **kwargs):
+        super().__init__(dont_define_cluster=True, *args, **kwargs)
 
     def get_this_cluster_name(self):
         if len(self._modifiers_list) != 1:
