@@ -18,16 +18,8 @@
 
 import bpy
 
-from .modifiers_list import ModifiersList
 
-# Modifiers List utils
-# Modifiers List
-# ----------------------
-# Object Modifiers List
-# ----------------------
-
-
-class ObjectModifiersList(ModifiersList):
+class ObjectModifiersListTrait():
     """
     List of object modifiers.
 

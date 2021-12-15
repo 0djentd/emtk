@@ -16,17 +16,11 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-from .first_layer_clusters_list import FirstLayerClustersList
-
-# Traits
-from .traits.object_clusters_list import ObjectClustersListTrait
-from .traits.active_cluster import ActiveClusterTrait
+from .traits.first_layer_clusters_list import FirstLayerClustersListTrait
 
 
 class ExtendedModifiersList(
-                            ActiveClusterTrait,
-                            FirstLayerClustersList,
-                            ObjectClustersListTrait
+                            FirstLayerClustersListTrait,
                             ):
     """
     List of object modifiers with 'active modifier' that can be useful
@@ -42,21 +36,3 @@ class ExtendedModifiersList(
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def get_cluster(self):
-        """
-        Returns active cluster on deepest non-collapsed layer.
-
-        This method should only be used if creating some kind of user
-        interface that uses ExtendedModifiersList.
-        """
-        return self.active_cluster_get_deep()
-
-    def get_layer(self):
-        """
-        Returns ModifiersClustersList, which active
-        cluster belongs to on deepest non-collapsed layer.
-
-        This method should only be used if creating some kind of user
-        interface that uses ExtendedModifiersList.
-        """
-        return self.get_active_cluster_layer()

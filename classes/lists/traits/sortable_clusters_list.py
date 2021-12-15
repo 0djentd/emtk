@@ -19,7 +19,7 @@
 from ..sorting_rule import SortingRule
 
 
-class SortableClustersList():
+class SortableClustersListTrait():
     """
     Base class for ClusterLists that should be able to sort clusters.
     """

@@ -19,7 +19,9 @@
 # import copy
 
 from .modifiers_list import ModifiersList
-from .sortable_clusters_list import SortableClustersList
+from .traits.object_clusters_list import ObjectClustersListTrait
+from .traits.active_cluster import ActiveClusterTrait
+from .traits.sortable_clusters_list import SortableClustersListTrait
 
 # Modifiers List utils
 # Modifiers List
@@ -29,7 +31,12 @@ from .sortable_clusters_list import SortableClustersList
 # ----------------------
 
 
-class ClustersList(ModifiersList, SortableClustersList):
+class ClustersList(
+                   ActiveClusterTrait,
+                   ObjectClustersListTrait,
+                   SortableClustersListTrait,
+                   ModifiersList,
+                   ):
     """
     Simple list of Modifiers Clusters with, or without modifiers.
 

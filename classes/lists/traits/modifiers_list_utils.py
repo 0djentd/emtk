@@ -19,7 +19,7 @@
 import copy
 
 
-class ModifiersListUtils():
+class ModifiersListUtilsTrait():
     """
     Some utility functional for ModifiersList.
     Can be used with any ModifiersClustersList as well.
@@ -81,7 +81,7 @@ class ModifiersListUtils():
             # Info about all clusters.
             for mod in self.get_full_list():
                 ui_t.append(" ")
-                if isinstance(mod, ModifiersListUtils):
+                if isinstance(mod, ModifiersListUtilsTrait):
                     ui_t.append(f"Cluster {mod}")
                     ui_t += mod._modifiers_list_info(True)
 

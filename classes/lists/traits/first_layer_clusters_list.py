@@ -22,11 +22,10 @@ import time
 
 import bpy
 
-from .clusters_list import ClustersList
 from ..clusters_parser import ClustersParser
 
 
-class FirstLayerClustersList(ClustersList):
+class FirstLayerClustersListTrait():
     """
     This is class with methods used for 'first layer' of
     clusters. Basically, any layers in it should consist of
@@ -46,6 +45,25 @@ class FirstLayerClustersList(ClustersList):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._clusters_parser = ClustersParser(*args, **kwargs)
+
+    def get_cluster(self):
+        """
+        Returns active cluster on deepest non-collapsed layer.
+
+        This method should only be used if creating some kind of user
+        interface that uses ExtendedModifiersList.
+        """
+        return self.active_cluster_get_deep()
+
+    def get_layer(self):
+        """
+        Returns ModifiersClustersList, which active
+        cluster belongs to on deepest non-collapsed layer.
+
+        This method should only be used if creating some kind of user
+        interface that uses ExtendedModifiersList.
+        """
+        return self.get_active_cluster_layer()
 
     def create_modifiers_list(self, obj):
         """
