@@ -51,6 +51,7 @@ class ObjectModifiersClustersList():
         super().__init__(*args, **kwargs)
         if obj is not None:
             self._object = obj
+            raise TypeError
         else:
             raise ValueError(
                     f'Clusters list cant be created with this arguments {args}')
