@@ -16,10 +16,6 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-# import copy
-
-# import bpy
-
 from .modifiers_list_utils import ModifiersListUtils
 
 

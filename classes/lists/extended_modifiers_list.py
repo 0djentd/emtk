@@ -16,13 +16,21 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+from .modifiers_list import ModifiersList
+from .traits.clusters_list import ClustersListTrait
+from .traits.sortable_clusters_list import SortableClustersListTrait
+from .traits.object_clusters_list import ObjectClustersListTrait
+from .traits.active_cluster import ActiveClusterTrait
 from .traits.first_layer_clusters_list import FirstLayerClustersListTrait
-from .clusters_list import ClustersList
 
 
 class ExtendedModifiersList(
                             FirstLayerClustersListTrait,
-                            ClustersList
+                            ActiveClusterTrait,
+                            ObjectClustersListTrait,
+                            SortableClustersListTrait,
+                            ClustersListTrait,
+                            ModifiersList
                             ):
     """
     First layer of clusters list with methods for editing, adding, removing,

@@ -16,29 +16,10 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-# import copy
-
-from .modifiers_list import ModifiersList
-
-from .traits.object_clusters_list import ObjectClustersListTrait
-from .traits.active_cluster import ActiveClusterTrait
-from .traits.sortable_clusters_list import SortableClustersListTrait
-
-                   ActiveClusterTrait,
-                   ObjectClustersListTrait,
-                   SortableClustersListTrait,
-
-# Modifiers List utils
-# Modifiers List
-# Modifiers Clusters List
-# ----------------------
-# Modifiers Clusters List
-# ----------------------
+from ..modifiers_list import ModifiersList
 
 
-class ClustersListBase(
-                   ModifiersList,
-                   ):
+class ClustersListTrait():
     """
     Simple list of Modifiers Clusters with, or without modifiers.
 
