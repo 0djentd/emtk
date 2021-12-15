@@ -31,9 +31,8 @@ class ModifiersListActiveModifier():
     # Active_modifier doesnt neccessary means that this is an actual modifier.
     # It mostly used for clusters, as every modifier is a cluster anyways.
 
-    def __init__(self):
-
-        super().__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
         # Cluster that selection started from
         self._cluster_to_select_from = None

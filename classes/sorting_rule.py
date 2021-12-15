@@ -16,8 +16,6 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-import random
-
 
 class SortingRule():
     """
@@ -32,7 +30,7 @@ class SortingRule():
                  last_cluster=None,
                  first_cluster=None,
                  sorting_rule_is_sane=None,
-                 *args, **kwargs
+                 **kwargs
                  ):
 
         # Sorting rule name. Should be unique.

@@ -61,10 +61,10 @@ class ModifiersCluster(
                  cluster_is_sane=None,
                  cluster_createable=None,
                  dont_define_cluster=None,
-                 *args, **kwargs
+                 **kwargs
                  ):
 
-        super().__init__(*args, **kwargs)
+        super().__init__(**kwargs)
 
         # ===============================================================
         # This is variables that should be defined in ModifiersCluster type.
@@ -224,10 +224,10 @@ class ModifiersCluster(
         self.modcluster_collapsed = True
 
         # Check cluster sanity.
-        if not dont_define_cluster\
-                and not self._MODCLUSTER_IS_SANE\
-                and not self.check_this_cluster_sanity():
-            raise ValueError
+        # if not dont_define_cluster\
+        #         and not self._MODCLUSTER_IS_SANE\
+        #         and not self.check_this_cluster_sanity():
+        #     raise ValueError
 
     def __str__(self):
         result = f"{self.get_this_cluster_default_name()} cluster, "

@@ -39,8 +39,8 @@ class DefaultModifierCluster(ModifiersCluster):
 
     _MODCLUSTER_CREATEABLE = True
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, **kwargs):
+        super().__init__(dont_define_cluster=True, **kwargs)
 
     def get_this_cluster_name(self):
         if len(self._modifiers_list) != 1:
@@ -54,10 +54,11 @@ class DefaultModifierCluster(ModifiersCluster):
 
     # Check if passed argument are actually Blender modifier
     def modcluster_extra_availability_check(self, mod):
-        if isinstance(mod[0], ModifierCluster):
+        if len(mod) > 1:
             return False
-        else:
-            return 'FOUND'
+        if isinstance(mod[0], ModifiersCluster):
+            return False
+        return 'FOUND'
 
     # ===========================
     # Initializing cluster
@@ -71,15 +72,15 @@ class DefaultModifierCluster(ModifiersCluster):
 
         # If not a list
         if not isinstance(modifiers, list):
-            return False
+            raise TypeError
 
         # If there is not exactly one modifier
         if len(modifiers) != 1:
-            return False
+            return ValueError
 
         # If it is not an actual modifier
         if not isinstance(modifiers[0], bpy.types.Modifier):
-            return False
+            raise TypeError
 
         # If havent set modifiers already
         if self._modcluster_initialized is False:
@@ -91,6 +92,5 @@ class DefaultModifierCluster(ModifiersCluster):
         elif self._MODCLUSTER_DYNAMIC:
             self._modifiers_list = modifiers
             return True
-
         else:
-            return False
+            raise ValueError

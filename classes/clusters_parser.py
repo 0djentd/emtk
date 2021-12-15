@@ -28,32 +28,54 @@ class ClustersParser():
     Base class for objects that should be able to parse clusters.
     """
 
-    # Max amount of iterations for _parse_modifiers_recursively
-    # Can also be interpreted as max amount of layers.
-    __RECURSIVE_PARSER_MAX_ITERATIONS = 10
-
-    # Skip parser and sanity checks, only use default cluster.
-    __SKIP_PARSE = False
-
-    # Only use default cluster, but dont skip parser.
-    __DEFAULT_CLUSTERS = False
-
-    # Use only simple clusters on first recursive
-    # parse iteration. Basically, this makes it
-    # so that every cluster that was using multiple
-    # modifiers now using multiple simple clusters.
-    __SIMPLE_CLUSTERS = False
-
-    # Check clusters for errors.
-    __CLUSTERS_SANITY_CHECKS = True
-
-    # Replace available cluster types when updaing existing one.
-    __REPLACE_ON_UPDATE = True
-
     # Additional info.
     _MODIFIERS_LIST_V = True
 
-    def __init__(self):
+    def __init__(self, *,
+                 skip_parser=None,
+                 default_cluster=None,
+                 parser_sanity_checks=None,
+                 replace_on_update=None,
+                 max_iterations=None
+                 ):
+
+        # Skip parser and sanity checks, only use default cluster.
+        if skip_parser:
+            self.__SKIP_PARSE = True
+        else:
+            self.__SKIP_PARSE = False
+
+        # Only use default cluster, but dont skip parser.
+        if default_cluster:
+            self.__DEFAULT_CLUSTERS = True
+        else:
+            self.__DEFAULT_CLUSTERS = False
+
+        # Check clusters for errors.
+        if parser_sanity_checks is None:
+            self.__CLUSTERS_SANITY_CHECKS = True
+        elif parser_sanity_checks:
+            self.__CLUSTERS_SANITY_CHECKS = True
+        else:
+            self.__CLUSTERS_SANITY_CHECKS = False
+
+        # Replace available cluster types when updaing existing one.
+        if replace_on_update is None:
+            self.__REPLACE_ON_UPDATE = True
+        elif replace_on_update:
+            self.__REPLACE_ON_UPDATE = True
+        else:
+            self.__REPLACE_ON_UPDATE = False
+
+        # Max amount of iterations for _parse_modifiers_recursively
+        # Can also be interpreted as max amount of layers.
+        if max_iterations is None:
+            self.__RECURSIVE_PARSER_MAX_ITERATIONS = 100
+        elif isinstance(max_iterations, int):
+            self.__RECURSIVE_PARSER_MAX_ITERATIONS = max_iterations
+        else:
+            raise TypeError
+
         # Additional info.
         self._additional_info_log = []
 
