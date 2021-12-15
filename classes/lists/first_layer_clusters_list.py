@@ -33,6 +33,16 @@ class FirstLayerClustersList(ClustersList):
     clusters or modifiers of the same object.
     """
 
+    # ExtendedModifiersList version.
+    # Used to check if saved clusters state can
+    # be used 'as is', or need some kind of
+    # editing.
+    _EXTENDED_MODIFIERS_LIST_VERSION = (0, 1, 0)
+
+    # List of versions that uncompatible with current
+    # version.
+    _EXTENDED_MODIFIERS_LIST_NO_COMPAT = [(0, 2, 0), (0, 0, 5)]
+
     def __init__(self):
         super().__init__()
         self._clusters_parser = ClustersParser()
@@ -152,14 +162,6 @@ class FirstLayerClustersList(ClustersList):
     def update_cluster_types_list(self, cluster):
         return self._clusters_parser.update_cluster_types_list(cluster)
 
-    # TODO: this thing barely works.
-    # actually kinda works idk
-    # TODO: test with multi-layer
-    # I dont sure why it works even.
-    # This method should be only used from ModifiersClustersList.
-    # Even though it exists in modifier clusters as well.
-    # Btw, if this returns false, modal operator should be
-    # finished.
     def remove_cluster(self, cluster):
         """
         Removes cluster from this list or nested lists.
@@ -221,14 +223,10 @@ class FirstLayerClustersList(ClustersList):
                                     f"removing actual modifier {mod}")
                 else:
                     # Get actual modifiers to be removed
-                    # TODO: what is dat?
-                    # TODO: this method returns copy of _modifiers_list
-                    # TODO: need another method for actual list reference
                     # but get_actual_full_actual_modifiers_list is kinda
                     # too complicated ya know?
                     mods = cluster.get_full_actual_modifiers_list()
                     for mod in mods:
-                        # TODO: why this thorws error?
                         self._object.modifiers.remove(mod)
                         self._additional_info_log.append(
                                 f"removing actual modifier {mod}")
@@ -526,7 +524,19 @@ class FirstLayerClustersList(ClustersList):
     # =================
     # Storing modifiers state
     # ================
+    def get_metainfo(self):
+        """
+        Returns list with some info about version of ExtendedModifiersList.
+        """
+        result = []
+        result.append("ExtendedModifiersList")
+        result.append(self._EXTENDED_MODIFIERS_LIST_VERSION)
+        return result
+
     def get_clusters_state(self):
+        """
+        Returns list with info about current clusters state.
+        """
         result = []
 
         # Example of cluster
