@@ -18,8 +18,8 @@
 
 import copy
 
-from .dummy_modifiers import DummyBlenderModifier
-from .dummy_modifiers import DummyBlenderObj
+from ..dummy_modifiers import DummyBlenderModifier
+from ..dummy_modifiers import DummyBlenderObj
 
 from ..clusters import DefaultModifierCluster, ClusterTrait
 
