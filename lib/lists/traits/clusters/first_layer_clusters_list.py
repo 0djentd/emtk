@@ -45,6 +45,11 @@ class FirstLayerClustersListTrait():
         super().__init__(*args, **kwargs)
         self._clusters_parser = ClustersParser(*args, **kwargs)
 
+    def __str__(self):
+        result = 'Extended Modifiers List, clusters: '
+        for x in self.get_full_list():
+            result.append(x.name + ' ')
+
     def get_cluster(self):
         """
         Returns active cluster on deepest non-collapsed layer.
