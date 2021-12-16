@@ -24,6 +24,11 @@ from ..dummy_modifiers import DummyBlenderModifier
 
 
 class ClusterTrait():
+    """
+    This ModifiersList trait should be in every
+    cluster used in ClustersList.
+    """
+
     def __init__(self, *,
                  cluster_name=None,
                  cluster_type=None,

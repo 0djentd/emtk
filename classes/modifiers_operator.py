@@ -17,7 +17,12 @@
 # ##### END GPL LICENSE BLOCK #####
 
 from .lists.extended_modifiers_list import ExtendedModifiersList
-from .clusters import ModifiersCluster, ClustersLayer, DefaultModifierCluster
+from .clusters import (
+                       ClusterTrait,
+                       ModifiersCluster,
+                       ClustersLayer,
+                       DefaultModifierCluster
+                       )
 
 
 class ModifiersOperator():
@@ -56,7 +61,7 @@ class ModifiersOperator():
             clusters = []
         elif isinstance(cluster_types, list):
             for x in cluster_types:
-                if isinstance(x, ModifiersCluster):
+                if isinstance(x, ClusterTrait):
                     clusters.append(x)
                 else:
                     raise TypeError

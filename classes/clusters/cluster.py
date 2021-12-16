@@ -22,7 +22,7 @@ from ..lists.modifiers_list import ModifiersList
 
 class Cluster(ClusterTrait, ModifiersList):
     """
-    Base class for cluster type
+    Simple cluster type.
 
     What is Cluster?
     It is a representation of any number of modifiers or clusters, that can
