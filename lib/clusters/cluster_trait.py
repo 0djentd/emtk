@@ -27,7 +27,7 @@ class ClusterTrait():
     cluster used in ClustersList.
     """
 
-    def __init__(self, *,
+    def __init__(self, *args,
                  cluster_name=None,
                  cluster_type=None,
                  modifiers_by_type=None,
@@ -42,7 +42,7 @@ class ClusterTrait():
                  **kwargs
                  ):
 
-        super().__init__(**kwargs)
+        super().__init__(no_obj=True, *args, **kwargs)
 
         # ===============================================================
         # This is variables that should be defined in ModifiersCluster type.

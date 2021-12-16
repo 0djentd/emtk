@@ -29,7 +29,7 @@ class ExtendedModifiersListTests(unittest.TestCase):
         mods.append(self.o.modifier_add('Bevel', 'BEVEL'))
         mods.append(self.o.modifier_add('Bevel', 'BEVEL'))
 
-        self.e = ExtendedModifiersList()
+        self.e = ExtendedModifiersList(self.o)
         self.e.create_modifiers_list(self.o)
 
     def tearDown(self):
@@ -42,3 +42,11 @@ class ExtendedModifiersListTests(unittest.TestCase):
             and (c.get_list_length() == 1)\
             and (c.has_clusters() is False)
         self.assertTrue(result)
+
+    def test_create_modifiers_list_first_name(self):
+        c = self.e.get_first()
+        self.assertEqual(c.name, c.get_first().name)
+
+    def test_create_modifiers_list_last_name(self):
+        c = self.e.get_last()
+        self.assertEqual(c.name, c.get_last().name)

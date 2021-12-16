@@ -31,7 +31,7 @@ class ModifiersListUtilsTrait():
     _MODCLUSTER_DEFAULT_MODIFIER = None
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__()
 
     def _modifier_info(self, mod):
         """

@@ -35,12 +35,10 @@ class ObjectClustersListTrait():
     for editing object's modifiers to ClustersList.
     """
 
-    __NO_OBJ = True
-
-    def __init__(self, *args, obj=None, **kwargs):
+    def __init__(self, obj=None, *args, no_obj=None, **kwargs):
         super().__init__(*args, **kwargs)
 
-        if not self.__NO_OBJ:
+        if not no_obj:
             if obj is None:
                 raise ValueError
 

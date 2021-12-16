@@ -245,7 +245,6 @@ class FirstLayerClustersListTrait():
 
         return True
 
-
     def remove_cluster(self, cluster):
         """
         Removes cluster from this list or nested lists.

@@ -44,7 +44,7 @@ class ClustersParser():
                  **kwargs
                  ):
 
-        super().__init__(*args, **kwargs)
+        super().__init__()
 
         # Skip parser and sanity checks, only use default cluster.
         if skip_parser:
