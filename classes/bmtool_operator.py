@@ -20,7 +20,7 @@ import copy
 
 import bpy
 
-from .modifiers_operator import ModifiersOperator
+from ..lib.modifiers_operator import ModifiersOperator
 from ..ui.bmtool_ui import bmtool_modifier_ui_draw
 
 
