@@ -16,10 +16,10 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-from .modifiers_list_utils import ModifiersListUtils
+from .traits.modifiers_list_utils import ModifiersListUtilsTrait
 
 
-class ModifiersList(ModifiersListUtils):
+class ModifiersList(ModifiersListUtilsTrait):
     """
     Simple list of Blender modifiers without Modifiers Clusters.
 

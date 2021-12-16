@@ -17,8 +17,10 @@
 # ##### END GPL LICENSE BLOCK #####
 
 from bpy.types import Operator
+
 from ..classes.bmtool_operator import BMToolMod
 from ..ui.bmtool_ui import BMToolUi
+
 from ..editors.weightednormal import BMToolEditorWeightedNormal
 from ..editors.bevel import BMToolEditorBevel
 

@@ -22,7 +22,7 @@ import time
 
 import bpy
 
-from ..clusters_parser import ClustersParser
+from ...clusters_parser import ClustersParser
 
 
 class FirstLayerClustersListTrait():

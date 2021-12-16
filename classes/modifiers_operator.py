@@ -17,8 +17,6 @@
 # ##### END GPL LICENSE BLOCK #####
 
 from .lists.extended_modifiers_list import ExtendedModifiersList
-from .lists.object_modifiers_clusters_list import ObjectModifiersClustersList
-from .lists.object_modifiers_list import ObjectModifiersList
 from .clusters import ModifiersCluster, ClustersLayer, DefaultModifierCluster
 
 
@@ -144,16 +142,16 @@ class ModifiersOperator():
                     if self._MODIFIERS_OPERATOR_MODIFIER_CLUSTERS:
 
                         # Create clusters list
-                        obj_mod_list = ObjectModifiersClustersList()
+                        obj_mod_list = ExtendedModifiersList()
                         obj_mod_list._MODIFIER_CLUSTERS = True
                         for y in clusters:
                             if not obj_mod_list.update_cluster_types_list(y):
                                 self.report(
                                         {'INFO'},
                                         "Failed to add new modcluster type")
-                    else:
-                        # Create usual modifiers list
-                        obj_mod_list = ObjectModifiersList()
+                    # else:
+                    #     # Create usual modifiers list
+                    #     obj_mod_list = ExtendedModifiersList()
 
                     # Create modifiers list for object and parse it
                     result = obj_mod_list.create_modifiers_list(obj)

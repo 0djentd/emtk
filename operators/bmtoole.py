@@ -16,9 +16,10 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-from ..classes.modifiers_operator import ModifiersOperator
-from bpy.types import Operator
 import bpy
+from bpy.types import Operator
+
+from ..classes.modifiers_operator import ModifiersOperator
 
 
 class BMTOOL_OT_bmtoole(ModifiersOperator, Operator):

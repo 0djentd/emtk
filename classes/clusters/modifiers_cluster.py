@@ -16,22 +16,22 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-# import copy
 import json
 
 import bpy
 
-# from .lists.modifiers_list_active_modifier import ModifiersListActiveModifier
-# from .lists.object_modifiers_list import ObjectModifiersList
 from ..lists.modifiers_list import ModifiersList
+# from ..lists.traits.active_modifier import ActiveModifierTrait
+# from ..lists.traits.object_modifiers_list import ObjectModifiersListTrait
+
 from ..dummy_modifiers import DummyBlenderModifier
 
 
 class ModifiersCluster(
-                      # ModifiersListActiveModifier,
-                      # ObjectModifiersList,
-                      ModifiersList
-                      ):
+                       # ActiveModifierTrait,
+                       # ObjectModifiersListTrait,
+                       ModifiersList
+                       ):
     """
     Base class for modifiers cluster type
 

@@ -16,7 +16,7 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-from ..sorting_rule import SortingRule
+from ...sorting_rule import SortingRule
 
 
 class SortableClustersListTrait():

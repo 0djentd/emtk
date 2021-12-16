@@ -442,6 +442,32 @@ class ClustersListTrait():
                 result.append(x)
         return result
 
+    # ==================
+    # First and last actual cluster's modifier methods.
+    # Used when moving clusters.
+    # ==================
+    def recursive_get_first_actual_modifier(self, cluster):
+        """
+        Returns first actual modifier of a cluster.
+        """
+        x = self.get_first().has_clusters()
+        if x.has_clusters():
+            y = x.get_first()
+            return x.recursive_get_first_actual_modifier(y)
+        else:
+            return x.get_first()
+
+    def recursive_get_last_actual_modifier(self, cluster):
+        """
+        Returns last actual modifier of a cluster.
+        """
+        x = self.get_last().has_clusters()
+        if x.has_clusters():
+            y = x.get_last()
+            return x.recursive_get_last_actual_modifier(y)
+        else:
+            return x.get_last()
+
     # ===============================
     # Renaming objects
     # ===============================
@@ -511,25 +537,3 @@ class ClustersListTrait():
             return True
         else:
             raise ValueError
-
-    def recursive_get_first_actual_modifier(self, cluster):
-        """
-        Returns first actual modifier of a cluster.
-        """
-        x = self.get_first().has_clusters()
-        if x.has_clusters():
-            y = x.get_first()
-            return x.recursive_get_first_actual_modifier(y)
-        else:
-            return x.get_first()
-
-    def recursive_get_last_actual_modifier(self, cluster):
-        """
-        Returns last actual modifier of a cluster.
-        """
-        x = self.get_last().has_clusters()
-        if x.has_clusters():
-            y = x.get_last()
-            return x.recursive_get_last_actual_modifier(y)
-        else:
-            return x.get_last()
