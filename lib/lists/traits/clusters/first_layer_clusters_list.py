@@ -112,6 +112,10 @@ class FirstLayerClustersListTrait():
         except KeyError:
             already_parsed = False
 
+        # Assume that object is a dummy object.
+        except TypeError:
+            already_parsed = False
+
         # Parse modifiers
         if already_parsed is False:
             ui_t.append("Modifiers not parsed.")
