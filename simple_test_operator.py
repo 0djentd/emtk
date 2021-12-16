@@ -1,6 +1,7 @@
 #! python
 import unittest
-from lib.lists import ExtendedModifiersList, ModifiersList
+from lib.lists.extended_modifiers_list import ExtendedModifiersList
+from lib.lists.modifiers_list import ModifiersList
 from lib.dummy_modifiers import DummyBlenderModifier, DummyBlenderObj
 
 print('ClustersList v1.0')
