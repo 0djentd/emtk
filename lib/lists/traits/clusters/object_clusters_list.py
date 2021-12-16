@@ -18,7 +18,7 @@
 
 import copy
 
-from ..modifiers_list import ModifiersList
+from ...modifiers_list import ModifiersList
 
 # Modifiers List utils
 # Modifiers List

@@ -19,7 +19,6 @@
 import json
 
 from ..dummy_modifiers import DummyBlenderModifier
-from ..dummy_modifiers import DummyBlenderObj
 
 
 class ClusterTrait():

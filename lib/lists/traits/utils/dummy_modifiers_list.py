@@ -18,7 +18,7 @@
 
 import copy
 
-from ...dummy_modifiers import DummyBlenderModifier, DummyBlenderObj
+from ....dummy_modifiers import DummyBlenderModifier, DummyBlenderObj
 
 
 class DummyModifiersClustersListTrait():

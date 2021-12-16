@@ -1,5 +1,5 @@
 #! python
-from lib.lists import ExtendedModifiersList
+from lib.lists.extended_modifiers_list import ExtendedModifiersList
 from lib.dummy_modifiers import DummyBlenderModifier
 from lib.dummy_modifiers import DummyBlenderObj
 import unittest

@@ -19,8 +19,10 @@
 from .cluster import ClusterTrait
 
 from ..lists.modifiers_list import ModifiersList
-from ..lists.traits import ActiveModifierTrait
-from ..lists.traits import ObjectModifiersListTrait
+from ..lists.traits.modifiers.active_modifier \
+        import ActiveModifierTrait
+from ..lists.traits.modifiers.object_modifiers_list \
+        import ObjectModifiersListTrait
 
 
 class ModifiersCluster(

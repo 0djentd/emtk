@@ -16,7 +16,7 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-from .traits.modifiers_list_utils import ModifiersListUtilsTrait
+from .traits.utils.modifiers_list_utils import ModifiersListUtilsTrait
 
 
 class ModifiersList(ModifiersListUtilsTrait):

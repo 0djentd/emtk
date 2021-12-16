@@ -16,7 +16,7 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-from ..modifiers_list import ModifiersList
+from ...modifiers_list import ModifiersList
 
 
 class ClustersListTrait():

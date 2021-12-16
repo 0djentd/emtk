@@ -20,8 +20,8 @@ import copy
 import json
 import time
 
-from ...dummy_modifiers import DummyBlenderModifier
-from ...parser import ClustersParser
+from ....dummy_modifiers import DummyBlenderModifier
+from ....parser import ClustersParser
 
 
 class FirstLayerClustersListTrait():
