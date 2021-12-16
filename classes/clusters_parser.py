@@ -20,7 +20,7 @@ import copy
 
 import bpy
 
-from .clusters import DefaultModifierCluster, ModifiersCluster
+from .clusters import DefaultModifierCluster, ClusterTrait
 
 
 class ClustersParser():
@@ -233,7 +233,7 @@ class ClustersParser():
         Returns False if cant be added
         """
 
-        if not isinstance(cluster_type_to_add, ModifiersCluster):
+        if not isinstance(cluster_type_to_add, ClusterTrait):
             raise TypeError
 
         cluster_type = copy.deepcopy(cluster_type_to_add)
@@ -712,7 +712,7 @@ class ClustersParser():
         if isinstance(modifiers_to_parse[0], bpy.types.Modifier):
             for x in modifiers_to_parse:
                 self._additional_info_log.append(f"{x}")
-        elif isinstance(modifiers_to_parse[0], ModifiersCluster):
+        elif isinstance(modifiers_to_parse[0], ClusterTrait):
             for x in modifiers_to_parse:
                 self._additional_info_log.append(
                         f"{x._modcluster_specified_modifier_names}")
@@ -1071,7 +1071,7 @@ class ClustersParser():
                 return x
             else:
                 for x in parse_result:
-                    if not isinstance(x[1], ModifiersCluster):
+                    if not isinstance(x[1], ClusterTrait):
                         self._additional_info_log.append(
                                 "Parse result is not a cluster list, why?")
                         self._additional_info_log.append(" ")

@@ -18,10 +18,19 @@
 
 import bpy
 
-from .modifiers_cluster import ModifiersCluster
+from .cluster import ClusterTrait
+
+from ..lists.modifiers_list import ModifiersList
+from ..lists.traits.active_modifier import ActiveModifierTrait
+from ..lists.traits.object_modifiers_list import ObjectModifiersListTrait
 
 
-class DefaultModifierCluster(ModifiersCluster):
+class DefaultModifierCluster(
+                             ClusterTrait,
+                             ActiveModifierTrait,
+                             ObjectModifiersListTrait,
+                             ModifiersList
+                             ):
     """
     Cluster type for default modifiers without custom behaviour, tags, or name.
     Consist of one modifier. Returns actual Blender modifier name and type to

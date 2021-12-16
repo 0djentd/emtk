@@ -19,7 +19,9 @@
 from .clusters_layer import ClustersLayer
 
 
-class ClustersGroup(ClustersLayer):
+class ClustersGroup(
+                    ClustersLayer
+                    ):
     """
     This is ClusterLayer-based cluster type that supports dynamic changing of
     clusters list.

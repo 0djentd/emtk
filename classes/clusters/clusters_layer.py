@@ -16,17 +16,16 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-from .modifiers_cluster import ModifiersCluster
-
 from ..lists.modifiers_list import ModifiersList
 from ..lists.traits.clusters_list import ClustersListTrait
 from ..lists.traits.sortable_clusters_list import SortableClustersListTrait
 from ..lists.traits.object_clusters_list import ObjectClustersListTrait
 from ..lists.traits.active_cluster import ActiveClusterTrait
+from .cluster import ClusterTrait
 
 
 class ClustersLayer(
-                    ModifiersCluster,
+                    ClusterTrait,
                     ActiveClusterTrait,
                     ObjectClustersListTrait,
                     SortableClustersListTrait,
