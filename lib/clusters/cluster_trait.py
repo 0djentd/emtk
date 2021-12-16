@@ -443,9 +443,10 @@ class ClusterTrait():
         Returns True or False, if cluster is not editable
         """
 
-        # If not a list of clusters or actual modifiers
         if not isinstance(modifiers, list):
             raise TypeError
+        if len(modifiers) == 0:
+            raise ValueError
         for x in modifiers:
             if not isinstance(x, DummyBlenderModifier)\
                     and not isinstance(x, ClusterTrait):
@@ -455,11 +456,13 @@ class ClusterTrait():
         if self._modcluster_initialized is False:
             self._modifiers_list = modifiers
             self._modcluster_initialized = True
+            self._mod = self._modifiers_list[0]
             return True
 
         # If allowed to reset modifiers
         elif self._MODCLUSTER_DYNAMIC:
             self._modifiers_list = modifiers
+            self._mod = self._modifiers_list[0]
             return True
 
         else:
