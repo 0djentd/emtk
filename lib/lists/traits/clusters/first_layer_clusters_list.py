@@ -81,9 +81,7 @@ class FirstLayerClustersListTrait():
         ui_t.append("Creating modifiers list")
         ui_t.append("======================")
 
-        # Modifiers list.
-        # self._modifiers_list = []
-
+        # Blender object
         self._object = obj
 
         # Are modifiers sorted already?
@@ -176,6 +174,69 @@ class FirstLayerClustersListTrait():
     # TODO: this method should be removed
     def update_cluster_types_list(self, cluster):
         return self._clusters_parser.update_cluster_types_list(cluster)
+
+    def _remove_cluster_dry(self, cluster, removed_clusters_dry=0):
+        """
+        Checks if cluster can be successfully removed.
+        Returns True or False.
+        """
+
+        # Layer cluster belongs to
+        layer = self.get_cluster_cluster_belongs_to(cluster)
+        self._additional_info_log.append(
+                f"Removing {cluster} from {layer}, dry")
+
+        # Can cluster be removed from its layer
+        cluster_can_be_removed = True
+
+        # Should layer be removed as well?
+        remove_layer = False
+
+        # Check if there is such cluster to begin with
+        if not self.recursive_has_cluster(cluster):
+            raise ValueError
+
+        # Check if it can be deleted without deleting layer
+        if not isinstance(layer, FirstLayerClustersListTrait)\
+                or not layer._MODCLUSTER_DYNAMIC:
+            cluster_can_be_removed = False
+
+        self._additional_info_log.append(
+                f"Cluster can be removed? {cluster_can_be_removed}")
+
+        if cluster_can_be_removed:
+
+            # Ask cluster if it can be removed
+            if not cluster.cluster_being_removed(self):
+                return False
+
+            # If there any clusters left on layer
+            # If no clusters, it should be removed
+            if layer.get_list_length() - removed_clusters_dry == 1:
+                remove_layer = True
+
+        # If not dynamic, it should be removed
+        else:
+            remove_layer = True
+
+        self._additional_info_log.append(
+                f"Should layer be removed as well? {remove_layer}")
+
+        # Remove layer
+        if remove_layer:
+            if not isinstance(layer, FirstLayerClustersListTrait):
+                x = self.get_cluster_cluster_belongs_to(layer)
+                self._additional_info_log.append(
+                        f"removing layer from {x}")
+                if not self._remove_cluster_dry(layer, 1):
+                    return False
+            else:
+                self._additional_info_log.append(
+                        f"cant remove layer {layer}")
+                return False
+
+        return True
+
 
     def remove_cluster(self, cluster):
         """
