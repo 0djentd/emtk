@@ -18,7 +18,8 @@
 
 import copy
 
-import bpy
+from ..dummy_modifiers import DummyBlenderModifier
+from ..dummy_modifiers import DummyBlenderObj
 
 from ..clusters import DefaultModifierCluster, ClusterTrait
 
@@ -139,7 +140,7 @@ class ClustersParser():
             clusters_names = []
 
         # Check if passed list have modifiers
-        if isinstance(modifiers_to_parse[0], bpy.types.Modifier):
+        if isinstance(modifiers_to_parse[0], DummyBlenderModifier):
 
             # Parse modifiers once.
             if self._ClustersParser__SIMPLE_CLUSTERS:
@@ -398,7 +399,7 @@ class ClustersParser():
             self._additional_info_log.append("No modifiers to parse.")
             return []
 
-        if not isinstance(modifiers_to_parse[0], bpy.types.Modifier):
+        if not isinstance(modifiers_to_parse[0], DummyBlenderModifier):
             self._additional_info_log.append("This is not an actual modifier.")
             return []
 
@@ -709,7 +710,7 @@ class ClustersParser():
         self._additional_info_log.append("       CLUSTERS PARSER LOG")
         self._additional_info_log.append("===================================")
         self._additional_info_log.append("Modifiers to parse:")
-        if isinstance(modifiers_to_parse[0], bpy.types.Modifier):
+        if isinstance(modifiers_to_parse[0], DummyBlenderModifier):
             for x in modifiers_to_parse:
                 self._additional_info_log.append(f"{x}")
         elif isinstance(modifiers_to_parse[0], ClusterTrait):
@@ -749,7 +750,7 @@ class ClustersParser():
 
             # Get actual modifiers before parsing for sanity check
             for x in modifiers_to_parse:
-                if isinstance(x, bpy.types.Modifier):
+                if isinstance(x, DummyBlenderModifier):
                     old_actual_modifiers.append(x)
                 else:
                     y = copy.copy(x.get_full_actual_modifiers_list())

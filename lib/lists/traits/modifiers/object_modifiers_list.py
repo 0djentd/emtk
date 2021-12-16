@@ -16,8 +16,6 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-import bpy
-
 
 class ObjectModifiersListTrait():
     """
@@ -80,14 +78,14 @@ class ObjectModifiersListTrait():
                 self._dummy_modifiers.modifier_move_up(
                         modifier=mod.name)
             else:
-                bpy.ops.object.modifier_move_up(
+                self._object.move_up(
                         modifier=mod.name)
         if direction == 'DOWN':
             if self._ModifiersList__DUMMY_MODIFIERS:
                 self._dummy_modifiers.modifier_move_down(
                         modifier=mod.name)
             else:
-                bpy.ops.object.modifier_move_down(
+                self._object.move_down(
                         modifier=mod.name)
 
         # Move modifier in list.
