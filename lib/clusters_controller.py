@@ -21,48 +21,43 @@ import time
 from .clusters_operation import ClustersOperation
 
 
-class ClustersController():
+class Action():
+    def __init__(self, action_type, action, val, obj):
+        self.type = action_type
+        self.name = action
+        self.value = val
+        self.obj = obj
+
+def remove_this_cluster(self):
+    task = Action('DO', 'REMOVE', self, self)
+    if self._controller.ask(task):
+        self._controller.do(task)
+        self._cluster_removed = True
+        return True
+    else:
+        return False
+
+def _check_if_cluster_removed(self):
+    if self._cluster_removed:
+        raise ValueError(f'Cluster {self} already removed.')
+        
+class Controller():
     """
-    This is object responsible for managing
-    ClustersOperations buffer.
-    """
-    """
-    What should be done when running dry operation on cluster?
-
-    1) Ask ClustersLayer layer belongs to.
-
-        Case 1: is ClustersLayer.
-        1.1) Ask ClustersLayer layer belongs to.
-
-        Case 1: is FirstLayer.
-        1.1) Ask first layer.
-
-    2) Ask object itself.
-
-        Case 1: operation on ModifiersCluster.
-        2.1) Ask ModifiersCluster itself.
-
-        Case 2: operation on ClustersLayer.
-        2.1) Asking ClustersLayer.
-            2.1.1) Ask all its ModifiersClusters.
-            2.1.2) Ask all its ClustersLayers.
-
-    3) Return result as set of additional operations that will be 
-    performed when running operation.
+    This is object responsible for managing Actions buffer.
     """
     """
     Example:
     Removing cluster 2 in layer 1 that is part of first layer and
-    doesnt allow removing clusters without removing layer.
+    doesnt allow removing clusters without removing layer 1.
 
-    result = cluster2.check_operation(op_on_cluster2)
+    result = cluster2.check_operation(action_on_cluster2)
 
     get trace to cluster2.
     for x in trace:
-        # This will return empty op if no operation needed.
+        # This will return empty action if no action needed.
         # If not allowed, returns NEED_TO_REMOVE_X
-        result = x.check_opertation(operation_in_x_clusters)
-        ops+=result
+        result = x.check_opertation(action_in_x_clusters)
+        actions+=result
 
     result:
     DO REMOVE cluster2
@@ -71,28 +66,27 @@ class ClustersController():
     EMPTY first
     """
 
-    def _check_operation(self, task):
-        if not isinstance(task, ClustersOperation):
+    def _check_action(self, task):
+        if not isinstance(task, Action):
             raise TypeError
 
     def add(self, task):
-        self._check_operation(task)
+        self._check_action(task)
         self._tasks.append(time.time(), task)
 
     def remove(self, taks):
-        self._check_operation(task)
+        self._check_action(task)
         tasks_to_test = self._tasks[self._tasks.index(task):-1]
 
     def ask(self, task):
-        self._check_operation(task)
+        self._check_action(task)
         self._tasks.append(time.time(), task)
         return self.run_task_dry(task)
 
-    def run_task(self, task):
-        self._check_operation(task)
+    def do(self, task):
+        self._check_action(task)
         result = True
         tasks_to_run = self._tasks[0:self._tasks.index(task)]
-
         for x in tasks_to_run 
             if not self.unwrap_and_run(x):
                 result = False
@@ -101,7 +95,7 @@ class ClustersController():
         return result
 
     def run_task_dry(self, task):
-        self._check_operation(task)
+        self._check_action(task)
         result = True
         tasks_to_run = self._tasks[0:self._tasks.index(task)]
 
