@@ -18,7 +18,7 @@
 
 import bpy
 
-from ..classes.bmtool_editor import ModifierEditor
+from ..lib.bmtool_editor import ModifierEditor
 
 
 # Weighted Normal modifier editor

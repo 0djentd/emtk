@@ -18,7 +18,7 @@
 
 from bpy.types import Operator
 
-from ..classes.modifiers_operator import ModifiersOperator
+from ..lib.modifiers_operator import ModifiersOperator
 
 
 class BMTOOL_OT_bmtoole2(ModifiersOperator, Operator):
