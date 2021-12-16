@@ -40,6 +40,11 @@ class ObjectClustersListTrait():
 
     def __init__(self, *args, obj=None, **kwargs):
         super().__init__(*args, **kwargs)
+
+        if not self.__NO_OBJ:
+            if obj is None:
+                raise ValueError
+
         self._object = obj
 
     # ===================================
