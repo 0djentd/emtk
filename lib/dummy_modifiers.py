@@ -32,6 +32,9 @@ class DummyBlenderModifier():
         self.name = m_name
         self.m_type = m_type
 
+    def __str__(self):
+        return f'{self.name}, {self.type}'
+
     @property
     def type(self):
         return self.m_type
@@ -85,8 +88,9 @@ class DummyBlenderObj():
             raise TypeError
 
         for x in self.modifiers:
-            if m_name == x.name:
+            if m_name in x.name:
                 i += 1
+
         m_name_2 = m_name + f'{i}'
 
         mod = DummyBlenderModifier(m_name_2, m_type)
@@ -97,10 +101,10 @@ class DummyBlenderObj():
     def _check_modifiers_names(self):
         y = []
         for x in self.modifiers:
-            if x.name not in y:
-                y.append(x.name)
-            else:
-                raise ValueError
+            for name in y:
+                if x.name == name:
+                    raise ValueError
+            y.append(x.name)
 
     def modifier_remove(self, m_name):
         """
