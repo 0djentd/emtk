@@ -20,7 +20,7 @@ import copy
 
 import bpy
 
-from .clusters import DefaultModifierCluster, ClusterTrait
+from ..clusters import DefaultModifierCluster, ClusterTrait
 
 
 class ClustersParser():
