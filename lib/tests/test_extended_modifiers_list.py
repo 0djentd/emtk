@@ -20,45 +20,20 @@ import unittest
 from lib.lists.extended_modifiers_list import ExtendedModifiersList
 from lib.dummy_modifiers import DummyBlenderObj
 from lib.clusters.cluster import ClusterTrait
+from lib.clusters.modifiers_cluster import ModifiersCluster
+from lib.clusters.clusters_layer import ClustersLayer
 
 
-class ExtendedModifiersListTests(unittest.TestCase):
+class ExtendedModifiersListTests():
     def setUp(self):
         self.o = DummyBlenderObj()
         mods = []
         mods.append(self.o.modifier_add('Bevel', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel', 'BEVEL'))
-
         self.e = ExtendedModifiersList(self.o)
-        self.e.create_modifiers_list(self.o)
 
     def tearDown(self):
         del(self.o)
         del(self.e)
-
-    def test_create_modifiers_list(self):
-        c = self.e.get_first()
-        result = (self.e.get_list_length() == 3)\
-            and (c.get_list_length() == 1)\
-            and (c.has_clusters() is False)
-        self.assertTrue(result)
-
-    def test_first_cluster_name(self):
-        c = self.e.get_deep_list()[0]
-        self.assertEqual(c.name, c.get_first().name)
-
-    def test_last_cluster_name(self):
-        c = self.e.get_deep_list()[-1]
-        self.assertEqual(c.name, c.get_last().name)
-
-    def test_first_cluster_type(self):
-        c = self.e.get_deep_list()[0]
-        self.assertEqual(c.type, c.get_first().type)
-
-    def test_last_cluster_type(self):
-        c = self.e.get_deep_list()[-1]
-        self.assertEqual(c.type, c.get_last().type)
 
     def test_all_clusters_initialized(self):
         result = True
@@ -91,18 +66,22 @@ class ExtendedModifiersListTests(unittest.TestCase):
         self.assertTrue(result)
 
     def test_duplicate_clusters(self):
-        result = True
+        result = False
+        i = 0
         for x in self.e.get_full_list():
             i = 0
             for y in self.e.get_full_list():
                 if y is x:
                     i += 1
-        if i != 1:
-            result = False
-        self.assertTrue(result)
+                    if i != 1:
+                        if not isinstance(result, list):
+                            result = []
+                        result.append(x)
+        self.assertFalse(result)
 
     def test_duplicate_modifiers(self):
         result = False
+        i = 0
         for x in self.e.get_full_actual_modifiers_list():
             i = 0
             for y in self.e.get_full_actual_modifiers_list():
@@ -185,3 +164,157 @@ class ExtendedModifiersListTests(unittest.TestCase):
                     result = []
                 result.append(x)
         self.assertFalse(result)
+
+    def test_clusters_active_modifier_exists(self):
+        result = False
+        for x in self.e.get_clusters_clusters_list():
+            if x._mod is None:
+                if not isinstance(result, list):
+                    result = []
+                result.append(x)
+        self.assertFalse(result)
+
+
+class ExtendedModifiersListNoModifiersTest(
+        ExtendedModifiersListTests, unittest.TestCase):
+    """
+    No modifiers at all.
+    """
+
+    def setUp(self):
+        self.o = DummyBlenderObj()
+        self.e = ExtendedModifiersList(self.o)
+
+    def test_active_modifier_is_in_the_list(self):
+        self.assertFalse(self.e.has_cluster(self.e.active_modifier_get()))
+
+
+class ExtendedModifiersListDifferentModifiersTests(
+        ExtendedModifiersListTests, unittest.TestCase):
+    """
+    No complex modifiers clusters.
+    """
+
+    def setUp(self):
+        self.o = DummyBlenderObj()
+        mods = []
+        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
+        mods.append(self.o.modifier_add('Array', 'ARRAY'))
+        mods.append(self.o.modifier_add('TopBevel', 'BEVEL'))
+        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
+        mods.append(self.o.modifier_add('Bevel2', 'BEVEL'))
+        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
+        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
+        mods.append(self.o.modifier_add('MediumBevel', 'BEVEL'))
+        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
+        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
+        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
+        mods.append(self.o.modifier_add('Array', 'ARRAY'))
+        mods.append(self.o.modifier_add('TopBevel', 'BEVEL'))
+        mods.append(self.o.modifier_add('WeightedNormal', 'WEIGHTED_NORMAL'))
+        self.e = ExtendedModifiersList(self.o)
+
+
+class ExtendedModifiersListLayersTests(
+        ExtendedModifiersListTests, unittest.TestCase):
+    """
+    Cluster layers and complex clusters.
+    """
+
+    def setUp(self):
+        self.o = DummyBlenderObj()
+        mods = []
+        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
+        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
+        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
+        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
+        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
+        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
+        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
+        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
+        mods.append(self.o.modifier_add('Array', 'ARRAY'))
+        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
+        mods.append(self.o.modifier_add('Array', 'ARRAY'))
+        mods.append(self.o.modifier_add('Array', 'ARRAY'))
+        mods.append(self.o.modifier_add('Array', 'ARRAY'))
+        mods.append(self.o.modifier_add('Array', 'ARRAY'))
+        mods.append(self.o.modifier_add('Boolean3', 'BOOLEAN'))
+        mods.append(self.o.modifier_add('Boolean3', 'BOOLEAN'))
+        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
+        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
+        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
+        mods.append(self.o.modifier_add('Array', 'ARRAY'))
+        mods.append(self.o.modifier_add('TopBevel', 'BEVEL'))
+        mods.append(self.o.modifier_add('WeightedNormal', 'WEIGHTED_NORMAL'))
+        mods.append(self.o.modifier_add('Bevel2', 'BEVEL'))
+        mods.append(self.o.modifier_add('Array', 'ARRAY'))
+        mods.append(self.o.modifier_add('Array', 'ARRAY'))
+        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
+        mods.append(self.o.modifier_add('Boolean3', 'BOOLEAN'))
+        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
+        mods.append(self.o.modifier_add('Bevel2', 'BEVEL'))
+        mods.append(self.o.modifier_add('Boolean3', 'BOOLEAN'))
+        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
+        mods.append(self.o.modifier_add('Boolean3', 'BOOLEAN'))
+        mods.append(self.o.modifier_add('Boolean3', 'BOOLEAN'))
+        mods.append(self.o.modifier_add('Bevel2', 'BEVEL'))
+        mods.append(self.o.modifier_add('Boolean3', 'BOOLEAN'))
+        mods.append(self.o.modifier_add('MediumBevel', 'BEVEL'))
+        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
+        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
+        mods.append(self.o.modifier_add('Array', 'ARRAY'))
+        mods.append(self.o.modifier_add('Array', 'ARRAY'))
+        mods.append(self.o.modifier_add('TopBevel', 'BEVEL'))
+        mods.append(self.o.modifier_add('WeightedNormal', 'WEIGHTED_NORMAL'))
+        mods.append(self.o.modifier_add('TopBevel', 'BEVEL'))
+        mods.append(self.o.modifier_add('WeightedNormal', 'WEIGHTED_NORMAL'))
+        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
+        clusters = []
+
+        cluster = ModifiersCluster(cluster_name='Beveled Boolean',
+                                   cluster_type='BEVELED_BOOLEAN',
+                                   modifiers_by_type=[
+                                       ['BOOLEAN'], ['BEVEL']],
+                                   modifiers_by_name=[['ANY'], ['ANY']],
+                                   cluster_priority=0,
+                                   cluster_createable=True,
+                                   )
+        clusters.append(cluster)
+
+        cluster = ModifiersCluster(cluster_name='Triple Bevel',
+                                   cluster_type='TRIPLE_BEVEL',
+                                   modifiers_by_type=[
+                                       ['BEVEL'], ['BEVEL'], ['BEVEL']],
+                                   modifiers_by_name=[
+                                       ['ANY'], ['ANY'], ['ANY']],
+                                   cluster_priority=0,
+                                   cluster_createable=True,
+                                   )
+        clusters.append(cluster)
+
+        cluster = ClustersLayer(cluster_name='Double Triple Bevel Cluster',
+                                cluster_type='BEVEL_CLUSTER',
+                                modifiers_by_type=[
+                                    ['TRIPLE_BEVEL'], ['TRIPLE_BEVEL']],
+                                modifiers_by_name=[['ANY'], ['ANY']],
+                                cluster_priority=0,
+                                cluster_createable=True,
+                                )
+        clusters.append(cluster)
+
+        self.e = ExtendedModifiersList(self.o, cluster_types=clusters)
+
+        def test_first_cluster_is_double_bevel(self):
+            self.assertEquals(self.e.get_first().type, 'BEVEL_CLUSTER')
+
+        def test_first_cluster_has_two_triple_bevels(self):
+            self.assertEquals(
+                    self.e.get_first().get_first().type, 'TRIPLE_BEVEL')
+
+        def test_triple_bevel_has_bevel(self):
+            self.assertEquals(
+                    self.e.get_first().get_first().get_first().type, 'BEVEL')
+
+        def test_triple_bevel_has_three_modifiers(self):
+            self.assertEquals(
+                    self.e.get_first().get_first().get_list_length(), 3)

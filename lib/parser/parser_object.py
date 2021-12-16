@@ -19,9 +19,10 @@
 import copy
 
 from ..dummy_modifiers import DummyBlenderModifier
-from ..dummy_modifiers import DummyBlenderObj
 
 from ..clusters import DefaultModifierCluster, ClusterTrait
+from ..lists.traits.clusters.active_cluster import ActiveClusterTrait
+from ..lists.traits.modifiers.active_modifier import ActiveModifierTrait
 
 
 class ClustersParser():
@@ -1289,9 +1290,9 @@ class ClustersParser():
         x[1]._object = self._object
 
         # Layer-specific.
-        if x[1].has_clusters():
-            if x[1].get_list_length() > 0:
-                x[1]._mod = x[1].get_first()
+        if isinstance(x[1], ActiveModifierTrait)\
+                or isinstance(x[1], ActiveClusterTrait):
+            x[1]._mod = x[1].get_first()
 
         # Set cluster name.
         x[1] = self._cluster_number_format(

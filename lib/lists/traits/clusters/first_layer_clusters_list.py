@@ -41,9 +41,11 @@ class FirstLayerClustersListTrait():
     # version.
     _EXTENDED_MODIFIERS_LIST_NO_COMPAT = [(0, 2, 0), (0, 0, 5)]
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, no_parse=None, **kwargs):
         super().__init__(*args, **kwargs)
         self._clusters_parser = ClustersParser(*args, **kwargs)
+        if not no_parse:
+            self._create_modifiers_list()
 
     def __str__(self):
         result = 'Extended Modifiers List, clusters: '
@@ -69,7 +71,7 @@ class FirstLayerClustersListTrait():
         """
         return self.get_active_cluster_layer()
 
-    def create_modifiers_list(self, obj):
+    def create_modifiers_list(self, obj=None):
         """
         Creates modifiers list for object.
         Parses modifiers, if needed.
@@ -78,15 +80,15 @@ class FirstLayerClustersListTrait():
         """
         return self._create_modifiers_list(obj)
 
-    def _create_modifiers_list(self, obj):
+    def _create_modifiers_list(self, obj=None):
         ui_t = []
 
         ui_t.append("======================")
         ui_t.append("Creating modifiers list")
         ui_t.append("======================")
 
-        # Blender object
-        self._object = obj
+        if obj is None and self._object is not None:
+            obj = self._object
 
         # Are modifiers sorted already?
         self._modifiers_sorted = False
@@ -121,7 +123,7 @@ class FirstLayerClustersListTrait():
         except TypeError:
             already_parsed = False
 
-        # Parse modifiers
+        # Parse modifiers.
         if already_parsed is False:
             ui_t.append("Modifiers not parsed.")
             if len(modifiers_to_parse) > 0:
@@ -139,7 +141,10 @@ class FirstLayerClustersListTrait():
                     return False
                 ui_t.append("Setting parse result as a modifiers list.")
                 self._modifiers_list = parse_result
+                self._mod = self._modifiers_list[0]
                 modified = True
+
+        # Restore clusters state.
         elif already_parsed:
             ui_t.append("")
             if len(modifiers_to_parse) > 0:
@@ -162,6 +167,7 @@ class FirstLayerClustersListTrait():
                 for line in parse_result:
                     self._additional_info_log.append(f"{line}")
                 self._modifiers_list = parse_result
+                self._mod = self._modifiers_list[0]
                 modified = True
 
         if self._MODIFIERS_LIST_V:
@@ -174,6 +180,7 @@ class FirstLayerClustersListTrait():
                 ui_t.append(f"{line}")
             for line in ui_t:
                 self._additional_info_log.append(line)
+
         if modified:
             return True
         else:
@@ -568,7 +575,7 @@ class FirstLayerClustersListTrait():
         Returns lowest level clusters layer that should be removed.
         Returns False, if no layer should be removed.
         """
-        if not isinstance(layer, FirstLayerClustersList):
+        if not isinstance(layer, FirstLayerClustersListTrait):
             if layer.get_list_length() == 0:
                 layer_2 = self.get_cluster_cluster_belongs_to(layer)
                 result = self.recursive_check_which_layer_should_be_removed(
