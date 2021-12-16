@@ -17,10 +17,10 @@
 # ##### END GPL LICENSE BLOCK #####
 
 from ..lists.modifiers_list import ModifiersList
-from ..lists.traits.clusters_list import ClustersListTrait
-from ..lists.traits.sortable_clusters_list import SortableClustersListTrait
-from ..lists.traits.object_clusters_list import ObjectClustersListTrait
-from ..lists.traits.active_cluster import ActiveClusterTrait
+from ..lists.traits import ClustersListTrait
+from ..lists.traits import SortableClustersListTrait
+from ..lists.traits import ObjectClustersListTrait
+from ..lists.traits import ActiveClusterTrait
 from .cluster import ClusterTrait
 
 
