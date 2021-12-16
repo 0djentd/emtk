@@ -49,21 +49,23 @@ class ModifiersListTests(unittest.TestCase):
 
 
 class ExtendedModifiersListTests(unittest.TestCase):
-    def test_create_modifiers_list(self):
-        o = DummyBlenderObj()
+    def setUp(self):
+        self.o = DummyBlenderObj()
         mods = []
-        mods.append(o.modifier_add('Bevel', 'BEVEL'))
-        mods.append(o.modifier_add('Bevel', 'BEVEL'))
-        mods.append(o.modifier_add('Bevel', 'BEVEL'))
+        mods.append(self.o.modifier_add('Bevel', 'BEVEL'))
+        mods.append(self.o.modifier_add('Bevel', 'BEVEL'))
+        mods.append(self.o.modifier_add('Bevel', 'BEVEL'))
 
-        m = ExtendedModifiersList()
-        result = m.create_modifiers_list(o)
+        self.e = ExtendedModifiersList()
+        self.e.create_modifiers_list(self.o)
 
-        self.assertNotEqual(result, False)
+    def tearDown(self):
+        del(self.o)
+        del(self.e)
 
-        # if not self.assertEqual(result, True):
-        #     print(f'{m}')
-
-
-if __name__ == '__main__':
-    unittest.main()
+    def test_create_modifiers_list(self):
+        c = self.e.get_first()
+        result = (self.e.get_list_length() == 3)\
+            and (c.get_list_length() == 1)\
+            and (c.has_clusters() is False)
+        self.assertTrue(result)

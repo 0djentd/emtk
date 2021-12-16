@@ -154,8 +154,6 @@ class ModifiersList(ModifiersListUtilsTrait):
         """
         return self._modifiers_list
 
-    # TODO: does it work?
-    # TODO: it doesnt work
     def get_list_in_range_not_inclusive(self, mod1, mod2):
         """
         Returns list of objects between two objects.
