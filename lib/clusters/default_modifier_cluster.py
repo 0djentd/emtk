@@ -16,8 +16,7 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-import bpy
-
+from ..dummy_modifiers import DummyBlenderModifier
 from .cluster import ClusterTrait
 
 from ..lists.modifiers_list import ModifiersList
@@ -89,7 +88,7 @@ class DefaultModifierCluster(
                     'DefaultModifierCluster can work only with one modifier.')
 
         # If it is not an actual modifier
-        if not isinstance(modifiers[0], bpy.types.Modifier):
+        if not isinstance(modifiers[0], DummyBlenderModifier):
             raise TypeError(
                     'DefaultModifierCluster needs actual Blender modifier.')
 

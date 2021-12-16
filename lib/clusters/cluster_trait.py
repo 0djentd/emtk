@@ -18,9 +18,8 @@
 
 import json
 
-import bpy
-
 from ..dummy_modifiers import DummyBlenderModifier
+from ..dummy_modifiers import DummyBlenderObj
 
 
 class ClusterTrait():
@@ -449,7 +448,7 @@ class ClusterTrait():
         if not isinstance(modifiers, list):
             raise TypeError
         for x in modifiers:
-            if not isinstance(x, bpy.types.Modifier)\
+            if not isinstance(x, DummyBlenderModifier)\
                     and not isinstance(x, ClusterTrait):
                 raise TypeError
 
@@ -543,7 +542,7 @@ class ClusterTrait():
         """
 
         for mod in modifiers:
-            if isinstance(mod, bpy.types.Modifier):
+            if isinstance(mod, DummyBlenderModifier):
                 pass
             elif isinstance(mod, ClusterTrait):
                 pass

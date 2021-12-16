@@ -20,8 +20,7 @@ import copy
 import json
 import time
 
-import bpy
-
+from ...dummy_modifiers import DummyBlenderModifier
 from ...parser import ClustersParser
 
 
@@ -316,7 +315,7 @@ class FirstLayerClustersListTrait():
                     # Remove modifiers
                     for y in x:
                         e = y.name
-                        bpy.ops.object.modifier_apply(modifier=e)
+                        self._object.modifier_apply(modifier=e)
 
                     # Remove reference to modifiers
                     for z in x2:
@@ -332,7 +331,7 @@ class FirstLayerClustersListTrait():
                 # Remove modifiers
                 for y in x:
                     e = y.name
-                    bpy.ops.object.modifier_apply(modifier=e)
+                    self._object.modifier_apply(modifier=e)
 
                 # Remove reference to modifiers
                 for z in x2:
@@ -517,7 +516,7 @@ class FirstLayerClustersListTrait():
         actual modifier.
         If get_last is True, looks for last actual modifier.
         """
-        if isinstance(modifier_or_cluster, bpy.types.Modifier):
+        if isinstance(modifier_or_cluster, DummyBlenderModifier):
             mod = modifier_or_cluster
         else:
             if get_last is False:
