@@ -329,7 +329,6 @@ class ClustersParser():
         """
         Returns one of available to this object cluster
         types by name.
-        Return False, if not found any.
         """
         self._additional_info_log.append(
                 f"Trying to find cluster type by name {cluster_type_name}")
@@ -345,13 +344,12 @@ class ClustersParser():
                 return x
         self._additional_info_log.append(
                 "Dont found any")
-        return False
+        raise ValueError(f"Cant find cluster with name {cluster_type_name} in {self._available_layer_types} and {self._available_cluster_types}")
 
     def _get_cluster_type_by_type(self, cluster_type):
         """
         Returns one of available to this object cluster
         types by type.
-        Return False, if not found any.
         """
         self._additional_info_log.append(
                 f"Trying to find cluster type by type {cluster_type}")
@@ -367,7 +365,7 @@ class ClustersParser():
                 return x
         self._additional_info_log.append(
                 "Dont found any")
-        return False
+        raise ValueError(f"Cant find cluster with type {cluster_type} in {self._available_layer_types} and {self._available_cluster_types}")
 
     # ==============================
     # Wrappers

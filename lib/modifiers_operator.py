@@ -123,7 +123,8 @@ class ModifiersOperator():
                 if obj == context.view_layer.objects.active:
 
                     # Create extended modifiers list and initialize it for obj
-                    obj_mod_list = ExtendedModifiersList(obj)
+                    obj_mod_list = ExtendedModifiersList(
+                            obj, cluster_types=clusters)
 
                     # If using clusters
                     if self._MODIFIERS_OPERATOR_MODIFIER_CLUSTERS:
@@ -136,31 +137,22 @@ class ModifiersOperator():
 
                     # Create modifiers list for object and parse it
                     result = obj_mod_list.create_modifiers_list(obj)
+                    if result is False or result is None:
+                        return False
 
                     # Add modifiers list references
                     self.selected_objects.append(obj_mod_list)
                     self.m_list = self.selected_objects[x]
-                    if result is False or result is None:
-                        return False
                 else:
-                    if self._MODIFIERS_OPERATOR_MODIFIER_CLUSTERS:
-
-                        # Create clusters list
-                        obj_mod_list = ExtendedModifiersList()
-                        obj_mod_list._MODIFIER_CLUSTERS = True
-                        for y in clusters:
-                            if not obj_mod_list.update_cluster_types_list(y):
-                                self.report(
-                                        {'INFO'},
-                                        "Failed to add new modcluster type")
-                    # else:
-                    #     # Create usual modifiers list
-                    #     obj_mod_list = ExtendedModifiersList()
+                    # Create clusters list
+                    obj_mod_list = ExtendedModifiersList(
+                            obj, cluster_types=clusters)
 
                     # Create modifiers list for object and parse it
                     result = obj_mod_list.create_modifiers_list(obj)
                     if result is False or result is None:
                         return False
+
                     self.selected_objects.append(obj_mod_list)
                 x += 1
             self.report({'INFO'}, "Finished creating modifier lists")
