@@ -19,6 +19,15 @@
 import copy
 import time
 
+try:
+    import bpy
+    _WITH_BPY = True
+except ModuleNotFoundError:
+    from .dummy_modifiers import DummyBlenderModifier
+    _WITH_BPY = False
+
+from .clusters.cluster_trait import ClusterTrait
+
 
 class ClusterRequest(dict):
     """
@@ -72,6 +81,67 @@ class ClustersAction(dict):
         self['subject'] = subject
         self['status'] = 'STILL_NOT_ALLOWED'
 
+
+class ClustersController():
+    """
+    This is object responsible for clusters actions buffer.
+    """
+
+    def __init__(self, extended_modifiers_list_obj):
+        self.e = extended_modifiers_list_obj
+
+    def get_required_actions(self, action, already_allowed_actions=None):
+        """
+        Asks all clusters if action is allowed.
+
+        already_allowed_actions is a list of actions that
+        should not be added to result.
+
+        Returns actions that are required to allow it by
+        all clusters.
+
+        If action is allowed by all clusters, returns empty list.
+        """
+
+        # Check arguments
+        if not isinstance(action, ClustersAction):
+            raise TypeError
+        if already_allowed_actions is None:
+            already_allowed = []
+        else:
+            already_allowed = already_allowed_actions
+        if not isinstance(already_allowed, list):
+            raise TypeError
+        for x in already_allowed:
+            if not isinstance(x, ClustersAction):
+                raise TypeError
+            if x['status'] != 'ALLOWED':
+                raise ValueError
+
+        result = []
+
+        # Get required actions.
+        for x in self.m.get_full_list():
+            answer = x.ask(action)
+            if isinstance(answer, ClusterRequest):
+                for a in answer['require']:
+                    add = True
+                    for x in already_allowed:
+                        if x['verb'] == a['verb']\
+                                and x['subject'] is a['subject']:
+                            add = False
+                    # Recursive search for required actions.
+                    if add:
+                        result.expand(
+                                self.get_required_actions(a, already_allowed))
+
+        # After loop, this action will be allowed, because there will be
+        # required actions to allow it in result.
+        action['status'] = 'ALLOWED'
+        result.append(action)
+        return result
+
+
 def remove(self, cluster):
     """
     Removes cluster from this list.
@@ -84,6 +154,11 @@ def remove(self, cluster):
     self.controller.do(x)
 
 def ask(self, question):
+    """
+    Returns actions required to allow action, if it is not
+    allowed.
+    Can return empty list.
+    """
     if not isinstance(question, ClustersAction):
         raise TypeError
 
@@ -117,48 +192,6 @@ def do(self, request):
     actions = get_required_actions(request['request'])
     for x in actions:
         self.apply_action(x)
-
-def get_required_actions(self, action, already_allowed=None):
-    """
-    Asks all clusters if action is allowed.
-
-    already_allowed_actions is a list of actions that
-    should not be added to result.
-
-    Returns actions that are required to allow it by
-    all clusters.
-
-    If action is allowed by all clusters, returns empty list.
-    """
-    # Check arguments
-    if not isinstance(action, ClustersAction):
-        raise TypeError
-    if already_allowed_actions is None:
-        already_allowed = []
-    else:
-        already_allowed = already_allowed_actions
-    if not isinstance(already_allowed, list):
-        raise TypeError
-    for x in already_allowed:
-        if not isinstance(x, ClustersAction):
-            raise TypeError
-        if x['status'] != 'ALLOWED':
-            raise ValueError
-
-    result = []
-    for x in self.get_full_list():
-        answer = x.ask(action)
-        if isinstance(answer, ClusterRequest):
-            for a in answer['require']:
-                add = True
-                for x in already_allowed:
-                    if x['verb'] == a['verb']\
-                            and x['subject'] is a['subject']:
-                        add = False
-                if add:
-                    result.expand(
-                            self.get_required_actions(a, already_allowed))
-    return result
 
 def apply_action(self, action):
     """
