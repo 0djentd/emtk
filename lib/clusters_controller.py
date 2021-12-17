@@ -28,18 +28,18 @@ class Action():
         self.value = val
         self.obj = obj
 
-def remove_this_cluster(self):
-    task = Action('DO', 'REMOVE', self, self)
-    if self._controller.ask(task):
-        self._controller.do(task)
-        self._cluster_removed = True
-        return True
-    else:
-        return False
-
-def _check_if_cluster_removed(self):
-    if self._cluster_removed:
-        raise ValueError(f'Cluster {self} already removed.')
+# def remove_this_cluster(self):
+#     task = Action('DO', 'REMOVE', self, self)
+#     if self._controller.ask(task):
+#         self._controller.do(task)
+#         self._cluster_removed = True
+#         return True
+#     else:
+#         return False
+# 
+# def _check_if_cluster_removed(self):
+#     if self._cluster_removed:
+#         raise ValueError(f'Cluster {self} already removed.')
         
 class Controller():
     """

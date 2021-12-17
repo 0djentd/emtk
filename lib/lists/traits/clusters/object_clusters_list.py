@@ -187,7 +187,7 @@ class ObjectClustersListTrait():
         else:
             raise ValueError
 
-        clusters_to_move = copy.copy(clusters)
+        clusters_to_move = clusters
 
         if direction == 'DOWN':
             clusters_to_move = clusters_to_move.reverse()
