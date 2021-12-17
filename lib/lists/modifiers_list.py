@@ -83,6 +83,9 @@ class ModifiersList(ModifiersListUtilsTrait):
     def __len__(self):
         return len(self._modifiers_list)
 
+    def _check_if_cluster_removed(self):
+        pass
+
     # =======================================================
     # THIS METHODS SHOULD BE SPECIFIED FOR OTHER OBJECT TYPES
     # AND ONLY USED IN NON-NESTED CLUSTERS.
@@ -93,6 +96,7 @@ class ModifiersList(ModifiersListUtilsTrait):
         Returns modifier name
         Returns False, if no such modifier
         """
+        self._check_if_cluster_removed()
         return self.actual_modifier_get_name(mod)
 
     def modifier_get_type(self, mod):
@@ -100,6 +104,7 @@ class ModifiersList(ModifiersListUtilsTrait):
         Returns modifier type
         Returns False, if no such modifier
         """
+        self._check_if_cluster_removed()
         return self.actual_modifier_get_type(mod)
 
     # ===============================================
@@ -130,9 +135,11 @@ class ModifiersList(ModifiersListUtilsTrait):
     # This means that they dont differ simple or nested clusters and modifiers
     # ==============================================
     def get_full_actual_modifiers_list(self):
+        self._check_if_cluster_removed()
         return self.get_list()
 
     def get_actual_full_actual_modifiers_list(self):
+        self._check_if_cluster_removed()
         return self.get_actual_list()
 
     def get_list(self):
@@ -141,6 +148,7 @@ class ModifiersList(ModifiersListUtilsTrait):
         Should be used instead of get_actual_list
         when possible.
         """
+        self._check_if_cluster_removed()
         return self._modifiers_list
 
         # x = copy.copy(self._modifiers_list)
@@ -152,6 +160,7 @@ class ModifiersList(ModifiersListUtilsTrait):
         Its better idea to usual get_list when possible instead
         of this method.
         """
+        self._check_if_cluster_removed()
         return self._modifiers_list
 
     def get_list_in_range_not_inclusive(self, mod1, mod2):
@@ -159,6 +168,7 @@ class ModifiersList(ModifiersListUtilsTrait):
         Returns list of objects between two objects.
         Not inclusive.
         """
+        self._check_if_cluster_removed()
 
         if (mod1 is None) or (mod2 is None):
             raise TypeError
@@ -187,6 +197,7 @@ class ModifiersList(ModifiersListUtilsTrait):
         If two references of same object, returns list
         with one object.
         """
+        self._check_if_cluster_removed()
 
         if (mod1 is None) or (mod2 is None):
             raise TypeError
@@ -207,12 +218,14 @@ class ModifiersList(ModifiersListUtilsTrait):
         """
         Returns length of list of objects.
         """
+        self._check_if_cluster_removed()
         return len(self._modifiers_list)
 
     def get_list_by_type(self, m_type):
         """
         Returns list of m_type objects.
         """
+        self._check_if_cluster_removed()
         y = []
         for x in self._modifiers_list:
             if self.modifier_get_type(x) == m_type:
@@ -223,24 +236,28 @@ class ModifiersList(ModifiersListUtilsTrait):
         """
         Returns object by index.
         """
+        self._check_if_cluster_removed()
         return self._modifiers_list[i]
 
     def get_index(self, mod):
         """
         Returns index of object.
         """
+        self._check_if_cluster_removed()
         return self._modifiers_list.index(mod)
 
     def get_first(self):
         """
         Returns first object.
         """
+        self._check_if_cluster_removed()
         return self._modifiers_list[0]
 
     def get_last(self):
         """
         Returns last object.
         """
+        self._check_if_cluster_removed()
         return self._modifiers_list[-1]
 
     # ===============
@@ -285,6 +302,7 @@ class ModifiersList(ModifiersListUtilsTrait):
     # to modifiers.
     # ------------------------------------
     def find_previous(self, mod, m_type):
+        self._check_if_cluster_removed()
         return self.find_previous_modifier(mod, m_type)
 
     def find_previous_modifier(self, mod, m_type):
@@ -293,6 +311,7 @@ class ModifiersList(ModifiersListUtilsTrait):
         modifier of m_type type wrt mod
         Returns None if not found any
         """
+        self._check_if_cluster_removed()
 
         # Offset for iterating over list
         x = 1
@@ -309,6 +328,7 @@ class ModifiersList(ModifiersListUtilsTrait):
             x += 1
 
     def find_next(self, mod, m_type):
+        self._check_if_cluster_removed()
         return self.find_next_modifier(mod, m_type)
 
     def find_next_modifier(self, mod, m_type):
@@ -316,6 +336,7 @@ class ModifiersList(ModifiersListUtilsTrait):
         Returns index of next modifier of m_type type wrt mod.
         Returns None if not found any.
         """
+        self._check_if_cluster_removed()
 
         # Offset for iterating over list
         x = 1
@@ -331,12 +352,14 @@ class ModifiersList(ModifiersListUtilsTrait):
             x += 1
 
     def find_previous_any(self, mod):
+        self._check_if_cluster_removed()
         return self.find_previous_modifier_any(mod)
 
     def find_previous_modifier_any(self, mod):
         """
         Returns any previous modifier wrt mod
         """
+        self._check_if_cluster_removed()
 
         x = self.get_index(mod)
         y = self.get_list_length()
@@ -348,6 +371,7 @@ class ModifiersList(ModifiersListUtilsTrait):
                 return self.get_by_index(0)
 
     def find_next_any(self, mod):
+        self._check_if_cluster_removed()
         return self.find_next_modifier_any(mod)
 
     def find_next_modifier_any(self, mod):
@@ -355,6 +379,7 @@ class ModifiersList(ModifiersListUtilsTrait):
         Returns any next modifier
         wrt mod
         """
+        self._check_if_cluster_removed()
 
         x = self.get_index(mod)
         y = self.get_list_length()
@@ -368,6 +393,7 @@ class ModifiersList(ModifiersListUtilsTrait):
     # Methods that are looping around list
     # ------------------------------------
     def find_previous_loop(self, mod, m_type):
+        self._check_if_cluster_removed()
         return self.find_previous_modifier_loop(mod, m_type)
 
     def find_previous_modifier_loop(self, mod, m_type):
@@ -378,6 +404,7 @@ class ModifiersList(ModifiersListUtilsTrait):
         Loops around m_list
         Returns None if not found any
         """
+        self._check_if_cluster_removed()
 
         # Offset for iterating over list
         x = 1
@@ -394,6 +421,7 @@ class ModifiersList(ModifiersListUtilsTrait):
             x += 1
 
     def find_next_loop(self, mod, m_type):
+        self._check_if_cluster_removed()
         return self.find_next_modifier_loop(mod, m_type)
 
     def find_next_modifier_loop(self, mod, m_type):
@@ -404,6 +432,7 @@ class ModifiersList(ModifiersListUtilsTrait):
         Loops around m_list
         Returns None if not found any
         """
+        self._check_if_cluster_removed()
 
         # Offset for iterating over list
         x = 1
@@ -420,6 +449,7 @@ class ModifiersList(ModifiersListUtilsTrait):
             x += 1
 
     def find_previous_any_loop(self, mod):
+        self._check_if_cluster_removed()
         return self.find_previous_modifier_any_loop(mod)
 
     def find_previous_modifier_any_loop(self, mod):
@@ -428,6 +458,7 @@ class ModifiersList(ModifiersListUtilsTrait):
         wrt mod
         Loops around m_list
         """
+        self._check_if_cluster_removed()
 
         # TODO: changed index_get to get_index
         x = self.get_index(mod)
@@ -438,6 +469,7 @@ class ModifiersList(ModifiersListUtilsTrait):
             return self._modifiers_list[y-1]
 
     def find_next_any_loop(self, mod):
+        self._check_if_cluster_removed()
         return self.find_next_modifier_any_loop(mod)
 
     def find_next_modifier_any_loop(self, mod):
@@ -446,6 +478,7 @@ class ModifiersList(ModifiersListUtilsTrait):
         wrt mod
         Loops around m_list
         """
+        self._check_if_cluster_removed()
 
         x = self.get_index(mod)
         y = self.get_list_length()

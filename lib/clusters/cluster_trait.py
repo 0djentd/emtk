@@ -198,6 +198,10 @@ class ClusterTrait():
         # Sorting rules.
         self._sorting_rules = []
 
+        # Cluster shouldnt be used, if it is already
+        # removed from clusters list.
+        self._cluster_removed = False
+
         # Should this cluster content be shown collapsed in ui?
         # Also stops recursive active_modifier_get_deep()
         self.modcluster_collapsed = True
@@ -332,6 +336,10 @@ class ClusterTrait():
     # ===========================
     # ModifiersCluster methods
     # ===========================
+    def _check_if_cluster_removed(self):
+        if self._cluster_removed:
+            raise ValueError(f'Cluster {self} already removed.')
+
     def is_complex(self):
         """
         Checks if this cluster cant be considered as usual modifier.
@@ -357,12 +365,14 @@ class ClusterTrait():
         """
         Returns this ModifiersCluster's type
         """
+        self._check_if_cluster_removed()
         return self._MODCLUSTER_TYPE
 
     def get_this_cluster_name(self):
         """
         Returns this ModifiersCluster's custom name, or default name.
         """
+        self._check_if_cluster_removed()
         if self._modcluster_custom_name is not None:
             return self._modcluster_custom_name
         else:
@@ -372,12 +382,14 @@ class ClusterTrait():
         """
         Returns this ModifiersCluster's custom name.
         """
+        self._check_if_cluster_removed()
         return self._modcluster_custom_name
 
     def get_this_cluster_default_name(self):
         """
         Returns this ModifiersCluster's default name.
         """
+        self._check_if_cluster_removed()
         return self._MODCLUSTER_NAME
 
     def set_this_cluster_custom_name(self, cluster_name):
@@ -385,6 +397,7 @@ class ClusterTrait():
         Sets cluster custom cluster name.
         Returns True or False, if cluster is not editable.
         """
+        self._check_if_cluster_removed()
         if isinstance(cluster_name, str):
             self._modcluster_custom_name = cluster_name
         else:
@@ -397,6 +410,7 @@ class ClusterTrait():
         """
         Returns this ModifiersCluster's custom tags, or default tags.
         """
+        self._check_if_cluster_removed()
         return self._MODCLUSTER_DEFAULT_TAGS + self._modcluster_custom_tags
 
     def add_tag_to_this_cluster(self, custom_tag):
@@ -405,6 +419,7 @@ class ClusterTrait():
         Takes string as an argument.
         Returns True if successfully added tag.
         """
+        self._check_if_cluster_removed()
         if isinstance(custom_tag, str):
             if custom_tag not in self._modcluster_custom_tags:
                 self._modcluster_custom_tags.append(custom_tag)
@@ -422,6 +437,7 @@ class ClusterTrait():
         Returns True if successfully removed tag.
         Returns False if no such tag or cant remove.
         """
+        self._check_if_cluster_removed()
         y = []
         result = False
         for x in self._modcluster_custom_tags:
@@ -443,6 +459,7 @@ class ClusterTrait():
         Returns True or False, if cluster is not editable
         """
 
+        self._check_if_cluster_removed()
         if not isinstance(modifiers, list):
             raise TypeError
         if len(modifiers) == 0:
@@ -479,6 +496,7 @@ class ClusterTrait():
         Returns True or False, if cluster not sortable.
         """
 
+        self._check_if_cluster_removed()
         if 'NO_SORT' in self.get_this_cluster_tags():
             return False
 
@@ -495,6 +513,7 @@ class ClusterTrait():
         rule.
         """
 
+        self._check_if_cluster_removed()
         removed_sorting_rule = False
         r = []
         for x in self._sorting_rules:
@@ -511,6 +530,7 @@ class ClusterTrait():
         Returns empty list, if cluster disabled
         sorting.
         """
+        self._check_if_cluster_removed()
         if 'NO_SORT' in self.get_this_cluster_tags():
             return []
         else:
@@ -640,6 +660,7 @@ class ClusterTrait():
         Returns False if something is wrong.
         """
 
+        self._check_if_cluster_removed()
         # Additional checks
         if not self.check_this_cluster_sanity_custom():
             return False
@@ -684,6 +705,7 @@ class ClusterTrait():
         """
         Returns list with info about this cluster visability
         """
+        self._check_if_cluster_removed()
         y1 = []
         y2 = []
         y3 = []
@@ -717,6 +739,7 @@ class ClusterTrait():
         Sets this cluster visibility.
         Takes list as an argument.
         """
+        self._check_if_cluster_removed()
         if vis_settings is None:
             vis_settings = [None, None, None, None]
 
@@ -753,6 +776,7 @@ class ClusterTrait():
 
         Takes list as an argument.
         """
+        self._check_if_cluster_removed()
         if vis_settings is None:
             vis_settings = [False, False, False, False]
 
@@ -803,27 +827,3 @@ class ClusterTrait():
         x.update({'cluster_createable': self._MODCLUSTER_CREATEABLE})
         result = json.dumps(x)
         return result
-
-    # TODO: can be removed
-    def clear_this_cluster(self):
-        """
-        Resets all unnecessary for cluster type
-        attributes in already initialized cluster.
-
-        Returns True or False, if cant reset this
-        type of clusters.
-        """
-
-        if self._MODCLUSTER_NO_CLEAR:
-            return False
-
-        self._mod = None
-        self._modifiers_list = []
-        self._object = None
-        self._modcluster_specified_modifier_names = []
-        self._modcluster_custom_name = None
-        self._modcluster_custom_tags = []
-        self.modcluster_index = None
-        self.collapsed = True
-        self._modcluster_initialized = False
-        return True

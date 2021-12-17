@@ -85,6 +85,9 @@ class ClustersListTrait():
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+    def _check_if_cluster_removed(self):
+        pass
+
     # =====================================
     # THIS METHODS WORK ONLY WITH CLUSTERS.
     # =====================================
@@ -128,6 +131,7 @@ class ClustersListTrait():
         Looks in nested clusters.
         Always return actual modifiers.
         """
+        self._check_if_cluster_removed()
         x = self.get_full_actual_modifiers_list()
         return x[i]
 
@@ -137,6 +141,7 @@ class ClustersListTrait():
         Looks in nested clusters.
         Returns None if not found.
         """
+        self._check_if_cluster_removed()
         for x in self.get_full_actual_modifiers_list():
             if x.name == m_name:
                 return x
@@ -146,6 +151,7 @@ class ClustersListTrait():
         """
         Returns first modifier of first cluster.
         """
+        self._check_if_cluster_removed()
         x = self.get_full_actual_modifiers_list()
         return x[0]
 
@@ -153,6 +159,7 @@ class ClustersListTrait():
         """
         Returns last modifier of last cluster.
         """
+        self._check_if_cluster_removed()
         x = self.get_full_actual_modifiers_list()
         return x[-1]
 
@@ -160,6 +167,7 @@ class ClustersListTrait():
         """
         Returns actual modifier index
         """
+        self._check_if_cluster_removed()
         x = self.get_full_actual_modifiers_list()
         return x.index(mod)
 
@@ -283,6 +291,7 @@ class ClustersListTrait():
         Returns full list of clusters, including nested ones.
         Also returns cluster that have other clusters in them.
         """
+        self._check_if_cluster_removed()
         result = []
         for x in self.get_list():
             result.append(x)
@@ -296,6 +305,7 @@ class ClustersListTrait():
         Returns list of this layer clusters including nested ones.
         Only return clusters that contain no other clusters.
         """
+        self._check_if_cluster_removed()
         result = []
         for x in self.get_list():
             if x.has_clusters():
@@ -311,6 +321,7 @@ class ClustersListTrait():
         clusters in it, including nested ones.
         Returns empty list if no such clusters found.
         """
+        self._check_if_cluster_removed()
 
         result = []
         for x in self.get_full_list():
@@ -324,6 +335,7 @@ class ClustersListTrait():
         including nested ones.
         Returns empty list if no actual modifiers found.
         """
+        self._check_if_cluster_removed()
 
         result = []
         for x in self.get_deep_list():
@@ -338,6 +350,7 @@ class ClustersListTrait():
         """
         Returns full list of clusters by type, including nested ones.
         """
+        self._check_if_cluster_removed()
         result = []
         for x in self.get_full_list():
             if m_type == x.get_this_cluster_type():
@@ -348,6 +361,7 @@ class ClustersListTrait():
         """
         Returns full list of clusters by name, including nested ones.
         """
+        self._check_if_cluster_removed()
         result = []
         for x in self.get_full_list():
             if m_name in x.get_this_cluster_name():
@@ -358,6 +372,7 @@ class ClustersListTrait():
         """
         Returns full list of clusters by tags, including nested ones.
         """
+        self._check_if_cluster_removed()
         result = []
         for x in self.get_full_list():
             if m_tags in x.get_this_cluster_tags():
@@ -374,6 +389,7 @@ class ClustersListTrait():
         Also returns this ModifiersClustersList.
         Looks in all clusters.
         """
+        self._check_if_cluster_removed()
         if not isinstance(cluster, ClusterTrait):
             raise TypeError
 
@@ -393,6 +409,7 @@ class ClustersListTrait():
         """
         Returns deep list of clusters by type, including nested ones.
         """
+        self._check_if_cluster_removed()
         result = []
         for x in self.get_deep_list():
             if m_type == x.get_this_cluster_type():
@@ -403,6 +420,7 @@ class ClustersListTrait():
         """
         Returns deep list of clusters by name, including nested ones.
         """
+        self._check_if_cluster_removed()
         result = []
         for x in self.get_deep_list():
             if m_name in x.get_this_cluster_name():
@@ -413,6 +431,7 @@ class ClustersListTrait():
         """
         Returns deep list of clusters by tags, including nested ones.
         """
+        self._check_if_cluster_removed()
         result = []
         for x in self.get_deep_list():
             if m_tags in x.get_this_cluster_tags():
@@ -426,6 +445,7 @@ class ClustersListTrait():
         """
         Returns full list of actual modifiers by type, including nested ones.
         """
+        self._check_if_cluster_removed()
         result = []
         for x in self.get_full_actual_modifiers_list():
             if x.type == m_type:
@@ -436,6 +456,7 @@ class ClustersListTrait():
         """
         Returns full list of actual modifiers by name, including nested ones.
         """
+        self._check_if_cluster_removed()
         result = []
         for x in self.get_full_actual_modifiers_list():
             if m_name in x.name:
@@ -450,6 +471,7 @@ class ClustersListTrait():
         """
         Returns first actual modifier of a cluster.
         """
+        self._check_if_cluster_removed()
         x = self.get_first().has_clusters()
         if x.has_clusters():
             y = x.get_first()
@@ -461,6 +483,7 @@ class ClustersListTrait():
         """
         Returns last actual modifier of a cluster.
         """
+        self._check_if_cluster_removed()
         x = self.get_last().has_clusters()
         if x.has_clusters():
             y = x.get_last()
@@ -478,6 +501,7 @@ class ClustersListTrait():
 
         Returns True or False.
         """
+        self._check_if_cluster_removed()
         if not isinstance(cluster, ClusterTrait):
             raise TypeError
 
@@ -504,6 +528,7 @@ class ClustersListTrait():
         If cluster has actual modifiers, it will be replaced with
         simpler clusters.
         """
+        self._check_if_cluster_removed()
         if not isinstance(cluster, ClusterTrait):
             raise TypeError
 
