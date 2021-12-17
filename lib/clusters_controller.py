@@ -18,90 +18,182 @@
 
 import copy
 import time
-from .clusters_operation import ClustersOperation
 
 
-class Action():
-    def __init__(self, action_type, action, val, obj):
-        self.type = action_type
-        self.name = action
-        self.value = val
-        self.obj = obj
-
-# def remove_this_cluster(self):
-#     task = Action('DO', 'REMOVE', self, self)
-#     if self._controller.ask(task):
-#         self._controller.do(task)
-#         self._cluster_removed = True
-#         return True
-#     else:
-#         return False
-# 
-# def _check_if_cluster_removed(self):
-#     if self._cluster_removed:
-#         raise ValueError(f'Cluster {self} already removed.')
-        
-class Controller():
+class ClusterRequest(dict):
     """
-    This is object responsible for managing Actions buffer.
-    """
-    """
-    Example:
-    Removing cluster 2 in layer 1 that is part of first layer and
-    doesnt allow removing clusters without removing layer 1.
-
-    result = cluster2.check_operation(action_on_cluster2)
-
-    get trace to cluster2.
-    for x in trace:
-        # This will return empty action if no action needed.
-        # If not allowed, returns NEED_TO_REMOVE_X
-        result = x.check_opertation(action_in_x_clusters)
-        actions+=result
-
-    result:
-    DO REMOVE cluster2
-    NEED REMOVE layer1
-    DO REMOVE layer1
-    EMPTY first
+    This thing looks like this:
+    x = {
+         'from': <obj BevelCluster>,
+         'require': [<action>, <action>]
+         }
     """
 
-    def _check_action(self, task):
-        if not isinstance(task, Action):
+    def __init__(self, obj, require):
+        if isinstance(require, list):
+            for x in require:
+                if not isinstance(x, ClustersAction):
+                    raise TypeError
+            actions = require
+        elif isinstance(require, ClustersAction):
+            actions = [require]
+        else:
             raise TypeError
 
-    def add(self, task):
-        self._check_action(task)
-        self._tasks.append(time.time(), task)
+        self['from'] = obj
+        self['require'] = actions
+        self['time'] = time.time()
 
-    def remove(self, taks):
-        self._check_action(task)
-        tasks_to_test = self._tasks[self._tasks.index(task):-1]
 
-    def ask(self, task):
-        self._check_action(task)
-        self._tasks.append(time.time(), task)
-        return self.run_task_dry(task)
+class ClustersAction(dict):
+    """
+    This thing looks like this:
+    x = {
+         'verb': 'REMOVE',
+         'subject': <obj BevelCluster>
+         'status': = 'STILL_NOT_ALLOWED'
+         }
+    """
 
-    def do(self, task):
-        self._check_action(task)
-        result = True
-        tasks_to_run = self._tasks[0:self._tasks.index(task)]
-        for x in tasks_to_run 
-            if not self.unwrap_and_run(x):
-                result = False
+    def __init__(self, verb, subject):
+        if not isinstance(verb, str):
+            raise TypeError
 
-            self._finished_tasks.append(self._tasks.pop(x))
-        return result
+        if _WITH_BPY:
+            modifiers_type = bpy.types.Modifier
+        else:
+            modifiers_type = DummyBlenderModifier
 
-    def run_task_dry(self, task):
-        self._check_action(task)
-        result = True
-        tasks_to_run = self._tasks[0:self._tasks.index(task)]
+        if not isinstance(subject, modifiers_type)\
+                and not isinstance(subject, ClusterTrait):
+            raise TypeError
 
-        for x in tasks_to_run:
-            if not self.unwrap_and_run_dry(x):
-                result = False
+        self['verb'] = verb
+        self['subject'] = subject
+        self['status'] = 'STILL_NOT_ALLOWED'
 
-            self._finished_tasks.append(self._tasks.pop(x))
-        return result
+def remove(self, cluster):
+    """
+    Removes cluster from this list.
+    """
+
+    y = ClustersAction('REMOVE', cluster)
+
+    x = ClusterRequest(self, y)
+
+    self.controller.do(x)
+
+def ask(self, question):
+    if not isinstance(question, ClustersAction):
+        raise TypeError
+
+    if not self.has(x['subject']):
+        return
+
+    x = question
+
+    q = x['verb']
+
+    if self._MODCLUSTER_DYNAMIC is False:
+        x = [ClustersAction(self, 'REMOVE')]
+        return x
+
+    # if q == 'REMOVE':
+    #     return self._dry_remove(x['subject'])
+    # elif q == 'ADD':
+    #     return self._dry_add(x['object_type'])
+    # elif q == 'MOVE':
+    #     return self._dry_move(x['subject'], x['direction'])
+    # elif q == 'CONSTRUCT':
+    #     return self._dry_construct(x['subject_list'])
+    # elif q == 'DECONSTRUCT':
+    #     return self._dry_deconstruct(x['subject'])
+
+def do(self, request):
+    """
+    Finds required actions and performs them.
+    """
+
+    actions = get_required_actions(request['request'])
+    for x in actions:
+        self.apply_action(x)
+
+def get_required_actions(self, action, already_allowed=None):
+    """
+    Asks all clusters if action is allowed.
+
+    already_allowed_actions is a list of actions that
+    should not be added to result.
+
+    Returns actions that are required to allow it by
+    all clusters.
+
+    If action is allowed by all clusters, returns empty list.
+    """
+    # Check arguments
+    if not isinstance(action, ClustersAction):
+        raise TypeError
+    if already_allowed_actions is None:
+        already_allowed = []
+    else:
+        already_allowed = already_allowed_actions
+    if not isinstance(already_allowed, list):
+        raise TypeError
+    for x in already_allowed:
+        if not isinstance(x, ClustersAction):
+            raise TypeError
+        if x['status'] != 'ALLOWED':
+            raise ValueError
+
+    result = []
+    for x in self.get_full_list():
+        answer = x.ask(action)
+        if isinstance(answer, ClusterRequest):
+            for a in answer['require']:
+                add = True
+                for x in already_allowed:
+                    if x['verb'] == a['verb']\
+                            and x['subject'] is a['subject']:
+                        add = False
+                if add:
+                    result.expand(
+                            self.get_required_actions(a, already_allowed))
+    return result
+
+def apply_action(self, action):
+    """
+    Performs ClustersAction on this ClustersList.
+    """
+    layer = self.get_cluster_cluster_belongs_to(action['subject'])
+    layer.perform_action(action)
+
+def perform_action(self, action):
+    if not self.has(action['subject']):
+        raise ValueError
+
+    x = action['verb']
+
+    if x == 'REMOVE':
+        self._delete_cluster(action)
+    elif x == 'MOVE':
+        self._move_cluster(action)
+    elif x == 'DECONSTRUCT':
+        self._deconstruct_cluster(action)
+
+def get_trace_to(self, cluster):
+    """
+    Returns trace to cluster, starting from this layer.
+    Example:
+    [TripleBevel, DoubleBevel, DefaultBevel]
+    """
+    result = []
+    f = True
+    c = cluster
+    while f:
+        layer = self.get_cluster_cluster_belongs_to(c)
+        result.append(layer)
+        if layer is self:
+            f = False
+        c = layer
+    result.revert()
+    return result
