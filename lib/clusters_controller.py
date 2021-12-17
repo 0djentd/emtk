@@ -16,8 +16,6 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-import copy
-
 from .clusters_actions import ClusterRequest, ClustersAction
 
 
@@ -26,7 +24,7 @@ class ClustersController():
     This is object responsible for clusters actions buffer.
     """
 
-    def __init__(self, extended_modifiers_list_obj):
+    def __init__(self, extended_modifiers_list_obj, *args, **kwargs):
         self.e = extended_modifiers_list_obj
 
     def get_required_actions(self, action, already_allowed_actions=None):
@@ -97,16 +95,16 @@ class ClustersController():
         layer.perform_action(action)
 
 
-def remove(self, cluster):
-    """
-    Removes cluster from this list.
-    """
-
-    y = ClustersAction('REMOVE', cluster)
-
-    x = ClusterRequest(self, y)
-
-    self.controller.do(x)
+# def remove(self, cluster):
+#     """
+#     Removes cluster from this list.
+#     """
+# 
+#     y = ClustersAction('REMOVE', cluster)
+# 
+#     x = ClusterRequest(self, y)
+# 
+#     self.controller.do(x)
 
 # def ask(self, question):
 #     """
@@ -139,18 +137,18 @@ def remove(self, cluster):
 #     # elif q == 'DECONSTRUCT':
 #     #     return self._dry_deconstruct(x['subject'])
 
-def perform_action(self, action):
-    if action['subject'] not in self._modifiers_list:
-        raise ValueError
-
-    x = action['verb']
-
-    if x == 'REMOVE':
-        self._delete(action)
-    elif x == 'MOVE':
-        self._move(action)
-    elif x == 'DECONSTRUCT':
-        self._deconstruct(action)
+# def perform_action(self, action):
+#     if action['subject'] not in self._modifiers_list:
+#         raise ValueError
+# 
+#     x = action['verb']
+# 
+#     if x == 'REMOVE':
+#         self._delete(action)
+#     elif x == 'MOVE':
+#         self._move(action)
+#     elif x == 'DECONSTRUCT':
+#         self._deconstruct(action)
 
 # def get_trace_to(self, cluster):
 #     """

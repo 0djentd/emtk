@@ -28,6 +28,7 @@ except ModuleNotFoundError:
     _WITH_BPY = False
 
 from ....parser import ClustersParser
+from ....clusters_controller import ClustersController
 
 
 class FirstLayerClustersListTrait():
@@ -51,7 +52,11 @@ class FirstLayerClustersListTrait():
 
     def __init__(self, *args, no_parse=None, **kwargs):
         super().__init__(*args, **kwargs)
+        self._controller = ClustersController(self, *args, **kwargs)
+        self._controller._object = self._object
         self._clusters_parser = ClustersParser(*args, **kwargs)
+        self._clusters_parser._object = self._object
+        self._clusters_parser._controller = self._controller
         if not no_parse:
             self._create_modifiers_list()
 

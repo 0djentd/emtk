@@ -1320,6 +1320,11 @@ class ClustersParser():
         # Set cluster name.
         x[1] = self._cluster_number_format(
                 x[1], clusters_names)
+
+        # Set controller and parser.
+        x[1]._controller = self._controller
+        x[1]._clusters_parser = self
+
         return x
 
     def _cluster_number_format(
