@@ -32,6 +32,15 @@ class ClustersSerializationTests():
         serialized_cluster_2 = serialize_cluster_type(cluster_2)
         self.assertEqual(self.serialized_cluster, serialized_cluster_2)
 
+    def test_serialize_deserialize_progressive(self):
+        cluster_3 = deserialize_cluster_type(self.serialized_cluster)
+        serialized_cluster_3 = serialize_cluster_type(cluster_3)
+
+        cluster_2 = deserialize_cluster_type(serialized_cluster_3)
+        serialized_cluster_2 = serialize_cluster_type(cluster_2)
+
+        self.assertEqual(self.serialized_cluster, serialized_cluster_2)
+
 
 class ClustersSerializationClusterTests(
         ClustersSerializationTests, unittest.TestCase):

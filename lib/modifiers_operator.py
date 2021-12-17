@@ -31,20 +31,16 @@ class ModifiersOperator():
     switching active object, selecting objects by properties.
     """
 
-    # Reference to active object's ModifierList()
+    # Reference to active object's ModifierList
     # m_list
 
     # Selected objects is a list of ModifierList objects for all
-    # selected objects, including active object
-    selected_objects = None
+    # selected objects, including active object.
+    # selected_objects = None
 
-    # Can be used with modifiers clusters
-    _MODIFIERS_OPERATOR_MODIFIER_CLUSTERS = True
-
-    # Dont use extended modifiers list, use object modifiers list
-    _MODIFIERS_OPERATOR_DONT_USE_EXTENDED = False
-
-    def create_objects_modifiers_lists(self, context, cluster_types=None):
+    def create_objects_modifiers_lists(self, context,
+                                       cluster_types=None,
+                                       *args, **kwargs):
         """
         Updates lists of modifiers for selected objects
         on active view layer.
@@ -78,7 +74,6 @@ class ModifiersOperator():
 
         if len(context.view_layer.objects.selected) != 0:
             self.selected_objects = []
-            x = 0
 
             # TODO: this shouldnt be here.
             # Available cluster types
@@ -118,44 +113,21 @@ class ModifiersOperator():
             clusters.append(cluster)
 
             for obj in context.view_layer.objects.selected:
+                # Create extended modifiers list and initialize it for obj
+                obj_mod_list = ExtendedModifiersList(
+                        obj, cluster_types=clusters)
 
-                # Create extended modlist for active object
+                # Create modifiers list for object and parse it
+                result = obj_mod_list.create_modifiers_list(obj)
+                if result is False or result is None:
+                    return False
+
+                # Add modifiers list references
+                self.selected_objects.append(obj_mod_list)
+
+                # Create active object's list reference
                 if obj == context.view_layer.objects.active:
-
-                    # Create extended modifiers list and initialize it for obj
-                    obj_mod_list = ExtendedModifiersList(
-                            obj, cluster_types=clusters)
-
-                    # If using clusters
-                    if self._MODIFIERS_OPERATOR_MODIFIER_CLUSTERS:
-
-                        for y in clusters:
-                            if not obj_mod_list.update_cluster_types_list(y):
-                                self.report(
-                                        {'INFO'},
-                                        "Failed to add new modcluster type")
-
-                    # Create modifiers list for object and parse it
-                    result = obj_mod_list.create_modifiers_list(obj)
-                    if result is False or result is None:
-                        return False
-
-                    # Add modifiers list references
-                    self.selected_objects.append(obj_mod_list)
-                    self.m_list = self.selected_objects[x]
-                else:
-                    # Create clusters list
-                    obj_mod_list = ExtendedModifiersList(
-                            obj, cluster_types=clusters)
-
-                    # Create modifiers list for object and parse it
-                    result = obj_mod_list.create_modifiers_list(obj)
-                    if result is False or result is None:
-                        return False
-
-                    self.selected_objects.append(obj_mod_list)
-                x += 1
-            self.report({'INFO'}, "Finished creating modifier lists")
+                    self.m_list = obj_mod_list
             return True
         else:
             # for finishing modal operators
