@@ -17,21 +17,37 @@
 # ##### END GPL LICENSE BLOCK #####
 
 import unittest
-from lib.dummy_modifiers import DummyBlenderModifier, DummyBlenderObj
+from lib.dummy_modifiers import DummyBlenderObj
 
 
 class DummyModifiersTests(unittest.TestCase):
     def setUp(self):
         self.o = DummyBlenderObj()
+        self.o.modifier_add('Bevel', 'BEVEL')
+        self.o.modifier_add('bevel', 'BOOLEAN')
+        self.o.modifier_add('b', 'BEVEL')
+        self.o.modifier_add('Bevel2', 'ARRAY')
+        self.o.modifier_add('Bevel1', 'BEVEL')
+        self.o_len = len(self.o.modifiers)
 
     def teatDown(self):
         del(self.o)
 
     def test_modifier_add(self):
         x = self.o.modifier_add('Bevel', 'BEVEL')
-        self.assertEqual(self.o.modifiers[0], x)
+        self.assertEqual(self.o.modifiers[self.o_len], x)
 
     def test_modifier_remove(self):
         x = self.o.modifier_add('Bevel', 'BEVEL')
         self.o.modifier_remove(x.name)
-        self.assertEqual(len(self.o.modifiers), 0)
+        self.assertEqual(len(self.o.modifiers), self.o_len)
+
+    def test_duplicate_modifiers(self):
+        result = True
+        y = []
+        for x in self.o.modifiers:
+            if x.name not in y:
+                y.append(x.name)
+            else:
+                result = False
+        self.assertTrue(result)

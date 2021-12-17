@@ -20,7 +20,8 @@ import copy
 
 from ..dummy_modifiers import DummyBlenderModifier
 
-from ..clusters import DefaultModifierCluster, ClusterTrait
+from ..clusters.cluster import ClusterTrait
+from ..clusters.default_modifier_cluster import DefaultModifierCluster
 from ..lists.traits.clusters.active_cluster import ActiveClusterTrait
 from ..lists.traits.modifiers.active_modifier import ActiveModifierTrait
 

@@ -139,14 +139,15 @@ class ObjectClustersListTrait():
                         self._dummy_modifiers.modifier_move_up(
                                 modifier=actual_modifier.name)
                     else:
-                        self._object.move_up(
+                        self._object.modifier_move_up(
                                 modifier=actual_modifier.name)
                 elif direction == 'DOWN':
                     if self._ModifiersList__DUMMY_MODIFIERS:
                         self._dummy_modifiers.modifier_move_down(
                                 modifier=actual_modifier.name)
                     else:
-                        self._object.move_down(
+                        # TODO: this is for dummy modifier
+                        self._object.modifier_move_down(
                                 modifier=actual_modifier.name)
 
         # Move modifier in list.

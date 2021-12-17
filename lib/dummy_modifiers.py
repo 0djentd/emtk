@@ -130,12 +130,12 @@ class DummyBlenderObj():
         self._check_modifiers_names()
         return False
 
-    def modifier_move_up(self, m_name=None):
+    def modifier_move_down(self, modifier=None):
         """
         Moves modifier up.
         Returns True or False.
         """
-        if not isinstance(m_name, str):
+        if not isinstance(modifier, str):
             raise TypeError
 
         if len(self.modifiers) < 2:
@@ -143,7 +143,7 @@ class DummyBlenderObj():
 
         mod = None
         for x in self.modifiers:
-            if x.name == m_name:
+            if x.name == modifier:
                 mod = x
 
         if mod is None:
@@ -151,17 +151,17 @@ class DummyBlenderObj():
 
         i = self.modifiers.index(mod)
         if i < len(self.modifiers) - 1:
-            x = self.modifiers.pop(mod)
+            x = self.modifiers.pop(self.modifiers.index(mod))
             self.modifiers.insert(i+1, x)
         self._check_modifiers_names()
         return True
 
-    def modifier_move_down(self, m_name=None):
+    def modifier_move_up(self, modifier=None):
         """
         Moves modifier down.
         Returns True or False.
         """
-        if not isinstance(m_name, str):
+        if not isinstance(modifier, str):
             raise TypeError
 
         if len(self.modifiers) < 2:
@@ -169,7 +169,7 @@ class DummyBlenderObj():
 
         mod = None
         for x in self.modifiers:
-            if x.name == m_name:
+            if x.name == modifier:
                 mod = x
 
         if mod is None:
@@ -177,7 +177,7 @@ class DummyBlenderObj():
 
         i = self.modifiers.index(mod)
         if i > 0:
-            x = self.modifiers.pop(mod)
+            x = self.modifiers.pop(self.modifiers.index(mod))
             self.modifiers.insert(i-1, x)
         self._check_modifiers_names()
         return True

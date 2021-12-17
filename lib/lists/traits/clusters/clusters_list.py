@@ -16,7 +16,7 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-from ...modifiers_list import ModifiersList
+from ....clusters.cluster import ClusterTrait
 
 
 class ClustersListTrait():
@@ -374,7 +374,7 @@ class ClustersListTrait():
         Also returns this ModifiersClustersList.
         Looks in all clusters.
         """
-        if not isinstance(cluster, ModifiersList):
+        if not isinstance(cluster, ClusterTrait):
             raise TypeError
 
         if cluster in self.get_list():
@@ -478,7 +478,7 @@ class ClustersListTrait():
 
         Returns True or False.
         """
-        if not isinstance(cluster, ModifiersList):
+        if not isinstance(cluster, ClusterTrait):
             raise TypeError
 
         if not isinstance(new_cluster_name, str):
@@ -504,7 +504,7 @@ class ClustersListTrait():
         If cluster has actual modifiers, it will be replaced with
         simpler clusters.
         """
-        if not isinstance(cluster, ModifiersList):
+        if not isinstance(cluster, ClusterTrait):
             raise TypeError
 
         elif self.recursive_has_cluster(cluster):

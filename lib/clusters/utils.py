@@ -19,9 +19,11 @@
 # import copy
 import json
 from .modifiers_cluster import ModifiersCluster
+from .clusters_layer import ClustersLayer
+from .cluster_trait import ClusterTrait
 
 
-def deserialize_cluster_type(serialized_cluster_type, **kwargs):
+def deserialize_cluster_type(serialized_cluster_type, *args, **kwargs):
     """
     Takes string with info about cluster type as argument.
 
@@ -30,7 +32,7 @@ def deserialize_cluster_type(serialized_cluster_type, **kwargs):
     x = json.loads(serialized_cluster_type)
 
     if not isinstance(x, dict):
-        raise TypeError
+        raise TypeError(f'Serialized cluster type should be dict, not {type(serialized_cluster_type)}')
 
     if x['cluster_class'] == 'ModifiersCluster':
         result = ModifiersCluster(
@@ -43,10 +45,24 @@ def deserialize_cluster_type(serialized_cluster_type, **kwargs):
                                   cluster_is_sane=x['cluster_is_sane'],
                                   cluster_createable=x['cluster_createable'],
                                   dont_define_cluster=False,
-                                  **kwargs
+                                  *args, **kwargs
                                   )
+
+    elif x['cluster_class'] == 'ClustersLayer':
+        result = ClustersLayer(
+                               cluster_name=x['cluster_name'],
+                               cluster_type=x['cluster_type'],
+                               modifiers_by_type=x['modifiers_by_types'],
+                               modifiers_by_name=x['modifiers_by_names'],
+                               cluster_tags=x['cluster_tags'],
+                               cluster_priority=x['cluster_priority'],
+                               cluster_is_sane=x['cluster_is_sane'],
+                               cluster_createable=x['cluster_createable'],
+                               dont_define_cluster=False,
+                               *args, **kwargs
+                               )
     else:
-        raise TypeError
+        raise TypeError(f'Cant deserialize {x["cluster_class"]}')
     return result
 
 
@@ -56,6 +72,6 @@ def serialize_cluster_type(cluster_type):
     is enough to create new cluster_type instance
     through deserialize_cluster_type.
     """
-    if not isinstance(cluster_type, ModifiersCluster):
+    if not isinstance(cluster_type, ClusterTrait):
         raise TypeError
     return cluster_type.serialize_this_cluster_type()

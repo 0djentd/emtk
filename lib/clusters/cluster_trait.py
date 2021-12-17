@@ -784,10 +784,17 @@ class ClusterTrait():
     # =======================================
     def serialize_this_cluster_type(self):
         x = {}
-        x.update({'cluster_class': self.__class__})
+
+        if self.has_clusters():
+            c = 'ClustersLayer'
+        else:
+            c = 'ModifiersCluster'
+
+        x.update({'cluster_class': f'{c}'})
         x.update({'cluster_name': self._MODCLUSTER_NAME})
         x.update({'cluster_type': self._MODCLUSTER_TYPE})
-        x.update({'modifiers_by_types': self._MODCLUSTER_MODIFIERS_BY_TYPE})
+        x.update({'modifiers_by_types':
+                 self._MODCLUSTER_MODIFIERS_BY_TYPE})
         x.update({'modifiers_by_names':
                  self._MODCLUSTER_MODIFIERS_BY_POSSIBLE_NAMES})
         x.update({'cluster_tags': self._MODCLUSTER_DEFAULT_TAGS})
