@@ -260,6 +260,20 @@ class ClusterTrait():
     def type(self):
         return self.get_this_cluster_type()
 
+    def remove(self, cluster):
+        """
+        Removes cluster from this list.
+        """
+        y = ClustersAction('REMOVE', cluster)
+        x = ClusterRequest(self, y)
+        self.controller.do(x)
+
+    def apply(self, cluster):
+        pass
+
+    # def move(self, cluster):
+    #     pass
+
     def ask(self, question):
         """
         Returns actions required to allow action, if it is not
@@ -268,28 +282,55 @@ class ClusterTrait():
         """
         if not isinstance(question, ClustersAction):
             raise TypeError
-    
-        if not self.has(x['subject']):
-            return
-    
-        x = question
-    
-        q = x['verb']
-    
-        if self._MODCLUSTER_DYNAMIC is False:
-            x = [ClustersAction(self, 'REMOVE')]
-            return x
-    
-        # if q == 'REMOVE':
-        #     return self._dry_remove(x['subject'])
-        # elif q == 'ADD':
-        #     return self._dry_add(x['object_type'])
-        # elif q == 'MOVE':
-        #     return self._dry_move(x['subject'], x['direction'])
-        # elif q == 'CONSTRUCT':
-        #     return self._dry_construct(x['subject_list'])
-        # elif q == 'DECONSTRUCT':
-        #     return self._dry_deconstruct(x['subject'])
+
+        a = question['verb']
+        actions = []
+
+        # If asking about cluster itself.
+        if question['subject'] is self:
+
+            # If removing this cluster remove its components.
+            if a == 'REMOVE':
+                for y in self._modifiers_list:
+                    actions.append(ClustersAction('REMOVE', y))
+
+        # If asking about its components.
+        elif question['subject'] in self._modifiers_list:
+
+            # Remove cluster with components if not allowed to change it.
+            if self._MODCLUSTER_DYNAMIC is False:
+                for y in self._modifiers_list:
+                    actions.append(ClustersAction('REMOVE', y))
+                actions.append(ClustersAction('REMOVE', self))
+
+            # If removing modifier and it is last modifier.
+            elif a == 'REMOVE':
+                if len(self._modifiers_list) == 1:
+                    x = ClustersAction('REMOVE', self)
+                    actions.append(x)
+
+        if len(actions) > 0:
+            return ClusterRequest(self, actions)
+        else:
+            return []
+
+    def perform_action(self, action):
+        if action['subject'] not in self._modifiers_list:
+            raise ValueError
+
+        x = action['verb']
+
+        if x == 'REMOVE':
+            self._delete(action)
+        elif x == 'MOVE':
+            self._move(action)
+        elif x == 'DECONSTRUCT':
+            self._deconstruct(action)
+        else:
+            raise ValueError
+
+    def _delete(self, action):
+        self._modifiers_list.remove(action['subject'])
 
     # ============================
     # Methods reserved for objects

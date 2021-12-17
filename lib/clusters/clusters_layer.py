@@ -25,6 +25,15 @@ from ..lists.traits.clusters.object_clusters_list\
 from ..lists.traits.clusters.active_cluster import ActiveClusterTrait
 from .cluster import ClusterTrait
 
+from ..clusters_actions import ClustersAction, ClusterRequest
+
+try:
+    import bpy
+    _WITH_BPY = True
+except ModuleNotFoundError:
+    from ..dummy_modifiers import DummyBlenderModifier, DummyBlenderObj
+    _WITH_BPY = False
+
 
 class ClustersLayer(
                     ClusterTrait,

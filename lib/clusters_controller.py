@@ -42,34 +42,35 @@ class ClustersController():
 
         # Check arguments
         if not isinstance(action, ClustersAction):
-            raise TypeError
+            raise TypeError(f'Should be ClustersAction {type(action)}')
         if already_allowed_actions is None:
             already_allowed = []
         else:
             already_allowed = already_allowed_actions
         if not isinstance(already_allowed, list):
-            raise TypeError
+            raise TypeError(f'Should be list {type(already_allowed)}')
         for x in already_allowed:
             if not isinstance(x, ClustersAction):
-                raise TypeError
+                raise TypeError(f'Should be ClustersAction {type(x)}')
             if x['status'] != 'ALLOWED':
                 raise ValueError
 
         result = []
 
         # Get required actions.
-        for x in self.m.get_full_list():
+        for x in self.e.get_full_list():
+            print(f'Asking {x}')
             answer = x.ask(action)
             if isinstance(answer, ClusterRequest):
+                print(f'Got answer {answer["require"]}')
                 for a in answer['require']:
                     add = True
                     for x in already_allowed:
-                        if x['verb'] == a['verb']\
-                                and x['subject'] is a['subject']:
+                        if x['subject'] is a['subject']:
                             add = False
                     # Recursive search for required actions.
                     if add:
-                        result.expand(
+                        result.extend(
                                 self.get_required_actions(a, already_allowed))
 
         # After loop, this action will be allowed, because there will be
@@ -82,8 +83,10 @@ class ClustersController():
         """
         Finds required actions and performs them.
         """
+        actions = []
+        for x in request['require']:
+            actions.extend(self.get_required_actions(x))
 
-        actions = self.get_required_actions(request['request'])
         for x in actions:
             self.apply_action(x)
 

@@ -29,6 +29,7 @@ except ModuleNotFoundError:
 
 from ....parser import ClustersParser
 from ....clusters_controller import ClustersController
+from ....clusters_actions import ClustersAction, ClusterRequest
 
 
 class FirstLayerClustersListTrait():
@@ -203,257 +204,43 @@ class FirstLayerClustersListTrait():
     def update_cluster_types_list(self, cluster):
         return self._clusters_parser.update_cluster_types_list(cluster)
 
-    def _remove_cluster_dry(self, cluster, removed_clusters_dry=0):
+    def ask(self, question):
         """
-        Checks if cluster can be successfully removed.
-        Returns True or False.
+        Returns actions required to allow action, if it is not
+        allowed.
+        Can return empty list.
         """
+        return []
 
-        # Layer cluster belongs to
-        layer = self.get_cluster_cluster_belongs_to(cluster)
-        self._additional_info_log.append(
-                f"Removing {cluster} from {layer}, dry")
-
-        # Can cluster be removed from its layer
-        cluster_can_be_removed = True
-
-        # Should layer be removed as well?
-        remove_layer = False
-
-        # Check if there is such cluster to begin with
-        if not self.recursive_has_cluster(cluster):
+    def remove(self, cluster):
+        """
+        Removes cluster from this list.
+        """
+        if cluster not in self._modifiers_list:
             raise ValueError
 
-        # Check if it can be deleted without deleting layer
-        if not isinstance(layer, FirstLayerClustersListTrait)\
-                or not layer._MODCLUSTER_DYNAMIC:
-            cluster_can_be_removed = False
+        y = ClustersAction('REMOVE', cluster)
+        y['status'] = 'ALLOWED'
+        x = ClusterRequest(self, y)
+        self._controller.do(x)
 
-        self._additional_info_log.append(
-                f"Cluster can be removed? {cluster_can_be_removed}")
+    def perform_action(self, action):
+        if action['subject'] not in self._modifiers_list:
+            raise ValueError
 
-        if cluster_can_be_removed:
+        x = action['verb']
 
-            # Ask cluster if it can be removed
-            if not cluster.cluster_being_removed(self):
-                return False
-
-            # If there any clusters left on layer
-            # If no clusters, it should be removed
-            if layer.get_list_length() - removed_clusters_dry == 1:
-                remove_layer = True
-
-        # If not dynamic, it should be removed
+        if x == 'REMOVE':
+            self._delete(action)
+        elif x == 'MOVE':
+            self._move(action)
+        elif x == 'DECONSTRUCT':
+            self._deconstruct(action)
         else:
-            remove_layer = True
+            raise ValueError
 
-        self._additional_info_log.append(
-                f"Should layer be removed as well? {remove_layer}")
-
-        # Remove layer
-        if remove_layer:
-            if not isinstance(layer, FirstLayerClustersListTrait):
-                x = self.get_cluster_cluster_belongs_to(layer)
-                self._additional_info_log.append(
-                        f"removing layer from {x}")
-                if not self._remove_cluster_dry(layer, 1):
-                    return False
-            else:
-                self._additional_info_log.append(
-                        f"cant remove layer {layer}")
-                return False
-
-        return True
-
-    def remove_cluster(self, cluster):
-        """
-        Removes cluster from this list or nested lists.
-        Cant remove last modifier.
-
-        Returns False, if any errors.
-        Returns True, if deleted cluster.
-        """
-
-        # Layer cluster belongs to
-        layer = self.get_cluster_cluster_belongs_to(cluster)
-        self._additional_info_log.append(f"Removing {cluster} from {layer}")
-
-        # Can cluster be removed from its layer
-        cluster_can_be_removed = False
-
-        # Should layer be removed as well?
-        remove_layer = False
-
-        # Was cluster active before removing
-        removing_active_cluster = False
-
-        # Was cluster last in list
-        removing_active_cluster_last = False
-
-        # Check if there is such cluster to begin with
-        if self.recursive_has_cluster(cluster):
-            # Check if it can be deleted without deleting layer
-            if isinstance(layer, FirstLayerClustersList):
-                cluster_can_be_removed = True
-            elif layer._MODCLUSTER_DYNAMIC:
-                cluster_can_be_removed = True
-
-            self._additional_info_log.append(
-                    f"Cluster can be removed? {cluster_can_be_removed}")
-
-            if cluster_can_be_removed:
-
-                # Check if it is active
-                if layer.active_modifier_get() is cluster:
-                    removing_active_cluster = True
-                    if layer.get_last() == layer.active_modifier_get():
-                        removing_active_cluster_last = True
-
-                # Ask cluster if it can be removed
-                if not cluster.cluster_being_removed(self):
-                    return False
-
-                if cluster.has_clusters():
-                    # Get list of clusters with modifiers
-                    for x in cluster.get_deep_list():
-                        # Get actual modifiers to be removed
-                        # TODO: what is dat?
-                        mods = x.get_full_actual_modifiers_list()
-                        for mod in mods:
-                            # TODO: why this thorws error?
-                            self._object.modifiers.remove(mod)
-                            self._additional_info_log.append(
-                                    f"removing actual modifier {mod}")
-                else:
-                    # Get actual modifiers to be removed
-                    # but get_actual_full_actual_modifiers_list is kinda
-                    # too complicated ya know?
-                    mods = cluster.get_full_actual_modifiers_list()
-                    for mod in mods:
-                        self._object.modifiers.remove(mod)
-                        self._additional_info_log.append(
-                                f"removing actual modifier {mod}")
-
-                # If there any clusters left on layer
-                if layer.get_list_length() > 0:
-                    # Select next cluster, if removing active
-                    if removing_active_cluster:
-                        if removing_active_cluster_last:
-                            layer.active_modifier_set(
-                                    layer.find_previous_any_loop(cluster))
-                        else:
-                            layer.active_modifier_set(
-                                    layer.find_next_any_loop(cluster))
-
-                # If no clusters, it should be removed
-                else:
-                    remove_layer = True
-
-                # Remove cluster
-                layer.get_actual_list().remove(cluster)
-
-            # If not dynamic, it should be removed
-            else:
-                remove_layer = True
-
-            self._additional_info_log.append(
-                    f"Should layer be removed as well? {remove_layer}")
-
-            # Remove layer
-            if remove_layer:
-                if not layer._modifiers_list_obj_list:
-                    x = self.get_cluster_cluster_belongs_to(layer)
-                    self._additional_info_log.append(
-                            f"removing layer from {x}")
-                    if not self.remove_cluster(layer):
-                        return False
-                else:
-                    self._additional_info_log.append(
-                            f"cant remove layer {layer}")
-                    return False
-
-            return True
-        return False
-
-    def apply_cluster(self, cluster):
-        """
-        Applies cluster in this list.
-
-        Returns False, if any errors.
-        This should return FINISHED in operator.
-        Returns True, if applied cluster.
-        """
-        # Check if there is such cluster to begin with
-        if self.recursive_has_cluster(cluster):
-
-            # Ask cluster if it can be applied
-            if not cluster.cluster_being_applied(self):
-                return False
-
-            if cluster.has_clusters():
-                # Get list of clusters with modifiers
-                for z in cluster.get_deep_list():
-
-                    # Get reference to modifiers list
-                    x = z.get_full_actual_modifiers_list()
-
-                    # Get shallow copy to iterate over original modifiers list
-                    # and remove references
-                    x2 = copy.copy(x)
-
-                    # Remove modifiers
-                    for y in x:
-                        e = y.name
-                        if _WITH_BPY:
-                            bpy.ops.object.modifier_apply(modifier=e)
-                        if not _WITH_BPY:
-                            self._object.modifier_apply(modifier=e)
-
-                    # Remove reference to modifiers
-                    for z in x2:
-                        x.remove(z)
-            else:
-                # Get reference to modifiers list
-                x = cluster.get_full_actual_modifiers_list()
-
-                # Get shallow copy to iterate over original modifiers list
-                # and remove references
-                x2 = copy.copy(x)
-
-                # Remove modifiers
-                for y in x:
-                    e = y.name
-                    if _WITH_BPY:
-                        bpy.ops.object.modifier_apply(modifier=e)
-                    if not _WITH_BPY:
-                        self._object.modifier_apply(modifier=e)
-
-                # Remove reference to modifiers
-                for z in x2:
-                    x.remove(z)
-
-            # Remove cluster.
-            # Check if applying modifier will make any nested clusers
-            # have no clusters in them.
-            # TODO: this should ask clusters if they can be removed.
-            layer = self.get_cluster_cluster_belongs_to(cluster)
-            layer_to_remove = self._check_which_layer_should_be_removed(layer)
-
-            # if some layer should be removed too.
-            if layer_to_remove is not False:
-                result = self.remove_cluster(layer_to_remove)
-                # TODO: check first, then apply modifiers?
-                if result is False:
-                    return False
-
-            # if only cluster should be removed.
-            else:
-                result = self.remove_cluster(cluster)
-                if result is False:
-                    return False
-
-            return True
-        return False
+    def _delete(self, action):
+        self._modifiers_list.remove(action['subject'])
 
     def create_modifier(self, m_name, m_type, layer=None, cluster_index=None):
         """

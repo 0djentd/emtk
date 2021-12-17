@@ -66,7 +66,7 @@ class ClustersAction(dict):
 
     def __init__(self, verb, subject):
         if not isinstance(verb, str):
-            raise TypeError
+            raise TypeError(f'{type(verb)}')
 
         if _WITH_BPY:
             modifiers_type = bpy.types.Modifier
@@ -75,7 +75,7 @@ class ClustersAction(dict):
 
         if not isinstance(subject, modifiers_type)\
                 and not isinstance(subject, ModifiersList):
-            raise TypeError
+            raise TypeError(f'{type(subject)}')
 
         self['verb'] = verb
         self['subject'] = subject

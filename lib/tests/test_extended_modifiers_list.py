@@ -174,6 +174,12 @@ class ExtendedModifiersListTests():
                 result.append(x)
         self.assertFalse(result)
 
+    def test_remove_cluster(self):
+        old_l = len(self.e._modifiers_list)
+        self.e.remove(self.e.get_first())
+        new_l = len(self.e._modifiers_list)
+        self.assertEqual(new_l, old_l-1)
+
 
 class ExtendedModifiersListNoModifiersTest(
         ExtendedModifiersListTests, unittest.TestCase):

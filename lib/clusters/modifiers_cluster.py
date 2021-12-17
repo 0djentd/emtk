@@ -23,6 +23,14 @@ from ..lists.traits.modifiers.active_modifier \
         import ActiveModifierTrait
 from ..lists.traits.modifiers.object_modifiers_list \
         import ObjectModifiersListTrait
+from ..clusters_actions import ClustersAction, ClusterRequest
+
+try:
+    import bpy
+    _WITH_BPY = True
+except ModuleNotFoundError:
+    from ..dummy_modifiers import DummyBlenderModifier, DummyBlenderObj
+    _WITH_BPY = False
 
 
 class ModifiersCluster(
@@ -36,3 +44,13 @@ class ModifiersCluster(
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+    def _delete(self, action):
+        if _WITH_BPY:
+            mod_name = action['subject'].name
+            self._modifiers_list.remove(action['subject'])
+            bpy.ops.object.modifier_remove(modifier=mod_name)
+        else:
+            mod_name = action['subject'].name
+            self._modifiers_list.remove(action['subject'])
+            self._object.modifier_remove(modifier=mod_name)
