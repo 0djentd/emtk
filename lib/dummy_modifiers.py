@@ -58,7 +58,8 @@ class DummyBlenderObj():
     modifiers list and other purposes.
     """
 
-    def __init__(self, modifiers=None, *args, **kwargs):
+    def __init__(self, modifiers=None, *args,
+                 saved_clusters_state=None, **kwargs):
 
         if modifiers is None:
             modifiers = []
@@ -72,6 +73,12 @@ class DummyBlenderObj():
 
         self.modifiers = modifiers
         self._check_modifiers_names()
+        self.props = {}
+
+        if saved_clusters_state is not None:
+            if not isinstance(saved_clusters_state, dict):
+                raise TypeError
+            self.props.update(saved_clusters_state)
 
         super().__init__(*args, **kwargs)
 

@@ -41,6 +41,8 @@ class FirstLayerClustersListTrait():
     # version.
     _EXTENDED_MODIFIERS_LIST_NO_COMPAT = [(0, 2, 0), (0, 0, 5)]
 
+    _dummy_modifiers = True
+
     def __init__(self, *args, no_parse=None, **kwargs):
         super().__init__(*args, **kwargs)
         self._clusters_parser = ClustersParser(*args, **kwargs)
@@ -114,13 +116,12 @@ class FirstLayerClustersListTrait():
             modifiers_to_parse.append(modifier)
 
         try:
-            clusters_state = self._object['PreviousClusters']
+            if self._dummy_modifiers:
+                clusters_state = self._object.props['PreviousClusters']
+            else:
+                clusters_state = self._object['PreviousClusters']
             already_parsed = True
         except KeyError:
-            already_parsed = False
-
-        # Assume that object is a dummy object.
-        except TypeError:
             already_parsed = False
 
         # Parse modifiers.
@@ -662,7 +663,7 @@ class FirstLayerClustersListTrait():
                     h.append(mod.type)
                     h.append(mod.name)
                     m.append(h)
-                t = 'LAYER'
+                t = 'CLUSTER'
             else:
                 modifiers = x.get_list()
                 for mod in modifiers:
@@ -672,7 +673,7 @@ class FirstLayerClustersListTrait():
                     h.append(mod.get_this_cluster_type())
                     h.append(mod.get_this_cluster_name())
                     m.append(h)
-                t = 'CLUSTER'
+                t = 'LAYER'
             cluster = [e, m, t]
             result.append(cluster)
         return result
@@ -695,7 +696,12 @@ class FirstLayerClustersListTrait():
         t_1 = time.time()
         y = self.get_clusters_state()
         x = json.dumps(y)
-        self._object[name] = x
+
+        if self._dummy_modifiers:
+            self._object.props[name] = x
+        else:
+            self._object[name] = x
+
         t_2 = time.time()
         t_3 = t_2 - t_1
         self._additional_info_log.append(f"Saved clusters, {t_3}")
@@ -719,7 +725,10 @@ class FirstLayerClustersListTrait():
             raise TypeError
 
         try:
-            previous_clusters = self._object[name]
+            if self._dummy_modifiers:
+                previous_clusters = self._object.props[name]
+            else:
+                previous_clusters = self._object[name]
         except KeyError:
             previous_clusters = False
 
@@ -764,7 +773,11 @@ class FirstLayerClustersListTrait():
 
         y = self.get_modifiers_state()
         x = json.dumps(y)
-        self._object[name] = x
+
+        if self._dummy_modifiers:
+            self._object.props[name] = x
+        else:
+            self._object[name] = x
 
     def load_modifiers_state(self, prop_name=None):
         """
@@ -784,7 +797,10 @@ class FirstLayerClustersListTrait():
             raise TypeError
 
         try:
-            previous_modifiers = self._object[name]
+            if self._dummy_modifiers:
+                previous_modifiers = self._object.props[name]
+            else:
+                previous_modifiers = self._object[name]
         except KeyError:
             previous_modifiers = False
         return previous_modifiers
