@@ -17,12 +17,11 @@
 # ##### END GPL LICENSE BLOCK #####
 
 from .lists.extended_modifiers_list import ExtendedModifiersList
-from .clusters import (
-                       ClusterTrait,
-                       ModifiersCluster,
-                       ClustersLayer,
-                       DefaultModifierCluster
-                       )
+
+from .clusters.cluster_trait import ClusterTrait
+from .clusters.modifiers_cluster import ModifiersCluster
+from .clusters.clusters_layer import ClustersLayer
+from .clusters.default_modifier_cluster import DefaultModifierCluster
 
 
 class ModifiersOperator():
@@ -124,7 +123,7 @@ class ModifiersOperator():
                 if obj == context.view_layer.objects.active:
 
                     # Create extended modifiers list and initialize it for obj
-                    obj_mod_list = ExtendedModifiersList()
+                    obj_mod_list = ExtendedModifiersList(obj)
 
                     # If using clusters
                     if self._MODIFIERS_OPERATOR_MODIFIER_CLUSTERS:

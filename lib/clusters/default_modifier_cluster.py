@@ -16,8 +16,15 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-from ..dummy_modifiers import DummyBlenderModifier
 from .cluster import ClusterTrait
+
+try:
+    import bpy
+    _WITH_BPY = True
+except ModuleNotFoundError:
+    from ..dummy_modifiers import DummyBlenderModifier, DummyBlenderObj
+    _WITH_BPY = False
+
 
 from ..lists.modifiers_list import ModifiersList
 from ..lists.traits.modifiers.active_modifier import ActiveModifierTrait
@@ -65,8 +72,12 @@ class DefaultModifierCluster(
     def modcluster_extra_availability_check(self, mod):
         if len(mod) > 1:
             return False
-        if isinstance(mod[0], ModifiersCluster):
-            return False
+        if _WITH_BPY:
+            if not isinstance(mod[0], bpy.types.Modifier):
+                return False
+        elif not _WITH_BPY:
+            if not isinstance(mod[0], DummyBlenderModifier):
+                return False
         return 'FOUND'
 
     # ===========================
@@ -89,9 +100,14 @@ class DefaultModifierCluster(
                     'DefaultModifierCluster can work only with one modifier.')
 
         # If it is not an actual modifier
-        if not isinstance(modifiers[0], DummyBlenderModifier):
-            raise TypeError(
-                    'DefaultModifierCluster needs actual Blender modifier.')
+        if _WITH_BPY:
+            if not isinstance(modifiers[0], bpy.types.Modifier):
+                raise TypeError(
+                        'DefaultModifierCluster needs actual Blender modifier.')
+        elif not _WITH_BPY:
+            if not isinstance(modifiers[0], DummyBlenderModifier):
+                raise TypeError(
+                        'DefaultModifierCluster needs actual Blender modifier.')
 
         # If havent set modifiers already
         if self._modcluster_initialized is False:

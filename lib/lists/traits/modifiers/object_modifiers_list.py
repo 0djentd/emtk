@@ -17,6 +17,14 @@
 # ##### END GPL LICENSE BLOCK #####
 
 
+try:
+    import bpy
+    _WITH_BPY = True
+except ModuleNotFoundError:
+    from ....dummy_modifiers import DummyBlenderModifier, DummyBlenderObj
+    _WITH_BPY = False
+
+
 class ObjectModifiersListTrait():
     """
     List of object modifiers.
@@ -74,18 +82,18 @@ class ObjectModifiersListTrait():
         ui_t.append("Moving modifiers.")
 
         if direction == 'UP':
-            if self._ModifiersList__DUMMY_MODIFIERS:
-                self._dummy_modifiers.modifier_move_up(
+            if _WITH_BPY:
+                bpy.ops.object.modifier_move_up(
                         modifier=mod.name)
-            else:
-                self._object.move_up(
+            elif not _WITH_BPY:
+                self._object.modifier_move_up(
                         modifier=mod.name)
-        if direction == 'DOWN':
-            if self._ModifiersList__DUMMY_MODIFIERS:
-                self._dummy_modifiers.modifier_move_down(
+        elif direction == 'DOWN':
+            if _WITH_BPY:
+                bpy.ops.object.modifier_move_down(
                         modifier=mod.name)
-            else:
-                self._object.move_down(
+            elif not _WITH_BPY:
+                self._object.modifier_move_down(
                         modifier=mod.name)
 
         # Move modifier in list.

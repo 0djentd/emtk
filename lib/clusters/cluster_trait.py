@@ -18,7 +18,12 @@
 
 import json
 
-from ..dummy_modifiers import DummyBlenderModifier
+try:
+    import bpy
+    _WITH_BPY = True
+except ModuleNotFoundError:
+    from ..dummy_modifiers import DummyBlenderModifier, DummyBlenderObj
+    _WITH_BPY = False
 
 
 class ClusterTrait():
@@ -460,14 +465,22 @@ class ClusterTrait():
         """
 
         self._check_if_cluster_removed()
+
         if not isinstance(modifiers, list):
             raise TypeError
         if len(modifiers) == 0:
             raise ValueError
+
         for x in modifiers:
-            if not isinstance(x, DummyBlenderModifier)\
-                    and not isinstance(x, ClusterTrait):
-                raise TypeError
+            if _WITH_BPY:
+                if not isinstance(x, bpy.types.Modifier)\
+                        and not isinstance(x, ClusterTrait):
+                    raise TypeError
+
+            elif not _WITH_BPY:
+                if not isinstance(x, DummyBlenderModifier)\
+                        and not isinstance(x, ClusterTrait):
+                    raise TypeError
 
         # If havent set modifiers already
         if self._modcluster_initialized is False:
@@ -564,11 +577,13 @@ class ClusterTrait():
         """
 
         for mod in modifiers:
-            if isinstance(mod, DummyBlenderModifier):
-                pass
+            if _WITH_BPY:
+                if isinstance(mod, bpy.types.Modifier):
+                    pass
+            elif not _WITH_BPY:
+                if isinstance(mod, DummyBlenderModifier):
+                    pass
             elif isinstance(mod, ClusterTrait):
-                pass
-            elif isinstance(mod, DummyBlenderModifier):
                 pass
             else:
                 raise TypeError(f'{mod} is not a modifier or cluster.')
@@ -663,7 +678,7 @@ class ClusterTrait():
         self._check_if_cluster_removed()
         # Additional checks
         if not self.check_this_cluster_sanity_custom():
-            return False
+            raise ValueError
 
         # If specified that cluster is sane
         if self._MODCLUSTER_IS_SANE:

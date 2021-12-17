@@ -18,7 +18,12 @@
 
 import copy
 
-from ..dummy_modifiers import DummyBlenderModifier
+try:
+    import bpy
+    _WITH_BPY = True
+except ModuleNotFoundError:
+    from ..dummy_modifiers import DummyBlenderModifier, DummyBlenderObj
+    _WITH_BPY = False
 
 from ..clusters.cluster import ClusterTrait
 from ..clusters.default_modifier_cluster import DefaultModifierCluster
@@ -141,8 +146,13 @@ class ClustersParser():
         if clusters_names is None:
             clusters_names = []
 
+        if _WITH_BPY:
+            modifier_type = bpy.types.Modifier
+        elif not _WITH_BPY:
+            modifier_type = DummyBlenderModifier
+
         # Check if passed list have modifiers
-        if isinstance(modifiers_to_parse[0], DummyBlenderModifier):
+        if isinstance(modifiers_to_parse[0], modifier_type):
 
             # Parse modifiers once.
             if self._ClustersParser__SIMPLE_CLUSTERS:
@@ -401,7 +411,12 @@ class ClustersParser():
             self._additional_info_log.append("No modifiers to parse.")
             return []
 
-        if not isinstance(modifiers_to_parse[0], DummyBlenderModifier):
+        if _WITH_BPY:
+            modifier_type = bpy.types.Modifier
+        elif not _WITH_BPY:
+            modifier_type = DummyBlenderModifier
+
+        if not isinstance(modifiers_to_parse[0], modifier_type):
             self._additional_info_log.append("This is not an actual modifier.")
             return []
 
@@ -581,6 +596,9 @@ class ClustersParser():
             cluster_info = x[0]
             cluster_name = cluster_info[1]
 
+            if not isinstance(cluster_name, str):
+                raise ValueError
+
             # Get cluster with default name that was saved.
             default_cluster_type = self._get_cluster_type_by_name(cluster_name)
             self._additional_info_log.append(f"found {default_cluster_type}")
@@ -605,7 +623,7 @@ class ClustersParser():
                     != cluster_type.get_this_cluster_possible_length():
                 self._additional_info_log.append(
                         "Specified names list length is wrong.")
-                return False
+                raise ValueError
 
             cluster_names = cluster_type._modcluster_specified_modifier_names
             self._additional_info_log.append(
@@ -712,7 +730,13 @@ class ClustersParser():
         self._additional_info_log.append("       CLUSTERS PARSER LOG")
         self._additional_info_log.append("===================================")
         self._additional_info_log.append("Modifiers to parse:")
-        if isinstance(modifiers_to_parse[0], DummyBlenderModifier):
+
+        if _WITH_BPY:
+            modifier_type = bpy.types.Modifier
+        elif not _WITH_BPY:
+            modifier_type = DummyBlenderModifier
+
+        if isinstance(modifiers_to_parse[0], modifier_type):
             for x in modifiers_to_parse:
                 self._additional_info_log.append(f"{x}")
         elif isinstance(modifiers_to_parse[0], ClusterTrait):
@@ -752,7 +776,7 @@ class ClustersParser():
 
             # Get actual modifiers before parsing for sanity check
             for x in modifiers_to_parse:
-                if isinstance(x, DummyBlenderModifier):
+                if isinstance(x, modifier_type):
                     old_actual_modifiers.append(x)
                 else:
                     y = copy.copy(x.get_full_actual_modifiers_list())

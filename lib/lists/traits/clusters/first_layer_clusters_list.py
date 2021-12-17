@@ -20,7 +20,13 @@ import copy
 import json
 import time
 
-from ....dummy_modifiers import DummyBlenderModifier
+try:
+    import bpy
+    _WITH_BPY = True
+except ModuleNotFoundError:
+    from ....dummy_modifiers import DummyBlenderModifier, DummyBlenderObj
+    _WITH_BPY = False
+
 from ....parser import ClustersParser
 
 
@@ -116,10 +122,11 @@ class FirstLayerClustersListTrait():
             modifiers_to_parse.append(modifier)
 
         try:
-            if self._dummy_modifiers:
-                clusters_state = self._object.props['PreviousClusters']
-            else:
+            if _WITH_BPY:
                 clusters_state = self._object['PreviousClusters']
+            elif not _WITH_BPY:
+                clusters_state = self._object.props['PreviousClusters']
+
             already_parsed = True
         except KeyError:
             already_parsed = False
@@ -392,7 +399,10 @@ class FirstLayerClustersListTrait():
                     # Remove modifiers
                     for y in x:
                         e = y.name
-                        self._object.modifier_apply(modifier=e)
+                        if _WITH_BPY:
+                            bpy.ops.object.modifier_apply(modifier=e)
+                        if not _WITH_BPY:
+                            self._object.modifier_apply(modifier=e)
 
                     # Remove reference to modifiers
                     for z in x2:
@@ -408,7 +418,10 @@ class FirstLayerClustersListTrait():
                 # Remove modifiers
                 for y in x:
                     e = y.name
-                    self._object.modifier_apply(modifier=e)
+                    if _WITH_BPY:
+                        bpy.ops.object.modifier_apply(modifier=e)
+                    if not _WITH_BPY:
+                        self._object.modifier_apply(modifier=e)
 
                 # Remove reference to modifiers
                 for z in x2:
@@ -464,7 +477,10 @@ class FirstLayerClustersListTrait():
             for line in ui_t:
                 self._additional_info_log.append(line)
 
-        x = self._object.modifiers.new(m_name, m_type)
+        if _WITH_BPY:
+            x = self._object.modifiers.new(m_name, m_type)
+        elif not _WITH_BPY:
+            x = self._object.modifier_add(m_name, m_type)
 
         z = []
         z.append(x)
@@ -494,8 +510,12 @@ class FirstLayerClustersListTrait():
         """
         modifiers = []
         for x in cluster_type.get_modifiers_sequence():
-            modifiers.append(
-                    self._object.modifiers.new(x[0], x[1]))
+            if _WITH_BPY:
+                modifiers.append(
+                        self._object.modifiers.new(x[0], x[1]))
+            if not _WITH_BPY:
+                modifiers.append(
+                        self._object.modifier_add(x[0], x[1]))
         cluster = copy.deepcopy(cluster_type)
         clusters_names = self.get_full_list_of_cluster_names()
         self._clusters_parser._initialize_cluster(
@@ -593,8 +613,13 @@ class FirstLayerClustersListTrait():
         actual modifier.
         If get_last is True, looks for last actual modifier.
         """
-        if isinstance(modifier_or_cluster, DummyBlenderModifier):
-            mod = modifier_or_cluster
+        # TODO: this probably dont works.
+        if _WITH_BPY:
+            if isinstance(modifier_or_cluster, bpy.types.Modifier):
+                mod = modifier_or_cluster
+        elif not _WITH_BPY:
+            if isinstance(modifier_or_cluster, DummyBlenderModifier):
+                mod = modifier_or_cluster
         else:
             if get_last is False:
                 mod = self.recursive_get_first_actual_modifier(
@@ -697,10 +722,10 @@ class FirstLayerClustersListTrait():
         y = self.get_clusters_state()
         x = json.dumps(y)
 
-        if self._dummy_modifiers:
-            self._object.props[name] = x
-        else:
+        if _WITH_BPY:
             self._object[name] = x
+        elif not _WITH_BPY:
+            self._object.props[name] = x
 
         t_2 = time.time()
         t_3 = t_2 - t_1
@@ -725,10 +750,10 @@ class FirstLayerClustersListTrait():
             raise TypeError
 
         try:
-            if self._dummy_modifiers:
-                previous_clusters = self._object.props[name]
-            else:
+            if _WITH_BPY:
                 previous_clusters = self._object[name]
+            elif not _WITH_BPY:
+                previous_clusters = self._object.props[name]
         except KeyError:
             previous_clusters = False
 
@@ -774,10 +799,10 @@ class FirstLayerClustersListTrait():
         y = self.get_modifiers_state()
         x = json.dumps(y)
 
-        if self._dummy_modifiers:
-            self._object.props[name] = x
-        else:
+        if _WITH_BPY:
             self._object[name] = x
+        elif not _WITH_BPY:
+            self._object.props[name] = x
 
     def load_modifiers_state(self, prop_name=None):
         """
@@ -797,10 +822,10 @@ class FirstLayerClustersListTrait():
             raise TypeError
 
         try:
-            if self._dummy_modifiers:
-                previous_modifiers = self._object.props[name]
-            else:
+            if _WITH_BPY:
                 previous_modifiers = self._object[name]
+            elif not _WITH_BPY:
+                previous_modifiers = self._object.props[name]
         except KeyError:
             previous_modifiers = False
         return previous_modifiers

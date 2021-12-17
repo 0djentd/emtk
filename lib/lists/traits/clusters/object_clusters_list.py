@@ -20,13 +20,12 @@ import copy
 
 from ...modifiers_list import ModifiersList
 
-# Modifiers List utils
-# Modifiers List
-# Modifiers Clusters parser
-# Modifiers Clusters List
-# ----------------------
-# Object Modifiers Clusters List
-# ----------------------
+try:
+    import bpy
+    _WITH_BPY = True
+except ModuleNotFoundError:
+    from ....dummy_modifiers import DummyBlenderModifier, DummyBlenderObj
+    _WITH_BPY = False
 
 
 class ObjectClustersListTrait():
@@ -135,18 +134,17 @@ class ObjectClustersListTrait():
             for actual_modifier in modifiers_to_be_moved:
                 ui_t.append(f"Moving {actual_modifier}")
                 if direction == 'UP':
-                    if self._ModifiersList__DUMMY_MODIFIERS:
-                        self._dummy_modifiers.modifier_move_up(
+                    if _WITH_BPY:
+                        bpy.ops.object.modifier_move_up(
                                 modifier=actual_modifier.name)
                     else:
                         self._object.modifier_move_up(
                                 modifier=actual_modifier.name)
                 elif direction == 'DOWN':
-                    if self._ModifiersList__DUMMY_MODIFIERS:
-                        self._dummy_modifiers.modifier_move_down(
+                    if _WITH_BPY:
+                        bpy.ops.object.modifier_move_down(
                                 modifier=actual_modifier.name)
-                    else:
-                        # TODO: this is for dummy modifier
+                    elif not _WITH_BPY:
                         self._object.modifier_move_down(
                                 modifier=actual_modifier.name)
 
