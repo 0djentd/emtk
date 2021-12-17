@@ -385,22 +385,38 @@ class ClustersListTrait():
     # TODO: rename this
     def get_cluster_cluster_belongs_to(self, cluster):
         """
-        Returns cluster cluster belongs to.
+        Returns cluster cluster or modifier belongs to.
         Also returns this ModifiersClustersList.
         Looks in all clusters.
         """
         self._check_if_cluster_removed()
-        if not isinstance(cluster, ClusterTrait):
-            raise TypeError
 
         if cluster in self.get_list():
             return self
 
-        y = self.get_clusters_clusters_list()
+        y = self.get_full_list()
         for x in y:
             if cluster in x.get_list():
                 return x
         raise ValueError
+
+    def get_trace_to(self, cluster):
+        """
+        Returns trace to cluster, starting from this layer.
+        Example:
+        [TripleBevel, DoubleBevel, DefaultBevel]
+        """
+        result = []
+        f = True
+        c = cluster
+        while f:
+            layer = self.get_cluster_cluster_belongs_to(c)
+            result.append(layer)
+            if layer is self:
+                f = False
+            c = layer
+        result.revert()
+        return result
 
     # ==============================
     # Methods based on get_deep_list

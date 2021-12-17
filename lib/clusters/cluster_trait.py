@@ -25,6 +25,8 @@ except ModuleNotFoundError:
     from ..dummy_modifiers import DummyBlenderModifier, DummyBlenderObj
     _WITH_BPY = False
 
+from ..clusters_controller import ClustersAction, ClusterRequest
+
 
 class ClusterTrait():
     """
@@ -257,6 +259,37 @@ class ClusterTrait():
     @property
     def type(self):
         return self.get_this_cluster_type()
+
+    def ask(self, question):
+        """
+        Returns actions required to allow action, if it is not
+        allowed.
+        Can return empty list.
+        """
+        if not isinstance(question, ClustersAction):
+            raise TypeError
+    
+        if not self.has(x['subject']):
+            return
+    
+        x = question
+    
+        q = x['verb']
+    
+        if self._MODCLUSTER_DYNAMIC is False:
+            x = [ClustersAction(self, 'REMOVE')]
+            return x
+    
+        # if q == 'REMOVE':
+        #     return self._dry_remove(x['subject'])
+        # elif q == 'ADD':
+        #     return self._dry_add(x['object_type'])
+        # elif q == 'MOVE':
+        #     return self._dry_move(x['subject'], x['direction'])
+        # elif q == 'CONSTRUCT':
+        #     return self._dry_construct(x['subject_list'])
+        # elif q == 'DECONSTRUCT':
+        #     return self._dry_deconstruct(x['subject'])
 
     # ============================
     # Methods reserved for objects
