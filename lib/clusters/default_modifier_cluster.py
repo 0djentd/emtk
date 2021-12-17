@@ -102,12 +102,10 @@ class DefaultModifierCluster(
         # If it is not an actual modifier
         if _WITH_BPY:
             if not isinstance(modifiers[0], bpy.types.Modifier):
-                raise TypeError(
-                        'DefaultModifierCluster needs actual Blender modifier.')
+                raise TypeError('Cluster needs actual Blender modifier.')
         elif not _WITH_BPY:
             if not isinstance(modifiers[0], DummyBlenderModifier):
-                raise TypeError(
-                        'DefaultModifierCluster needs actual Blender modifier.')
+                raise TypeError('Cluster needs actual Blender modifier.')
 
         # If havent set modifiers already
         if self._modcluster_initialized is False:

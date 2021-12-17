@@ -402,18 +402,18 @@ class ExtendedModifiersListLayersTests(
         self.e = ExtendedModifiersList(self.o, cluster_types=clusters)
 
     def test_first_cluster_is_double_bevel(self):
-        self.assertEquals(self.e.get_first().type, 'BEVEL_CLUSTER')
+        self.assertEqual(self.e.get_first().type, 'BEVEL_CLUSTER')
 
     def test_first_cluster_has_two_triple_bevels(self):
-        self.assertEquals(
+        self.assertEqual(
                 self.e.get_first().get_first().type, 'TRIPLE_BEVEL')
 
     def test_triple_bevel_has_bevel(self):
-        self.assertEquals(
+        self.assertEqual(
                 self.e.get_first().get_first().get_first().type, 'BEVEL')
 
     def test_triple_bevel_has_three_modifiers(self):
-        self.assertEquals(
+        self.assertEqual(
                 self.e.get_first().get_first().get_list_length(), 3)
 
 

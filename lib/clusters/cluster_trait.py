@@ -434,10 +434,9 @@ class ClusterTrait():
         else:
             raise TypeError
 
-    # TODO: this is not correct implementation
     def remove_tag_from_this_cluster(self, custom_tag):
         """
-        Remove this ModifiersCluster's custom tags.
+        Remove this ModifiersCluster's custom tag.
         Takes string as an argument.
         Returns True if successfully removed tag.
         Returns False if no such tag or cant remove.
@@ -460,8 +459,8 @@ class ClusterTrait():
     # ===========================
     def set_this_cluster_modifiers(self, modifiers):
         """
-        Replaces list of modifiers with modifiers
-        Returns True or False, if cluster is not editable
+        Replaces list of modifiers with modifiers.
+        Returns True or False, if cluster is not editable.
         """
 
         self._check_if_cluster_removed()
@@ -489,7 +488,7 @@ class ClusterTrait():
             self._mod = self._modifiers_list[0]
             return True
 
-        # If allowed to reset modifiers
+        # Or allowed to reset modifiers
         elif self._MODCLUSTER_DYNAMIC:
             self._modifiers_list = modifiers
             self._mod = self._modifiers_list[0]
@@ -535,6 +534,8 @@ class ClusterTrait():
         for x in r:
             self._sorting_rules.remove(x)
             removed_sorting_rule = True
+        if removed_sorting_rule is False:
+            raise ValueError
         return removed_sorting_rule
 
     def get_sorting_rules(self):
@@ -672,10 +673,10 @@ class ClusterTrait():
         overengeneered.
 
         Returns True if not found any errors.
-        Returns False if something is wrong.
         """
 
         self._check_if_cluster_removed()
+
         # Additional checks
         if not self.check_this_cluster_sanity_custom():
             raise ValueError
@@ -721,6 +722,7 @@ class ClusterTrait():
         Returns list with info about this cluster visability
         """
         self._check_if_cluster_removed()
+
         y1 = []
         y2 = []
         y3 = []
@@ -755,6 +757,7 @@ class ClusterTrait():
         Takes list as an argument.
         """
         self._check_if_cluster_removed()
+
         if vis_settings is None:
             vis_settings = [None, None, None, None]
 
