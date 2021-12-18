@@ -38,7 +38,7 @@ class ClustersController():
 
     def do(self, request):
         """
-        Finds required actions and performs them.
+        Finds actions required for request actions, solves and performs them.
         """
 
         for x in request.require:
@@ -48,16 +48,29 @@ class ClustersController():
         for x in request.require:
             actions.extend(self.get_required_actions(x))
 
-        for x in actions:
-            self.e.check_obj_ref(x.subject)
-
         actions = self._sort_actions_by_layer_depth(actions)
 
         for x in actions:
+            self._apply_action(x)
+
+    def check_action_solving(self, request, try_actions):
+        """
+        Checks if request will have try_actions in it after solving.
+
+        Returns False, if it has try_actions.
+        Returns True, if not.
+        """
+        for x in request.require:
             self.e.check_obj_ref(x.subject)
 
+        actions = []
+        for x in request.require:
+            actions.extend(self.get_required_actions(x))
         for x in actions:
-            self._apply_action(x)
+            for t in try_actions:
+                if x == t:
+                    return False
+        return True
 
     def _sort_actions_by_layer_depth(self, actions):
         """
@@ -85,16 +98,12 @@ class ClustersController():
     # ============================
     def get_required_actions(self, action):
         """
-        Asks all clusters if action is allowed.
-
-        Returns actions that are required to allow it by
+        Returns actions that are required to allow action by
         all clusters.
         """
 
         if not isinstance(action, ClustersAction):
             raise TypeError(f'Should be ClustersAction {type(action)}')
-
-        print(f'Trying to recursively get actions required for {action}')
 
         self.e.check_obj_ref(action.subject)
 
@@ -109,10 +118,10 @@ class ClustersController():
 
         while len(self.required_actions) > 0:
 
-            print('')
-            print(f'Recursive action solver iteration {i}')
-            print(f'Already required actions is {self.required_actions}')
-            print(f'Already allowed actions is {self.allowed_actions}')
+            # print('')
+            # print(f'Recursive action solver iteration {i}')
+            # print(f'Already required actions is {self.required_actions}')
+            # print(f'Already allowed actions is {self.allowed_actions}')
 
             # Allowed action is an action that will be performed
             # to allow initial action. It is an allowed action too.
@@ -136,12 +145,10 @@ class ClustersController():
                 # This action can be allowed.
                 if len(a) == 0:
                     self.allowed_actions.append(x)
-                    print(f'Allowed {x}')
                     remove_req_actions.append(x)
 
                 # This action requires additional actions.
                 else:
-                    print(f'Not allowed {x}')
                     add_req_actions.extend(a)
 
             for x in remove_req_actions:
@@ -162,7 +169,7 @@ class ClustersController():
 
             i += 1
             if i > 100:
-                raise ValueError('Depth limit')
+                raise ValueError('Clusters actions solver depth limit')
 
         result = self.allowed_actions
         self.allowed_actions = []
@@ -174,7 +181,6 @@ class ClustersController():
             raise ValueError
         if len(result) == 0:
             raise ValueError
-        print(f'Actions is {result}')
         return result
 
     def _get_required_actions_recursive(self, action):
@@ -208,10 +214,8 @@ class ClustersController():
 
         # Ask clusters.
         for x in clusters:
-            print(f'Asking {x}')
             answer = x.ask(action)
             if isinstance(answer, ClusterRequest):
-                print(f'Got answer {answer.require}')
                 result.extend(answer.require)
 
         # Remove duplicates.
@@ -224,77 +228,3 @@ class ClustersController():
         for x in remove:
             result.remove(x)
         return result
-
-# def remove(self, cluster):
-#     """
-#     Removes cluster from this list.
-#     """
-# 
-#     y = ClustersAction('REMOVE', cluster)
-# 
-#     x = ClusterRequest(self, y)
-# 
-#     self.controller.do(x)
-
-# def ask(self, question):
-#     """
-#     Returns actions required to allow action, if it is not
-#     allowed.
-#     Can return empty list.
-#     """
-#     if not isinstance(question, ClustersAction):
-#         raise TypeError
-# 
-#     if not self.has(x['subject']):
-#         return
-# 
-#     x = question
-# 
-#     q = x.verb
-# 
-#     if self._MODCLUSTER_DYNAMIC is False:
-#         x = [ClustersAction(self, 'REMOVE')]
-#         return x
-# 
-#     # if q == 'REMOVE':
-#     #     return self._dry_remove(x['subject'])
-#     # elif q == 'ADD':
-#     #     return self._dry_add(x['object_type'])
-#     # elif q == 'MOVE':
-#     #     return self._dry_move(x['subject'], x['direction'])
-#     # elif q == 'CONSTRUCT':
-#     #     return self._dry_construct(x['subject_list'])
-#     # elif q == 'DECONSTRUCT':
-#     #     return self._dry_deconstruct(x['subject'])
-
-# def perform_action(self, action):
-#     if action['subject'] not in self._modifiers_list:
-#         raise ValueError
-# 
-#     x = action.verb
-# 
-#     if x == 'REMOVE':
-#         self._delete(action)
-#     elif x == 'MOVE':
-#         self._move(action)
-#     elif x == 'DECONSTRUCT':
-#         self._deconstruct(action)
-
-# def get_trace_to(self, cluster):
-#     """
-#     Returns trace to cluster, starting from this layer.
-#     Example:
-#     [TripleBevel, DoubleBevel, DefaultBevel]
-#     """
-#
-#     result = []
-#     f = True
-#     c = cluster
-#     while f:
-#         layer = self.get_cluster_cluster_belongs_to(c)
-#         result.append(layer)
-#         if layer is self:
-#             f = False
-#         c = layer
-#     result.revert()
-#     return result

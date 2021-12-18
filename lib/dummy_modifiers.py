@@ -128,7 +128,7 @@ class DummyBlenderObj():
             self.modifiers.remove(mod_to_remove)
             return True
         self._check_modifiers_names()
-        return False
+        raise ValueError
 
     def modifier_move_down(self, modifier=None):
         """
@@ -147,7 +147,7 @@ class DummyBlenderObj():
                 mod = x
 
         if mod is None:
-            return False
+            raise ValueError
 
         i = self.modifiers.index(mod)
         if i < len(self.modifiers) - 1:
@@ -173,7 +173,7 @@ class DummyBlenderObj():
                 mod = x
 
         if mod is None:
-            return False
+            raise ValueError
 
         i = self.modifiers.index(mod)
         if i > 0:

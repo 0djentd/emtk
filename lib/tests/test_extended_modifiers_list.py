@@ -573,7 +573,7 @@ class ClusterRemoveTests(unittest.TestCase):
         old_l = len(self.o.modifiers)
         self.e.remove(self.e.get_last())
         new_l = len(self.o.modifiers)
-        self.assertEqual(new_l, old_l-3)
+        self.assertEqual(new_l, old_l-1)
 
 
 class ClusterRemoveMultilayerTests(unittest.TestCase):
@@ -607,20 +607,20 @@ class ClusterRemoveMultilayerTests(unittest.TestCase):
         new_l = len(self.e._modifiers_list)
         self.assertEqual(new_l, old_l-1)
 
-    # def test_remove_modifiers(self):
-    #     old_l = len(self.o.modifiers)
-    #     self.e.remove(self.e.get_first())
-    #     new_l = len(self.o.modifiers)
-    #     self.assertEqual(new_l, old_l-6)
+    def test_remove_modifiers(self):
+        old_l = len(self.o.modifiers)
+        self.e.remove(self.e.get_first())
+        new_l = len(self.o.modifiers)
+        self.assertEqual(new_l, old_l-2)
 
-    # def test_remove_cluster_last(self):
-    #     old_l = len(self.e._modifiers_list)
-    #     self.e.remove(self.e.get_last())
-    #     new_l = len(self.e._modifiers_list)
-    #     self.assertEqual(new_l, old_l-1)
+    def test_remove_cluster_last(self):
+        old_l = len(self.e._modifiers_list)
+        self.e.remove(self.e.get_last())
+        new_l = len(self.e._modifiers_list)
+        self.assertEqual(new_l, old_l-1)
 
-    # def test_remove_modifiers_last(self):
-    #     old_l = len(self.o.modifiers)
-    #     self.e.remove(self.e.get_last())
-    #     new_l = len(self.o.modifiers)
-    #     self.assertEqual(new_l, old_l-3)
+    def test_remove_modifiers_last(self):
+        old_l = len(self.o.modifiers)
+        self.e.remove(self.e.get_last())
+        new_l = len(self.o.modifiers)
+        self.assertEqual(new_l, old_l-1)
