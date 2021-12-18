@@ -30,20 +30,35 @@ class ClustersController():
     def __init__(self, extended_modifiers_list_obj, *args, **kwargs):
         self.e = extended_modifiers_list_obj
 
+    def do(self, request):
+        """
+        Finds required actions and performs them.
+        """
+        actions = []
+        for x in request['require']:
+            actions.extend(self.get_required_actions(x))
+
+        for x in actions:
+            self.apply_action(x)
+
+    def apply_action(self, action):
+        """
+        Performs ClustersAction on this ClustersList.
+        """
+        layer = self.e.get_cluster_cluster_belongs_to(action['subject'])
+        layer.perform_action(action)
+
+    # ============================
+    # CLUSTERS ACTIONS SOLVER
+    # ============================
     def get_required_actions(self, action):
         """
         Asks all clusters if action is allowed.
 
-        already_allowed_actions is a list of actions that
-        should not be added to result.
-
         Returns actions that are required to allow it by
         all clusters.
-
-        If action is allowed by all clusters, returns empty list.
         """
 
-        # Check arguments
         if not isinstance(action, ClustersAction):
             raise TypeError(f'Should be ClustersAction {type(action)}')
 
@@ -55,20 +70,29 @@ class ClustersController():
         i = 0
 
         while len(self.required_actions) > 0:
-            if i > 20:
-                break
 
             print(f'Recursive action solver iteration {i}')
             print(f'Already required actions is {self.required_actions}')
             print(f'Already allowed actions is {self.allowed_actions}')
 
+            # Allowed action is an action that will be performed
+            # to allow initial action. It is an allowed action too.
+            # It requires no additional actions.
+
+            # Required action is an action that will be performed,
+            # but still not checked for being allowed
+            # by all clusters.
+            # Basically, this is an action that can potentially require
+            # additional actions.
+
             # List of changes after iteration
             remove_req_actions = []
             add_req_actions = []
 
-            # Get new list of changes for already existing actions req
+            # Get new list of required actions for
+            # already existing required actions
             for x in self.required_actions:
-                a = self.get_actions(x)
+                a = self._get_required_actions_recursive(x)
 
                 # This action can be allowed.
                 if len(a) == 0:
@@ -76,32 +100,43 @@ class ClustersController():
                     print(f'Allowed {x}')
                     remove_req_actions.append(x)
 
-                # This action requires additional actions
+                # This action requires additional actions.
                 else:
                     print(f'Not allowed {x}')
-                    # list of new actions
                     add_req_actions.extend(a)
 
             for x in remove_req_actions:
                 self.required_actions.remove(x)
 
             for x in add_req_actions:
+
+                # Dont add duplicates
                 already_there = False
                 for y in self.required_actions:
                     if y['verb'] == x['verb']\
                             and y['subject'] is x['subject']:
+                        raise ValueError
                         already_there = True
                 if already_there is False:
                     self.required_actions.append(x)
 
+            i += 1
+            if i > 100:
+                raise ValueError
+
         result = self.allowed_actions
         self.allowed_actions = []
+
+        # Check result
         if len(self.required_actions) != 0:
+            raise ValueError
+        if len(result) == 0:
             raise ValueError
         print(f'Actions is {result}')
         return result
 
-    def get_actions(self, action):
+    def _get_required_actions_recursive(self, action):
+
         # Check arguments
         if not isinstance(action, ClustersAction):
             raise TypeError(f'Should be ClustersAction {type(action)}')
@@ -122,34 +157,17 @@ class ClustersController():
         if len(clusters) == 0:
             raise ValueError
 
+        # Remove duplicates.
         remove = []
         for x in result:
             for y in self.required_actions:
                 if x == y:
                     remove.append(x)
+
         for x in remove:
             print('Removing action from result')
             result.remove(x)
         return result
-
-    def do(self, request):
-        """
-        Finds required actions and performs them.
-        """
-        actions = []
-        for x in request['require']:
-            actions.extend(self.get_required_actions(x))
-
-        for x in actions:
-            self.apply_action(x)
-
-    def apply_action(self, action):
-        """
-        Performs ClustersAction on this ClustersList.
-        """
-        layer = self.e.get_cluster_cluster_belongs_to(action['subject'])
-        layer.perform_action(action)
-
 
 # def remove(self, cluster):
 #     """
