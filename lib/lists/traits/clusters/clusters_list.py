@@ -399,11 +399,25 @@ class ClustersListTrait():
         if cluster in self._modifiers_list:
             return self
 
-        y = self.get_full_list()
-
-        for x in y:
+        g = self.get_full_list()
+        for x in g:
             if cluster in x.get_list():
                 return x
+
+        # TODO: why tho
+        # for x in self.get_full_list():
+        #     for y in x.get_list():
+        #         if y.name == cluster.name:
+        #             return x
+
+        # for x in self.get_deep_list():
+        #     for y in x.get_list():
+        #         if y.name == cluster.name:
+        #             return x
+
+        # for y in self.get_list():
+        #     if y.name == cluster.name:
+        #         return self
         raise ValueError
 
     def get_trace_to(self, cluster):

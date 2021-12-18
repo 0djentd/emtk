@@ -113,16 +113,16 @@ class DummyBlenderObj():
                     raise ValueError
             y.append(x.name)
 
-    def modifier_remove(self, m_name):
+    def modifier_remove(self, modifier=None):
         """
         Removes modifier.
         """
-        if not isinstance(m_name, str):
+        if not isinstance(modifier, str):
             raise TypeError
 
         mod_to_remove = None
         for x in self.modifiers:
-            if x.name == m_name:
+            if x.name == modifier:
                 mod_to_remove = x
         if mod_to_remove is not None:
             self.modifiers.remove(mod_to_remove)

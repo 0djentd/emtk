@@ -525,7 +525,7 @@ class ExtendedModifiersListLayersMovingTests(
         self.assertEqual(self.moved_cluster_2, self.e.get_by_index(1))
 
 
-class ClusterRemoveTests(ExtendedModifiersListTests, unittest.TestCase):
+class ClusterRemoveTests(unittest.TestCase):
     def setUp(self):
         self.o = DummyBlenderObj()
         mods = []
@@ -545,6 +545,10 @@ class ClusterRemoveTests(ExtendedModifiersListTests, unittest.TestCase):
                                    )
         clusters.append(cluster)
         self.e = ExtendedModifiersList(self.o, cluster_types=clusters)
+
+    def tearDown(self):
+        del(self.o)
+        del(self.e)
 
     def test_remove_cluster(self):
         old_l = len(self.e._modifiers_list)

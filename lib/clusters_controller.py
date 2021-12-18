@@ -37,8 +37,7 @@ class ClustersController():
         actions = []
         for x in request['require']:
             actions.extend(self.get_required_actions(x))
-
-        for x in actions:
+        for x in reversed(actions):
             self.apply_action(x)
 
     def apply_action(self, action):
@@ -111,11 +110,11 @@ class ClustersController():
             for x in add_req_actions:
 
                 # Dont add duplicates
+                # TODO: should also check in allowed actions?
                 already_there = False
                 for y in self.required_actions:
                     if y['verb'] == x['verb']\
-                            and y['subject'] is x['subject']:
-                        raise ValueError
+                            and y['subject'].name == x['subject'].name:
                         already_there = True
                 if already_there is False:
                     self.required_actions.append(x)
@@ -132,6 +131,22 @@ class ClustersController():
             raise ValueError
         if len(result) == 0:
             raise ValueError
+        print(f'Actions is {result}')
+
+        # Remove duplicates
+        remove = []
+        for x in result:
+            d = 0
+            for y in result:
+                if y['verb'] == x['verb']\
+                        and y['subject'].name == x['subject'].name:
+                    if d < 1:
+                        d += 1
+                    elif x not in remove:
+                        remove.append(y)
+        for x in remove:
+            result.remove(x)
+
         print(f'Actions is {result}')
         return result
 
