@@ -229,11 +229,7 @@ class FirstLayerClustersListTrait():
         self._controller.do(x)
 
     def perform_action(self, action):
-        f = False
-        for x in self._modifiers_list:
-            if action['subject'].name == x.name:
-                f = True
-        if not f:
+        if action['subject'] not in self._modifiers_list:
             raise ValueError(f"{action['subject']}")
 
         x = action['verb']
@@ -248,10 +244,11 @@ class FirstLayerClustersListTrait():
             raise ValueError
 
     def _delete(self, action):
-        for x in self._modifiers_list:
-            if action['subject'].name == x.name:
-                f = x
-        self._modifiers_list.remove(f)
+        self._modifiers_list.remove(action['subject'])
+
+    def recursive_has_object(self, obj):
+        return obj in self.get_full_list()\
+                and obj in self.get_full_actual_modifiers_list()
 
     def create_modifier(self, m_name, m_type, layer=None, cluster_index=None):
         """

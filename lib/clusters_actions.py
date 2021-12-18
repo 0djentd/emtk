@@ -39,6 +39,7 @@ class ClusterRequest(dict):
     """
 
     def __init__(self, obj, require):
+        super().__init__()
         if isinstance(require, list):
             for x in require:
                 if not isinstance(x, ClustersAction):
@@ -70,6 +71,7 @@ class ClustersAction(dict):
     """
 
     def __init__(self, verb, subject):
+        super().__init__()
         if not isinstance(verb, str):
             raise TypeError(f'{type(verb)}')
 

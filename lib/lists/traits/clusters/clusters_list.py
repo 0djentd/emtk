@@ -404,20 +404,6 @@ class ClustersListTrait():
             if cluster in x.get_list():
                 return x
 
-        # TODO: why tho
-        # for x in self.get_full_list():
-        #     for y in x.get_list():
-        #         if y.name == cluster.name:
-        #             return x
-
-        # for x in self.get_deep_list():
-        #     for y in x.get_list():
-        #         if y.name == cluster.name:
-        #             return x
-
-        # for y in self.get_list():
-        #     if y.name == cluster.name:
-        #         return self
         raise ValueError
 
     def get_trace_to(self, cluster):

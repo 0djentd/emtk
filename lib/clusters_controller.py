@@ -37,7 +37,10 @@ class ClustersController():
         actions = []
         for x in request['require']:
             actions.extend(self.get_required_actions(x))
-        for x in reversed(actions):
+
+        actions = self.sort_actions(actions)
+
+        for x in actions:
             self.apply_action(x)
 
     def apply_action(self, action):
@@ -114,7 +117,7 @@ class ClustersController():
                 already_there = False
                 for y in self.required_actions:
                     if y['verb'] == x['verb']\
-                            and y['subject'].name == x['subject'].name:
+                            and y['subject'] is x['subject']:
                         already_there = True
                 if already_there is False:
                     self.required_actions.append(x)
@@ -139,7 +142,7 @@ class ClustersController():
             d = 0
             for y in result:
                 if y['verb'] == x['verb']\
-                        and y['subject'].name == x['subject'].name:
+                        and y['subject'] is x['subject']:
                     if d < 1:
                         d += 1
                     elif x not in remove:
@@ -156,6 +159,8 @@ class ClustersController():
         if not isinstance(action, ClustersAction):
             raise TypeError(f'Should be ClustersAction {type(action)}')
         if action['subject'] is self.e:
+            raise ValueError
+        if not self.e.recursive_has_object(action['subject']):
             raise ValueError
 
         result = []
@@ -176,13 +181,26 @@ class ClustersController():
         remove = []
         for x in result:
             for y in self.required_actions:
-                if x == y:
+                if y['verb'] == x['verb']\
+                        and y['subject'] is x['subject']:
                     remove.append(x)
 
         for x in remove:
             print('Removing action from result')
             result.remove(x)
         return result
+
+    def sort_actions(self, actions):
+        f = []
+        s = []
+        for x in actions:
+            if x in self.e.get_full_actual_modifiers_list():
+                f.append(x)
+            else:
+                s.append(x)
+        result = f + s
+        return result
+
 
 # def remove(self, cluster):
 #     """
