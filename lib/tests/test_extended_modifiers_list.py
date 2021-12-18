@@ -174,12 +174,6 @@ class ExtendedModifiersListTests():
                 result.append(x)
         self.assertFalse(result)
 
-    def test_remove_cluster(self):
-        old_l = len(self.e._modifiers_list)
-        self.e.remove(self.e.get_first())
-        new_l = len(self.e._modifiers_list)
-        self.assertEqual(new_l, old_l-1)
-
 
 class ExtendedModifiersListNoModifiersTest(
         ExtendedModifiersListTests, unittest.TestCase):
@@ -521,3 +515,37 @@ class ExtendedModifiersListLayersMovingTests(
 
     def test_moved_cluster_down(self):
         self.assertEqual(self.moved_cluster_2, self.e.get_by_index(1))
+
+
+class ClusterRemoveTests(ExtendedModifiersListTests, unittest.TestCase):
+    def setUp(self):
+        self.o = DummyBlenderObj()
+        mods = []
+        mods.append(self.o.modifier_add('Bevel', 'BEVEL'))
+        mods.append(self.o.modifier_add('Bevel', 'BEVEL'))
+        mods.append(self.o.modifier_add('Bevel', 'BEVEL'))
+        mods.append(self.o.modifier_add('Bevel', 'BEVEL'))
+        clusters = []
+        cluster = ModifiersCluster(cluster_name='Triple Bevel',
+                                   cluster_type='TRIPLE_BEVEL',
+                                   modifiers_by_type=[
+                                       ['BEVEL'], ['BEVEL'], ['BEVEL']],
+                                   modifiers_by_name=[
+                                       ['ANY'], ['ANY'], ['ANY']],
+                                   cluster_priority=0,
+                                   cluster_createable=True,
+                                   )
+        clusters.append(cluster)
+        self.e = ExtendedModifiersList(self.o, cluster_types=clusters)
+
+    def test_remove_cluster(self):
+        old_l = len(self.e._modifiers_list)
+        self.e.remove(self.e.get_first())
+        new_l = len(self.e._modifiers_list)
+        self.assertEqual(new_l, old_l-1)
+
+    def test_remove_modifiers(self):
+        old_l = len(self.o.modifiers)
+        self.e.remove(self.e.get_first())
+        new_l = len(self.o.modifiers)
+        self.assertEqual(new_l, old_l-3)

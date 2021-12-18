@@ -85,6 +85,9 @@ class ClustersListTrait():
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+    def __repr__(self):
+        return f'Extended Modifiers List {self.get_full_list()}'
+
     def _check_if_cluster_removed(self):
         pass
 
@@ -391,13 +394,21 @@ class ClustersListTrait():
         """
         self._check_if_cluster_removed()
 
-        if cluster in self.get_list():
+        for x in self._modifiers_list:
+            if x.name == cluster.name:
+                return self
+
+        if cluster in self._modifiers_list:
             return self
 
         y = self.get_full_list()
         for x in y:
             if cluster in x.get_list():
                 return x
+        for x in y:
+            for z in x.get_list():
+                if cluster.name == z.name:
+                    return x
         raise ValueError
 
     def get_trace_to(self, cluster):
@@ -406,6 +417,9 @@ class ClustersListTrait():
         Example:
         [TripleBevel, DoubleBevel, DefaultBevel]
         """
+        if cluster is self:
+            raise ValueError
+
         result = []
         f = True
         c = cluster
@@ -415,7 +429,7 @@ class ClustersListTrait():
             if layer is self:
                 f = False
             c = layer
-        result.revert()
+        result.reverse()
         return result
 
     # ==============================

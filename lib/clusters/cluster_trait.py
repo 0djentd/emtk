@@ -220,14 +220,14 @@ class ClusterTrait():
             raise ValueError
 
     def __str__(self):
-        result = f"{self.get_this_cluster_default_name()} cluster, "
-        result = result + f"{len(self._modifiers_list)} "
-        if self.has_clusters():
-            result = result + "clusters, "
-        else:
-            result = result + "modifiers, "
-        result = result + f"index {self.modcluster_index}, "
-        result = result + f"tags {self.get_this_cluster_tags()}, "
+        result = f"{self.get_this_cluster_default_name()}"
+        # result = result + f"{len(self._modifiers_list)} "
+        # if self.has_clusters():
+        #     result = result + "clusters, "
+        # else:
+        #     result = result + "modifiers, "
+        # result = result + f"index {self.modcluster_index}, "
+        # result = result + f"tags {self.get_this_cluster_tags()}, "
         return result
 
     # Collapsed
@@ -298,9 +298,7 @@ class ClusterTrait():
         elif question['subject'] in self._modifiers_list:
 
             # Remove cluster with components if not allowed to change it.
-            if self._MODCLUSTER_DYNAMIC is False:
-                for y in self._modifiers_list:
-                    actions.append(ClustersAction('REMOVE', y))
+            if not self._MODCLUSTER_DYNAMIC:
                 actions.append(ClustersAction('REMOVE', self))
 
             # If removing modifier and it is last modifier.

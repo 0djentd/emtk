@@ -24,10 +24,13 @@ class ClustersController():
     This is object responsible for clusters actions buffer.
     """
 
+    required_actions = []
+    allowed_actions = []
+
     def __init__(self, extended_modifiers_list_obj, *args, **kwargs):
         self.e = extended_modifiers_list_obj
 
-    def get_required_actions(self, action, already_allowed_actions=None):
+    def get_required_actions(self, action):
         """
         Asks all clusters if action is allowed.
 
@@ -43,40 +46,100 @@ class ClustersController():
         # Check arguments
         if not isinstance(action, ClustersAction):
             raise TypeError(f'Should be ClustersAction {type(action)}')
-        if already_allowed_actions is None:
-            already_allowed = []
-        else:
-            already_allowed = already_allowed_actions
-        if not isinstance(already_allowed, list):
-            raise TypeError(f'Should be list {type(already_allowed)}')
-        for x in already_allowed:
-            if not isinstance(x, ClustersAction):
-                raise TypeError(f'Should be ClustersAction {type(x)}')
-            if x['status'] != 'ALLOWED':
-                raise ValueError
+
+        print(f'Trying to recursively get actions required for {action}')
+
+        self.required_actions.append(action)
+
+        i = 0
+
+        while len(self.required_actions) > 0:
+            if i > 20:
+                break
+
+            print(f'Recursive action solver iteration {i}')
+            print(f'Already required actions is {self.required_actions}')
+            print(f'Already allowed actions is {self.allowed_actions}')
+
+            # List of changes after iteration
+            remove_req_actions = []
+            add_req_actions = []
+
+            # Get new list of changes
+            for x in self.required_actions:
+                a = self.get_actions(x)
+
+                # This action can be allowed.
+                if len(a) == 0:
+                    self.allowed_actions.append(x)
+                    remove_req_actions.append(x)
+
+                # This action requires additional actions
+                else:
+                    added_action = False
+                    for x in a:
+                        already_there = False
+                        for y in self.required_actions:
+                            if y['verb'] == x['verb']\
+                                    and y['subject'] is x['subject']:
+                                already_there = True
+                        if already_there is False:
+                            added_action = True
+                    if added_action is False:
+                        self.allowed_actions.append(x)
+                        remove_req_actions.append(x)
+                    else:
+                        # list of new actions
+                        add_req_actions.extend(a)
+
+            for x in remove_req_actions:
+                self.required_actions.remove(x)
+
+            added_action = False
+            for x in add_req_actions:
+                already_there = False
+                for y in self.required_actions:
+                    if y['verb'] == x['verb']\
+                            and y['subject'] is x['subject']:
+                        already_there = True
+                if already_there is False:
+                    self.required_actions.append(x)
+                    added_action = True
+
+        result = self.allowed_actions
+        print(f'Actions is {result}')
+        return result
+
+    def check_if_actions_allowed(self, actions):
+        for x in self.e.get_list():
+            actions_2 = []
+            second_layer = x.get_full_list()\
+                + x.get_full_actual_modifiers_list()
+            for action in actions:
+                if action['subject'] in second_layer:
+                    actions_2.append(action)
+            if len(actions_2) == len(actions):
+                return True
+        raise ValueError
+
+    def get_actions(self, action):
+        # Check arguments
+        if not isinstance(action, ClustersAction):
+            raise TypeError(f'Should be ClustersAction {type(action)}')
+        if action['subject'] is self.e:
+            raise ValueError
 
         result = []
 
         # Get required actions.
-        for x in self.e.get_full_list():
+        clusters = self.e.get_trace_to(
+                action['subject'])
+        for x in clusters:
             print(f'Asking {x}')
             answer = x.ask(action)
             if isinstance(answer, ClusterRequest):
                 print(f'Got answer {answer["require"]}')
-                for a in answer['require']:
-                    add = True
-                    for x in already_allowed:
-                        if x['subject'] is a['subject']:
-                            add = False
-                    # Recursive search for required actions.
-                    if add:
-                        result.extend(
-                                self.get_required_actions(a, already_allowed))
-
-        # After loop, this action will be allowed, because there will be
-        # required actions to allow it in result.
-        action['status'] = 'ALLOWED'
-        result.append(action)
+                result.extend(answer['require'])
         return result
 
     def do(self, request):

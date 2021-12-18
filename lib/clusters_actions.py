@@ -51,7 +51,12 @@ class ClusterRequest(dict):
 
         self['from'] = obj
         self['require'] = actions
-        self['time'] = time.time()
+
+    def __str__(self):
+        return f"Cluster request from {self['from']} is {self['require']}"
+
+    def __repr__(self):
+        return f"ClusterRequest from {self['from']} is {self['require']}"
 
 
 class ClustersAction(dict):
@@ -68,6 +73,9 @@ class ClustersAction(dict):
         if not isinstance(verb, str):
             raise TypeError(f'{type(verb)}')
 
+        if len(verb) == 0:
+            raise ValueError
+
         if _WITH_BPY:
             modifiers_type = bpy.types.Modifier
         else:
@@ -80,3 +88,9 @@ class ClustersAction(dict):
         self['verb'] = verb
         self['subject'] = subject
         self['status'] = 'STILL_NOT_ALLOWED'
+
+    def __str__(self):
+        return f"Cluster action {self['verb']} {self['subject']}"
+
+    def __repr__(self):
+        return f"ClusterAction [{self['verb']} {self['subject']}]"

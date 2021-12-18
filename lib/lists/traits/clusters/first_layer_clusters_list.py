@@ -64,7 +64,8 @@ class FirstLayerClustersListTrait():
     def __str__(self):
         result = 'Extended Modifiers List, clusters: '
         for x in self.get_full_list():
-            result.append(x.name + ' ')
+            result = result + x.name + ' '
+        return result
 
     def get_cluster(self):
         """
@@ -210,6 +211,10 @@ class FirstLayerClustersListTrait():
         allowed.
         Can return empty list.
         """
+        if question['subject'] in self._modifiers_list:
+            return []
+        if question['subject'] is self:
+            raise ValueError
         return []
 
     def remove(self, cluster):
@@ -220,13 +225,16 @@ class FirstLayerClustersListTrait():
             raise ValueError
 
         y = ClustersAction('REMOVE', cluster)
-        y['status'] = 'ALLOWED'
         x = ClusterRequest(self, y)
         self._controller.do(x)
 
     def perform_action(self, action):
-        if action['subject'] not in self._modifiers_list:
-            raise ValueError
+        f = False
+        for x in self._modifiers_list:
+            if action['subject'].name == x.name:
+                f = True
+        if not f:
+            raise ValueError(f"{action['subject']}")
 
         x = action['verb']
 
@@ -240,7 +248,10 @@ class FirstLayerClustersListTrait():
             raise ValueError
 
     def _delete(self, action):
-        self._modifiers_list.remove(action['subject'])
+        for x in self._modifiers_list:
+            if action['subject'].name == x.name:
+                f = x
+        self._modifiers_list.remove(f)
 
     def create_modifier(self, m_name, m_type, layer=None, cluster_index=None):
         """
