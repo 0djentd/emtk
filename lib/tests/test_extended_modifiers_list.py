@@ -259,7 +259,6 @@ class ExtendedModifiersListLoadClustersTests(
                 self.old_clusters_state_2, self.e.get_clusters_state())
 
 
-
 class ExtendedModifiersListProgressiveLoadClustersTests(
         ExtendedModifiersListTests, unittest.TestCase):
     """
@@ -310,6 +309,16 @@ class ExtendedModifiersListProgressiveLoadClustersTests(
     def test_check_clusters_state_eq_2(self):
         self.assertEqual(
                 self.old_clusters_state_2, self.e.get_clusters_state())
+
+    def test_trace_cluster(self):
+        x = []
+        x.append(self.e)
+        x.append(self.e.get_first())
+        x.append(x[1].get_first())
+        t = self.e.get_trace_to(x[2])
+        print(x)
+        print(t)
+        self.assertEqual(t, x)
 
 
 class ExtendedModifiersListLayersTests(
@@ -415,7 +424,6 @@ class ExtendedModifiersListLayersTests(
     def test_triple_bevel_has_three_modifiers(self):
         self.assertEqual(
                 self.e.get_first().get_first().get_list_length(), 3)
-
 
 class ExtendedModifiersListLayersMovingTests(
         ExtendedModifiersListTests, unittest.TestCase):

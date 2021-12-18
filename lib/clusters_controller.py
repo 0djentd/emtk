@@ -48,6 +48,7 @@ class ClustersController():
             raise TypeError(f'Should be ClustersAction {type(action)}')
 
         print(f'Trying to recursively get actions required for {action}')
+        print(f'{action["subject"]}')
 
         self.required_actions.append(action)
 
@@ -65,37 +66,25 @@ class ClustersController():
             remove_req_actions = []
             add_req_actions = []
 
-            # Get new list of changes
+            # Get new list of changes for already existing actions req
             for x in self.required_actions:
                 a = self.get_actions(x)
 
                 # This action can be allowed.
                 if len(a) == 0:
                     self.allowed_actions.append(x)
+                    print(f'Allowed {x}')
                     remove_req_actions.append(x)
 
                 # This action requires additional actions
                 else:
-                    added_action = False
-                    for x in a:
-                        already_there = False
-                        for y in self.required_actions:
-                            if y['verb'] == x['verb']\
-                                    and y['subject'] is x['subject']:
-                                already_there = True
-                        if already_there is False:
-                            added_action = True
-                    if added_action is False:
-                        self.allowed_actions.append(x)
-                        remove_req_actions.append(x)
-                    else:
-                        # list of new actions
-                        add_req_actions.extend(a)
+                    print(f'Not allowed {x}')
+                    # list of new actions
+                    add_req_actions.extend(a)
 
             for x in remove_req_actions:
                 self.required_actions.remove(x)
 
-            added_action = False
             for x in add_req_actions:
                 already_there = False
                 for y in self.required_actions:
@@ -104,23 +93,13 @@ class ClustersController():
                         already_there = True
                 if already_there is False:
                     self.required_actions.append(x)
-                    added_action = True
 
         result = self.allowed_actions
+        self.allowed_actions = []
+        if len(self.required_actions) != 0:
+            raise ValueError
         print(f'Actions is {result}')
         return result
-
-    def check_if_actions_allowed(self, actions):
-        for x in self.e.get_list():
-            actions_2 = []
-            second_layer = x.get_full_list()\
-                + x.get_full_actual_modifiers_list()
-            for action in actions:
-                if action['subject'] in second_layer:
-                    actions_2.append(action)
-            if len(actions_2) == len(actions):
-                return True
-        raise ValueError
 
     def get_actions(self, action):
         # Check arguments
@@ -132,14 +111,25 @@ class ClustersController():
         result = []
 
         # Get required actions.
-        clusters = self.e.get_trace_to(
-                action['subject'])
+        clusters = self.e.get_full_list()
         for x in clusters:
             print(f'Asking {x}')
             answer = x.ask(action)
             if isinstance(answer, ClusterRequest):
                 print(f'Got answer {answer["require"]}')
                 result.extend(answer['require'])
+
+        if len(clusters) == 0:
+            raise ValueError
+
+        remove = []
+        for x in result:
+            for y in self.required_actions:
+                if x == y:
+                    remove.append(x)
+        for x in remove:
+            print('Removing action from result')
+            result.remove(x)
         return result
 
     def do(self, request):

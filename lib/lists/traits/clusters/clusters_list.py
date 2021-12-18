@@ -86,7 +86,7 @@ class ClustersListTrait():
         super().__init__(*args, **kwargs)
 
     def __repr__(self):
-        return f'Extended Modifiers List {self.get_full_list()}'
+        return f'Extended Modifiers List {len(self.get_full_list())} clusters'
 
     def _check_if_cluster_removed(self):
         pass
@@ -393,22 +393,17 @@ class ClustersListTrait():
         Looks in all clusters.
         """
         self._check_if_cluster_removed()
-
-        for x in self._modifiers_list:
-            if x.name == cluster.name:
-                return self
+        if cluster is self:
+            raise TypeError
 
         if cluster in self._modifiers_list:
             return self
 
         y = self.get_full_list()
+
         for x in y:
             if cluster in x.get_list():
                 return x
-        for x in y:
-            for z in x.get_list():
-                if cluster.name == z.name:
-                    return x
         raise ValueError
 
     def get_trace_to(self, cluster):

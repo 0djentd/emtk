@@ -282,6 +282,8 @@ class ClusterTrait():
         """
         if not isinstance(question, ClustersAction):
             raise TypeError
+        if question['status'] == 'ALLOWED':
+            raise ValueError
 
         a = question['verb']
         actions = []
