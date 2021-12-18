@@ -394,7 +394,8 @@ class ClustersListTrait():
         """
         self._check_if_cluster_removed()
         if cluster is self:
-            raise TypeError
+            raise TypeError(
+                    'First layer of ExtendedModifiersList is not a cluster.')
 
         if cluster in self._modifiers_list:
             return self
@@ -404,7 +405,7 @@ class ClustersListTrait():
             if cluster in x.get_list():
                 return x
 
-        raise ValueError
+        raise ValueError('Cluster is not in this list.')
 
     def get_trace_to(self, cluster):
         """
@@ -412,9 +413,6 @@ class ClustersListTrait():
         Example:
         [TripleBevel, DoubleBevel, DefaultBevel]
         """
-        if cluster is self:
-            raise ValueError
-
         result = []
         f = True
         c = cluster
@@ -426,6 +424,12 @@ class ClustersListTrait():
             c = layer
         result.reverse()
         return result
+
+    def get_depth(self, cluster):
+        """
+        Returns cluster depth, starting from 1 for this layer's clusters.
+        """
+        return len(self.get_trace_to(cluster))
 
     # ==============================
     # Methods based on get_deep_list

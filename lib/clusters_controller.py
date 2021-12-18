@@ -18,17 +18,23 @@
 
 from .clusters_actions import ClusterRequest, ClustersAction
 
+try:
+    import bpy
+    _WITH_BPY = True
+except ModuleNotFoundError:
+    from .dummy_modifiers import DummyBlenderModifier, DummyBlenderObj
+    _WITH_BPY = False
+
 
 class ClustersController():
     """
     This is object responsible for clusters actions buffer.
     """
 
-    required_actions = []
-    allowed_actions = []
-
     def __init__(self, extended_modifiers_list_obj, *args, **kwargs):
         self.e = extended_modifiers_list_obj
+        self.allowed_actions = []
+        self.required_actions = []
 
     def do(self, request):
         """
@@ -45,15 +51,29 @@ class ClustersController():
         for x in actions:
             self.e.check_obj_ref(x.subject)
 
-        actions = self.sort_actions(actions)
+        actions = self._sort_actions_by_layer_depth(actions)
 
         for x in actions:
             self.e.check_obj_ref(x.subject)
 
         for x in actions:
-            self.apply_action(x)
+            self._apply_action(x)
 
-    def apply_action(self, action):
+    def _sort_actions_by_layer_depth(self, actions):
+        """
+        Returns actions sorted by reversed layer depth.
+        """
+        result = []
+        d = []
+        for x in actions:
+            d.append([self.e.get_depth(x.subject), x])
+        d.sort(key=lambda z: z[0])
+        for x in d:
+            result.append(x[1])
+        result.reverse()
+        return result
+
+    def _apply_action(self, action):
         """
         Performs ClustersAction on this ClustersList.
         """
@@ -81,7 +101,7 @@ class ClustersController():
         self.required_actions.append(action)
 
         if len(self.allowed_actions) != 0 or len(self.required_actions) != 1:
-            raise ValueError('One of list is wrong len')
+            raise ValueError('One of actions lists is wrong len')
 
         self.e.check_obj_ref(self.required_actions[0].subject)
 
@@ -89,6 +109,7 @@ class ClustersController():
 
         while len(self.required_actions) > 0:
 
+            print('')
             print(f'Recursive action solver iteration {i}')
             print(f'Already required actions is {self.required_actions}')
             print(f'Already allowed actions is {self.allowed_actions}')
@@ -136,9 +157,11 @@ class ClustersController():
                         already_there = True
                 if already_there is False:
                     self.required_actions.append(x)
+                else:
+                    raise ValueError
 
             i += 1
-            if i > 4:
+            if i > 100:
                 raise ValueError('Depth limit')
 
         result = self.allowed_actions
@@ -147,25 +170,10 @@ class ClustersController():
         # Check result
         if len(self.required_actions) != 0:
             raise ValueError
+        if len(self.allowed_actions) != 0:
+            raise ValueError
         if len(result) == 0:
             raise ValueError
-        print(f'Actions is {result}')
-
-        # Remove duplicates
-        remove = []
-        for x in result:
-            d = 0
-            for y in result:
-                if y.verb == x.verb\
-                        and y.subject is x.subject:
-                    if d < 1:
-                        d += 1
-                    elif x not in remove:
-                        remove.append(y)
-                        raise ValueError
-        for x in remove:
-            result.remove(x)
-
         print(f'Actions is {result}')
         return result
 
@@ -177,10 +185,28 @@ class ClustersController():
         if action.subject is self.e:
             raise ValueError
         self.e.check_obj_ref(action.subject)
+
         result = []
 
-        # Get required actions.
-        clusters = self.e.get_full_list()
+        if _WITH_BPY:
+            modifiers_type = bpy.types.Modifier
+        else:
+            modifiers_type = DummyBlenderModifier
+
+        # Get list of clusters to ask.
+        if isinstance(action.subject, modifiers_type):
+            clusters = []
+            clusters.extend(self.e.get_trace_to(action.subject))
+        else:
+            clusters = []
+            clusters.append(action.subject)
+            clusters.extend(self.e.get_trace_to(action.subject))
+            if action.subject.has_clusters():
+                clusters.extend(action.subject.get_full_list())
+        if len(clusters) == 0:
+            raise ValueError
+
+        # Ask clusters.
         for x in clusters:
             print(f'Asking {x}')
             answer = x.ask(action)
@@ -188,32 +214,16 @@ class ClustersController():
                 print(f'Got answer {answer.require}')
                 result.extend(answer.require)
 
-        if len(clusters) == 0:
-            raise ValueError
-
         # Remove duplicates.
         remove = []
         for x in result:
-            for y in self.required_actions:
-                if x.subject == y.subject:
-                    remove.append(x)
-
+            for y in self.required_actions + self.allowed_actions:
+                if x.subject == y.subject and x.verb == y.verb:
+                    if x not in remove:
+                        remove.append(x)
         for x in remove:
-            print('Removing action from result')
             result.remove(x)
         return result
-
-    def sort_actions(self, actions):
-        f = []
-        s = []
-        for x in actions:
-            if x.subject in self.e.get_full_actual_modifiers_list():
-                f.append(x)
-            else:
-                s.append(x)
-        result = f + s
-        return result
-
 
 # def remove(self, cluster):
 #     """

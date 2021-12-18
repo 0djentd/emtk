@@ -425,6 +425,7 @@ class ExtendedModifiersListLayersTests(
         self.assertEqual(
                 self.e.get_first().get_first().get_list_length(), 3)
 
+
 class ExtendedModifiersListLayersMovingTests(
         ExtendedModifiersListTests, unittest.TestCase):
     """
@@ -547,8 +548,8 @@ class ClusterRemoveTests(unittest.TestCase):
         self.e = ExtendedModifiersList(self.o, cluster_types=clusters)
 
     def tearDown(self):
-        del(self.o)
-        del(self.e)
+        self.o = None
+        self.e = None
 
     def test_remove_cluster(self):
         old_l = len(self.e._modifiers_list)
@@ -573,3 +574,53 @@ class ClusterRemoveTests(unittest.TestCase):
         self.e.remove(self.e.get_last())
         new_l = len(self.o.modifiers)
         self.assertEqual(new_l, old_l-3)
+
+
+class ClusterRemoveMultilayerTests(unittest.TestCase):
+    def setUp(self):
+        self.o = DummyBlenderObj()
+        mods = []
+        mods.append(self.o.modifier_add('Bevel', 'BEVEL'))
+        mods.append(self.o.modifier_add('Bevel', 'BEVEL'))
+        mods.append(self.o.modifier_add('Bevel', 'BEVEL'))
+        clusters = []
+        cluster = ClustersLayer(cluster_name='Double Bevel Cluster',
+                                cluster_type='BEVEL_CLUSTER',
+                                modifiers_by_type=[
+                                    ['BEVEL'], ['BEVEL']],
+                                modifiers_by_name=[['ANY'], ['ANY']],
+                                cluster_priority=0,
+                                cluster_createable=True,
+                                )
+
+        clusters.append(cluster)
+        self.e = ExtendedModifiersList(self.o, cluster_types=clusters)
+
+    def tearDown(self):
+        self.o = None
+        self.e = None
+
+    def test_remove_cluster(self):
+        print(f'{self.e}')
+        old_l = len(self.e._modifiers_list)
+        self.e.remove(self.e.get_first())
+        new_l = len(self.e._modifiers_list)
+        self.assertEqual(new_l, old_l-1)
+
+    # def test_remove_modifiers(self):
+    #     old_l = len(self.o.modifiers)
+    #     self.e.remove(self.e.get_first())
+    #     new_l = len(self.o.modifiers)
+    #     self.assertEqual(new_l, old_l-6)
+
+    # def test_remove_cluster_last(self):
+    #     old_l = len(self.e._modifiers_list)
+    #     self.e.remove(self.e.get_last())
+    #     new_l = len(self.e._modifiers_list)
+    #     self.assertEqual(new_l, old_l-1)
+
+    # def test_remove_modifiers_last(self):
+    #     old_l = len(self.o.modifiers)
+    #     self.e.remove(self.e.get_last())
+    #     new_l = len(self.o.modifiers)
+    #     self.assertEqual(new_l, old_l-3)
