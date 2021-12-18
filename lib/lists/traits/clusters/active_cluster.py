@@ -43,6 +43,25 @@ class ActiveClusterTrait():
     # ===============
     # Active modifier
     # ===============
+    def get_cluster(self):
+        """
+        Returns active cluster on deepest non-collapsed layer.
+
+        This method should only be used if creating some kind of user
+        interface that uses ExtendedModifiersList.
+        """
+        return self.active_cluster_get_deep()
+
+    def get_layer(self):
+        """
+        Returns ModifiersClustersList, which active
+        cluster belongs to on deepest non-collapsed layer.
+
+        This method should only be used if creating some kind of user
+        interface that uses ExtendedModifiersList.
+        """
+        return self.get_active_cluster_layer()
+
     # TODO: this methods should be renamed
     @property
     def active_modifier(self):

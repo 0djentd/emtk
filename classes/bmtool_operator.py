@@ -302,19 +302,19 @@ class BMToolMod(ModifiersOperator):
 
             # TODO: this only moves object to new collection, should create
             # a backup instead.
-            if self.backup_mesh_on_modifier_apply_remove:
-                objCollections = self.m_list._object.users_collection
+            # if self.backup_mesh_on_modifier_apply_remove:
+            #     objCollections = self.m_list._object.users_collection
 
-                if self.backup_collection not in objCollections:
-                    self.backup_collection.objects.link(self.m_list._object)
-                    for x in objCollections:
-                        x.object.unlink(self.m_list._object)
+            #     if self.backup_collection not in objCollections:
+            #         self.backup_collection.objects.link(self.m_list._object)
+            #         for x in objCollections:
+            #             x.object.unlink(self.m_list._object)
 
             # Remove cluster.
             if self._selecting_clusters is True:
                 modifier_removed = self.m_list.remove_clusters_selection()
             else:
-                modifier_removed = self.m_list.remove_cluster(cluster)
+                layer.remove(cluster)
 
             # Clear selection
             self._selecting_clusters = False
@@ -322,12 +322,12 @@ class BMToolMod(ModifiersOperator):
 
             # Finish operator, if something is wrong
             # while deleting cluster.
-            if not modifier_removed:
-                self.report({'ERROR'}, "Error while deleting modifier")
-                for line in self.m_list.modifiers_list_info_get():
-                    self.report({'INFO'}, f"{line}")
-                self.clear(context)
-                return {'FINISHED'}
+            # if not modifier_removed:
+            #     self.report({'ERROR'}, "Error while deleting modifier")
+            #     for line in self.m_list.modifiers_list_info_get():
+            #         self.report({'INFO'}, f"{line}")
+            #     self.clear(context)
+            #     return {'FINISHED'}
 
             # Select currently active cluster.
             cluster = self.m_list.get_cluster()

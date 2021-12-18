@@ -220,14 +220,10 @@ class ClusterTrait():
             raise ValueError
 
     def __str__(self):
-        result = f"{self.get_this_cluster_default_name()}"
-        # result = result + f"{len(self._modifiers_list)} "
-        # if self.has_clusters():
-        #     result = result + "clusters, "
-        # else:
-        #     result = result + "modifiers, "
-        # result = result + f"index {self.modcluster_index}, "
-        # result = result + f"tags {self.get_this_cluster_tags()}, "
+        if not self._cluster_removed:
+            result = f"{self.get_this_cluster_default_name()}"
+        else:
+            result = f"Already removed cluster {self._MODCLUSTER_NAME}"
         return result
 
     # Collapsed
@@ -267,12 +263,6 @@ class ClusterTrait():
         y = ClustersAction('REMOVE', cluster)
         x = ClusterRequest(self, y)
         self.controller.do(x)
-
-    def apply(self, cluster):
-        pass
-
-    # def move(self, cluster):
-    #     pass
 
     def ask(self, question):
         """
@@ -333,9 +323,6 @@ class ClusterTrait():
             self._deconstruct(action)
         else:
             raise ValueError
-
-    def _delete(self, action):
-        self._modifiers_list.remove(action.subject)
 
     # ============================
     # Methods reserved for objects

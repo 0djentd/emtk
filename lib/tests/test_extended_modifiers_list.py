@@ -174,22 +174,53 @@ class ExtendedModifiersListTests():
                 result.append(x)
         self.assertFalse(result)
 
+    def test_get_cluster(self):
+        c = self.e.get_cluster()
+        self.assertEqual(c, self.e.get_first())
 
-class ExtendedModifiersListNoModifiersTest(
-        ExtendedModifiersListTests, unittest.TestCase):
-    """
-    No modifiers at all.
-    """
+    def test_get_layer(self):
+        layer = self.e.get_layer()
+        self.assertEqual(layer, self.e)
 
-    def setUp(self):
-        self.o = DummyBlenderObj()
-        self.e = ExtendedModifiersList(self.o)
+    def test_get_cluster_and_remove(self):
+        old_l = len(self.o.modifiers)
+        c = self.e.get_cluster()
+        layer = self.e.get_layer()
+        length = len(c.get_full_actual_modifiers_list())
+        layer.remove(c)
+        new_l = len(self.o.modifiers)
+        self.assertEqual(new_l, old_l-length)
 
-    def test_active_modifier_is_in_the_list(self):
-        self.assertFalse(self.e.has_cluster(self.e.active_modifier_get()))
+    def test_remove_cluster(self):
+        old_l = len(self.e._modifiers_list)
+        self.e.remove(self.e.get_first())
+        new_l = len(self.e._modifiers_list)
+        self.assertEqual(new_l, old_l-1)
+
+    def test_remove_modifiers(self):
+        old_l = len(self.o.modifiers)
+        c = self.e.get_first()
+        length = len(c.get_full_actual_modifiers_list())
+        self.e.remove(c)
+        new_l = len(self.o.modifiers)
+        self.assertEqual(new_l, old_l-length)
+
+    def test_remove_cluster_last(self):
+        old_l = len(self.e._modifiers_list)
+        c = self.e.get_last()
+        length = len(c.get_full_actual_modifiers_list())
+        self.e.remove(c)
+        new_l = len(self.e._modifiers_list)
+        self.assertEqual(new_l, old_l-length)
+
+    def test_remove_modifiers_last(self):
+        old_l = len(self.o.modifiers)
+        self.e.remove(self.e.get_last())
+        new_l = len(self.o.modifiers)
+        self.assertEqual(new_l, old_l-1)
 
 
-class ExtendedModifiersListDifferentModifiersTests(
+class DifferentModifiersTests(
         ExtendedModifiersListTests, unittest.TestCase):
     """
     No complex modifiers clusters.
@@ -215,7 +246,7 @@ class ExtendedModifiersListDifferentModifiersTests(
         self.e = ExtendedModifiersList(self.o)
 
 
-class ExtendedModifiersListLoadClustersTests(
+class LoadClustersTests(
         ExtendedModifiersListTests, unittest.TestCase):
     """
     Saving and loading clusters.
@@ -259,7 +290,7 @@ class ExtendedModifiersListLoadClustersTests(
                 self.old_clusters_state_2, self.e.get_clusters_state())
 
 
-class ExtendedModifiersListProgressiveLoadClustersTests(
+class ProgressiveLoadClustersTests(
         ExtendedModifiersListTests, unittest.TestCase):
     """
     Saving and loading clusters.
@@ -310,18 +341,8 @@ class ExtendedModifiersListProgressiveLoadClustersTests(
         self.assertEqual(
                 self.old_clusters_state_2, self.e.get_clusters_state())
 
-    def test_trace_cluster(self):
-        x = []
-        x.append(self.e)
-        x.append(self.e.get_first())
-        x.append(x[1].get_first())
-        t = self.e.get_trace_to(x[2])
-        print(x)
-        print(t)
-        self.assertEqual(t, x)
 
-
-class ExtendedModifiersListLayersTests(
+class LayersTests(
         ExtendedModifiersListTests, unittest.TestCase):
     """
     Cluster layers and complex clusters.
@@ -425,8 +446,16 @@ class ExtendedModifiersListLayersTests(
         self.assertEqual(
                 self.e.get_first().get_first().get_list_length(), 3)
 
+    def test_trace_cluster(self):
+        x = []
+        x.append(self.e)
+        x.append(self.e.get_first())
+        x.append(x[1].get_first())
+        t = self.e.get_trace_to(x[2])
+        self.assertEqual(t, x[0: -1])
 
-class ExtendedModifiersListLayersMovingTests(
+
+class MovingTests(
         ExtendedModifiersListTests, unittest.TestCase):
     """
     Cluster layers and complex clusters.
@@ -524,103 +553,3 @@ class ExtendedModifiersListLayersMovingTests(
 
     def test_moved_cluster_down(self):
         self.assertEqual(self.moved_cluster_2, self.e.get_by_index(1))
-
-
-class ClusterRemoveTests(unittest.TestCase):
-    def setUp(self):
-        self.o = DummyBlenderObj()
-        mods = []
-        mods.append(self.o.modifier_add('Bevel', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel', 'BEVEL'))
-        clusters = []
-        cluster = ModifiersCluster(cluster_name='Triple Bevel',
-                                   cluster_type='TRIPLE_BEVEL',
-                                   modifiers_by_type=[
-                                       ['BEVEL'], ['BEVEL'], ['BEVEL']],
-                                   modifiers_by_name=[
-                                       ['ANY'], ['ANY'], ['ANY']],
-                                   cluster_priority=0,
-                                   cluster_createable=True,
-                                   )
-        clusters.append(cluster)
-        self.e = ExtendedModifiersList(self.o, cluster_types=clusters)
-
-    def tearDown(self):
-        self.o = None
-        self.e = None
-
-    def test_remove_cluster(self):
-        old_l = len(self.e._modifiers_list)
-        self.e.remove(self.e.get_first())
-        new_l = len(self.e._modifiers_list)
-        self.assertEqual(new_l, old_l-1)
-
-    def test_remove_modifiers(self):
-        old_l = len(self.o.modifiers)
-        self.e.remove(self.e.get_first())
-        new_l = len(self.o.modifiers)
-        self.assertEqual(new_l, old_l-3)
-
-    def test_remove_cluster_last(self):
-        old_l = len(self.e._modifiers_list)
-        self.e.remove(self.e.get_last())
-        new_l = len(self.e._modifiers_list)
-        self.assertEqual(new_l, old_l-1)
-
-    def test_remove_modifiers_last(self):
-        old_l = len(self.o.modifiers)
-        self.e.remove(self.e.get_last())
-        new_l = len(self.o.modifiers)
-        self.assertEqual(new_l, old_l-1)
-
-
-class ClusterRemoveMultilayerTests(unittest.TestCase):
-    def setUp(self):
-        self.o = DummyBlenderObj()
-        mods = []
-        mods.append(self.o.modifier_add('Bevel', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel', 'BEVEL'))
-        clusters = []
-        cluster = ClustersLayer(cluster_name='Double Bevel Cluster',
-                                cluster_type='BEVEL_CLUSTER',
-                                modifiers_by_type=[
-                                    ['BEVEL'], ['BEVEL']],
-                                modifiers_by_name=[['ANY'], ['ANY']],
-                                cluster_priority=0,
-                                cluster_createable=True,
-                                )
-
-        clusters.append(cluster)
-        self.e = ExtendedModifiersList(self.o, cluster_types=clusters)
-
-    def tearDown(self):
-        self.o = None
-        self.e = None
-
-    def test_remove_cluster(self):
-        print(f'{self.e}')
-        old_l = len(self.e._modifiers_list)
-        self.e.remove(self.e.get_first())
-        new_l = len(self.e._modifiers_list)
-        self.assertEqual(new_l, old_l-1)
-
-    def test_remove_modifiers(self):
-        old_l = len(self.o.modifiers)
-        self.e.remove(self.e.get_first())
-        new_l = len(self.o.modifiers)
-        self.assertEqual(new_l, old_l-2)
-
-    def test_remove_cluster_last(self):
-        old_l = len(self.e._modifiers_list)
-        self.e.remove(self.e.get_last())
-        new_l = len(self.e._modifiers_list)
-        self.assertEqual(new_l, old_l-1)
-
-    def test_remove_modifiers_last(self):
-        old_l = len(self.o.modifiers)
-        self.e.remove(self.e.get_last())
-        new_l = len(self.o.modifiers)
-        self.assertEqual(new_l, old_l-1)

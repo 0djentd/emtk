@@ -27,36 +27,6 @@ except ModuleNotFoundError:
 from .lists.modifiers_list import ModifiersList
 
 
-class ClusterRequest():
-    """
-    This thing looks like this:
-    x = {
-         'from': <obj BevelCluster>,
-         'require': [<action>, <action>]
-         }
-    """
-
-    def __init__(self, obj, require):
-        if isinstance(require, list):
-            for x in require:
-                if not isinstance(x, ClustersAction):
-                    raise TypeError
-            actions = require
-        elif isinstance(require, ClustersAction):
-            actions = [require]
-        else:
-            raise TypeError
-
-        self.o = obj
-        self.require = actions
-
-    def __str__(self):
-        return f"Cluster request from {self.o} is {self.require}"
-
-    def __repr__(self):
-        return f"ClusterRequest from {self.o} is {self.require}"
-
-
 class ClustersAction():
     """
     This thing looks like this:
@@ -92,3 +62,134 @@ class ClustersAction():
 
     def __repr__(self):
         return f"ClusterAction [{self.verb} {self.subject}]"
+
+
+class ClusterRequest():
+    """
+    This thing looks like this:
+    x = {
+         'from': <obj BevelCluster>,
+         'require': [<action>, <action>]
+         }
+    """
+
+    def __init__(self, obj, require):
+        if isinstance(require, list):
+            for x in require:
+                if not isinstance(x, ClustersAction):
+                    raise TypeError
+            actions = require
+        elif isinstance(require, ClustersAction):
+            actions = [require]
+        else:
+            raise TypeError
+
+        self.o = obj
+        self.require = actions
+
+    def __str__(self):
+        return f"Cluster request from {self.o} {self.require}"
+
+    def __repr__(self):
+        return f"ClusterRequest from {self.o} {self.require}"
+
+
+class ClusterActionAnswer():
+    """
+    This is object responsible for answering on actions from ClustersController
+    and performing them.
+    """
+
+    def __init__(self, cluster):
+        self.cluster = cluster
+
+    def ask(self, action):
+        if action.subject is self.cluster:
+            self._answer_case_self(action)
+
+        if action.subject in self.cluster.get_list():
+            self._answer_case_list(action)
+
+        if action.subject in self.cluster.get_all():
+            self._answer_case_all(action)
+        raise ValueError('Action cant be interpreted')
+
+    def do(self, action):
+        if action.subject is self.cluster:
+            self._interpret_case_self(action)
+
+        if action.subject in self.cluster.get_list():
+            self._interpret_case_list(action)
+
+        if action.subject in self.cluster.get_all():
+            self._interpret_case_all(action)
+        raise ValueError('Action cant be interpreted')
+
+    def _answer_case_self(self, action):
+        return self._no_action_answer(self, action)
+
+    def _answer_case_list(self, action):
+        return self._no_action_answer(self, action)
+
+    def _answer_case_all(self, action):
+        return self._no_action_answer(self, action)
+
+    def _interpret_case_self(self, action):
+        return self._no_action_answer(self, action)
+
+    def _interpret_case_list(self, action):
+        return self._no_action_answer(self, action)
+
+    def _interpret_case_all(self, action):
+        return self._no_action_answer(self, action)
+
+    def _no_action_answer(self, action)
+        raise ValueError('No class-specific method.')
+
+
+class DefaultRemove(ClusterActionAnswer):
+    def _answer_case_self(self, action):
+
+        # If removing cluster, remove it.
+        actions = []
+        for y in self.cluster._modifiers_list:
+            actions.append(ClustersAction('REMOVE', y))
+        return actions
+
+    def _answer_case_list(self, action):
+        actions = []
+
+        # Remove cluster with components if not allowed to change it.
+        if not self.cluster._MODCLUSTER_DYNAMIC:
+            actions.append(ClustersAction('REMOVE', cluster))
+
+        # If removing modifier and it is last modifier.
+        if len(self.cluster._modifiers_list) == 1:
+            actions.append(ClustersAction('REMOVE', cluster))
+        return actions
+
+    def _answer_case_all(self, action):
+        return self._answer_case_list(self, action)
+
+    def _interpret_case_self(self, action):
+        if not self.cluster.cluster_being_removed():
+            raise ValueError('Not allowed to remove cluster')
+
+    def _interpret_case_list(self, action):
+        if _WITH_BPY:
+            modifiers_type = bpy.types.Modifier
+        else:
+            modifiers_type = DummyBlenderModifier
+
+        if isinstance(action.subject, modifiers_type):
+            if _WITH_BPY:
+                mod_name = action.subject.name
+                self.cluster._modifiers_list.remove(action.subject)
+                bpy.ops.object.modifier_remove(modifier=mod_name)
+            else:
+                mod_name = action.subject.name
+                self.cluster._modifiers_list.remove(action.subject)
+                self.cluster._object.modifier_remove(modifier=mod_name)
+        else:
+            self.cluster._modifiers_list.remove(action.subject)
+

@@ -49,8 +49,6 @@ class FirstLayerClustersListTrait():
     # version.
     _EXTENDED_MODIFIERS_LIST_NO_COMPAT = [(0, 2, 0), (0, 0, 5)]
 
-    _dummy_modifiers = True
-
     def __init__(self, *args, no_parse=None, **kwargs):
         super().__init__(*args, **kwargs)
         self._controller = ClustersController(self, *args, **kwargs)
@@ -66,25 +64,6 @@ class FirstLayerClustersListTrait():
         for x in self.get_full_list():
             result = result + x.name + ' '
         return result
-
-    def get_cluster(self):
-        """
-        Returns active cluster on deepest non-collapsed layer.
-
-        This method should only be used if creating some kind of user
-        interface that uses ExtendedModifiersList.
-        """
-        return self.active_cluster_get_deep()
-
-    def get_layer(self):
-        """
-        Returns ModifiersClustersList, which active
-        cluster belongs to on deepest non-collapsed layer.
-
-        This method should only be used if creating some kind of user
-        interface that uses ExtendedModifiersList.
-        """
-        return self.get_active_cluster_layer()
 
     def create_modifiers_list(self, obj=None):
         """
@@ -242,9 +221,6 @@ class FirstLayerClustersListTrait():
             self._deconstruct(action)
         else:
             raise ValueError
-
-    def _delete(self, action):
-        self._modifiers_list.remove(action.subject)
 
     def create_modifier(self, m_name, m_type, layer=None, cluster_index=None):
         """

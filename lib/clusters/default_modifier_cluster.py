@@ -16,7 +16,7 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-from .cluster import ClusterTrait
+from .modifiers_cluster import ModifiersCluster
 
 try:
     import bpy
@@ -26,17 +26,12 @@ except ModuleNotFoundError:
     _WITH_BPY = False
 
 
-from ..lists.modifiers_list import ModifiersList
-from ..lists.traits.modifiers.active_modifier import ActiveModifierTrait
-from ..lists.traits.modifiers.object_modifiers_list \
-        import ObjectModifiersListTrait
-
-
 class DefaultModifierCluster(
-                             ClusterTrait,
-                             ActiveModifierTrait,
-                             ObjectModifiersListTrait,
-                             ModifiersList
+                             ModifiersCluster
+                             # ClusterTrait,
+                             # ActiveModifierTrait,
+                             # ObjectModifiersListTrait,
+                             # ModifiersList
                              ):
     """
     Cluster type for default modifiers without custom behaviour, tags, or name.

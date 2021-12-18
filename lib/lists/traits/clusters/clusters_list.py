@@ -85,11 +85,12 @@ class ClustersListTrait():
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def __repr__(self):
-        return f'Extended Modifiers List {len(self.get_full_list())} clusters'
-
     def _check_if_cluster_removed(self):
         pass
+
+    def _delete(self, action):
+        action.subject._cluster_removed = True
+        self._modifiers_list.remove(action.subject)
 
     # =====================================
     # THIS METHODS WORK ONLY WITH CLUSTERS.
@@ -405,7 +406,7 @@ class ClustersListTrait():
             if cluster in x.get_list():
                 return x
 
-        raise ValueError('Cluster is not in this list.')
+        raise ValueError(f'Cluster {cluster} is not in this list {self}.')
 
     def get_trace_to(self, cluster):
         """

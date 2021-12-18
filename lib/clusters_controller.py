@@ -203,12 +203,14 @@ class ClustersController():
         if isinstance(action.subject, modifiers_type):
             clusters = []
             clusters.extend(self.e.get_trace_to(action.subject))
+            clusters.append(self.e)
         else:
             clusters = []
             clusters.append(action.subject)
             clusters.extend(self.e.get_trace_to(action.subject))
             if action.subject.has_clusters():
                 clusters.extend(action.subject.get_full_list())
+            clusters.append(self.e)
         if len(clusters) == 0:
             raise ValueError
 
