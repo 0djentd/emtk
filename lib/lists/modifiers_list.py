@@ -154,6 +154,12 @@ class ModifiersList(ModifiersListUtilsTrait):
         # x = copy.copy(self._modifiers_list)
         # return x
 
+    def get_full_list(self):
+        return self.get_list()
+
+    def get_all_clusters_and_modifiers(self):
+        return self.get_list()
+
     def get_actual_list(self):
         """
         Returns reference to this layer's list.

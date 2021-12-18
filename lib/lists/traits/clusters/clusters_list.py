@@ -347,6 +347,14 @@ class ClustersListTrait():
                 result.append(y)
         return result
 
+    def get_all_clusters_and_modifiers(self):
+        """
+        Returns list of all clusters and modifiers anywhere in this cluster.
+        """
+        result = self.get_full_actual_modifiers_list()
+        result.extend(self.get_full_list())
+        return result
+
     # ==============================
     # Methods based on get_full_list
     # ==============================

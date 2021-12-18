@@ -98,30 +98,35 @@ class ClusterActionAnswer():
     """
     This is object responsible for answering on actions from ClustersController
     and performing them.
-    """
 
-    def __init__(self, cluster):
+    case_self methods are used when action subject is cluster itself.
+    case_list methods are used when action subject is in this cluster's layer.
+    case_all methods are used when action subject is anywhere in nested clusters.
+    """
+    def __init__(self, cluster, *args, **kwargs):
         self.cluster = cluster
 
     def ask(self, action):
+        """
+        Returns cluster response to action.
+        """
         if action.subject is self.cluster:
             self._answer_case_self(action)
-
-        if action.subject in self.cluster.get_list():
+        elif action.subject in self.cluster.get_list():
             self._answer_case_list(action)
-
-        if action.subject in self.cluster.get_all():
+        elif action.subject in self.cluster.get_all_clusters_and_modifiers():
             self._answer_case_all(action)
         raise ValueError('Action cant be interpreted')
 
     def do(self, action):
+        """
+        Interprets action.
+        """
         if action.subject is self.cluster:
             self._interpret_case_self(action)
-
-        if action.subject in self.cluster.get_list():
+        elif action.subject in self.cluster.get_list():
             self._interpret_case_list(action)
-
-        if action.subject in self.cluster.get_all():
+        elif action.subject in self.cluster.get_all_clusters_and_modifiers():
             self._interpret_case_all(action)
         raise ValueError('Action cant be interpreted')
 
@@ -143,11 +148,22 @@ class ClusterActionAnswer():
     def _interpret_case_all(self, action):
         return self._no_action_answer(self, action)
 
-    def _no_action_answer(self, action)
+    def _no_action_answer(self, action):
         raise ValueError('No class-specific method.')
+
+    def _check_action(self, action):
+        if not isinstance(action, ClustersAction):
+            raise TypeError
+        if action.subject is None:
+            raise TypeError
 
 
 class DefaultRemove(ClusterActionAnswer):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.action_type = 'REMOVE'
+
     def _answer_case_self(self, action):
 
         # If removing cluster, remove it.
@@ -169,7 +185,12 @@ class DefaultRemove(ClusterActionAnswer):
         return actions
 
     def _answer_case_all(self, action):
-        return self._answer_case_list(self, action)
+        actions = []
+
+        # Remove cluster with components if not allowed to change it.
+        if not self.cluster._MODCLUSTER_DYNAMIC:
+            actions.append(ClustersAction('REMOVE', cluster))
+        return actions
 
     def _interpret_case_self(self, action):
         if not self.cluster.cluster_being_removed():
@@ -192,4 +213,3 @@ class DefaultRemove(ClusterActionAnswer):
                 self.cluster._object.modifier_remove(modifier=mod_name)
         else:
             self.cluster._modifiers_list.remove(action.subject)
-
