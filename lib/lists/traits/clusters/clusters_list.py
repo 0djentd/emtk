@@ -587,3 +587,22 @@ class ClustersListTrait():
             return True
         else:
             raise ValueError
+
+    def recursive_has_object(self, obj):
+        return obj in self.get_full_list()\
+                and obj in self.get_full_actual_modifiers_list()
+
+    def check_obj_ref(self, s):
+        if not self.recursive_has_object(s):
+            o = None
+            for x in self.get_full_list():
+                if x.name == s.name:
+                    if x.__class__ == s.__class__:
+                        o = x
+            for x in self.get_full_actual_modifiers_list():
+                if x.name == s.name:
+                    if x.__class__ == s.__class__:
+                        o = x
+            if o != s:
+                raise ValueError(
+                    f'This object {o} reference is broken {s}')

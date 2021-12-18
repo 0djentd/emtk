@@ -16,8 +16,6 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-import time
-
 try:
     import bpy
     _WITH_BPY = True
@@ -29,7 +27,7 @@ except ModuleNotFoundError:
 from .lists.modifiers_list import ModifiersList
 
 
-class ClusterRequest(dict):
+class ClusterRequest():
     """
     This thing looks like this:
     x = {
@@ -39,7 +37,6 @@ class ClusterRequest(dict):
     """
 
     def __init__(self, obj, require):
-        super().__init__()
         if isinstance(require, list):
             for x in require:
                 if not isinstance(x, ClustersAction):
@@ -50,17 +47,17 @@ class ClusterRequest(dict):
         else:
             raise TypeError
 
-        self['from'] = obj
-        self['require'] = actions
+        self.o = obj
+        self.require = actions
 
     def __str__(self):
-        return f"Cluster request from {self['from']} is {self['require']}"
+        return f"Cluster request from {self.o} is {self.require}"
 
     def __repr__(self):
-        return f"ClusterRequest from {self['from']} is {self['require']}"
+        return f"ClusterRequest from {self.o} is {self.require}"
 
 
-class ClustersAction(dict):
+class ClustersAction():
     """
     This thing looks like this:
     x = {
@@ -71,7 +68,6 @@ class ClustersAction(dict):
     """
 
     def __init__(self, verb, subject):
-        super().__init__()
         if not isinstance(verb, str):
             raise TypeError(f'{type(verb)}')
 
@@ -87,12 +83,12 @@ class ClustersAction(dict):
                 and not isinstance(subject, ModifiersList):
             raise TypeError(f'{type(subject)}')
 
-        self['verb'] = verb
-        self['subject'] = subject
-        self['status'] = 'STILL_NOT_ALLOWED'
+        self.verb = verb
+        self.subject = subject
+        self.status = 'STILL_NOT_ALLOWED'
 
     def __str__(self):
-        return f"Cluster action {self['verb']} {self['subject']}"
+        return f"Cluster action {self.verb} {self.subject}"
 
     def __repr__(self):
-        return f"ClusterAction [{self['verb']} {self['subject']}]"
+        return f"ClusterAction [{self.verb} {self.subject}]"

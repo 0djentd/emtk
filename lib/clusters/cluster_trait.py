@@ -282,14 +282,14 @@ class ClusterTrait():
         """
         if not isinstance(question, ClustersAction):
             raise TypeError
-        if question['status'] == 'ALLOWED':
+        if question.status == 'ALLOWED':
             raise ValueError
 
-        a = question['verb']
+        a = question.verb
         actions = []
 
         # If asking about cluster itself.
-        if question['subject'] is self:
+        if question.subject is self:
 
             # If removing this cluster remove its components.
             if a == 'REMOVE':
@@ -297,7 +297,7 @@ class ClusterTrait():
                     actions.append(ClustersAction('REMOVE', y))
 
         # If asking about its components.
-        elif question['subject'] in self._modifiers_list:
+        elif question.subject in self._modifiers_list:
 
             # Remove cluster with components if not allowed to change it.
             if not self._MODCLUSTER_DYNAMIC:
@@ -310,15 +310,20 @@ class ClusterTrait():
                     actions.append(x)
 
         if len(actions) > 0:
-            return ClusterRequest(self, actions)
+            for x in actions:
+                self._controller.e.check_obj_ref(x.subject)
+            r = ClusterRequest(self, actions)
+            for x in r.require:
+                self._controller.e.check_obj_ref(x.subject)
+            return r
         else:
             return []
 
     def perform_action(self, action):
-        if action['subject'] not in self._modifiers_list:
+        if action.subject not in self._modifiers_list:
             raise ValueError
 
-        x = action['verb']
+        x = action.verb
 
         if x == 'REMOVE':
             self._delete(action)
@@ -330,7 +335,7 @@ class ClusterTrait():
             raise ValueError
 
     def _delete(self, action):
-        self._modifiers_list.remove(action['subject'])
+        self._modifiers_list.remove(action.subject)
 
     # ============================
     # Methods reserved for objects

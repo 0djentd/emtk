@@ -211,9 +211,9 @@ class FirstLayerClustersListTrait():
         allowed.
         Can return empty list.
         """
-        if question['subject'] in self._modifiers_list:
+        if question.subject in self._modifiers_list:
             return []
-        if question['subject'] is self:
+        if question.subject is self:
             raise ValueError
         return []
 
@@ -229,10 +229,10 @@ class FirstLayerClustersListTrait():
         self._controller.do(x)
 
     def perform_action(self, action):
-        if action['subject'] not in self._modifiers_list:
-            raise ValueError(f"{action['subject']}")
+        if action.subject not in self._modifiers_list:
+            raise ValueError(f"{action.subject}")
 
-        x = action['verb']
+        x = action.verb
 
         if x == 'REMOVE':
             self._delete(action)
@@ -244,11 +244,7 @@ class FirstLayerClustersListTrait():
             raise ValueError
 
     def _delete(self, action):
-        self._modifiers_list.remove(action['subject'])
-
-    def recursive_has_object(self, obj):
-        return obj in self.get_full_list()\
-                and obj in self.get_full_actual_modifiers_list()
+        self._modifiers_list.remove(action.subject)
 
     def create_modifier(self, m_name, m_type, layer=None, cluster_index=None):
         """

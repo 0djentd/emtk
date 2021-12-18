@@ -47,10 +47,10 @@ class ModifiersCluster(
 
     def _delete(self, action):
         if _WITH_BPY:
-            mod_name = action['subject'].name
-            self._modifiers_list.remove(action['subject'])
+            mod_name = action.subject.name
+            self._modifiers_list.remove(action.subject)
             bpy.ops.object.modifier_remove(modifier=mod_name)
         else:
-            mod_name = action['subject'].name
-            self._modifiers_list.remove(action['subject'])
+            mod_name = action.subject.name
+            self._modifiers_list.remove(action.subject)
             self._object.modifier_remove(modifier=mod_name)

@@ -34,11 +34,21 @@ class ClustersController():
         """
         Finds required actions and performs them.
         """
+
+        for x in request.require:
+            self.e.check_obj_ref(x.subject)
+
         actions = []
-        for x in request['require']:
+        for x in request.require:
             actions.extend(self.get_required_actions(x))
 
+        for x in actions:
+            self.e.check_obj_ref(x.subject)
+
         actions = self.sort_actions(actions)
+
+        for x in actions:
+            self.e.check_obj_ref(x.subject)
 
         for x in actions:
             self.apply_action(x)
@@ -47,7 +57,7 @@ class ClustersController():
         """
         Performs ClustersAction on this ClustersList.
         """
-        layer = self.e.get_cluster_cluster_belongs_to(action['subject'])
+        layer = self.e.get_cluster_cluster_belongs_to(action.subject)
         layer.perform_action(action)
 
     # ============================
@@ -65,9 +75,15 @@ class ClustersController():
             raise TypeError(f'Should be ClustersAction {type(action)}')
 
         print(f'Trying to recursively get actions required for {action}')
-        print(f'{action["subject"]}')
+
+        self.e.check_obj_ref(action.subject)
 
         self.required_actions.append(action)
+
+        if len(self.allowed_actions) != 0 or len(self.required_actions) != 1:
+            raise ValueError('One of list is wrong len')
+
+        self.e.check_obj_ref(self.required_actions[0].subject)
 
         i = 0
 
@@ -116,15 +132,14 @@ class ClustersController():
                 # TODO: should also check in allowed actions?
                 already_there = False
                 for y in self.required_actions:
-                    if y['verb'] == x['verb']\
-                            and y['subject'] is x['subject']:
+                    if x.subject == y.subject:
                         already_there = True
                 if already_there is False:
                     self.required_actions.append(x)
 
             i += 1
-            if i > 100:
-                raise ValueError
+            if i > 4:
+                raise ValueError('Depth limit')
 
         result = self.allowed_actions
         self.allowed_actions = []
@@ -141,12 +156,13 @@ class ClustersController():
         for x in result:
             d = 0
             for y in result:
-                if y['verb'] == x['verb']\
-                        and y['subject'] is x['subject']:
+                if y.verb == x.verb\
+                        and y.subject is x.subject:
                     if d < 1:
                         d += 1
                     elif x not in remove:
                         remove.append(y)
+                        raise ValueError
         for x in remove:
             result.remove(x)
 
@@ -158,11 +174,9 @@ class ClustersController():
         # Check arguments
         if not isinstance(action, ClustersAction):
             raise TypeError(f'Should be ClustersAction {type(action)}')
-        if action['subject'] is self.e:
+        if action.subject is self.e:
             raise ValueError
-        if not self.e.recursive_has_object(action['subject']):
-            raise ValueError
-
+        self.e.check_obj_ref(action.subject)
         result = []
 
         # Get required actions.
@@ -171,8 +185,8 @@ class ClustersController():
             print(f'Asking {x}')
             answer = x.ask(action)
             if isinstance(answer, ClusterRequest):
-                print(f'Got answer {answer["require"]}')
-                result.extend(answer['require'])
+                print(f'Got answer {answer.require}')
+                result.extend(answer.require)
 
         if len(clusters) == 0:
             raise ValueError
@@ -181,8 +195,7 @@ class ClustersController():
         remove = []
         for x in result:
             for y in self.required_actions:
-                if y['verb'] == x['verb']\
-                        and y['subject'] is x['subject']:
+                if x.subject == y.subject:
                     remove.append(x)
 
         for x in remove:
@@ -194,7 +207,7 @@ class ClustersController():
         f = []
         s = []
         for x in actions:
-            if x in self.e.get_full_actual_modifiers_list():
+            if x.subject in self.e.get_full_actual_modifiers_list():
                 f.append(x)
             else:
                 s.append(x)
@@ -227,7 +240,7 @@ class ClustersController():
 # 
 #     x = question
 # 
-#     q = x['verb']
+#     q = x.verb
 # 
 #     if self._MODCLUSTER_DYNAMIC is False:
 #         x = [ClustersAction(self, 'REMOVE')]
@@ -248,7 +261,7 @@ class ClustersController():
 #     if action['subject'] not in self._modifiers_list:
 #         raise ValueError
 # 
-#     x = action['verb']
+#     x = action.verb
 # 
 #     if x == 'REMOVE':
 #         self._delete(action)
