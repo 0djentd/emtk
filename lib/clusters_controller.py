@@ -155,17 +155,7 @@ class ClustersController():
                 self.required_actions.remove(x)
 
             for x in add_req_actions:
-
-                # Dont add duplicates
-                # TODO: should also check in allowed actions?
-                already_there = False
-                for y in self.required_actions:
-                    if x.subject == y.subject:
-                        already_there = True
-                if already_there is False:
-                    self.required_actions.append(x)
-                else:
-                    raise ValueError
+                self.required_actions.append(x)
 
             i += 1
             if i > 100:
