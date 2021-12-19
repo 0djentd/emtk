@@ -329,10 +329,10 @@ class ActionDefaultMove(ClusterActionAnswer):
                     if _WITH_BPY:
                         bpy.ops.object.modifier_move_up(modifier=mod)
                     else:
-                        self.cluster._object.move_up(modifier=mod)
+                        self.cluster._object.modifier_move_up(modifier=mod)
                 else:
                     c = self.cluster._modifiers_list.pop(i)
-                    self.cluster._modifiers.list.insert(i-1, c)
+                    self.cluster._modifiers_list.insert(i-1, c)
 
         elif action.direction == 'DOWN':
             if i == self.cluster.get_list_length() - 1:
@@ -342,10 +342,10 @@ class ActionDefaultMove(ClusterActionAnswer):
                     if _WITH_BPY:
                         bpy.ops.object.modifier_move_down(modifier=mod)
                     else:
-                        self.cluster._object.move_down(modifier=mod)
+                        self.cluster._object.modifier_move_down(modifier=mod)
                 else:
                     c = self.cluster._modifiers_list.pop(i)
-                    self.cluster._modifiers.list.insert(i+1, c)
+                    self.cluster._modifiers_list.insert(i+1, c)
         else:
             raise ValueError
 
@@ -395,7 +395,6 @@ class ActionDefaultMoved(ClusterActionAnswer):
         return
 
     def _interpret_case_list(self, action):
-        i = self.cluster._modifiers_list.index(action.subject)
         mod = action.subject.name
 
         if _WITH_BPY:
@@ -405,21 +404,17 @@ class ActionDefaultMoved(ClusterActionAnswer):
 
         if action.direction == 'UP':
             if isinstance(action.subject, modifiers_type):
-                if i == 0:
-                    raise ValueError
                 if _WITH_BPY:
                     bpy.ops.object.modifier_move_up(modifier=mod)
                 else:
-                    self.cluster._object.move_up(modifier=mod)
+                    self.cluster._object.modifier_move_up(modifier=mod)
 
         elif action.direction == 'DOWN':
             if isinstance(action.subject, modifiers_type):
-                if i == self.cluster.get_list_length() - 1:
-                    raise ValueError
                 if _WITH_BPY:
                     bpy.ops.object.modifier_move_down(modifier=mod)
                 else:
-                    self.cluster._object.move_down(modifier=mod)
+                    self.cluster._object.modifier_move_down(modifier=mod)
         else:
             raise ValueError
 
