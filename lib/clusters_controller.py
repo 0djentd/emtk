@@ -16,19 +16,19 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-from .clusters_actions import ClusterRequest, ClustersAction
+from .clusters_actions import ClusterRequest, ClustersAction, ClustersCommand
 
 try:
     import bpy
     _WITH_BPY = True
 except ModuleNotFoundError:
-    from .dummy_modifiers import DummyBlenderModifier, DummyBlenderObj
+    from .dummy_modifiers import DummyBlenderModifier
     _WITH_BPY = False
 
 
 class ClustersController():
     """
-    This is object responsible for clusters actions buffer.
+    This is object responsible for clusters actions solver.
     """
 
     def __init__(self, extended_modifiers_list_obj, *args, **kwargs):
@@ -46,31 +46,31 @@ class ClustersController():
 
         actions = []
         for x in request.require:
-            actions.extend(self.get_required_actions(x))
+            actions.extend(self._solve_action(x))
 
         actions = self._sort_actions_by_layer_depth(actions)
 
         for x in actions:
             self._apply_action(x)
 
-    def check_action_solving(self, request, try_actions):
-        """
-        Checks if request will have try_actions in it after solving.
+    # def check_action_solving(self, request, try_actions):
+    #     """
+    #     Checks if request will have try_actions in it after solving.
 
-        Returns False, if it has try_actions.
-        Returns True, if not.
-        """
-        for x in request.require:
-            self.e.check_obj_ref(x.subject)
+    #     Returns False, if it has try_actions.
+    #     Returns True, if not.
+    #     """
+    #     for x in request.require:
+    #         self.e.check_obj_ref(x.subject)
 
-        actions = []
-        for x in request.require:
-            actions.extend(self.get_required_actions(x))
-        for x in actions:
-            for t in try_actions:
-                if x == t:
-                    return False
-        return True
+    #     actions = []
+    #     for x in request.require:
+    #         actions.extend(self.get_required_actions(x))
+    #     for x in actions:
+    #         for t in try_actions:
+    #             if x == t:
+    #                 return False
+    #     return True
 
     def _sort_actions_by_layer_depth(self, actions):
         """
@@ -96,7 +96,7 @@ class ClustersController():
     # ============================
     # CLUSTERS ACTIONS SOLVER
     # ============================
-    def get_required_actions(self, action):
+    def _solve_action(self, action):
         """
         Returns actions that are required to allow action by
         all clusters.
@@ -135,7 +135,7 @@ class ClustersController():
             # Get new list of required actions for
             # already existing required actions
             for x in self.required_actions:
-                a = self._get_required_actions_recursive(x)
+                a = self._ask_clusters(x)
 
                 # This action can be allowed.
                 if len(a) == 0:
@@ -151,6 +151,7 @@ class ClustersController():
 
             for x in add_req_actions:
                 self.required_actions.append(x)
+
             i += 1
             if i > 100:
                 raise ValueError('Clusters actions solver depth limit')
@@ -166,7 +167,7 @@ class ClustersController():
             raise ValueError
         return result
 
-    def _get_required_actions_recursive(self, action):
+    def _ask_clusters(self, action):
 
         # Check arguments
         if not isinstance(action, ClustersAction):

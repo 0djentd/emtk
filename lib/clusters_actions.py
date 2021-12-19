@@ -53,6 +53,36 @@ class ClustersAction():
         return f"ClusterAction [{self.verb} {self.subject}]"
 
 
+class ClustersCommand():
+    """
+    This is an object that represents any number of actions.
+    """
+
+    def __init__(self, command_type, actions_to_do, command_status):
+        if isinstance(actions_to_do, list):
+            for x in actions_to_do:
+                if not isinstance(x, ClustersAction):
+                    raise TypeError
+            actions = actions_to_do
+        elif isinstance(actions_to_do, ClustersAction):
+            actions = [actions_to_do]
+        else:
+            raise TypeError
+        if not isinstance(command_type, str)\
+                or if not isinstance(command_status, str):
+            raise TypeError
+
+        self.command_type = command_type
+        self.command_status = command_status
+        self.actions = actions
+
+    def __str__(self):
+        return f"Cluster command from {self.o} {self.require}"
+
+    def __repr__(self):
+        return f"Cluster command from {self.o} {self.require}"
+
+
 class ClusterRequest():
     """
     Object that represents multiple actions from one
@@ -294,6 +324,7 @@ class ActionDefaultMove(ClusterActionAnswer):
 
         # Remove cluster with components if not allowed to change it.
         if not self.cluster._MODCLUSTER_DYNAMIC:
+            raise ValueError
             # TODO: this should be in clusters controller
             return [ClustersAction('DECONSTRUCT', self.cluster)]
 
@@ -301,14 +332,22 @@ class ActionDefaultMove(ClusterActionAnswer):
             if i == 0:
                 raise ValueError
             else:
-                actions = [ClustersAction('MOVE', action.subject)]
+                actions.append(ClustersAction('MOVE', action.subject))
+                d_move_cluster = self.cluster.get_by_index(
+                        self.cluster.get_index(action.subject) - 1)
+                actions.append(ClustersAction('DRY_MOVE', action.subject))
                 actions[0].direction = action.direction
+                actions[1].direction = 'DOWN'
         elif action.direction == 'DOWN':
             if i == self.cluster.get_list_length() - 1:
                 raise ValueError
             else:
-                actions = [ClustersAction('MOVE', action.subject)]
-
+                actions.append(ClustersAction('MOVE', action.subject))
+                d_move_cluster = self.cluster.get_by_index(
+                        self.cluster.get_index(action.subject) + 1)
+                actions.append(ClustersAction('DRY_MOVE', action.subject))
+                actions[0].direction = action.direction
+                actions[1].direction = 'UP'
         return actions
 
     def _answer_case_all(self, action):
@@ -358,6 +397,32 @@ class ActionDefaultMove(ClusterActionAnswer):
     def _interpret_case_all(self, action):
         return []
 
+class ActionDefaultDryMove(ClusterActionAnswer):
+    def _answer_case_self(self, action):
+        actions = []
+        for x in self.cluster.get_list:
+            actions.append(ClustersAction('DRY_MOVE', x))
+            actions[-1].direction = action.direction
+        return actions
+
+    def _answer_case_list(self, action):
+        return self._no_action_answer(action)
+
+    def _answer_case_all(self, action):
+        return self._no_action_answer(action)
+
+    def _interpret_case_self(self, action):
+        return self._no_action_answer(action)
+
+    def _interpret_case_list(self, action):
+        return self._no_action_answer(action)
+
+    def _interpret_case_all(self, action):
+        return self._no_action_answer(action)
+
+    def _no_action_answer(self, action):
+        return []
+
 
 class ActionDefaultMoved(ClusterActionAnswer):
     def __init__(self, *args, **kwargs):
@@ -386,19 +451,14 @@ class ActionDefaultMoved(ClusterActionAnswer):
         if isinstance(action.subject, modifiers_type):
             actions.append(ClustersAction('MOVED', action.subject))
             actions[0].direction = action.direction
-        # TODO: should it actually require that?
-        else:
-            for i, x in enumerate(
-                    action.subject.get_all_clusters_and_modifiers()):
-                actions.append(ClustersAction('MOVED', x))
-                actions[i].direction = action.direction
+
         return actions
 
     def _answer_case_all(self, action):
         return []
 
     def _interpret_case_self(self, action):
-        return
+        return []
 
     def _interpret_case_list(self, action):
         mod = action.subject.name
@@ -425,7 +485,7 @@ class ActionDefaultMoved(ClusterActionAnswer):
             raise ValueError
 
     def _interpret_case_all(self, action):
-        return
+        return []
 
 
 default_clusters_actions = [ActionDefaultMoved,
