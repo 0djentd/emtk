@@ -130,6 +130,9 @@ class DummyBlenderObj():
         self._check_modifiers_names()
         raise ValueError
 
+    def modifier_apply(self, modifier=None):
+        return self.modifier_remove(modifier)
+
     def modifier_move_down(self, modifier=None):
         """
         Moves modifier up.

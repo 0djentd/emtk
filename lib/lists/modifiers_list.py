@@ -17,6 +17,12 @@
 # ##### END GPL LICENSE BLOCK #####
 
 from .traits.utils.modifiers_list_utils import ModifiersListUtilsTrait
+from ..clusters_actions import (
+                                ActionDefaultRemove,
+                                ActionDefaultApply,
+                                ClusterRequest,
+                                ClustersAction
+                                )
 
 
 class ModifiersList(ModifiersListUtilsTrait):
@@ -74,17 +80,71 @@ class ModifiersList(ModifiersListUtilsTrait):
     # Additional info
     _MODIFIERS_LIST_V = True
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args,
+                 actions=None, no_default_actions=False,
+                 **kwargs):
         super().__init__(*args, **kwargs)
         self.__DUMMY_MODIFIERS = False
         self._modifiers_list = []
         self._additional_info_log = []
+        self._actions = []
+        if not no_default_actions:
+            default_actions = []
+            default_actions.append(ActionDefaultRemove(self))
+            default_actions.append(ActionDefaultApply(self))
+            self._actions.extend(default_actions)
+        if actions is not None and isinstance(actions, list):
+            self._actions.extend(actions)
 
     def __len__(self):
         return len(self._modifiers_list)
 
     def _check_if_cluster_removed(self):
         pass
+
+    def remove(self, cluster):
+        """
+        Removes cluster from this list.
+        """
+        y = ClustersAction('REMOVE', cluster)
+        x = ClusterRequest(self, y)
+        self._controller.do(x)
+
+    def apply(self, cluster):
+        """
+        Removes cluster from this list.
+        """
+        y = ClustersAction('APPLY', cluster)
+        x = ClusterRequest(self, y)
+        self._controller.do(x)
+
+    def move_up(self, cluster):
+        """
+        Removes cluster from this list.
+        """
+        y = ClustersAction('MOVE', cluster)
+        y.direction = 'UP'
+        x = ClusterRequest(self, y)
+        self._controller.do(x)
+
+    def move_down(self, cluster):
+        """
+        Removes cluster from this list.
+        """
+        y = ClustersAction('MOVE', cluster)
+        y.direction = 'DOWN'
+        x = ClusterRequest(self, y)
+        self._controller.do(x)
+
+    def ask(self, action):
+        for x in self._actions:
+            if x.action_type == action.verb:
+                return x.ask(action)
+
+    def do(self, action):
+        for x in self._actions:
+            if x.action_type == action.verb:
+                return x.do(action)
 
     # =======================================================
     # THIS METHODS SHOULD BE SPECIFIED FOR OTHER OBJECT TYPES

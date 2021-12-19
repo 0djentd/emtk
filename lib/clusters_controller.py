@@ -91,7 +91,7 @@ class ClustersController():
         Performs ClustersAction on this ClustersList.
         """
         layer = self.e.get_cluster_cluster_belongs_to(action.subject)
-        layer.perform_action(action)
+        layer.do(action)
 
     # ============================
     # CLUSTERS ACTIONS SOLVER

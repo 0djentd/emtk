@@ -88,10 +88,6 @@ class ClustersListTrait():
     def _check_if_cluster_removed(self):
         pass
 
-    def _delete(self, action):
-        action.subject._cluster_removed = True
-        self._modifiers_list.remove(action.subject)
-
     # =====================================
     # THIS METHODS WORK ONLY WITH CLUSTERS.
     # =====================================
