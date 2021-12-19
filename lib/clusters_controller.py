@@ -151,7 +151,6 @@ class ClustersController():
 
             for x in add_req_actions:
                 self.required_actions.append(x)
-
             i += 1
             if i > 100:
                 raise ValueError('Clusters actions solver depth limit')
