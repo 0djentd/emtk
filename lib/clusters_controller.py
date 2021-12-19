@@ -118,11 +118,6 @@ class ClustersController():
 
         while len(self.required_actions) > 0:
 
-            # print('')
-            # print(f'Recursive action solver iteration {i}')
-            # print(f'Already required actions is {self.required_actions}')
-            # print(f'Already allowed actions is {self.allowed_actions}')
-
             # Allowed action is an action that will be performed
             # to allow initial action. It is an allowed action too.
             # It requires no additional actions.
@@ -164,7 +159,6 @@ class ClustersController():
         result = self.allowed_actions
         self.allowed_actions = []
 
-        # Check result
         if len(self.required_actions) != 0:
             raise ValueError
         if len(self.allowed_actions) != 0:

@@ -33,7 +33,7 @@ class ClustersAction():
 
     verb = None
     subject = None
-    alternative_actions = None
+    # alternative_actions = None
 
     def __init__(self, verb, subject):
         if not isinstance(verb, str):
@@ -44,7 +44,7 @@ class ClustersAction():
 
         self.verb = verb
         self.subject = subject
-        self.alternative_actions = []
+        # self.alternative_actions = []
 
     def __str__(self):
         return f"Cluster action {self.verb} {self.subject}"
@@ -291,18 +291,24 @@ class ActionDefaultMove(ClusterActionAnswer):
 
     def _answer_case_list(self, action):
         i = self._modifiers_list.index(action.subject)
-        if action.direction == 'UP':
+
+        # Remove cluster with components if not allowed to change it.
+        if not self.cluster._MODCLUSTER_DYNAMIC:
+            # TODO: this should be in clusters controller
+            return [ClustersAction('DECONSTRUCT', self.cluster)]
+
+        elif action.direction == 'UP':
             if i == 0:
                 raise ValueError
             else:
                 actions = [ClustersAction('MOVE', action.subject)]
+                actions[0].direction = action.direction
         elif action.direction == 'DOWN':
             if i == self.cluster.get_list_length() - 1:
                 raise ValueError
             else:
                 actions = [ClustersAction('MOVE', action.subject)]
 
-        actions[0].direction = action.direction
         return actions
 
     def _answer_case_all(self, action):
