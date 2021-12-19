@@ -20,6 +20,8 @@ from .traits.utils.modifiers_list_utils import ModifiersListUtilsTrait
 from ..clusters_actions import (
                                 ActionDefaultRemove,
                                 ActionDefaultApply,
+                                ActionDefaultMove,
+                                ActionDefaultMoved,
                                 ClusterRequest,
                                 ClustersAction
                                 )
@@ -92,6 +94,8 @@ class ModifiersList(ModifiersListUtilsTrait):
             default_actions = []
             default_actions.append(ActionDefaultRemove(self))
             default_actions.append(ActionDefaultApply(self))
+            default_actions.append(ActionDefaultMoved(self))
+            default_actions.append(ActionDefaultMove(self))
             self._actions.extend(default_actions)
         if actions is not None and isinstance(actions, list):
             self._actions.extend(actions)

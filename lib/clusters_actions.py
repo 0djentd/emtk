@@ -26,14 +26,14 @@ except ModuleNotFoundError:
 
 class ClustersAction():
     """
-    Simples element used in clusters controller,
+    Simplest element used in clusters controller,
     represents action without any of its
     dependencies.
     """
 
     verb = None
     subject = None
-    status = None
+    alternative_actions = None
 
     def __init__(self, verb, subject):
         if not isinstance(verb, str):
@@ -44,7 +44,7 @@ class ClustersAction():
 
         self.verb = verb
         self.subject = subject
-        self.status = 'STILL_NOT_ALLOWED'
+        self.alternative_actions = []
 
     def __str__(self):
         return f"Cluster action {self.verb} {self.subject}"
@@ -58,6 +58,8 @@ class ClusterRequest():
     Object that represents multiple actions from one
     cluster, controller, or list.
     """
+    o = None
+    require = None
 
     def __init__(self, obj, require):
         if isinstance(require, list):
@@ -121,22 +123,22 @@ class ClusterActionAnswer():
             raise ValueError('Action cant be interpreted')
 
     def _answer_case_self(self, action):
-        return self._no_action_answer(self, action)
+        return self._no_action_answer(action)
 
     def _answer_case_list(self, action):
-        return self._no_action_answer(self, action)
+        return self._no_action_answer(action)
 
     def _answer_case_all(self, action):
-        return self._no_action_answer(self, action)
+        return self._no_action_answer(action)
 
     def _interpret_case_self(self, action):
-        return self._no_action_answer(self, action)
+        return self._no_action_answer(action)
 
     def _interpret_case_list(self, action):
-        return self._no_action_answer(self, action)
+        return self._no_action_answer(action)
 
     def _interpret_case_all(self, action):
-        return self._no_action_answer(self, action)
+        return self._no_action_answer(action)
 
     def _no_action_answer(self, action):
         raise ValueError('No class-specific method.')
@@ -275,16 +277,17 @@ class ActionDefaultApply(ActionDefaultTemplate):
 
 
 # TODO: this method doent checks clusters in layers above it.
-class ActionDefaultMove():
+class ActionDefaultMove(ClusterActionAnswer):
     def __init__(self, *args, **kwargs):
         super().__init__(action_type='MOVE', *args, **kwargs)
+        self.action_type = 'MOVE'
 
     def _answer_case_self(self, action):
         actions = []
         for i, x in enumerate(self.cluster.get_list()):
             actions.append(ClustersAction('MOVED', x))
             actions[i].direction = action.direction
-        return self._no_action_answer(self, action)
+        return actions
 
     def _answer_case_list(self, action):
         i = self._modifiers_list.index(action.subject)
@@ -310,7 +313,7 @@ class ActionDefaultMove():
                 direction=action.direction)
 
     def _interpret_case_list(self, action):
-        i = self._modifiers_list.index(action.subject)
+        i = self.cluster._modifiers_list.index(action.subject)
         mod = action.subject.name
 
         if _WITH_BPY:
@@ -322,7 +325,7 @@ class ActionDefaultMove():
             if i == 0:
                 raise ValueError
             else:
-                if isinstance(modifiers_type):
+                if isinstance(action.subject, modifiers_type):
                     if _WITH_BPY:
                         bpy.ops.object.modifier_move_up(modifier=mod)
                     else:
@@ -335,7 +338,7 @@ class ActionDefaultMove():
             if i == self.cluster.get_list_length() - 1:
                 raise ValueError
             else:
-                if isinstance(modifiers_type):
+                if isinstance(action.subject, modifiers_type):
                     if _WITH_BPY:
                         bpy.ops.object.modifier_move_down(modifier=mod)
                     else:
@@ -350,9 +353,10 @@ class ActionDefaultMove():
         return []
 
 
-class ActionDefaultMoved():
+class ActionDefaultMoved(ClusterActionAnswer):
     def __init__(self, *args, **kwargs):
-        super().__init__(action_type='MOVED', *args, **kwargs)
+        super().__init__(*args, **kwargs)
+        self.action_type = 'MOVED'
 
     def _answer_case_self(self, action):
         actions = []
@@ -391,7 +395,7 @@ class ActionDefaultMoved():
         return
 
     def _interpret_case_list(self, action):
-        i = self._modifiers_list.index(action.subject)
+        i = self.cluster._modifiers_list.index(action.subject)
         mod = action.subject.name
 
         if _WITH_BPY:
@@ -400,7 +404,7 @@ class ActionDefaultMoved():
             modifiers_type = DummyBlenderModifier
 
         if action.direction == 'UP':
-            if isinstance(modifiers_type):
+            if isinstance(action.subject, modifiers_type):
                 if i == 0:
                     raise ValueError
                 if _WITH_BPY:
@@ -409,7 +413,7 @@ class ActionDefaultMoved():
                     self.cluster._object.move_up(modifier=mod)
 
         elif action.direction == 'DOWN':
-            if isinstance(modifiers_type):
+            if isinstance(action.subject, modifiers_type):
                 if i == self.cluster.get_list_length() - 1:
                     raise ValueError
                 if _WITH_BPY:

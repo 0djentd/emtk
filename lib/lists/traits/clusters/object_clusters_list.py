@@ -27,6 +27,11 @@ except ModuleNotFoundError:
     from ....dummy_modifiers import DummyBlenderModifier, DummyBlenderObj
     _WITH_BPY = False
 
+from ....clusters_actions import (
+                                  ClusterRequest,
+                                  ClustersAction
+                                  )
+
 
 class ObjectClustersListTrait():
     """
@@ -75,6 +80,10 @@ class ObjectClustersListTrait():
         Moves cluster in blender modifiers
         stack. Direction should be either UP or DOWN.
         """
+        y = ClustersAction('MOVE', mod)
+        y.direction = direction
+        x = ClusterRequest(self, y)
+        self._controller.do(x)
 
         if not isinstance(mod, ModifiersList):
             raise TypeError
