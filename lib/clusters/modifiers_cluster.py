@@ -16,7 +16,7 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-from .cluster import ClusterTrait
+from .cluster_trait import ClusterTrait
 
 from ..lists.modifiers_list import ModifiersList
 from ..lists.traits.modifiers.active_modifier \

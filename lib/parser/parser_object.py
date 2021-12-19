@@ -25,7 +25,7 @@ except ModuleNotFoundError:
     from ..dummy_modifiers import DummyBlenderModifier, DummyBlenderObj
     _WITH_BPY = False
 
-from ..clusters.cluster import ClusterTrait
+from ..clusters.cluster_trait import ClusterTrait
 from ..clusters.default_modifier_cluster import DefaultModifierCluster
 from ..lists.traits.clusters.active_cluster import ActiveClusterTrait
 from ..lists.traits.modifiers.active_modifier import ActiveModifierTrait

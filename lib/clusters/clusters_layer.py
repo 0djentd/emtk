@@ -23,7 +23,7 @@ from ..lists.traits.clusters.sortable_clusters_list\
 from ..lists.traits.clusters.object_clusters_list\
         import ObjectClustersListTrait
 from ..lists.traits.clusters.active_cluster import ActiveClusterTrait
-from .cluster import ClusterTrait
+from .cluster_trait import ClusterTrait
 
 from ..clusters_actions import ClustersAction, ClusterRequest
 

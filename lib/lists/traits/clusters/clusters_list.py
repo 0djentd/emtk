@@ -16,7 +16,7 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-from ....clusters.cluster import ClusterTrait
+from ....clusters.cluster_trait import ClusterTrait
 
 
 class ClustersListTrait():
