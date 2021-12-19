@@ -23,93 +23,7 @@ except ModuleNotFoundError:
     from .dummy_modifiers import DummyBlenderModifier
     _WITH_BPY = False
 
-
-class ClustersAction():
-    """
-    Simplest element used in clusters controller,
-    represents action without any of its
-    dependencies.
-    """
-
-    verb = None
-    subject = None
-    # alternative_actions = None
-
-    def __init__(self, verb, subject):
-        if not isinstance(verb, str):
-            raise TypeError(f'{type(verb)}')
-
-        if len(verb) == 0:
-            raise ValueError
-
-        self.verb = verb
-        self.subject = subject
-        # self.alternative_actions = []
-
-    def __str__(self):
-        return f"Cluster action {self.verb} {self.subject}"
-
-    def __repr__(self):
-        return f"ClusterAction [{self.verb} {self.subject}]"
-
-
-class ClustersCommand():
-    """
-    This is an object that represents any number of actions.
-    """
-
-    def __init__(self, command_type, actions_to_do, command_status):
-        if isinstance(actions_to_do, list):
-            for x in actions_to_do:
-                if not isinstance(x, ClustersAction):
-                    raise TypeError
-            actions = actions_to_do
-        elif isinstance(actions_to_do, ClustersAction):
-            actions = [actions_to_do]
-        else:
-            raise TypeError
-        if not isinstance(command_type, str)\
-                or if not isinstance(command_status, str):
-            raise TypeError
-
-        self.command_type = command_type
-        self.command_status = command_status
-        self.actions = actions
-
-    def __str__(self):
-        return f"Cluster command from {self.o} {self.require}"
-
-    def __repr__(self):
-        return f"Cluster command from {self.o} {self.require}"
-
-
-class ClusterRequest():
-    """
-    Object that represents multiple actions from one
-    cluster, controller, or list.
-    """
-    o = None
-    require = None
-
-    def __init__(self, obj, require):
-        if isinstance(require, list):
-            for x in require:
-                if not isinstance(x, ClustersAction):
-                    raise TypeError
-            actions = require
-        elif isinstance(require, ClustersAction):
-            actions = [require]
-        else:
-            raise TypeError
-
-        self.o = obj
-        self.require = actions
-
-    def __str__(self):
-        return f"Cluster request from {self.o} {self.require}"
-
-    def __repr__(self):
-        return f"ClusterRequest from {self.o} {self.require}"
+from .actions import ClustersAction, ClusterRequest, ClustersCommand
 
 
 class ClusterActionAnswer():
@@ -195,7 +109,7 @@ class ActionDefaultTemplate(ClusterActionAnswer):
 
     def _answer_case_self(self, action):
 
-        # If removing cluster, remove it.
+        # If removing cluster, remove all its components.
         actions = []
         for y in self.cluster._modifiers_list:
             actions.append(ClustersAction(self.action_type, y))
@@ -204,52 +118,23 @@ class ActionDefaultTemplate(ClusterActionAnswer):
     def _answer_case_list(self, action):
         actions = []
 
-        # Remove cluster with components if not allowed to change it.
+        # Deconstruct cluster with components if not allowed to change it.
         if not self.cluster._MODCLUSTER_DYNAMIC:
-            actions.append(ClustersAction(self.action_type, self.cluster))
+            c = ClustersCommand(ClustersAction('DECONSTRUCT', self.cluster))
+            actions.append(c)
 
         # If removing modifier and it is last modifier.
-        if len(self.cluster._modifiers_list) == 1:
-            actions.append(ClustersAction(self.action_type, self.cluster))
+        elif len(self.cluster._modifiers_list) == 1:
+            c = ClustersCommand(ClustersAction('REMOVE', self.cluster))
+            actions.append(c)
         return actions
-
-    def _answer_case_all(self, action):
-        actions = []
-
-        # Remove cluster with components if not allowed to change it.
-        if not self.cluster._MODCLUSTER_DYNAMIC:
-            actions.append(ClustersAction(self.action_type, self.cluster))
-        return actions
-
-    def _interpret_case_self(self, action):
-        return
-
-    def _interpret_case_list(self, action):
-        raise ValueError('No action-specific method')
-
-        if _WITH_BPY:
-            modifiers_type = bpy.types.Modifier
-        else:
-            modifiers_type = DummyBlenderModifier
-
-        if isinstance(action.subject, modifiers_type):
-            if _WITH_BPY:
-                mod_name = action.subject.name
-                self.cluster._modifiers_list.remove(action.subject)
-                bpy.ops.object.modifier_remove(modifier=mod_name)
-            else:
-                mod_name = action.subject.name
-                self.cluster._modifiers_list.remove(action.subject)
-                self.cluster._object.modifier_remove(modifier=mod_name)
-        else:
-            self.cluster._modifiers_list.remove(action.subject)
-
 
 # Remove and apply are practically the same action, as modifier being removed
 # from modifiers list when its applied in blender.
 
 # TODO: dont remove cluster on apply, create a duplicate blender
 # object and allow copying modifier with its cluster from it.
+
 
 class ActionDefaultRemove(ActionDefaultTemplate):
     def __init__(self, *args, **kwargs):
@@ -321,6 +206,7 @@ class ActionDefaultMove(ClusterActionAnswer):
 
     def _answer_case_list(self, action):
         i = self._modifiers_list.index(action.subject)
+        actions = []
 
         # Remove cluster with components if not allowed to change it.
         if not self.cluster._MODCLUSTER_DYNAMIC:
@@ -345,7 +231,7 @@ class ActionDefaultMove(ClusterActionAnswer):
                 actions.append(ClustersAction('MOVE', action.subject))
                 d_move_cluster = self.cluster.get_by_index(
                         self.cluster.get_index(action.subject) + 1)
-                actions.append(ClustersAction('DRY_MOVE', action.subject))
+                actions.append(ClustersAction('DRY_MOVE', d_move_cluster))
                 actions[0].direction = action.direction
                 actions[1].direction = 'UP'
         return actions
@@ -396,6 +282,7 @@ class ActionDefaultMove(ClusterActionAnswer):
 
     def _interpret_case_all(self, action):
         return []
+
 
 class ActionDefaultDryMove(ClusterActionAnswer):
     def _answer_case_self(self, action):

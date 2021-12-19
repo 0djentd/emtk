@@ -53,25 +53,6 @@ class ClustersController():
         for x in actions:
             self._apply_action(x)
 
-    # def check_action_solving(self, request, try_actions):
-    #     """
-    #     Checks if request will have try_actions in it after solving.
-
-    #     Returns False, if it has try_actions.
-    #     Returns True, if not.
-    #     """
-    #     for x in request.require:
-    #         self.e.check_obj_ref(x.subject)
-
-    #     actions = []
-    #     for x in request.require:
-    #         actions.extend(self.get_required_actions(x))
-    #     for x in actions:
-    #         for t in try_actions:
-    #             if x == t:
-    #                 return False
-    #     return True
-
     def _sort_actions_by_layer_depth(self, actions):
         """
         Returns actions sorted by reversed layer depth.
