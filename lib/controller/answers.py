@@ -28,8 +28,8 @@ from .actions import ClustersAction, ClusterRequest, ClustersCommand
 
 class ClusterActionAnswer():
     """
-    This is object responsible for answering on actions from ClustersController
-    and performing them.
+    This is base class for objects responsible for answering on
+    actions from ClustersController and performing them.
 
     case_self methods are used when action subject is cluster itself.
     case_list methods are used when action subject is in this cluster's layer.
@@ -47,8 +47,8 @@ class ClusterActionAnswer():
             actions = self._answer_case_self(action)
         elif action.subject in self.cluster.get_list():
             actions = self._answer_case_list(action)
-        elif action.subject in self.cluster.get_all_clusters_and_modifiers():
-            actions = self._answer_case_all(action)
+        # elif action.subject in self.cluster.get_all_clusters_and_modifiers():
+        #     actions = self._answer_case_all(action)
         else:
             return []
         return ClusterRequest(self.cluster, actions)
@@ -61,11 +61,12 @@ class ClusterActionAnswer():
             self._interpret_case_self(action)
         elif action.subject in self.cluster.get_list():
             self._interpret_case_list(action)
-        elif action.subject in self.cluster.get_all_clusters_and_modifiers():
-            self._interpret_case_all(action)
+        # elif action.subject in self.cluster.get_all_clusters_and_modifiers():
+        #     self._interpret_case_all(action)
         else:
             raise ValueError('Action cant be interpreted')
 
+    # This methods should only require actions on cluster or it's clusters.
     def _answer_case_self(self, action):
         return self._no_action_answer(action)
 
@@ -192,187 +193,187 @@ class ActionDefaultApply(ActionDefaultTemplate):
 
 
 # TODO: this method doent checks clusters in layers above it.
-class ActionDefaultMove(ClusterActionAnswer):
-    def __init__(self, *args, **kwargs):
-        super().__init__(action_type='MOVE', *args, **kwargs)
-        self.action_type = 'MOVE'
-
-    def _answer_case_self(self, action):
-        actions = []
-        for i, x in enumerate(self.cluster.get_list()):
-            actions.append(ClustersAction('MOVED', x))
-            actions[i].direction = action.direction
-        return actions
-
-    def _answer_case_list(self, action):
-        i = self._modifiers_list.index(action.subject)
-        actions = []
-
-        # Remove cluster with components if not allowed to change it.
-        if not self.cluster._MODCLUSTER_DYNAMIC:
-            raise ValueError
-            # TODO: this should be in clusters controller
-            return [ClustersAction('DECONSTRUCT', self.cluster)]
-
-        elif action.direction == 'UP':
-            if i == 0:
-                raise ValueError
-            else:
-                actions.append(ClustersAction('MOVE', action.subject))
-                d_move_cluster = self.cluster.get_by_index(
-                        self.cluster.get_index(action.subject) - 1)
-                actions.append(ClustersAction('DRY_MOVE', action.subject))
-                actions[0].direction = action.direction
-                actions[1].direction = 'DOWN'
-        elif action.direction == 'DOWN':
-            if i == self.cluster.get_list_length() - 1:
-                raise ValueError
-            else:
-                actions.append(ClustersAction('MOVE', action.subject))
-                d_move_cluster = self.cluster.get_by_index(
-                        self.cluster.get_index(action.subject) + 1)
-                actions.append(ClustersAction('DRY_MOVE', d_move_cluster))
-                actions[0].direction = action.direction
-                actions[1].direction = 'UP'
-        return actions
-
-    def _answer_case_all(self, action):
-        return []
-
-    def _interpret_case_self(self, action):
-        return self.cluster.cluster_being_moved(
-                direction=action.direction)
-
-    def _interpret_case_list(self, action):
-        i = self.cluster._modifiers_list.index(action.subject)
-        mod = action.subject.name
-
-        if _WITH_BPY:
-            modifiers_type = bpy.types.Modifier
-        else:
-            modifiers_type = DummyBlenderModifier
-
-        if action.direction == 'UP':
-            if i == 0:
-                raise ValueError
-            else:
-                if isinstance(action.subject, modifiers_type):
-                    if _WITH_BPY:
-                        bpy.ops.object.modifier_move_up(modifier=mod)
-                    else:
-                        self.cluster._object.modifier_move_up(modifier=mod)
-                else:
-                    c = self.cluster._modifiers_list.pop(i)
-                    self.cluster._modifiers_list.insert(i-1, c)
-
-        elif action.direction == 'DOWN':
-            if i == self.cluster.get_list_length() - 1:
-                raise ValueError
-            else:
-                if isinstance(action.subject, modifiers_type):
-                    if _WITH_BPY:
-                        bpy.ops.object.modifier_move_down(modifier=mod)
-                    else:
-                        self.cluster._object.modifier_move_down(modifier=mod)
-                else:
-                    c = self.cluster._modifiers_list.pop(i)
-                    self.cluster._modifiers_list.insert(i+1, c)
-        else:
-            raise ValueError
-
-    def _interpret_case_all(self, action):
-        return []
-
-
-class ActionDefaultDryMove(ClusterActionAnswer):
-    def _answer_case_self(self, action):
-        actions = []
-        for x in self.cluster.get_list:
-            actions.append(ClustersAction('DRY_MOVE', x))
-            actions[-1].direction = action.direction
-        return actions
-
-    def _answer_case_list(self, action):
-        return self._no_action_answer(action)
-
-    def _answer_case_all(self, action):
-        return self._no_action_answer(action)
-
-    def _interpret_case_self(self, action):
-        return self._no_action_answer(action)
-
-    def _interpret_case_list(self, action):
-        return self._no_action_answer(action)
-
-    def _interpret_case_all(self, action):
-        return self._no_action_answer(action)
-
-    def _no_action_answer(self, action):
-        return []
-
-
-class ActionDefaultMoved(ClusterActionAnswer):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.action_type = 'MOVED'
-
-    def _answer_case_self(self, action):
-        actions = []
-        # TODO: should it actually require that?
-        for i, x in enumerate(
-                self.cluster.get_all_clusters_and_modifiers()):
-            actions.append(ClustersAction('MOVED', x))
-            actions[i].direction = action.direction
-        # TODO: should it actually require that?
-        actions.append(ClustersAction('MOVED', self.cluster))
-        return actions
-
-    def _answer_case_list(self, action):
-        actions = []
-
-        if _WITH_BPY:
-            modifiers_type = bpy.types.Modifier
-        else:
-            modifiers_type = DummyBlenderModifier
-
-        if isinstance(action.subject, modifiers_type):
-            actions.append(ClustersAction('MOVED', action.subject))
-            actions[0].direction = action.direction
-
-        return actions
-
-    def _answer_case_all(self, action):
-        return []
-
-    def _interpret_case_self(self, action):
-        return []
-
-    def _interpret_case_list(self, action):
-        mod = action.subject.name
-
-        if _WITH_BPY:
-            modifiers_type = bpy.types.Modifier
-        else:
-            modifiers_type = DummyBlenderModifier
-
-        if action.direction == 'UP':
-            if isinstance(action.subject, modifiers_type):
-                if _WITH_BPY:
-                    bpy.ops.object.modifier_move_up(modifier=mod)
-                else:
-                    self.cluster._object.modifier_move_up(modifier=mod)
-
-        elif action.direction == 'DOWN':
-            if isinstance(action.subject, modifiers_type):
-                if _WITH_BPY:
-                    bpy.ops.object.modifier_move_down(modifier=mod)
-                else:
-                    self.cluster._object.modifier_move_down(modifier=mod)
-        else:
-            raise ValueError
-
-    def _interpret_case_all(self, action):
-        return []
+# class ActionDefaultMove(ClusterActionAnswer):
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(action_type='MOVE', *args, **kwargs)
+#         self.action_type = 'MOVE'
+# 
+#     def _answer_case_self(self, action):
+#         actions = []
+#         for i, x in enumerate(self.cluster.get_list()):
+#             actions.append(ClustersAction('MOVED', x))
+#             actions[i].direction = action.direction
+#         return actions
+# 
+#     def _answer_case_list(self, action):
+#         i = self._modifiers_list.index(action.subject)
+#         actions = []
+# 
+#         # Remove cluster with components if not allowed to change it.
+#         if not self.cluster._MODCLUSTER_DYNAMIC:
+#             raise ValueError
+#             # TODO: this should be in clusters controller
+#             return [ClustersAction('DECONSTRUCT', self.cluster)]
+# 
+#         elif action.direction == 'UP':
+#             if i == 0:
+#                 raise ValueError
+#             else:
+#                 actions.append(ClustersAction('MOVE', action.subject))
+#                 d_move_cluster = self.cluster.get_by_index(
+#                         self.cluster.get_index(action.subject) - 1)
+#                 actions.append(ClustersAction('DRY_MOVE', action.subject))
+#                 actions[0].direction = action.direction
+#                 actions[1].direction = 'DOWN'
+#         elif action.direction == 'DOWN':
+#             if i == self.cluster.get_list_length() - 1:
+#                 raise ValueError
+#             else:
+#                 actions.append(ClustersAction('MOVE', action.subject))
+#                 d_move_cluster = self.cluster.get_by_index(
+#                         self.cluster.get_index(action.subject) + 1)
+#                 actions.append(ClustersAction('DRY_MOVE', d_move_cluster))
+#                 actions[0].direction = action.direction
+#                 actions[1].direction = 'UP'
+#         return actions
+# 
+#     def _answer_case_all(self, action):
+#         return []
+# 
+#     def _interpret_case_self(self, action):
+#         return self.cluster.cluster_being_moved(
+#                 direction=action.direction)
+# 
+#     def _interpret_case_list(self, action):
+#         i = self.cluster._modifiers_list.index(action.subject)
+#         mod = action.subject.name
+# 
+#         if _WITH_BPY:
+#             modifiers_type = bpy.types.Modifier
+#         else:
+#             modifiers_type = DummyBlenderModifier
+# 
+#         if action.direction == 'UP':
+#             if i == 0:
+#                 raise ValueError
+#             else:
+#                 if isinstance(action.subject, modifiers_type):
+#                     if _WITH_BPY:
+#                         bpy.ops.object.modifier_move_up(modifier=mod)
+#                     else:
+#                         self.cluster._object.modifier_move_up(modifier=mod)
+#                 else:
+#                     c = self.cluster._modifiers_list.pop(i)
+#                     self.cluster._modifiers_list.insert(i-1, c)
+# 
+#         elif action.direction == 'DOWN':
+#             if i == self.cluster.get_list_length() - 1:
+#                 raise ValueError
+#             else:
+#                 if isinstance(action.subject, modifiers_type):
+#                     if _WITH_BPY:
+#                         bpy.ops.object.modifier_move_down(modifier=mod)
+#                     else:
+#                         self.cluster._object.modifier_move_down(modifier=mod)
+#                 else:
+#                     c = self.cluster._modifiers_list.pop(i)
+#                     self.cluster._modifiers_list.insert(i+1, c)
+#         else:
+#             raise ValueError
+# 
+#     def _interpret_case_all(self, action):
+#         return []
+# 
+# 
+# class ActionDefaultDryMove(ClusterActionAnswer):
+#     def _answer_case_self(self, action):
+#         actions = []
+#         for x in self.cluster.get_list:
+#             actions.append(ClustersAction('DRY_MOVE', x))
+#             actions[-1].direction = action.direction
+#         return actions
+# 
+#     def _answer_case_list(self, action):
+#         return self._no_action_answer(action)
+# 
+#     def _answer_case_all(self, action):
+#         return self._no_action_answer(action)
+# 
+#     def _interpret_case_self(self, action):
+#         return self._no_action_answer(action)
+# 
+#     def _interpret_case_list(self, action):
+#         return self._no_action_answer(action)
+# 
+#     def _interpret_case_all(self, action):
+#         return self._no_action_answer(action)
+# 
+#     def _no_action_answer(self, action):
+#         return []
+# 
+# 
+# class ActionDefaultMoved(ClusterActionAnswer):
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         self.action_type = 'MOVED'
+# 
+#     def _answer_case_self(self, action):
+#         actions = []
+#         # TODO: should it actually require that?
+#         for i, x in enumerate(
+#                 self.cluster.get_all_clusters_and_modifiers()):
+#             actions.append(ClustersAction('MOVED', x))
+#             actions[i].direction = action.direction
+#         # TODO: should it actually require that?
+#         actions.append(ClustersAction('MOVED', self.cluster))
+#         return actions
+# 
+#     def _answer_case_list(self, action):
+#         actions = []
+# 
+#         if _WITH_BPY:
+#             modifiers_type = bpy.types.Modifier
+#         else:
+#             modifiers_type = DummyBlenderModifier
+# 
+#         if isinstance(action.subject, modifiers_type):
+#             actions.append(ClustersAction('MOVED', action.subject))
+#             actions[0].direction = action.direction
+# 
+#         return actions
+# 
+#     def _answer_case_all(self, action):
+#         return []
+# 
+#     def _interpret_case_self(self, action):
+#         return []
+# 
+#     def _interpret_case_list(self, action):
+#         mod = action.subject.name
+# 
+#         if _WITH_BPY:
+#             modifiers_type = bpy.types.Modifier
+#         else:
+#             modifiers_type = DummyBlenderModifier
+# 
+#         if action.direction == 'UP':
+#             if isinstance(action.subject, modifiers_type):
+#                 if _WITH_BPY:
+#                     bpy.ops.object.modifier_move_up(modifier=mod)
+#                 else:
+#                     self.cluster._object.modifier_move_up(modifier=mod)
+# 
+#         elif action.direction == 'DOWN':
+#             if isinstance(action.subject, modifiers_type):
+#                 if _WITH_BPY:
+#                     bpy.ops.object.modifier_move_down(modifier=mod)
+#                 else:
+#                     self.cluster._object.modifier_move_down(modifier=mod)
+#         else:
+#             raise ValueError
+# 
+#     def _interpret_case_all(self, action):
+#         return []
 
 
 default_clusters_actions = [ActionDefaultMoved,

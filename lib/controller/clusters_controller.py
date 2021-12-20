@@ -16,14 +16,19 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-from .clusters_actions import ClusterRequest, ClustersAction, ClustersCommand
-
 try:
     import bpy
     _WITH_BPY = True
 except ModuleNotFoundError:
     from .dummy_modifiers import DummyBlenderModifier
     _WITH_BPY = False
+
+from .actions import (
+                      ClusterRequest,
+                      ClustersAction,
+                      ClustersCommand,
+                      ClustersBatchCommand
+                      )
 
 
 class ClustersController():
@@ -38,11 +43,9 @@ class ClustersController():
 
     def do(self, request):
         """
-        Finds actions required for request actions, solves and performs them.
+        Finds actions required for request actions, creates
+        commands in a batch, solves and performs them.
         """
-
-        for x in request.require:
-            self.e.check_obj_ref(x.subject)
 
         actions = []
         for x in request.require:
