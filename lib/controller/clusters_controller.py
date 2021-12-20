@@ -20,7 +20,7 @@ try:
     import bpy
     _WITH_BPY = True
 except ModuleNotFoundError:
-    from .dummy_modifiers import DummyBlenderModifier
+    from ..dummy_modifiers import DummyBlenderModifier
     _WITH_BPY = False
 
 from .actions import (
@@ -77,16 +77,16 @@ class ClustersController():
         # Solve commands.
         while s:
             new_commands = []
-            for x in batch.required_commands:
+            for x in batch.commands:
 
                 # Solve command.
-                if x.status == 'STILL_NOT_ALLOWED':
+                if x.status == 'NOT_SOLVED':
                     self._solve_command(x)
 
                 # Add its dependencies to batch, if any.
                 if x.status == 'HAS_DEPENDENCIES':
                     for y in x.dependencies:
-                        if y not in batch.required_commands:
+                        if y not in batch.commands:
                             new_commands.append(y)
 
             if len(new_commands) == 0:
@@ -101,7 +101,7 @@ class ClustersController():
         # Check result.
         for x in batch.commands:
             if x.status != 'ALLOWED' and x.status != 'HAS_DEPENDENCIES':
-                raise ValueError
+                raise ValueError(f'This is not correct status {x.status}')
             for y in x.dependencies:
                 if y not in batch.commands:
                     raise ValueError
@@ -138,39 +138,40 @@ class ClustersController():
         f = False
 
         while not f:
-
             # List of changes to required actions list after iteration
             remove_req_actions = []
             add_req_actions = []
 
             # Get new list of required actions for
             # all already existing required actions
-            for x in required_actions:
-                a = self._ask_clusters(x)
+            for action in required_actions:
+                answer = self._ask_clusters(action)
 
                 # Remove duplicates.
                 remove = []
-                for x in a:
+                for x in answer:
                     for y in required_actions + allowed_actions:
-                        if x.subject == y.subject and x.verb == y.verb:
+                        if x.subject == y.subject\
+                                and x.verb == y.verb:
                             if x not in remove:
                                 remove.append(x)
                 for x in remove:
-                    a.remove(x)
+                    answer.remove(x)
 
                 # This action can be allowed, if every new
                 # action is a duplicate.
-                if len(a) == 0:
-                    allowed_actions.append(x)
-                    remove_req_actions.append(x)
+                if len(answer) == 0:
+                    allowed_actions.append(action)
+                    remove_req_actions.append(action)
 
                 # This action requires additional actions.
                 else:
-                    add_req_actions.extend(a)
+                    add_req_actions.extend(answer)
 
             # Change required actions list.
             for x in remove_req_actions:
                 required_actions.remove(x)
+
             for x in add_req_actions:
                 required_actions.append(x)
 
@@ -245,23 +246,24 @@ class ClustersController():
             answer = x.ask(action)
             if isinstance(answer, ClusterRequest):
                 result.extend(answer.require)
-            elif answer is not None:
-                raise ValueError
         return result
 
     # =========
     # Applying
     # =========
     def _apply_batch(self, batch):
-        for x in batch.command:
+        print(f'Applying {batch}')
+        for x in batch.commands:
             self._apply_command(x)
 
     def _apply_command(self, command):
+        print(f'Applying {command}')
         for x in command.actions:
             self._apply_action(x)
 
     def _apply_action(self, action):
         layer = self.e.get_cluster_cluster_belongs_to(action.subject)
+        print(f'Applying {action} on layer {layer}')
         layer.do(action)
 
     # ==========

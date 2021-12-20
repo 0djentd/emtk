@@ -17,14 +17,17 @@
 # ##### END GPL LICENSE BLOCK #####
 
 from .traits.utils.modifiers_list_utils import ModifiersListUtilsTrait
-from ..clusters_actions import (
-                                ActionDefaultRemove,
-                                ActionDefaultApply,
-                                ActionDefaultMove,
-                                ActionDefaultMoved,
-                                ClusterRequest,
-                                ClustersAction
-                                )
+from ..controller.actions import (
+                                  ClusterRequest,
+                                  ClustersAction
+                                  )
+
+from ..controller.answers import (
+                                  ActionDefaultRemove,
+                                  ActionDefaultApply,
+                                  ActionDefaultMove,
+                                  ActionDefaultDeconstuct
+                                  )
 
 
 class ModifiersList(ModifiersListUtilsTrait):
@@ -94,7 +97,7 @@ class ModifiersList(ModifiersListUtilsTrait):
             default_actions = []
             default_actions.append(ActionDefaultRemove(self))
             default_actions.append(ActionDefaultApply(self))
-            default_actions.append(ActionDefaultMoved(self))
+            default_actions.append(ActionDefaultDeconstuct(self))
             default_actions.append(ActionDefaultMove(self))
             self._actions.extend(default_actions)
         if actions is not None and isinstance(actions, list):
@@ -110,8 +113,7 @@ class ModifiersList(ModifiersListUtilsTrait):
         """
         Removes cluster from this list.
         """
-        y = ClustersAction('REMOVE', cluster)
-        x = ClusterRequest(self, y)
+        x = ClustersAction('REMOVE', cluster)
         self._controller.do(x)
 
     def apply(self, cluster):
@@ -119,8 +121,7 @@ class ModifiersList(ModifiersListUtilsTrait):
         Removes cluster from this list.
         """
         y = ClustersAction('APPLY', cluster)
-        x = ClusterRequest(self, y)
-        self._controller.do(x)
+        self._controller.do(y)
 
     def move_up(self, cluster):
         """
@@ -128,8 +129,7 @@ class ModifiersList(ModifiersListUtilsTrait):
         """
         y = ClustersAction('MOVE', cluster)
         y.direction = 'UP'
-        x = ClusterRequest(self, y)
-        self._controller.do(x)
+        self._controller.do(y)
 
     def move_down(self, cluster):
         """
@@ -137,18 +137,19 @@ class ModifiersList(ModifiersListUtilsTrait):
         """
         y = ClustersAction('MOVE', cluster)
         y.direction = 'DOWN'
-        x = ClusterRequest(self, y)
-        self._controller.do(x)
+        self._controller.do(y)
 
     def ask(self, action):
         for x in self._actions:
             if x.action_type == action.verb:
                 return x.ask(action)
+        raise ValueError(f'No implementation for action type {action.verb}')
 
     def do(self, action):
         for x in self._actions:
             if x.action_type == action.verb:
                 return x.do(action)
+        raise ValueError(f'No implementation for action type {action.verb}')
 
     # =======================================================
     # THIS METHODS SHOULD BE SPECIFIED FOR OTHER OBJECT TYPES

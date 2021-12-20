@@ -23,7 +23,6 @@ from ..lists.traits.modifiers.active_modifier \
         import ActiveModifierTrait
 from ..lists.traits.modifiers.object_modifiers_list \
         import ObjectModifiersListTrait
-from ..clusters_actions import ClustersAction, ClusterRequest
 
 try:
     import bpy

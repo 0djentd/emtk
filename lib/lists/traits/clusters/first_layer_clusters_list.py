@@ -28,8 +28,8 @@ except ModuleNotFoundError:
     _WITH_BPY = False
 
 from ....parser import ClustersParser
-from ....clusters_controller import ClustersController
-from ....clusters_actions import ClustersAction, ClusterRequest
+from ....controller.clusters_controller import ClustersController
+from ....controller.actions import ClustersAction, ClusterRequest
 
 
 class FirstLayerClustersListTrait():
@@ -203,8 +203,7 @@ class FirstLayerClustersListTrait():
         if cluster not in self._modifiers_list:
             raise ValueError
 
-        y = ClustersAction('REMOVE', cluster)
-        x = ClusterRequest(self, y)
+        x = ClustersAction('REMOVE', cluster)
         self._controller.do(x)
 
     def perform_action(self, action):

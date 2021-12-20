@@ -25,8 +25,6 @@ from ..lists.traits.clusters.object_clusters_list\
 from ..lists.traits.clusters.active_cluster import ActiveClusterTrait
 from .cluster_trait import ClusterTrait
 
-from ..clusters_actions import ClustersAction, ClusterRequest
-
 try:
     import bpy
     _WITH_BPY = True

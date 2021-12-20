@@ -25,7 +25,7 @@ except ModuleNotFoundError:
     from ..dummy_modifiers import DummyBlenderModifier, DummyBlenderObj
     _WITH_BPY = False
 
-from ..clusters_controller import ClustersAction, ClusterRequest
+from ..controller.actions import ClustersAction, ClusterRequest
 
 
 class ClusterTrait():

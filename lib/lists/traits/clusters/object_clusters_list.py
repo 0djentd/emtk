@@ -27,10 +27,10 @@ except ModuleNotFoundError:
     from ....dummy_modifiers import DummyBlenderModifier, DummyBlenderObj
     _WITH_BPY = False
 
-from ....clusters_actions import (
-                                  ClusterRequest,
-                                  ClustersAction
-                                  )
+from ....controller.actions import (
+                                    ClusterRequest,
+                                    ClustersAction
+                                    )
 
 
 class ObjectClustersListTrait():

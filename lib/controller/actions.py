@@ -51,10 +51,10 @@ class ClustersAction():
         self._layer = layer
 
     def __str__(self):
-        return f"Cluster action {self.verb} {self.subject}"
+        return f"[{self.verb} {self.subject}]"
 
     def __repr__(self):
-        return f"ClusterAction [{self.verb} {self.subject}]"
+        return f"[{self.verb} {self.subject}]"
 
 
 class ClusterRequest():
@@ -90,6 +90,7 @@ class ClusterRequest():
 class ClustersCommand():
     """
     This is an object that represents any number of actions.
+
     It should always have at least one action.
     """
 
@@ -105,7 +106,7 @@ class ClustersCommand():
 
     @property
     def status(self):
-        if len(self.dependencies) != []
+        if len(self.dependencies) != 0:
             return 'HAS_DEPENDENCIES'
         elif not self._initialized:
             return 'NOT_SOLVED'
@@ -120,8 +121,7 @@ class ClustersCommand():
         self.check_this_command_sanity()
         self._initialized = True
 
-    def __init__(self,
-                 initial_action)
+    def __init__(self, initial_action):
         if not isinstance(initial_action, ClustersAction):
             raise TypeError
 
@@ -131,14 +131,29 @@ class ClustersCommand():
         self.dependencies = []
         self.check_this_command_sanity()
 
+    def __str__(self):
+        result = 'ClustersCommand ['
+        for x in self._actions_to_do:
+            result = result + f'{x}'
+        result = result + '] '
+        return result
+
+    def __repr__(self):
+        result = 'ClustersCommand ['
+        for x in self._actions_to_do:
+            result = result + f'{x}'
+        result = result + '] '
+        return result
+
     def check_this_command_sanity(self):
-        if not isinstance(self.actions_to_do, list):
+        if not isinstance(self._actions_to_do, list):
             raise TypeError
         verbs = []
         for x in self._actions_to_do:
             if not isinstance(x, ClustersAction):
                 raise TypeError
-            verbs.append(x.verb)
+            if x.verb not in verbs:
+                verbs.append(x.verb)
         if len(verbs) > 1:
             raise ValueError('Error in actions verbs.')
         if self._initial_action not in self._actions_to_do:
@@ -153,7 +168,7 @@ class ClustersBatchCommand():
     @property
     def status(self):
         deps = []
-        for x in self._commands_to_do:
+        for x in self.commands:
             if x.status == 'NOT_SOLVED':
                 return 'NOT_SOLVED'
             deps.extend(x.dependencies)
@@ -162,17 +177,38 @@ class ClustersBatchCommand():
                 return 'NOT_SOLVED_DEPENDENCIES'
         return 'ALLOWED'
 
-    def __init__(self, commands_to_do=None)
-
+    def __init__(self, commands_to_do=None):
         if not isinstance(commands_to_do, list):
             commands_to_do = [commands_to_do]
+        elif len(commands_to_do) == 0:
+            raise ValueError
+        self.commands = []
         for x in commands_to_do:
             if isinstance(x, ClustersCommand):
-                self.commands_to_do = commands_to_do
+                self.commands.append(x)
             else:
                 raise TypeError
+        self.check_this_batch_command_sanity()
+
+    def __str__(self):
+        result = 'ClustersBatchCommand ['
+        for x in self.commands:
+            result = result + f'{x}'
+        result = result + '] '
+        return result
+
+    def __repr__(self):
+        result = 'ClustersBatchCommand ['
+        for x in self.commands:
+            result = result + f'{x}'
+        result = result + '] '
+        return result
 
     def check_this_batch_command_sanity(self):
-        for x in self.commands_to_do:
-            x.check_this_command_sanity()
-
+        if len(self.commands) == 0:
+            raise ValueError
+        for x in self.commands:
+            if not isinstance(x, ClustersCommand):
+                raise TypeError
+            else:
+                x.check_this_command_sanity()
