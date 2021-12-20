@@ -38,126 +38,184 @@ class ClustersController():
 
     def __init__(self, extended_modifiers_list_obj, *args, **kwargs):
         self.e = extended_modifiers_list_obj
-        self.allowed_actions = []
-        self.required_actions = []
 
-    def do(self, request):
+    def do(self, command):
         """
-        Finds actions required for request actions, creates
+        Finds actions required for action, command or a batch, creates
         commands in a batch, solves and performs them.
         """
+        if not isinstance(command, ClustersBatchCommand):
+            if not isinstance(command, ClustersCommand):
+                if not isinstance(command, ClustersAction):
+                    raise TypeError
+                else:
+                    batch = ClustersBatchCommand(
+                            ClustersCommand(command))
+            else:
+                batch = ClustersBatchCommand(command)
+        else:
+            batch = command
 
-        actions = []
-        for x in request.require:
-            actions.extend(self._solve_action(x))
+        self._solve_batch(batch)
 
-        actions = self._sort_actions_by_layer_depth(actions)
+        self._apply_batch(batch)
 
-        for x in actions:
-            self._apply_action(x)
-
-    def _sort_actions_by_layer_depth(self, actions):
+    # ==============
+    # Solver
+    # ==============
+    def _solve_batch(self, batch):
         """
-        Returns actions sorted by reversed layer depth.
+        Solves batch command.
+
+        Returns None.
         """
-        result = []
-        d = []
-        for x in actions:
-            d.append([self.e.get_depth(x.subject), x])
-        d.sort(key=lambda z: z[0])
-        for x in d:
-            result.append(x[1])
-        result.reverse()
-        return result
+        if not isinstance(batch, ClustersBatchCommand):
+            raise TypeError
 
-    def _apply_action(self, action):
+        s = True
+
+        # Solve commands.
+        while s:
+            new_commands = []
+            for x in batch.required_commands:
+
+                # Solve command.
+                if x.status == 'STILL_NOT_ALLOWED':
+                    self._solve_command(x)
+
+                # Add its dependencies to batch, if any.
+                if x.status == 'HAS_DEPENDENCIES':
+                    for y in x.dependencies:
+                        if y not in batch.required_commands:
+                            new_commands.append(y)
+
+            if len(new_commands) == 0:
+                s = False
+            else:
+                batch.commands.extend(new_commands)
+
+        # Sort commands
+        batch.commands = self._sort_commands_by_layer_depth(
+                batch.commands)
+
+        # Check result.
+        for x in batch.commands:
+            if x.status != 'ALLOWED' and x.status != 'HAS_DEPENDENCIES':
+                raise ValueError
+            for y in x.dependencies:
+                if y not in batch.commands:
+                    raise ValueError
+
+    def _solve_command(self, command):
         """
-        Performs ClustersAction on this ClustersList.
-        """
-        layer = self.e.get_cluster_cluster_belongs_to(action.subject)
-        layer.do(action)
+        Solves all actions in command. Adds dependencies, if any.
 
-    # ============================
-    # CLUSTERS ACTIONS SOLVER
-    # ============================
-    def _solve_action(self, action):
-        """
-        Returns actions that are required to allow action by
-        all clusters.
+        Returns None.
         """
 
-        if not isinstance(action, ClustersAction):
-            raise TypeError(f'Should be ClustersAction {type(action)}')
+        if not isinstance(command, ClustersCommand):
+            raise TypeError
 
-        self.e.check_obj_ref(action.subject)
+        self.e.check_obj_ref(command.initial_action.subject)
 
-        self.required_actions.append(action)
+        # Allowed action is an action that will be performed
+        # to allow initial action. It is an allowed action too.
+        # It requires no additional actions.
+        allowed_actions = []
 
-        if len(self.allowed_actions) != 0 or len(self.required_actions) != 1:
-            raise ValueError('One of actions lists is wrong len')
+        # Required action is an action that will be performed,
+        # but still not checked for being allowed
+        # by all clusters.
+        # Basically, this is an action that can potentially require
+        # additional actions.
+        required_actions = [command.initial_action]
 
-        self.e.check_obj_ref(self.required_actions[0].subject)
+        # Any actions that is not of initial_action type
+        # are considered dependency.
 
         i = 0
 
-        while len(self.required_actions) > 0:
+        f = False
 
-            # Allowed action is an action that will be performed
-            # to allow initial action. It is an allowed action too.
-            # It requires no additional actions.
+        while not f:
 
-            # Required action is an action that will be performed,
-            # but still not checked for being allowed
-            # by all clusters.
-            # Basically, this is an action that can potentially require
-            # additional actions.
-
-            # List of changes after iteration
+            # List of changes to required actions list after iteration
             remove_req_actions = []
             add_req_actions = []
 
             # Get new list of required actions for
-            # already existing required actions
-            for x in self.required_actions:
+            # all already existing required actions
+            for x in required_actions:
                 a = self._ask_clusters(x)
 
-                # This action can be allowed.
+                # Remove duplicates.
+                remove = []
+                for x in a:
+                    for y in required_actions + allowed_actions:
+                        if x.subject == y.subject and x.verb == y.verb:
+                            if x not in remove:
+                                remove.append(x)
+                for x in remove:
+                    a.remove(x)
+
+                # This action can be allowed, if every new
+                # action is a duplicate.
                 if len(a) == 0:
-                    self.allowed_actions.append(x)
+                    allowed_actions.append(x)
                     remove_req_actions.append(x)
 
                 # This action requires additional actions.
                 else:
                     add_req_actions.extend(a)
 
+            # Change required actions list.
             for x in remove_req_actions:
-                self.required_actions.remove(x)
-
+                required_actions.remove(x)
             for x in add_req_actions:
-                self.required_actions.append(x)
+                required_actions.append(x)
+
+            if len(required_actions) == 0:
+                f = True
 
             i += 1
             if i > 100:
                 raise ValueError('Clusters actions solver depth limit')
 
-        result = self.allowed_actions
-        self.allowed_actions = []
+        if len(required_actions) != 0:
+            raise ValueError
+        if len(allowed_actions) == 0:
+            raise ValueError
 
-        if len(self.required_actions) != 0:
-            raise ValueError
-        if len(self.allowed_actions) != 0:
-            raise ValueError
-        if len(result) == 0:
-            raise ValueError
-        return result
+        result = allowed_actions
+
+        # Sort actions.
+        result = self._sort_actions_by_layer_depth(
+                result)
+
+        # Filter dependencies.
+        dependencies = []
+        new_commands = []
+        for x in result:
+            if x.verb != command.initial_action.verb:
+                dependencies.append(x)
+
+        for x in dependencies:
+            result.remove(x)
+            new_commands.append(ClustersCommand(x))
+
+        command.actions = result
+        command.dependencies.extend(new_commands)
 
     def _ask_clusters(self, action):
+        """
+        Asks clusters about action.
+
+        Returns list of additional actions and commands.
+        """
 
         # Check arguments
         if not isinstance(action, ClustersAction):
             raise TypeError(f'Should be ClustersAction {type(action)}')
-        if action.subject is self.e:
-            raise ValueError
         self.e.check_obj_ref(action.subject)
 
         result = []
@@ -187,14 +245,49 @@ class ClustersController():
             answer = x.ask(action)
             if isinstance(answer, ClusterRequest):
                 result.extend(answer.require)
+            elif answer is not None:
+                raise ValueError
+        return result
 
-        # Remove duplicates.
-        remove = []
-        for x in result:
-            for y in self.required_actions + self.allowed_actions:
-                if x.subject == y.subject and x.verb == y.verb:
-                    if x not in remove:
-                        remove.append(x)
-        for x in remove:
-            result.remove(x)
+    # =========
+    # Applying
+    # =========
+    def _apply_batch(self, batch):
+        for x in batch.command:
+            self._apply_command(x)
+
+    def _apply_command(self, command):
+        for x in command.actions:
+            self._apply_action(x)
+
+    def _apply_action(self, action):
+        layer = self.e.get_cluster_cluster_belongs_to(action.subject)
+        layer.do(action)
+
+    # ==========
+    # Utils
+    # ==========
+    def _sort_commands_by_layer_depth(self, commands):
+        result = []
+        d = []
+        for x in commands:
+            d.append([self.e.get_depth(x.initial_action.subject), x])
+        d.sort(key=lambda z: z[0])
+        for x in d:
+            result.append(x[1])
+        result.reverse()
+        return result
+
+    def _sort_actions_by_layer_depth(self, actions):
+        """
+        Returns actions sorted by reversed layer depth.
+        """
+        result = []
+        d = []
+        for x in actions:
+            d.append([self.e.get_depth(x.subject), x])
+        d.sort(key=lambda z: z[0])
+        for x in d:
+            result.append(x[1])
+        result.reverse()
         return result
