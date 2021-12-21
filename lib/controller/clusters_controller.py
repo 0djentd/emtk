@@ -163,7 +163,12 @@ class ClustersController():
 
         for x in command.actions:
             if not isinstance(x, modifiers_type):
-                deps.extend(x.subject.ask(x))
+                answer = x.subject.ask(x)
+                if answer is not None:
+                    for y in answer.require:
+                        if not isinstance(y, ClustersCommand):
+                            raise TypeError
+                    deps.extend(answer.require)
         result = []
         for y in deps:
             result.append([command, y])
@@ -181,12 +186,12 @@ class ClustersController():
             answer = x.ask(command.initial_action)
             if not isinstance(answer, ClusterRequest):
                 raise TypeError
-            if len(answer) != 0:
-                for y in answer:
+            if len(answer.require) != 0:
+                for y in answer.requiere:
                     if not isinstance(y, ClustersCommand):
                         raise TypeError
                 result = []
-                for y in answer:
+                for y in answer.require:
                     result.append([command, y])
                 return result
 

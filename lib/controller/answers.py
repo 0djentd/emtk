@@ -51,19 +51,21 @@ class ClusterActionAnswer():
         elif action.subject in self.cluster.get_all_clusters_and_modifiers():
             actions = self._answer_case_all(action)
         else:
-            return []
+            return
         return ClusterRequest(self.cluster, actions)
 
     def do(self, action):
         """
         Interprets action.
         """
-        if action.subject is self.cluster:
-            self._interpret_case_self(action)
-        elif action.subject in self.cluster.get_list():
+        if action.subject in self.cluster.get_list():
             self._interpret_case_list(action)
-        elif action.subject in self.cluster.get_all_clusters_and_modifiers():
-            self._interpret_case_all(action)
+        # if action.subject is self.cluster:
+        #     self._interpret_case_self(action)
+        # elif action.subject in self.cluster.get_list():
+        #     self._interpret_case_list(action)
+        # elif action.subject in self.cluster.get_all_clusters_and_modifiers():
+        #     self._interpret_case_all(action)
         else:
             raise ValueError('Action cant be interpreted')
 
@@ -107,26 +109,27 @@ class ActionDefaultTemplate(ClusterActionAnswer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    def _answer_case_self(self, action):
-
-        # If removing cluster, remove all its components.
-        actions = []
-        for y in self.cluster._modifiers_list:
-            actions.append(ClustersAction(self.action_type, y))
-        return actions
-
     def _answer_case_list(self, action):
         actions = []
 
         # Deconstruct cluster with components if not allowed to change it.
         if not self.cluster._MODCLUSTER_DYNAMIC:
-            actions.append(ClustersAction('DECONSTRUCT', self.cluster))
+            actions.append(
+                    ClustersCommand(
+                        ClustersAction(
+                            'DECONSTRUCT', self.cluster)))
 
         # If removing modifier and it is last modifier.
         elif len(self.cluster._modifiers_list) == 1:
             actions.append(ClustersAction('REMOVE', self.cluster))
-
+            actions.append(
+                    ClustersCommand(
+                        ClustersAction(
+                            'REMOVE', self.cluster)))
         return actions
+
+    def _no_action_answer(self, action):
+        return
 
 # Remove and apply are practically the same action, as modifier being removed
 # from modifiers list when its applied in blender.
@@ -181,15 +184,9 @@ class ActionDefaultApply(ActionDefaultTemplate):
             self.cluster._modifiers_list.remove(action.subject)
 
 
-class ActionDefaultDeconstuct(ClusterActionAnswer):
+class ActionDefaultDeconstuct(ActionDefaultTemplate):
     def __init__(self, *args, **kwargs):
         super().__init__(action_type='DECONSTRUCT', *args, **kwargs)
-
-    def _answer_case_list(self, action):
-        actions = []
-        if not self.cluster._MODCLUSTER_DYNAMIC:
-            actions.append(ClustersAction('DECONSTRUCT', self.cluster))
-        return actions
 
     def _interpret_case_list(self, action):
         clusters_index = self.cluster._modifiers_list.index(action.subject)
@@ -214,8 +211,6 @@ class ActionDefaultDeconstuct(ClusterActionAnswer):
             if removing_active:
                 self.cluster.active_modifier_set_by_index(clusters_index)
 
-    def _no_action_answer(self, action):
-        return []
 
 # Moving modifiers is more complex, because if it will be the same action
 # for cluster that is being moved and all modifiers and clusters in it, it
