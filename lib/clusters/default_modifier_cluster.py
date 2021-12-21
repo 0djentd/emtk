@@ -52,13 +52,13 @@ class DefaultModifierCluster(
         self._MODCLUSTER_DYNAMIC = False
 
     def get_this_cluster_name(self):
-        if not self._modcluster_initialized:
+        if not self._modcluster_initialized or len(self._modifiers_list) == 0:
             return self.get_this_cluster_default_name()
         else:
             return self._modifiers_list[0].name
 
     def get_this_cluster_type(self):
-        if not self._modcluster_initialized:
+        if not self._modcluster_initialized or len(self._modifiers_list) == 0:
             return self.get_this_cluster_default_type()
         else:
             return self._modifiers_list[0].type
