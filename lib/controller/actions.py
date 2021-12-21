@@ -35,20 +35,15 @@ class ClustersAction():
     def subject(self):
         return self._subject
 
-    @property
-    def layer(self):
-        return self._layer
-
     def __init__(self, verb, subject, layer=None):
         if not isinstance(verb, str):
-            raise TypeError(f'{type(verb)}')
+            raise TypeError
 
         if len(verb) == 0:
             raise ValueError
 
         self._verb = verb
         self._subject = subject
-        self._layer = layer
 
     def __str__(self):
         return f"[{self.verb} {self.subject}]"
@@ -69,10 +64,12 @@ class ClusterRequest():
     def __init__(self, obj, require):
         if isinstance(require, list):
             for x in require:
-                if not isinstance(x, ClustersAction):
+                if not isinstance(x, ClustersAction)\
+                        and not isinstance(x, ClustersCommand):
                     raise TypeError
             actions = require
-        elif isinstance(require, ClustersAction):
+        elif isinstance(require, ClustersAction)\
+                or isinstance(require, ClustersCommand):
             actions = [require]
         else:
             raise TypeError
@@ -81,7 +78,7 @@ class ClusterRequest():
         self.require = actions
 
     def __str__(self):
-        return f"Cluster request from {self.o} {self.require}"
+        return f"ClusterRequest from {self.o} {self.require}"
 
     def __repr__(self):
         return f"ClusterRequest from {self.o} {self.require}"
@@ -106,9 +103,7 @@ class ClustersCommand():
 
     @property
     def status(self):
-        if len(self.dependencies) != 0:
-            return 'HAS_DEPENDENCIES'
-        elif not self._initialized:
+        if not self._initialized:
             return 'NOT_SOLVED'
         else:
             return 'ALLOWED'
@@ -121,14 +116,23 @@ class ClustersCommand():
         self.check_this_command_sanity()
         self._initialized = True
 
-    def __init__(self, initial_action):
+    def __init__(self, initial_action, actions=None):
         if not isinstance(initial_action, ClustersAction):
             raise TypeError
+        if actions is not None:
+            if isinstance(actions, list):
+                for x in actions:
+                    if not isinstance(x, ClustersAction):
+                        raise TypeError
+                actions_to_do = actions
+            else:
+                raise TypeError
+        else:
+            actions_to_do = [initial_action]
 
         self._initialized = False
         self._initial_action = initial_action
-        self._actions_to_do = [initial_action]
-        self.dependencies = []
+        self._actions_to_do = actions_to_do
         self.check_this_command_sanity()
 
     def __str__(self):
@@ -146,6 +150,8 @@ class ClustersCommand():
         return result
 
     def check_this_command_sanity(self):
+        if not isinstance(self._initial_action, ClustersAction):
+            raise TypeError
         if not isinstance(self._actions_to_do, list):
             raise TypeError
         verbs = []
@@ -167,14 +173,9 @@ class ClustersBatchCommand():
 
     @property
     def status(self):
-        deps = []
         for x in self.commands:
             if x.status == 'NOT_SOLVED':
                 return 'NOT_SOLVED'
-            deps.extend(x.dependencies)
-        for x in deps:
-            if x not in self.commands:
-                return 'NOT_SOLVED_DEPENDENCIES'
         return 'ALLOWED'
 
     def __init__(self, commands_to_do=None):

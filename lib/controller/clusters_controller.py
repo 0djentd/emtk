@@ -16,6 +16,8 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+import json
+
 try:
     import bpy
     _WITH_BPY = True
@@ -76,186 +78,122 @@ class ClustersController():
 
         # Solve commands.
         while s:
+            # This is commands that should be added after command.
             new_commands = []
+            # This is commands that should be added before command.
+            new_dependencies = []
             for x in batch.commands:
 
                 # Solve command.
                 if x.status == 'NOT_SOLVED':
-                    self._solve_command(x)
+                    self._populate_command_actions(x)
+                    new_dependencies.extend(self._get_command_deps(x))
+                    new_commands.extend(self._solve_dependencies(x))
 
-                # Add its dependencies to batch, if any.
-                if x.status == 'HAS_DEPENDENCIES':
-                    for y in x.dependencies:
-                        if y not in batch.commands:
-                            new_commands.append(y)
+            # TODO: wrong index?
+            for x in reversed(new_dependencies):
+                i = batch.commands.index(x[0])
+                batch.commands.insert(i, x[1])
+            for x in new_commands:
+                i = batch.commands.index(x[0])
+                batch.commands.insert(i+1, x[1])
 
-            if len(new_commands) == 0:
+            if len(new_commands) == 0 and len(new_dependencies) == 0:
                 s = False
-            else:
-                batch.commands.extend(new_commands)
-
-        # Sort commands
-        batch.commands = self._sort_commands_by_layer_depth(
-                batch.commands)
 
         # Check result.
         for x in batch.commands:
-            if x.status != 'ALLOWED' and x.status != 'HAS_DEPENDENCIES':
+            if x.status != 'ALLOWED':
                 raise ValueError(f'This is not correct status {x.status}')
-            for y in x.dependencies:
-                if y not in batch.commands:
-                    raise ValueError
 
-    def _solve_command(self, command):
+    def _populate_command_actions(self, command, *args,
+                                  affect_clusters=False,
+                                  affect_modifiers=False,
+                                  dry_clusters=False,
+                                  dry_modifiers=False,
+                                  **kwargs
+                                  ):
         """
-        Solves all actions in command. Adds dependencies, if any.
-
-        Returns None.
+        Adds actions for command's initial action subject's
+        clusters and modifiers to command.
         """
-
-        if not isinstance(command, ClustersCommand):
-            raise TypeError
-
-        self.e.check_obj_ref(command.initial_action.subject)
-
-        # Allowed action is an action that will be performed
-        # to allow initial action. It is an allowed action too.
-        # It requires no additional actions.
-        allowed_actions = []
-
-        # Required action is an action that will be performed,
-        # but still not checked for being allowed
-        # by all clusters.
-        # Basically, this is an action that can potentially require
-        # additional actions.
-        required_actions = [command.initial_action]
-
-        # Any actions that is not of initial_action type
-        # are considered dependency.
-
-        i = 0
-
-        f = False
-
-        while not f:
-            # List of changes to required actions list after iteration
-            remove_req_actions = []
-            add_req_actions = []
-
-            # Get new list of required actions for
-            # all already existing required actions
-            for action in required_actions:
-                answer = self._ask_clusters(action)
-
-                # Remove duplicates.
-                remove = []
-                for x in answer:
-                    for y in required_actions + allowed_actions:
-                        if x.subject == y.subject\
-                                and x.verb == y.verb:
-                            if x not in remove:
-                                remove.append(x)
-                    if x.subject == command.initial_action.subject\
-                            and x.verb != command.initial_action.verb:
-                        remove.append(x)
-                for x in remove:
-                    answer.remove(x)
-
-                # This action can be allowed, if every new
-                # action is a duplicate.
-                if len(answer) == 0:
-                    allowed_actions.append(action)
-                    remove_req_actions.append(action)
-
-                # This action requires additional actions.
-                else:
-                    add_req_actions.extend(answer)
-
-            # Change required actions list.
-            for x in remove_req_actions:
-                required_actions.remove(x)
-
-            for x in add_req_actions:
-                required_actions.append(x)
-
-            if len(required_actions) == 0:
-                f = True
-
-            i += 1
-            if i > 100:
-                raise ValueError('Clusters actions solver depth limit')
-
-        if len(required_actions) != 0:
-            raise ValueError
-        if len(allowed_actions) == 0:
-            raise ValueError
-
-        result = allowed_actions
-
-        # Sort actions.
-        result = self._sort_actions_by_layer_depth(
-                result)
-
-        # Filter dependencies.
-        dependencies = []
-        new_commands = []
-        for x in result:
-            if x.verb != command.initial_action.verb:
-                dependencies.append(x)
-
-        for x in dependencies:
-            result.remove(x)
-            new_commands.append(ClustersCommand(x))
-
-        command.actions = result
-        command.dependencies.extend(new_commands)
-
-    def _ask_clusters(self, action):
-        """
-        Asks clusters about action.
-
-        Returns list of additional actions and commands.
-        """
-
-        # Check arguments
-        if not isinstance(action, ClustersAction):
-            raise TypeError(f'Should be ClustersAction {type(action)}')
-        self.e.check_obj_ref(action.subject)
-
-        result = []
 
         if _WITH_BPY:
             modifiers_type = bpy.types.Modifier
         else:
             modifiers_type = DummyBlenderModifier
 
-        clusters_no_replace = []
+        if isinstance(command.initial_action.subject, modifiers_type):
+            command.actions = [command.initial_action]
+            return command
 
-        # Get list of clusters to ask.
-        if isinstance(action.subject, modifiers_type):
-            clusters = []
-            clusters.extend(self.e.get_trace_to(action.subject))
-            clusters.append(self.e)
+        actions = []
+        if affect_clusters:
+            for x in command.initial_action.subject.get_full_list():
+                a = ClustersAction(command.initial_action.verb, x)
+                if dry_clusters:
+                    a.dry = True
+                actions.append(a)
+        if affect_modifiers:
+            for x in command.initial_action.subject.\
+                    get_full_actual_modifiers_list():
+                a = ClustersAction(command.initial_action.verb, x)
+                if dry_modifiers:
+                    a.dry = True
+                actions.append(a)
+        actions = self._sort_actions_by_layer_depth(actions)
+        command.actions = actions
+        return command
+
+    def _get_command_deps(self, command):
+        """
+        Returns commands that should be performed before command.
+
+        Example:
+        [[initial_command, commands_to_add]
+         [initial_command, commands_to_add_2]]
+        """
+
+        if _WITH_BPY:
+            modifiers_type = bpy.types.Modifier
         else:
-            clusters = []
-            clusters_no_replace.append(action.subject)
-            clusters.extend(self.e.get_trace_to(action.subject))
-            if action.subject.has_clusters():
-                clusters.extend(action.subject.get_full_list())
-            clusters.append(self.e)
-        if len(clusters) == 0:
-            raise ValueError
+            modifiers_type = DummyBlenderModifier
 
-        # Ask clusters.
-        for x in clusters:
-            answer = x.ask(action)
-            if isinstance(answer, ClusterRequest):
-                result.extend(answer.require)
+        deps = []
+
+        for x in command.actions:
+            if not isinstance(x, modifiers_type):
+                deps.extend(x.subject.ask(x))
+        result = []
+        for y in deps:
+            result.append([command, y])
         return result
+
+    def _solve_dependencies(self, command):
+        """
+        Returns commands that should be performed after command.
+
+        Example:
+        [[initial_command, commands_to_add]
+         [initial_command, commands_to_add_2]]
+        """
+        for x in reversed(self.e.get_trace_to(command.initial_action.subject)):
+            answer = x.ask(command.initial_action)
+            if not isinstance(answer, ClusterRequest):
+                raise TypeError
+            if len(answer) != 0:
+                for y in answer:
+                    if not isinstance(y, ClustersCommand):
+                        raise TypeError
+                result = []
+                for y in answer:
+                    result.append([command, y])
+                return result
 
     # =========
     # Applying
     # =========
+    # TODO: to be removed
     def _apply_batch(self, batch):
         print(f'Applying {batch}')
         for x in batch.commands:
@@ -267,6 +205,11 @@ class ClustersController():
             self._apply_action(x)
 
     def _apply_action(self, action):
+        # TODO: this is for dependency commands, that can potentially
+        # remove action subject.
+        if action.subject not in self.e.get_all_clusters_and_modifiers():
+            return
+
         layer = self.e.get_cluster_cluster_belongs_to(action.subject)
         print(f'Applying {action} on layer {layer}')
         layer.do(action)
@@ -298,3 +241,44 @@ class ClustersController():
             result.append(x[1])
         result.reverse()
         return result
+
+    # =========
+    # Serialize
+    # =========
+    def serialize_batch_command(self, batch):
+        result = []
+        for x in batch.commands:
+            result.append(self._serialize_command(x))
+        result = json.dumps(result)
+        return result
+
+    def _serialize_command(self, command):
+        result = []
+        for x in command.actions:
+            result.append(self._serialize_action(x))
+        return result
+
+    def _serialize_action(self, action):
+        result = [action.verb, action.subject.name, action.subject.type]
+        return result
+
+    # =========
+    # Deserialize
+    # =========
+    def deserialize_batch_command(self, batch):
+        result = []
+        for x in batch.commands:
+            result.append(self._deserialize_command(x))
+        result = json.dumps(result)
+        return result
+
+    def _deserialize_command(self, command):
+        result = []
+        for x in command.actions:
+            result.append(self._deserialize_action(x))
+        return result
+
+    def _deserialize_action(self, action):
+        result = [action.verb, action.subject.name, action.subject.type]
+        return result
+

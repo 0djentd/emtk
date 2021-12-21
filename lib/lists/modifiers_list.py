@@ -19,7 +19,9 @@
 from .traits.utils.modifiers_list_utils import ModifiersListUtilsTrait
 from ..controller.actions import (
                                   ClusterRequest,
-                                  ClustersAction
+                                  ClustersAction,
+                                  ClustersCommand,
+                                  ClustersBatchCommand,
                                   )
 
 from ..controller.answers import (
@@ -114,30 +116,34 @@ class ModifiersList(ModifiersListUtilsTrait):
         Removes cluster from this list.
         """
         x = ClustersAction('REMOVE', cluster)
+        x = ClustersCommand(x)
         self._controller.do(x)
 
     def apply(self, cluster):
         """
         Removes cluster from this list.
         """
-        y = ClustersAction('APPLY', cluster)
-        self._controller.do(y)
+        x = ClustersAction('APPLY', cluster)
+        x = ClustersCommand(x)
+        self._controller.do(x)
 
     def move_up(self, cluster):
         """
         Removes cluster from this list.
         """
-        y = ClustersAction('MOVE', cluster)
-        y.direction = 'UP'
-        self._controller.do(y)
+        x = ClustersAction('MOVE', cluster)
+        x.direction = 'UP'
+        x = ClustersCommand(x)
+        self._controller.do(x)
 
     def move_down(self, cluster):
         """
         Removes cluster from this list.
         """
-        y = ClustersAction('MOVE', cluster)
-        y.direction = 'DOWN'
-        self._controller.do(y)
+        x = ClustersAction('MOVE', cluster)
+        x.direction = 'DOWN'
+        x = ClustersCommand(x)
+        self._controller.do(x)
 
     def ask(self, action):
         for x in self._actions:
@@ -146,10 +152,36 @@ class ModifiersList(ModifiersListUtilsTrait):
         raise ValueError(f'No implementation for action type {action.verb}')
 
     def do(self, action):
+        """
+        Do batch command, simple command or action of this
+        modifiers list elements.
+        """
+        if not isinstance(action, list):
+            action = [action]
+        for x in action:
+            if isinstance(action, ClustersBatchCommand):
+                self.do_batch(action)
+            elif isinstance(action, ClustersCommand):
+                self.do_command(action)
+            elif isinstance(action, ClustersAction):
+                self.do_action(action)
+            else:
+                raise TypeError
+
+    def do_batch(self, batch):
+        for x in batch.commands:
+            self.do_command(x)
+
+    def do_command(self, command):
+        for x in command.actions
+            self.do_action(x)
+
+    def do_action(self, action):
         for x in self._actions:
             if x.action_type == action.verb:
                 return x.do(action)
         raise ValueError(f'No implementation for action type {action.verb}')
+
 
     # =======================================================
     # THIS METHODS SHOULD BE SPECIFIED FOR OTHER OBJECT TYPES
