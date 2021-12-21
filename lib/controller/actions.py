@@ -71,6 +71,8 @@ class ClusterRequest():
         elif isinstance(require, ClustersAction)\
                 or isinstance(require, ClustersCommand):
             actions = [require]
+        elif require is None:
+            actions = []
         else:
             raise TypeError
 
@@ -150,7 +152,7 @@ class ClustersCommand():
         self.check_this_command_sanity()
 
     def __str__(self):
-        result = 'ClustersCommand ['
+        result = f'ClustersCommand {self._initial_action} ['
         for x in self._actions_to_do:
             result = result + f'{x}'
         result = result + '] '
@@ -165,7 +167,7 @@ class ClustersCommand():
         if self.dry_modifiers:
             d += 'm'
 
-        result = result + f' affects {a}, dry {d}'
+        result = result + f' a: {a}, d: {d}'
         return result
 
     def __repr__(self):

@@ -194,15 +194,22 @@ class ModifiersList(ModifiersListUtilsTrait):
         """
         if not isinstance(action, list):
             action = [action]
+
+        # Check all elements first
+        # TODO: function for this
         for x in action:
-            if isinstance(action, ClustersBatchCommand):
-                self.do_batch(action)
-            elif isinstance(action, ClustersCommand):
-                self.do_command(action)
-            elif isinstance(action, ClustersAction):
-                self.do_action(action)
-            else:
-                raise TypeError
+            if not isinstance(x, ClustersBatchCommand)\
+                    and not isinstance(x, ClustersCommand)\
+                    and not isinstance(x, ClustersAction):
+                raise TypeError(f'Expected ClustersAction, got {type(x)}')
+
+        for x in action:
+            if isinstance(x, ClustersBatchCommand):
+                self.do_batch(x)
+            elif isinstance(x, ClustersCommand):
+                self.do_command(x)
+            elif isinstance(x, ClustersAction):
+                self.do_action(x)
 
     def do_batch(self, batch):
         for x in batch.commands:
@@ -214,6 +221,7 @@ class ModifiersList(ModifiersListUtilsTrait):
 
     def do_action(self, action):
         for x in self._actions:
+            print(x)
             if x.action_type == action.verb:
                 return x.do(action)
         raise ValueError(f'No implementation for action type {action.verb}')

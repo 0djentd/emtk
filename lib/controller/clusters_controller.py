@@ -32,6 +32,8 @@ from .actions import (
                       ClustersBatchCommand
                       )
 
+from ..lists.traits.clusters.clusters_list import ClustersListTrait
+
 
 class ClustersController():
     """
@@ -124,22 +126,33 @@ class ClustersController():
             command.actions = [command.initial_action]
             return command
 
-        actions = []
+        actions = [command.initial_action]
         if command.affect_clusters:
-            for x in command.initial_action.subject.get_full_list():
-                a = ClustersAction(command.initial_action.verb, x)
-                if command.dry_clusters:
-                    a.dry = True
-                actions.append(a)
+            if isinstance(command.initial_action.subject, ClustersListTrait):
+                clusters = command.initial_action.subject.get_full_list()
+                print(f'Adding clusters actions for {clusters}')
+                for x in clusters:
+                    a = ClustersAction(command.initial_action.verb, x)
+                    if command.dry_clusters:
+                        a.dry = True
+                    print(f'adding {a}')
+                    actions.append(a)
+            else:
+                print(f'Not adding clusters actions, {command.initial_action.subject} has no clusters in it.')
         if command.affect_modifiers:
-            for x in command.initial_action.subject.\
-                    get_full_actual_modifiers_list():
+            modifiers = command.initial_action.\
+                    subject.get_full_actual_modifiers_list()
+            print(f'Adding modifiers actions for {modifiers}')
+            for x in modifiers:
                 a = ClustersAction(command.initial_action.verb, x)
                 if command.dry_modifiers:
                     a.dry = True
+                print(f'adding {a}')
                 actions.append(a)
         actions = self._sort_actions_by_layer_depth(actions)
+        print(f'{actions}')
         command.actions = actions
+        print(f'Populated {command}')
         return command
 
     def _get_command_deps(self, command):
@@ -159,7 +172,7 @@ class ClustersController():
         deps = []
 
         for x in command.actions:
-            if not isinstance(x, modifiers_type):
+            if not isinstance(x.subject, modifiers_type):
                 answer = x.subject.ask(x)
                 if answer is not None:
                     for y in answer.require:
@@ -181,16 +194,16 @@ class ClustersController():
         """
         for x in reversed(self.e.get_trace_to(command.initial_action.subject)):
             answer = x.ask(command.initial_action)
-            if not isinstance(answer, ClusterRequest):
-                raise TypeError
-            if len(answer.require) != 0:
-                for y in answer.requiere:
-                    if not isinstance(y, ClustersCommand):
-                        raise TypeError
-                result = []
-                for y in answer.require:
-                    result.append([command, y])
-                return result
+            if isinstance(answer, ClusterRequest):
+                if len(answer.require) != 0:
+                    for y in answer.requiere:
+                        if not isinstance(y, ClustersCommand):
+                            raise TypeError
+                    result = []
+                    for y in answer.require:
+                        result.append([command, y])
+                    return result
+        return []
 
     # =========
     # Applying
