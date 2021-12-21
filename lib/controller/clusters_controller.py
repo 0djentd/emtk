@@ -155,6 +155,9 @@ class ClustersController():
                                 and x.verb == y.verb:
                             if x not in remove:
                                 remove.append(x)
+                    if x.subject == command.initial_action.subject\
+                            and x.verb != command.initial_action.verb:
+                        remove.append(x)
                 for x in remove:
                     answer.remove(x)
 
@@ -226,6 +229,8 @@ class ClustersController():
         else:
             modifiers_type = DummyBlenderModifier
 
+        clusters_no_replace = []
+
         # Get list of clusters to ask.
         if isinstance(action.subject, modifiers_type):
             clusters = []
@@ -233,7 +238,7 @@ class ClustersController():
             clusters.append(self.e)
         else:
             clusters = []
-            clusters.append(action.subject)
+            clusters_no_replace.append(action.subject)
             clusters.extend(self.e.get_trace_to(action.subject))
             if action.subject.has_clusters():
                 clusters.extend(action.subject.get_full_list())
