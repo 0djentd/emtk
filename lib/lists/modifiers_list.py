@@ -153,7 +153,7 @@ class ModifiersList(ModifiersListUtilsTrait):
         i = self._modifiers_list.index(cluster)
 
         x = ClustersAction('MOVE', cluster)
-        x.direction = direction
+        x.props['direction'] = direction
         x = ClustersCommand(x,
                             affect_clusters=True,
                             affect_modifiers=True,
@@ -171,8 +171,8 @@ class ModifiersList(ModifiersListUtilsTrait):
             raise ValueError
 
         x_2 = ClustersAction('MOVE', cluster_to_move_through)
-        x_2.direction = direction_2
-        x_2 = ClustersCommand(x,
+        x_2.props['direction'] = direction_2
+        x_2 = ClustersCommand(x_2,
                               affect_clusters=True,
                               affect_modifiers=True,
                               dry_clusters=True,
@@ -180,6 +180,17 @@ class ModifiersList(ModifiersListUtilsTrait):
                               )
 
         self._controller.do([x, x_2])
+
+    def deconstruct(self, cluster):
+        x = ClustersAction('DECONSTRUCT', cluster)
+        x = ClustersCommand(x,
+                            affect_clusters=False,
+                            affect_modifiers=False,
+                            dry_clusters=False,
+                            dry_modifiers=False,
+                            )
+
+        self._controller.do(x)
 
     def ask(self, action):
         for x in self._actions:
@@ -220,8 +231,8 @@ class ModifiersList(ModifiersListUtilsTrait):
             self.do_action(x)
 
     def do_action(self, action):
+        print(f'Cluster {self}, action is {action}')
         for x in self._actions:
-            print(x)
             if x.action_type == action.verb:
                 return x.do(action)
         raise ValueError(f'No implementation for action type {action.verb}')

@@ -48,21 +48,27 @@ class ClustersController():
         Finds actions required for action, command or a batch, creates
         commands in a batch, solves and performs them.
         """
-        if not isinstance(command, ClustersBatchCommand):
-            if not isinstance(command, ClustersCommand):
-                if not isinstance(command, ClustersAction):
-                    raise TypeError
-                else:
-                    batch = ClustersBatchCommand(
-                            ClustersCommand(command))
-            else:
-                batch = ClustersBatchCommand(command)
+        if not isinstance(command, list):
+            commands = [command]
         else:
-            batch = command
+            commands = command
 
-        self._solve_batch(batch)
+        for command in commands:
+            if not isinstance(command, ClustersBatchCommand):
+                if not isinstance(command, ClustersCommand):
+                    if not isinstance(command, ClustersAction):
+                        raise TypeError
+                    else:
+                        batch = ClustersBatchCommand(
+                                ClustersCommand(command))
+                else:
+                    batch = ClustersBatchCommand(command)
+            else:
+                batch = command
 
-        self._apply_batch(batch)
+            self._solve_batch(batch)
+
+            self._apply_batch(batch)
 
     # ==============
     # Solver
@@ -133,20 +139,22 @@ class ClustersController():
                 print(f'Adding clusters actions for {clusters}')
                 for x in clusters:
                     a = ClustersAction(command.initial_action.verb, x)
-                    if command.dry_clusters:
-                        a.dry = True
+                    a.props = command.initial_action.props
+                    a.dry = command.dry_clusters
                     print(f'adding {a}')
                     actions.append(a)
             else:
-                print(f'Not adding clusters actions, {command.initial_action.subject} has no clusters in it.')
+                o = command.initial_action.subject
+                print(f'Not adding clusters actions, {o} has no clusters.')
+
         if command.affect_modifiers:
             modifiers = command.initial_action.\
                     subject.get_full_actual_modifiers_list()
             print(f'Adding modifiers actions for {modifiers}')
             for x in modifiers:
                 a = ClustersAction(command.initial_action.verb, x)
-                if command.dry_modifiers:
-                    a.dry = True
+                a.props = command.initial_action.props
+                a.dry = command.dry_modifiers
                 print(f'adding {a}')
                 actions.append(a)
         actions = self._sort_actions_by_layer_depth(actions)
@@ -280,20 +288,19 @@ class ClustersController():
     # =========
     # Deserialize
     # =========
-    def deserialize_batch_command(self, batch):
-        result = []
-        for x in batch.commands:
-            result.append(self._deserialize_command(x))
-        result = json.dumps(result)
-        return result
+    # def deserialize_batch_command(self, batch):
+    #     result = []
+    #     for x in batch.commands:
+    #         result.append(self._deserialize_command(x))
+    #     result = json.dumps(result)
+    #     return result
 
-    def _deserialize_command(self, command):
-        result = []
-        for x in command.actions:
-            result.append(self._deserialize_action(x))
-        return result
+    # def _deserialize_command(self, command):
+    #     result = []
+    #     for x in command.actions:
+    #         result.append(self._deserialize_action(x))
+    #     return result
 
-    def _deserialize_action(self, action):
-        result = [action.verb, action.subject.name, action.subject.type]
-        return result
-
+    # def _deserialize_action(self, action):
+    #     result = [action.verb, action.subject.name, action.subject.type]
+    #     return result

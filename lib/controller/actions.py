@@ -44,12 +44,14 @@ class ClustersAction():
 
         self._verb = verb
         self._subject = subject
+        self.dry = False
+        self.props = {}
 
     def __str__(self):
-        return f"[{self.verb} {self.subject}]"
+        return f"[{self.verb} {self.subject} d:{self.dry} p:{self.props}]"
 
     def __repr__(self):
-        return f"[{self.verb} {self.subject}]"
+        return self.__str__()
 
 
 class ClusterRequest():
@@ -93,6 +95,13 @@ class ClustersCommand():
     It should always have at least one action.
     """
 
+    _initial_action = 'NO_INITIAL_ACTION'
+    _actions_to_do = 'NO_ACTIONS'
+    affect_clusters = None
+    affect_modifiers = None
+    dry_clusters = None
+    dry_modifiers = None
+
     @property
     def initial_action(self):
         return self._initial_action
@@ -101,7 +110,7 @@ class ClustersCommand():
     def actions(self):
         if not self._initialized:
             raise ValueError
-        return self._actions_to_do
+        return self._actions_to_do + [self._initial_action]
 
     @property
     def status(self):
@@ -128,17 +137,19 @@ class ClustersCommand():
                  ):
 
         if not isinstance(initial_action, ClustersAction):
-            raise TypeError
+            raise TypeError(
+                    f'Expected ClustersAction, got {type(initial_action)}')
         if actions is not None:
             if isinstance(actions, list):
                 for x in actions:
                     if not isinstance(x, ClustersAction):
-                        raise TypeError
+                        raise TypeError(
+                                f'Expected ClustersAction, got {type(x)}')
                 actions_to_do = actions
             else:
                 raise TypeError
         else:
-            actions_to_do = [initial_action]
+            actions_to_do = []
 
         self.affect_clusters = affect_clusters
         self.affect_modifiers = affect_modifiers

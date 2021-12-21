@@ -247,7 +247,7 @@ class BMToolMod(ModifiersOperator):
         elif (event.type == self.bmtool_kbs['construct_deconstruct'])\
                 & event.shift & (event.value == 'PRESS'):
 
-            if layer.deconstruct_cluster(cluster):
+            if layer.deconstruct(cluster):
                 self.report({'INFO'}, "Deconstructed cluster")
             else:
                 self.report({'ERROR'}, "Cant deconstruct cluster")
@@ -268,6 +268,7 @@ class BMToolMod(ModifiersOperator):
                 layer.clear_cluster_selection()
                 self._selecting_clusters = False
             else:
+                # TODO: what is dat
                 layer.clear_cluster_selection()
                 layer.add_cluster_to_selection(cluster)
                 if layer.construct_cluster_from_selection():

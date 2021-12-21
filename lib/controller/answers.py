@@ -51,25 +51,23 @@ class ClusterActionAnswer():
         elif action.subject in self.cluster.get_all_clusters_and_modifiers():
             actions = self._answer_case_all(action)
         else:
-            return
+            raise ValueError('Action cant be interpreted')
         return ClusterRequest(self.cluster, actions)
 
     def do(self, action):
         """
         Interprets action.
         """
-        if action.subject in self.cluster.get_list():
+        if action.subject is self.cluster:
+            self._interpret_case_self(action)
+        elif action.subject in self.cluster.get_list():
             self._interpret_case_list(action)
-        # if action.subject is self.cluster:
-        #     self._interpret_case_self(action)
-        # elif action.subject in self.cluster.get_list():
-        #     self._interpret_case_list(action)
-        # elif action.subject in self.cluster.get_all_clusters_and_modifiers():
-        #     self._interpret_case_all(action)
+        elif action.subject in self.cluster.get_all_clusters_and_modifiers():
+            self._interpret_case_all(action)
         else:
             raise ValueError('Action cant be interpreted')
 
-    # This methods should only require actions on cluster or it's clusters.
+    # This methods should only require commands on cluster or it's clusters.
     def _answer_case_self(self, action):
         return self._no_action_answer(action)
 
@@ -79,6 +77,8 @@ class ClusterActionAnswer():
     def _answer_case_all(self, action):
         return self._no_action_answer(action)
 
+    # This methods should not require additional commands and only do something
+    # with cluster itself or its list.
     def _interpret_case_self(self, action):
         return self._no_action_answer(action)
 
@@ -158,6 +158,7 @@ class ActionDefaultRemove(ActionDefaultTemplate):
                 self.cluster._modifiers_list.remove(action.subject)
                 self.cluster._object.modifier_remove(modifier=mod_name)
         else:
+            action.subject._cluster_removed = True
             self.cluster._modifiers_list.remove(action.subject)
 
 
@@ -181,6 +182,7 @@ class ActionDefaultApply(ActionDefaultTemplate):
                 self.cluster._modifiers_list.remove(action.subject)
                 self.cluster._object.modifier_apply(modifier=mod_name)
         else:
+            action.subject._cluster_removed = True
             self.cluster._modifiers_list.remove(action.subject)
 
 
@@ -189,7 +191,7 @@ class ActionDefaultDeconstuct(ActionDefaultTemplate):
         super().__init__(action_type='DECONSTRUCT', *args, **kwargs)
 
     def _interpret_case_list(self, action):
-        clusters_index = self.cluster._modifiers_list.index(action.subject)
+        i = self.cluster._modifiers_list.index(action.subject)
 
         y = action.subject.get_list()
 
@@ -201,15 +203,15 @@ class ActionDefaultDeconstuct(ActionDefaultTemplate):
         if action.subject.has_clusters():
             self.cluster._modifiers_list.remove(action.subject)
             for x in reversed(y):
-                self.cluster._modifiers_list.insert(clusters_index, x)
+                self.cluster._modifiers_list.insert(i, x)
         else:
             parser = self.cluster._clusters_parser
             parse_result = parser._parse_modifiers_for_simple_clusters(y)
             self.cluster._modifiers_list.remove(action.subject)
             for x in reversed(parse_result):
-                self.cluster._modifiers_list.insert(clusters_index, x)
+                self.cluster._modifiers_list.insert(i, x)
             if removing_active:
-                self.cluster.active_modifier_set_by_index(clusters_index)
+                self.cluster.active_modifier_set_by_index(i)
 
 
 # Moving modifiers is more complex, because if it will be the same action
@@ -226,7 +228,55 @@ class ActionDefaultMove(ClusterActionAnswer):
     def __init__(self, *args, **kwargs):
         super().__init__(action_type='MOVE', *args, **kwargs)
 
+    def _answer_case_list(self, action):
+        actions = []
+        i = self.cluster._modifiers_list.index(action.subject)
+        if action.props['direction'] == 'UP':
+            if i == 0:
+                actions.append(
+                        ClustersCommand(
+                            ClustersAction(
+                                'DECONSTRUCT', self.cluster)))
+        elif action.props['direction'] == 'DOWN':
+            if i == len(self.cluster._modifiers_list) - 1:
+                actions.append(
+                        ClustersCommand(
+                            ClustersAction(
+                                'DECONSTRUCT', self.cluster)))
+        else:
+            raise ValueError
+        return actions
 
-class ActionDefaultMoved(ClusterActionAnswer):
-    def __init__(self, *args, **kwargs):
-        super().__init__(action_type='MOVED', *args, **kwargs)
+    def _interpret_case_list(self, action):
+        if action.dry:
+            return
+
+        if _WITH_BPY:
+            modifiers_type = bpy.types.Modifier
+        else:
+            modifiers_type = DummyBlenderModifier
+
+        if isinstance(action.subject, modifiers_type):
+            mod_name = action.subject.name
+            if action.props['direction'] == 'UP':
+                if _WITH_BPY:
+                    bpy.ops.object.modifier_move_up(modifier=mod_name)
+                else:
+                    self.cluster._object.modifier_move_up(modifier=mod_name)
+                # self.cluster._modifiers_list.insert(i+1, mod)
+            elif action.props['direction'] == 'DOWN':
+                if _WITH_BPY:
+                    bpy.ops.object.modifier_move_down(modifier=mod_name)
+                else:
+                    self.cluster._object.modifier_move_down(modifier=mod_name)
+                # self.cluster._modifiers_list.insert(i-1, mod)
+        else:
+            i = self.cluster._modifiers_list.index(action.subject)
+            mod = self.cluster._modifiers_list.pop(i)
+            if action.props['direction'] == 'UP':
+                self.cluster._modifiers_list.insert(i-1, mod)
+            elif action.props['direction'] == 'DOWN':
+                self.cluster._modifiers_list.insert(i+1, mod)
+
+    def _no_action_answer(self, action):
+        return
