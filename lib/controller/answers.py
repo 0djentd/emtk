@@ -23,7 +23,7 @@ except ModuleNotFoundError:
     from ..dummy_modifiers import DummyBlenderModifier
     _WITH_BPY = False
 
-from .actions import ClustersAction, ClusterRequest
+from .actions import ClustersAction, ClusterRequest, ClustersCommand
 
 
 class ClusterActionAnswer():

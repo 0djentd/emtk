@@ -116,7 +116,12 @@ class ModifiersList(ModifiersListUtilsTrait):
         Removes cluster from this list.
         """
         x = ClustersAction('REMOVE', cluster)
-        x = ClustersCommand(x)
+        x = ClustersCommand(x,
+                            affect_clusters=True,
+                            affect_modifiers=True,
+                            dry_clusters=False,
+                            dry_modifiers=False,
+                            )
         self._controller.do(x)
 
     def apply(self, cluster):
@@ -124,26 +129,57 @@ class ModifiersList(ModifiersListUtilsTrait):
         Removes cluster from this list.
         """
         x = ClustersAction('APPLY', cluster)
-        x = ClustersCommand(x)
+        x = ClustersCommand(x,
+                            affect_clusters=True,
+                            affect_modifiers=True,
+                            dry_clusters=False,
+                            dry_modifiers=False,
+                            )
         self._controller.do(x)
 
     def move_up(self, cluster):
         """
         Removes cluster from this list.
         """
-        x = ClustersAction('MOVE', cluster)
-        x.direction = 'UP'
-        x = ClustersCommand(x)
-        self._controller.do(x)
+        self._move(cluster, direction='UP')
 
     def move_down(self, cluster):
         """
         Removes cluster from this list.
         """
+        self._move(cluster, direction='DOWN')
+
+    def _move(self, cluster, direction):
+        i = self._modifiers_list.index(cluster)
+
         x = ClustersAction('MOVE', cluster)
-        x.direction = 'DOWN'
-        x = ClustersCommand(x)
-        self._controller.do(x)
+        x.direction = direction
+        x = ClustersCommand(x,
+                            affect_clusters=True,
+                            affect_modifiers=True,
+                            dry_clusters=True,
+                            dry_modifiers=False,
+                            )
+
+        if direction == 'UP':
+            cluster_to_move_through = self._modifiers_list[i-1]
+            direction_2 = 'DOWN'
+        elif direction == 'DOWN':
+            cluster_to_move_through = self._modifiers_list[i+1]
+            direction_2 = 'UP'
+        else:
+            raise ValueError
+
+        x_2 = ClustersAction('MOVE', cluster_to_move_through)
+        x_2.direction = direction_2
+        x_2 = ClustersCommand(x,
+                              affect_clusters=True,
+                              affect_modifiers=True,
+                              dry_clusters=True,
+                              dry_modifiers=True,
+                              )
+
+        self._controller.do([x, x_2])
 
     def ask(self, action):
         for x in self._actions:
@@ -173,7 +209,7 @@ class ModifiersList(ModifiersListUtilsTrait):
             self.do_command(x)
 
     def do_command(self, command):
-        for x in command.actions
+        for x in command.actions:
             self.do_action(x)
 
     def do_action(self, action):
@@ -181,7 +217,6 @@ class ModifiersList(ModifiersListUtilsTrait):
             if x.action_type == action.verb:
                 return x.do(action)
         raise ValueError(f'No implementation for action type {action.verb}')
-
 
     # =======================================================
     # THIS METHODS SHOULD BE SPECIFIED FOR OTHER OBJECT TYPES

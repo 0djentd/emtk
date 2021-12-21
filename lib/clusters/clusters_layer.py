@@ -54,7 +54,3 @@ class ClustersLayer(
         Returns True, if cluster consists of clusters.
         """
         return True
-
-    def _delete(self, action):
-        action.subject._cluster_removed = True
-        self._modifiers_list.remove(action.subject)

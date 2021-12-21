@@ -190,35 +190,7 @@ class FirstLayerClustersListTrait():
         allowed.
         Can return empty list.
         """
-        if question.subject in self._modifiers_list:
-            return []
         if question.subject is self:
-            raise ValueError
-        return []
-
-    def remove(self, cluster):
-        """
-        Removes cluster from this list.
-        """
-        if cluster not in self._modifiers_list:
-            raise ValueError
-
-        x = ClustersAction('REMOVE', cluster)
-        self._controller.do(x)
-
-    def perform_action(self, action):
-        if action.subject not in self._modifiers_list:
-            raise ValueError(f"{action.subject}")
-
-        x = action.verb
-
-        if x == 'REMOVE':
-            self._delete(action)
-        elif x == 'MOVE':
-            self._move(action)
-        elif x == 'DECONSTRUCT':
-            self._deconstruct(action)
-        else:
             raise ValueError
 
     def create_modifier(self, m_name, m_type, layer=None, cluster_index=None):

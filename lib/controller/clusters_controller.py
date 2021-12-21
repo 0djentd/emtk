@@ -73,6 +73,7 @@ class ClustersController():
         """
         if not isinstance(batch, ClustersBatchCommand):
             raise TypeError
+        print(f'Solving {batch}')
 
         s = True
 
@@ -106,17 +107,13 @@ class ClustersController():
             if x.status != 'ALLOWED':
                 raise ValueError(f'This is not correct status {x.status}')
 
-    def _populate_command_actions(self, command, *args,
-                                  affect_clusters=False,
-                                  affect_modifiers=False,
-                                  dry_clusters=False,
-                                  dry_modifiers=False,
-                                  **kwargs
-                                  ):
+    def _populate_command_actions(self, command, *args, **kwargs):
         """
         Adds actions for command's initial action subject's
         clusters and modifiers to command.
         """
+
+        print(f'Populating {command}')
 
         if _WITH_BPY:
             modifiers_type = bpy.types.Modifier
@@ -128,17 +125,17 @@ class ClustersController():
             return command
 
         actions = []
-        if affect_clusters:
+        if command.affect_clusters:
             for x in command.initial_action.subject.get_full_list():
                 a = ClustersAction(command.initial_action.verb, x)
-                if dry_clusters:
+                if command.dry_clusters:
                     a.dry = True
                 actions.append(a)
-        if affect_modifiers:
+        if command.affect_modifiers:
             for x in command.initial_action.subject.\
                     get_full_actual_modifiers_list():
                 a = ClustersAction(command.initial_action.verb, x)
-                if dry_modifiers:
+                if command.dry_modifiers:
                     a.dry = True
                 actions.append(a)
         actions = self._sort_actions_by_layer_depth(actions)

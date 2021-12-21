@@ -113,10 +113,18 @@ class ClustersCommand():
         if self._initialized:
             raise ValueError
         self._actions_to_do = actions
-        self.check_this_command_sanity()
         self._initialized = True
+        self.check_this_command_sanity()
 
-    def __init__(self, initial_action, actions=None):
+    def __init__(self, initial_action, *args,
+                 actions=None,
+                 affect_clusters=False,
+                 affect_modifiers=False,
+                 dry_clusters=False,
+                 dry_modifiers=False,
+                 **kwargs
+                 ):
+
         if not isinstance(initial_action, ClustersAction):
             raise TypeError
         if actions is not None:
@@ -130,9 +138,15 @@ class ClustersCommand():
         else:
             actions_to_do = [initial_action]
 
+        self.affect_clusters = affect_clusters
+        self.affect_modifiers = affect_modifiers
+        self.dry_clusters = dry_clusters
+        self.dry_modifiers = dry_modifiers
+
         self._initialized = False
         self._initial_action = initial_action
         self._actions_to_do = actions_to_do
+
         self.check_this_command_sanity()
 
     def __str__(self):
@@ -140,14 +154,22 @@ class ClustersCommand():
         for x in self._actions_to_do:
             result = result + f'{x}'
         result = result + '] '
+        a = ''
+        d = ''
+        if self.affect_clusters:
+            a += 'c'
+        if self.affect_modifiers:
+            a += 'm'
+        if self.dry_clusters:
+            d += 'c'
+        if self.dry_modifiers:
+            d += 'm'
+
+        result = result + f' affects {a}, dry {d}'
         return result
 
     def __repr__(self):
-        result = 'ClustersCommand ['
-        for x in self._actions_to_do:
-            result = result + f'{x}'
-        result = result + '] '
-        return result
+        return self.__str__()
 
     def check_this_command_sanity(self):
         if not isinstance(self._initial_action, ClustersAction):

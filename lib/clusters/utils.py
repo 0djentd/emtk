@@ -32,7 +32,8 @@ def deserialize_cluster_type(serialized_cluster_type, *args, **kwargs):
     x = json.loads(serialized_cluster_type)
 
     if not isinstance(x, dict):
-        raise TypeError(f'Serialized cluster type should be dict, not {type(serialized_cluster_type)}')
+        t = type(serialized_cluster_type)
+        raise TypeError(f'Serialized cluster type should be dict, not {t}')
 
     if x['cluster_class'] == 'ModifiersCluster':
         result = ModifiersCluster(
