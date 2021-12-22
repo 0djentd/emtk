@@ -152,14 +152,6 @@ class ModifiersList(ModifiersListUtilsTrait):
     def _move(self, cluster, direction):
         i = self._modifiers_list.index(cluster)
 
-        x = ClustersAction('MOVE', cluster)
-        x.props['direction'] = direction
-        x = ClustersCommand(x,
-                            affect_clusters=True,
-                            affect_modifiers=True,
-                            dry_clusters=True,
-                            dry_modifiers=False,
-                            )
 
         if direction == 'UP':
             cluster_to_move_through = self._modifiers_list[i-1]
@@ -170,14 +162,39 @@ class ModifiersList(ModifiersListUtilsTrait):
         else:
             raise ValueError
 
+        length = len(
+                cluster_to_move_through.get_full_actual_modifiers_list())
+
+        x = ClustersAction('MOVE', cluster)
         x_2 = ClustersAction('MOVE', cluster_to_move_through)
+        x_2.dry = True
+
+        x.props['direction'] = direction
         x_2.props['direction'] = direction_2
+
+        x.props['length'] = length
+        x_2.props['length'] = length
+
+        x = ClustersCommand(x,
+                            affect_clusters=True,
+                            affect_modifiers=True,
+                            dry_clusters=True,
+                            dry_modifiers=False,
+                            )
+
         x_2 = ClustersCommand(x_2,
                               affect_clusters=True,
                               affect_modifiers=True,
                               dry_clusters=True,
                               dry_modifiers=True,
                               )
+
+        if direction == 'UP':
+            x.reverse_by_layer = False
+            x_2.reverse_by_layer = True
+        else:
+            x.reverse_by_layer = True
+            x_2.reverse_by_layer = False
 
         self._controller.do([x, x_2])
 

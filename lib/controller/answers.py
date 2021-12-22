@@ -148,6 +148,12 @@ class ActionDefaultRemove(ActionDefaultTemplate):
         else:
             modifiers_type = DummyBlenderModifier
 
+        i = self.cluster._modifiers_list.index(action.subject)
+        removing_active = False
+
+        if self.cluster.active_modifier_get() == action.subject:
+            removing_active = True
+
         if isinstance(action.subject, modifiers_type):
             if _WITH_BPY:
                 mod_name = action.subject.name
@@ -161,6 +167,9 @@ class ActionDefaultRemove(ActionDefaultTemplate):
             action.subject._cluster_removed = True
             self.cluster._modifiers_list.remove(action.subject)
 
+        if removing_active:
+            self.cluster.active_modifier_set_by_index(i)
+
 
 class ActionDefaultApply(ActionDefaultTemplate):
     def __init__(self, *args, **kwargs):
@@ -171,6 +180,12 @@ class ActionDefaultApply(ActionDefaultTemplate):
             modifiers_type = bpy.types.Modifier
         else:
             modifiers_type = DummyBlenderModifier
+
+        i = self.cluster._modifiers_list.index(action.subject)
+        removing_active = False
+
+        if self.cluster.active_modifier_get() == action.subject:
+            removing_active = True
 
         if isinstance(action.subject, modifiers_type):
             if _WITH_BPY:
@@ -184,6 +199,9 @@ class ActionDefaultApply(ActionDefaultTemplate):
         else:
             action.subject._cluster_removed = True
             self.cluster._modifiers_list.remove(action.subject)
+
+        if removing_active:
+            self.cluster.active_modifier_set_by_index(i)
 
 
 class ActionDefaultDeconstuct(ActionDefaultTemplate):
@@ -210,8 +228,9 @@ class ActionDefaultDeconstuct(ActionDefaultTemplate):
             self.cluster._modifiers_list.remove(action.subject)
             for x in reversed(parse_result):
                 self.cluster._modifiers_list.insert(i, x)
-            if removing_active:
-                self.cluster.active_modifier_set_by_index(i)
+
+        if removing_active:
+            self.cluster.active_modifier_set_by_index(i)
 
 
 # Moving modifiers is more complex, because if it will be the same action
@@ -233,16 +252,12 @@ class ActionDefaultMove(ClusterActionAnswer):
         i = self.cluster._modifiers_list.index(action.subject)
         if action.props['direction'] == 'UP':
             if i == 0:
-                actions.append(
-                        ClustersCommand(
-                            ClustersAction(
-                                'DECONSTRUCT', self.cluster)))
+                actions.append(ClustersCommand(
+                    ClustersAction('DECONSTRUCT', self.cluster)))
         elif action.props['direction'] == 'DOWN':
             if i == len(self.cluster._modifiers_list) - 1:
-                actions.append(
-                        ClustersCommand(
-                            ClustersAction(
-                                'DECONSTRUCT', self.cluster)))
+                actions.append(ClustersCommand(
+                    ClustersAction('DECONSTRUCT', self.cluster)))
         else:
             raise ValueError
         return actions
@@ -259,17 +274,23 @@ class ActionDefaultMove(ClusterActionAnswer):
         if isinstance(action.subject, modifiers_type):
             mod_name = action.subject.name
             if action.props['direction'] == 'UP':
-                if _WITH_BPY:
-                    bpy.ops.object.modifier_move_up(modifier=mod_name)
-                else:
-                    self.cluster._object.modifier_move_up(modifier=mod_name)
-                # self.cluster._modifiers_list.insert(i+1, mod)
+                for x in range(action.props['length']):
+                    if _WITH_BPY:
+                        bpy.ops.object.modifier_move_up(
+                                modifier=mod_name)
+                    else:
+                        self.cluster._object.modifier_move_up(
+                                modifier=mod_name)
+                    # self.cluster._modifiers_list.insert(i+1, mod)
             elif action.props['direction'] == 'DOWN':
-                if _WITH_BPY:
-                    bpy.ops.object.modifier_move_down(modifier=mod_name)
-                else:
-                    self.cluster._object.modifier_move_down(modifier=mod_name)
-                # self.cluster._modifiers_list.insert(i-1, mod)
+                for x in range(action.props['length']):
+                    if _WITH_BPY:
+                        bpy.ops.object.modifier_move_down(
+                                modifier=mod_name)
+                    else:
+                        self.cluster._object.modifier_move_down(
+                                modifier=mod_name)
+                    # self.cluster._modifiers_list.insert(i-1, mod)
         else:
             i = self.cluster._modifiers_list.index(action.subject)
             mod = self.cluster._modifiers_list.pop(i)

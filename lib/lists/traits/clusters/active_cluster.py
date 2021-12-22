@@ -184,16 +184,54 @@ class ActiveClusterTrait():
             result = []
         return result
 
-    # ================================
+    # ===============
     # Operations on selection
-    # ================================
-    def move_selected_clusters_up(self):
-        clusters = self.get_cluster_selection()
-        return self.move_clusters(clusters, direction='UP')
+    # ===============
+    def remove_selection(self):
+        """
+        Removes selected clusters on this layer.
+        """
+        clusters = copy.copy(self.get_cluster_selection())
+        for x in clusters:
+            self.remove(x):
 
-    def move_selected_clusters_down(self):
-        clusters = self.get_cluster_selection()
-        return self.move_clusters(clusters, direction='DOWN')
+    def apply_selection(self):
+        """
+        Applies selected clusters on this layer.
+        """
+        clusters = copy.copy(self.get_cluster_selection())
+        for x in clusters:
+            self.apply(x):
+
+    def deconstruct_selection(self):
+        """
+        Deconstructs selected clusters on this layer.
+        """
+        clusters = copy.copy(self.get_cluster_selection())
+        for x in clusters:
+            self.deconstruct(x):
+
+    def move_up_selection(self):
+        """
+        Moves up selected clusters on this layer.
+        """
+        self._move_selection('UP')
+
+    def move_down_selection(self):
+        """
+        Moves down selected clusters on this layer.
+        """
+        self._move_selection('DOWN')
+
+    def _move_selection(self, direction):
+        """
+        Deconstructs selected clusters on this layer.
+        """
+        clusters = copy.copy(self.get_cluster_selection())
+        if direction == 'DOWN':
+            clusters.revert()
+        for x in clusters:
+            self.deconstruct(x):
 
     def construct_cluster_from_selection(self):
         """

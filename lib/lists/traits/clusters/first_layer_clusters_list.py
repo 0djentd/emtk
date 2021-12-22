@@ -265,42 +265,6 @@ class FirstLayerClustersListTrait():
                 cluster, modifiers, clusters_names)
         self._modifiers_list.append(cluster)
         return True
-
-    # ===============
-    # Operations on selection
-    # ===============
-    def apply_clusters_selection(self):
-        """
-        Applies selected clusters on active layer, if any.
-        """
-
-        layer = self.get_layer()
-
-        clusters = copy.copy(layer.get_cluster_selection())
-
-        for x in clusters:
-            if not self.apply_cluster(x):
-                self._additional_info_log.append(
-                        "Applying selected clusters failed.")
-                return False
-        return True
-
-    def remove_clusters_selection(self):
-        """
-        Removes selected clusters on active layer, if any.
-        """
-
-        layer = self.get_layer()
-
-        clusters = copy.copy(layer.get_cluster_selection())
-
-        for x in clusters:
-            if not self.remove_cluster(x):
-                self._additional_info_log.append(
-                        "Removing selected clusters failed.")
-                return False
-        return True
-
     # ===============
     # Utility
     # ===============

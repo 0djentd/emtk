@@ -156,6 +156,8 @@ class ClustersCommand():
         self.dry_clusters = dry_clusters
         self.dry_modifiers = dry_modifiers
 
+        self.reverse_by_layer = False
+
         self._initialized = False
         self._initial_action = initial_action
         self._actions_to_do = actions_to_do
@@ -197,8 +199,6 @@ class ClustersCommand():
                 verbs.append(x.verb)
         if len(verbs) > 1:
             raise ValueError('Error in actions verbs.')
-        if self._initial_action not in self._actions_to_do:
-            raise ValueError
 
 
 class ClustersBatchCommand():

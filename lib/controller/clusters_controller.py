@@ -132,10 +132,20 @@ class ClustersController():
             command.actions = [command.initial_action]
             return command
 
-        actions = [command.initial_action]
+        actions = []
         if command.affect_clusters:
             if isinstance(command.initial_action.subject, ClustersListTrait):
-                clusters = command.initial_action.subject.get_full_list()
+
+                # Reverse actions sorting on layer, looks like this:
+                # layer 0: doublebevel --> doublebevel
+                # layer 1: bevel1 bevel2 --> bevel2 bevel1
+                # Used when moving modifiers.
+                # Later in _sort_actions actions list are being reversed again.
+                if not command.reverse_by_layer:
+                    clusters = command.initial_action.subject.get_full_list()
+                    clusters = reversed(clusters)
+                else:
+                    clusters = command.initial_action.subject.get_full_list()
                 print(f'Adding clusters actions for {clusters}')
                 for x in clusters:
                     a = ClustersAction(command.initial_action.verb, x)
@@ -148,8 +158,13 @@ class ClustersController():
                 print(f'Not adding clusters actions, {o} has no clusters.')
 
         if command.affect_modifiers:
-            modifiers = command.initial_action.\
-                    subject.get_full_actual_modifiers_list()
+            if not command.reverse_by_layer:
+                modifiers = command.initial_action.\
+                        subject.get_full_actual_modifiers_list()
+                modifiers = reversed(modifiers)
+            else:
+                modifiers = command.initial_action.\
+                        subject.get_full_actual_modifiers_list()
             print(f'Adding modifiers actions for {modifiers}')
             for x in modifiers:
                 a = ClustersAction(command.initial_action.verb, x)
@@ -157,7 +172,8 @@ class ClustersController():
                 a.dry = command.dry_modifiers
                 print(f'adding {a}')
                 actions.append(a)
-        actions = self._sort_actions_by_layer_depth(actions)
+        actions = self._sort_actions_by_layer_depth(
+                actions)
         print(f'{actions}')
         command.actions = actions
         print(f'Populated {command}')
@@ -253,16 +269,19 @@ class ClustersController():
 
     def _sort_actions_by_layer_depth(self, actions):
         """
-        Returns actions sorted by reversed layer depth.
+        Returns actions sorted by reversed layer depth
+        (modifiers clusters first, then layers).
         """
         result = []
         d = []
         for x in actions:
             d.append([self.e.get_depth(x.subject), x])
         d.sort(key=lambda z: z[0])
+
         for x in d:
             result.append(x[1])
         result.reverse()
+        print(f'result is {result}')
         return result
 
     # =========

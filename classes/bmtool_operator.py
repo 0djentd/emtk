@@ -219,9 +219,9 @@ class BMToolMod(ModifiersOperator):
 
             # Remove cluster.
             if self._selecting_clusters:
-                modifier_removed = self.m_list.apply_clusters_selection()
+                layer.apply_clusters_selection()
             else:
-                modifier_removed = self.m_list.apply_cluster(cluster)
+                layer.apply(cluster)
 
             # Clear selection
             self._selecting_clusters = False
@@ -313,22 +313,13 @@ class BMToolMod(ModifiersOperator):
 
             # Remove cluster.
             if self._selecting_clusters is True:
-                modifier_removed = self.m_list.remove_clusters_selection()
+                layer.remove_clusters_selection()
             else:
                 layer.remove(cluster)
 
             # Clear selection
             self._selecting_clusters = False
             layer.clear_cluster_selection()
-
-            # Finish operator, if something is wrong
-            # while deleting cluster.
-            # if not modifier_removed:
-            #     self.report({'ERROR'}, "Error while deleting modifier")
-            #     for line in self.m_list.modifiers_list_info_get():
-            #         self.report({'INFO'}, f"{line}")
-            #     self.clear(context)
-            #     return {'FINISHED'}
 
             # Select currently active cluster.
             cluster = self.m_list.get_cluster()
