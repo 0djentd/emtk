@@ -87,10 +87,17 @@ class ModifiersList(ModifiersListUtilsTrait):
     # Additional info
     _MODIFIERS_LIST_V = True
 
-    def __init__(self, *args,
+    def __init__(self, obj=None, *args, no_obj=None,
                  actions=None, no_default_actions=False,
                  **kwargs):
         super().__init__(*args, **kwargs)
+
+        if not no_obj:
+            if obj is None:
+                raise ValueError
+
+        self._object = obj
+
         self.__DUMMY_MODIFIERS = False
         self._modifiers_list = []
         self._additional_info_log = []

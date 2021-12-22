@@ -42,11 +42,11 @@ class ObjectClustersListTrait():
     def __init__(self, obj=None, *args, no_obj=None, **kwargs):
         super().__init__(*args, **kwargs)
 
-        if not no_obj:
-            if obj is None:
-                raise ValueError
+        # if not no_obj:
+        #     if obj is None:
+        #         raise ValueError
 
-        self._object = obj
+        # self._object = obj
 
     # ===================================
     # Changing modifiers_list of an object
