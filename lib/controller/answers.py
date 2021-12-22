@@ -233,15 +233,10 @@ class ActionDefaultDeconstuct(ActionDefaultTemplate):
             self.cluster.active_modifier_set_by_index(i)
 
 
-# Moving modifiers is more complex, because if it will be the same action
-# for cluster that is being moved and all modifiers and clusters in it, it
-# will have no way to know when to actually move it in list, and when
-# to just move actual modifiers.
-
-# Action that should be only used in cluster that is
-# requested to be moved is 'MOVE'.
-# Action that should be in all its clusters and modifiers is 'MOVED'.
-
+# Moving clusters invokes two commands, one has 'dry' clusters actions
+# between moved cluster and actual modifiers and one has only 'dry'
+# clusters actions. Second command is for cluster that initial
+# moved cluster is moved 'through'
 
 class ActionDefaultMove(ClusterActionAnswer):
     def __init__(self, *args, **kwargs):
@@ -281,6 +276,7 @@ class ActionDefaultMove(ClusterActionAnswer):
                     else:
                         self.cluster._object.modifier_move_up(
                                 modifier=mod_name)
+                    # TODO: this is for moving modifiers in modifiers cluster.
                     # self.cluster._modifiers_list.insert(i+1, mod)
             elif action.props['direction'] == 'DOWN':
                 for x in range(action.props['length']):
