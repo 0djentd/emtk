@@ -265,6 +265,7 @@ class FirstLayerClustersListTrait():
                 cluster, modifiers, clusters_names)
         self._modifiers_list.append(cluster)
         return True
+
     # ===============
     # Utility
     # ===============

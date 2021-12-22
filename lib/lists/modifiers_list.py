@@ -152,7 +152,6 @@ class ModifiersList(ModifiersListUtilsTrait):
     def _move(self, cluster, direction):
         i = self._modifiers_list.index(cluster)
 
-
         if direction == 'UP':
             cluster_to_move_through = self._modifiers_list[i-1]
             direction_2 = 'DOWN'

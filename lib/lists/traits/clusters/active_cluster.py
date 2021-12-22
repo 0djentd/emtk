@@ -16,6 +16,9 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+import copy
+import json
+
 
 # TODO: this trait requires class to also inherit ObjectClustersListTrait
 class ActiveClusterTrait():
@@ -193,7 +196,7 @@ class ActiveClusterTrait():
         """
         clusters = copy.copy(self.get_cluster_selection())
         for x in clusters:
-            self.remove(x):
+            self.remove(x)
 
     def apply_selection(self):
         """
@@ -201,7 +204,7 @@ class ActiveClusterTrait():
         """
         clusters = copy.copy(self.get_cluster_selection())
         for x in clusters:
-            self.apply(x):
+            self.apply(x)
 
     def deconstruct_selection(self):
         """
@@ -209,7 +212,7 @@ class ActiveClusterTrait():
         """
         clusters = copy.copy(self.get_cluster_selection())
         for x in clusters:
-            self.deconstruct(x):
+            self.deconstruct(x)
 
     def move_up_selection(self):
         """
@@ -231,7 +234,7 @@ class ActiveClusterTrait():
         if direction == 'DOWN':
             clusters.revert()
         for x in clusters:
-            self.deconstruct(x):
+            self.deconstruct(x)
 
     def construct_cluster_from_selection(self):
         """

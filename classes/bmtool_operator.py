@@ -337,7 +337,7 @@ class BMToolMod(ModifiersOperator):
 
             # Move modifier.
             if self._selecting_clusters:
-                layer.move_selected_clusters_up()
+                layer.move_up_selection()
             else:
                 layer.move_up(cluster)
 
@@ -353,7 +353,7 @@ class BMToolMod(ModifiersOperator):
 
             # Move modifier.
             if self._selecting_clusters:
-                layer.move_selected_clusters_down()
+                layer.move_down_selection()
             else:
                 layer.move_down(cluster)
 

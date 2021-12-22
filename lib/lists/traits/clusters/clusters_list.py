@@ -415,8 +415,6 @@ class ClustersListTrait():
     def get_trace_to(self, cluster):
         """
         Returns trace to cluster, starting from this layer.
-        Example:
-        [TripleBevel, DoubleBevel, DefaultBevel]
         """
         result = []
         f = True

@@ -52,60 +52,60 @@ class ObjectClustersListTrait():
     # Changing modifiers_list of an object
     # ===================================
 
-    def move_clusters(self, clusters, direction):
-        """
-        Moves list of clusters.
+    # def move_clusters(self, clusters, direction):
+    #     """
+    #     Moves list of clusters.
 
-        Returns True or False.
-        """
-        if not isinstance(clusters, list):
-            raise TypeError
+    #     Returns True or False.
+    #     """
+    #     if not isinstance(clusters, list):
+    #         raise TypeError
 
-        # Dont move, if modifier is last or first.
-        if direction == 'UP':
-            x = self.get_index(clusters[0])
-            if x == 0:
-                return False
-        elif direction == 'DOWN':
-            x = self.get_index(clusters[-1])
-            if x == self.get_list_length() - 1:
-                return False
-        else:
-            raise ValueError
+    #     # Dont move, if modifier is last or first.
+    #     if direction == 'UP':
+    #         x = self.get_index(clusters[0])
+    #         if x == 0:
+    #             return False
+    #     elif direction == 'DOWN':
+    #         x = self.get_index(clusters[-1])
+    #         if x == self.get_list_length() - 1:
+    #             return False
+    #     else:
+    #         raise ValueError
 
-        clusters_to_move = clusters
+    #     clusters_to_move = clusters
 
-        if direction == 'DOWN':
-            clusters_to_move = clusters_to_move.reverse()
+    #     if direction == 'DOWN':
+    #         clusters_to_move = clusters_to_move.reverse()
 
-        for cluster in clusters_to_move:
-            if direction == 'UP':
-                if not self.move_up(cluster):
-                    return False
-            elif direction == 'DOWN':
-                if not self.move_down(cluster):
-                    return False
-        return True
+    #     for cluster in clusters_to_move:
+    #         if direction == 'UP':
+    #             if not self.move_up(cluster):
+    #                 return False
+    #         elif direction == 'DOWN':
+    #             if not self.move_down(cluster):
+    #                 return False
+    #     return True
 
-    def move_to_index(self, mod, i):
-        """
-        Moves cluster to index.
+    # def move_to_index(self, mod, i):
+    #     """
+    #     Moves cluster to index.
 
-        Returns True if moved modifier.
-        Returns False if any errors.
-        """
-        # TODO: not tested
-        if i < self.get_list_length():
-            m_i = self.get_index(mod)
-            d_i = i - m_i
-            x = 0
-            if d_i > 0:
-                while x <= d_i:
-                    self.move_up(mod)
-                    x += 1
-                return True
-            elif d_i < 0:
-                while x >= d_i:
-                    self.move_up(mod)
-                    x -= 1
-                return True
+    #     Returns True if moved modifier.
+    #     Returns False if any errors.
+    #     """
+    #     # TODO: not tested
+    #     if i < self.get_list_length():
+    #         m_i = self.get_index(mod)
+    #         d_i = i - m_i
+    #         x = 0
+    #         if d_i > 0:
+    #             while x <= d_i:
+    #                 self.move_up(mod)
+    #                 x += 1
+    #             return True
+    #         elif d_i < 0:
+    #             while x >= d_i:
+    #                 self.move_up(mod)
+    #                 x -= 1
+    #             return True

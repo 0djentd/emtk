@@ -143,6 +143,9 @@ class ClustersParser():
         Returns clusters ready to be put into ClustersList.
         Returns False if cant parse for some reason.
         """
+        if not isinstance(modifiers_to_parse, list):
+            raise TypeError
+
         if clusters_names is None:
             clusters_names = []
 
@@ -151,18 +154,39 @@ class ClustersParser():
         elif not _WITH_BPY:
             modifier_type = DummyBlenderModifier
 
+        for x in modifiers_to_parse:
+            if not isinstance(x, modifier_type):
+                if x.has_clusters():
+                    has_clusters = True
+                    has_layers = True
+                else:
+                    has_clusters = True
+            else:
+                has_modifiers = True
+
+        if not has_modifiers\
+                and not has_clusters\
+                and not has_layers:
+            raise TypeError
+
         # Check if passed list have modifiers
-        if isinstance(modifiers_to_parse[0], modifier_type):
+        if has_modifiers:
+            modifiers_to_parse_2 = []
+            for x in modifiers_to_parse:
+                if not isinstance(x, modifier_type):
+                    modifiers_to_parse_2.extend(
+                            x.get_full_actual_modifiers_list())
+                modifiers_to_parse_2.append(x)
 
             # Parse modifiers once.
             if self._ClustersParser__SIMPLE_CLUSTERS:
                 parse_result = self._parse_modifiers_for_simple_clusters(
-                        modifiers_to_parse)
+                        modifiers_to_parse_2)
                 if parse_result is False:
                     return False
             else:
                 self._additional_info_log.append("Trying to parse modifiers")
-                parse_result = self._parse_modifiers(modifiers_to_parse,
+                parse_result = self._parse_modifiers(modifiers_to_parse_2,
                                                      additional_types,
                                                      no_available_types,
                                                      clusters_names)
