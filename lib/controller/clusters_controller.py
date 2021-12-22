@@ -53,6 +53,8 @@ class ClustersController():
         else:
             commands = command
 
+        batches = []
+
         for command in commands:
             if not isinstance(command, ClustersBatchCommand):
                 if not isinstance(command, ClustersCommand):
@@ -66,8 +68,18 @@ class ClustersController():
             else:
                 batch = command
 
-            self._solve_batch(batch)
+            batches.append(self._solve_batch(batch))
 
+        for x in batches:
+            i = []
+            c = []
+            for y in x:
+                if y.initial_action not in i:
+                    y.append(c)
+                else:
+                    raise ValueError
+
+        for x in batches:
             self._apply_batch(batch)
 
     # ==============
