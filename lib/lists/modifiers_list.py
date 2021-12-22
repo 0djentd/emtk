@@ -296,50 +296,6 @@ class ModifiersList(ModifiersListUtilsTrait):
                     x -= 1
                 return True
 
-    # =======================================================
-    # THIS METHODS SHOULD BE SPECIFIED FOR OTHER OBJECT TYPES
-    # AND ONLY USED IN NON-NESTED CLUSTERS.
-    # TODO: remove this.
-    # =======================================================
-    def modifier_get_name(self, mod):
-        """
-        Returns modifier name
-        Returns False, if no such modifier
-        """
-        self._check_if_cluster_removed()
-        return self.actual_modifier_get_name(mod)
-
-    def modifier_get_type(self, mod):
-        """
-        Returns modifier type
-        Returns False, if no such modifier
-        """
-        self._check_if_cluster_removed()
-        return self.actual_modifier_get_type(mod)
-
-    # ===============================================
-    # THIS METHODS IS SPECIFIED FOR BLENDER MODIFIERS
-    # AND ONLY USED IN NON-NESTED CLUSTERS.
-    # ===============================================
-    def actual_modifier_get_name(self, mod):
-        """
-        Returns modifier name
-        """
-        if mod in self._modifiers_list:
-            return mod.name
-        else:
-            raise ValueError
-
-    def actual_modifier_get_type(self, mod):
-        """
-        Returns modifier type
-        Returns False, if no such modifier
-        """
-        if mod in self._modifiers_list:
-            return mod.type
-        else:
-            raise ValueError
-
     # ==============================================
     # This methods work on _modifiers_list's level.
     # This means that they dont differ simple or nested clusters and modifiers
@@ -360,9 +316,6 @@ class ModifiersList(ModifiersListUtilsTrait):
         """
         self._check_if_cluster_removed()
         return self._modifiers_list
-
-        # x = copy.copy(self._modifiers_list)
-        # return x
 
     def get_full_list(self):
         return self.get_list()
