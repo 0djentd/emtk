@@ -74,8 +74,7 @@ class BMTOOL_OT_bmtoolm(BMToolUi, BMToolMod, Operator):
 
         editors_list = []
         for editor in self._editors:
-            if self.m_list.active_modifier_get_type(
-                    ) == editor._DEFAULT_M_TYPE:
+            if self.m_list.active_modifier.type == editor._DEFAULT_M_TYPE:
                 editors_list.append(editor)
         return editors_list
 

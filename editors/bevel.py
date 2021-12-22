@@ -33,7 +33,7 @@ class BMToolEditorBevel(ModifierEditor):
     def bevel_segment_count(self, m_list):
         y = 0
         for x in m_list.get_list():
-            if m_list.modifier_get_type(x) == 'BEVEL':
+            if x.type == 'BEVEL':
                 y += x.get_by_index(0).segments
         return y
 

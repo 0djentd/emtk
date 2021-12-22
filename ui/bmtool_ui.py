@@ -148,8 +148,8 @@ class BMToolUi:
 
         ui_t = []
 
-        m_name = m_list.get_cluster().get_this_cluster_name()
-        m_type = m_list.get_cluster().get_this_cluster_type()
+        m_name = m_list.get_cluster().name
+        m_type = m_list.get_cluster().type
 
         layer = m_list.get_layer()
         cluster_selection = layer.get_cluster_selection()
@@ -173,11 +173,11 @@ class BMToolUi:
 
         # Info about cluster
         ui_t = []
-        if cluster.get_this_cluster_type() == m_type:
+        if cluster.type == m_type:
             y = "<"
         else:
             y = "  "
-        if cluster.get_this_cluster_name() == m_name:
+        if cluster.name == m_name:
             y2 = ">"
         else:
             y2 = "  "
@@ -189,15 +189,15 @@ class BMToolUi:
         if cluster.has_clusters():
             y3 = "L"
             if cluster_selected:
-                ui_t.append([f"{y2} {cluster.get_this_cluster_name()} {y3} {y} {y5}", 10])
+                ui_t.append([f"{y2} {cluster.name {y3} {y} {y5}", 10])
             else:
-                ui_t.append([f"{y2} {cluster.get_this_cluster_name()} {y3} {y} {y5}", 1])
+                ui_t.append([f"{y2} {cluster.name {y3} {y} {y5}", 1])
         else:
             y3 = "C"
             if cluster_selected:
-                ui_t.append([f"{y2} {cluster.get_this_cluster_name()} {y3} {y} {y5}", 10])
+                ui_t.append([f"{y2} {cluster.name {y3} {y} {y5}", 10])
             else:
-                ui_t.append([f"{y2} {cluster.get_this_cluster_name()} {y3} {y} {y5}", 3])
+                ui_t.append([f"{y2} {cluster.name {y3} {y} {y5}", 3])
 
         # Info about its clusters
         if cluster.has_clusters() and (cluster.collapsed is False):
