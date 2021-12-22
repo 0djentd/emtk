@@ -21,8 +21,6 @@ from .cluster_trait import ClusterTrait
 from ..lists.modifiers_list import ModifiersList
 from ..lists.traits.modifiers.active_modifier \
         import ActiveModifierTrait
-from ..lists.traits.modifiers.object_modifiers_list \
-        import ObjectModifiersListTrait
 
 try:
     import bpy
@@ -35,7 +33,6 @@ except ModuleNotFoundError:
 class ModifiersCluster(
                        ClusterTrait,
                        ActiveModifierTrait,
-                       ObjectModifiersListTrait,
                        ModifiersList
                        ):
     """

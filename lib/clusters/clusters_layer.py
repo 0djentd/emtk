@@ -20,8 +20,6 @@ from ..lists.modifiers_list import ModifiersList
 from ..lists.traits.clusters.clusters_list import ClustersListTrait
 from ..lists.traits.clusters.sortable_clusters_list\
         import SortableClustersListTrait
-from ..lists.traits.clusters.object_clusters_list\
-        import ObjectClustersListTrait
 from ..lists.traits.clusters.active_cluster import ActiveClusterTrait
 from .cluster_trait import ClusterTrait
 
@@ -36,7 +34,6 @@ except ModuleNotFoundError:
 class ClustersLayer(
                     ClusterTrait,
                     ActiveClusterTrait,
-                    ObjectClustersListTrait,
                     SortableClustersListTrait,
                     ClustersListTrait,
                     ModifiersList

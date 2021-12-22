@@ -28,10 +28,6 @@ except ModuleNotFoundError:
 
 class DefaultModifierCluster(
                              ModifiersCluster
-                             # ClusterTrait,
-                             # ActiveModifierTrait,
-                             # ObjectModifiersListTrait,
-                             # ModifiersList
                              ):
     """
     Cluster type for default modifiers without custom behaviour, tags, or name.

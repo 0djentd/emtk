@@ -19,7 +19,6 @@
 from .modifiers_list import ModifiersList
 from .traits.clusters.clusters_list import ClustersListTrait
 from .traits.clusters.sortable_clusters_list import SortableClustersListTrait
-from .traits.clusters.object_clusters_list import ObjectClustersListTrait
 from .traits.clusters.active_cluster import ActiveClusterTrait
 from .traits.clusters.first_layer_clusters_list \
         import FirstLayerClustersListTrait
@@ -28,7 +27,6 @@ from .traits.clusters.first_layer_clusters_list \
 class ExtendedModifiersList(
                             FirstLayerClustersListTrait,
                             ActiveClusterTrait,
-                            ObjectClustersListTrait,
                             SortableClustersListTrait,
                             ClustersListTrait,
                             ModifiersList
