@@ -29,7 +29,7 @@ class ModifiersListTests(unittest.TestCase):
         mods.append(self.o.modifier_add('Bevel', 'BEVEL'))
         mods.append(self.o.modifier_add('Bevel', 'BEVEL'))
 
-        self.m_list = ModifiersList()
+        self.m_list = ModifiersList(no_obj=True)
         self.m_list._modifiers_list = mods
 
     def teatDown(self):
@@ -41,14 +41,6 @@ class ModifiersListTests(unittest.TestCase):
 
     def test_get_first(self):
         self.assertEqual(self.m_list.get_first(), self.o.modifiers[0])
-
-    def test_modifier_get_name(self):
-        self.assertEqual(self.m_list.modifier_get_name(
-            self.m_list.get_first()), self.o.modifiers[0].name)
-
-    def test_modifier_get_type(self):
-        self.assertEqual(self.m_list.modifier_get_type(
-            self.m_list.get_first()), self.o.modifiers[0].type)
 
     def test_get_list_in_range_inclusive(self):
         mod1 = self.m_list.get_first()
