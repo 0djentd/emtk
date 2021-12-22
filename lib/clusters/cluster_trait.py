@@ -282,59 +282,72 @@ class ClusterTrait():
         """
         return True
 
-    # ============================
-    # ModifiersClustersList actions
-    # ============================
-    # TODO: rework this
-    # TODO: does this actually require full clusters list?
-    def cluster_being_removed(self, modifiers_clusters_list):
+    """
+    =========================================
+    Cluster type-specific additional actions.
+    =========================================
+
+    This three methods should return None, ClustersCommand or
+    list of ClustersCommands (not ClustersBatchCommand).
+    Command will be put before recived command in ClustersBatchCommand.
+
+    Intended usecase:
+    Additional ClustersCommands that are required for action to be
+    allowed by this cluster.
+
+    Make sure not to change clusters state in this methods, because
+    sometimes this methods will be called without actually performing
+    action after.
+    """
+    def cluster_answer_case_self(self, action):
         """
-        Method reserved for object-specific actions on cluster remove in
-        ModifiersClustersList.
-
-        Passed arguments are list this cluster belongs to.
-
-        Returns True if cluster can be successfully removed.
-        Returns False if cluster shouldnt be removed.
+        This method is called when action.subject is cluster itself.
         """
-        return True
+        return
 
-    def cluster_being_applied(self, modifiers_clusters_list):
+    def cluster_answer_case_list(self, action):
         """
-        Method reserved for object-specific actions on cluster apply in
-        ModifiersClustersList.
-
-        Passed arguments are list this cluster belongs to.
-
-        Returns True if cluster can be successfully applied.
-        Returns False if cluster shouldnt be applied.
+        This method is called when action.subject is in cluster's list.
         """
-        return True
+        return
 
-    def cluster_being_moved(self, modifiers_clusters_list, direction):
+    def cluster_answer_case_all(self, action):
         """
-        Method reserved for object-specific actions on cluster move in
-        ModifiersClustersList.
-
-        Passed arguments are list this cluster belongs to and direction
-        as one of UP or DOWN.
-
-        Returns True if cluster can be successfully moved.
-        Returns False if cluster shouldnt be moved.
+        This method is called when action.subject is somewhere in this
+        cluster's layers and modifiers clusters.
         """
-        return True
+        return
 
-    def cluster_being_deconstructed(self, clusters_list):
+    """
+    ================================================
+    Cluster type-specific additional interpretation.
+    ================================================
+
+    This three methods called just before applying action and
+    should return None.
+
+    Intended usecase:
+    Additional actions on cluster itself, without changing other
+    clusters in any way.
+    """
+    def cluster_do_case_self(self, action):
         """
-        Method reserved for object-specific actions on cluster
-        deconstruction in ModifiersClustersList.
-
-        Passed arguments are list this cluster belongs to.
-
-        Returns True if cluster can be successfully moved.
-        Returns False if cluster shouldnt be moved.
+        This method is called when action.subject is cluster itself.
         """
-        return True
+        return
+
+    def cluster_do_case_list(self, action):
+        """
+        This method is called when action.subject is in cluster's list.
+        """
+        return
+
+    def cluster_do_case_all(self, action):
+        """
+        This method is called when action.subject is somewhere in this
+        cluster's layers and modifiers clusters.
+        """
+        return
 
     # ===========================
     # ModifiersCluster methods

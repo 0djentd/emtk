@@ -118,10 +118,13 @@ class ModifiersList(ModifiersListUtilsTrait):
     def _check_if_cluster_removed(self):
         pass
 
-    def remove(self, cluster):
+    def remove(self, cluster=None):
         """
-        Removes cluster from this list.
+        Removes cluster or modifier from this list.
+        If cluster is None, removes cluster itself.
         """
+        if cluster is None:
+            cluster = self
         x = ClustersAction('REMOVE', cluster)
         x = ClustersCommand(x,
                             affect_clusters=True,
@@ -131,10 +134,13 @@ class ModifiersList(ModifiersListUtilsTrait):
                             )
         self._controller.do(x)
 
-    def apply(self, cluster):
+    def apply(self, cluster=None):
         """
-        Removes cluster from this list.
+        Removes cluster or modifier from this list.
+        If cluster is None, applies cluster itself.
         """
+        if cluster is None:
+            cluster = self
         x = ClustersAction('APPLY', cluster)
         x = ClustersCommand(x,
                             affect_clusters=True,
