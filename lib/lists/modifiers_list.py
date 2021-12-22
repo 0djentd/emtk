@@ -510,8 +510,6 @@ class ModifiersList(ModifiersListUtilsTrait):
         x = 1
         m_list_len = self.get_list_length()
         while x < m_list_len + 1:
-            # y = index of modifier that should be returned
-            # created on every iteration
             y = self.get_index(mod) + x
             if y >= m_list_len:
                 return None
@@ -578,12 +576,9 @@ class ModifiersList(ModifiersListUtilsTrait):
         x = 1
         m_list_len = self.get_list_length()
         while x < m_list_len + 1:
-            # y = index of modifier that should be returned
-            # created on every iteration
             y = self.get_index(mod) - x
             if y < 0:
                 y = y + m_list_len
-            # TODO: should be through methods?
             if self._modifiers_list[y].type == m_type:
                 return self.get_by_index(y)
             x += 1

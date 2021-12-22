@@ -516,52 +516,6 @@ class ClustersListTrait():
         else:
             raise ValueError
 
-    # =======================
-    # Clusters methods
-    # =======================
-    # def deconstruct_cluster(self, cluster):
-    #     """
-    #     Deconstructs cluster into its components.
-
-    #     If cluster has cluster, it will be replaced with them.
-    #     If cluster has actual modifiers, it will be replaced with
-    #     simpler clusters.
-    #     """
-    #     self._check_if_cluster_removed()
-    #     if not isinstance(cluster, ClusterTrait):
-    #         raise TypeError
-
-    #     elif self.recursive_has_cluster(cluster):
-    #         layer = self.get_cluster_cluster_belongs_to(cluster)
-    #         clusters_index = layer.get_index(cluster)
-    #         removing_active = False
-
-    #         if layer.active_modifier_get() == cluster:
-    #             removing_active = True
-
-    #         # TODO: cluster being deconstructed
-    #         if not cluster.cluster_being_deconstructed(self):
-    #             return False
-    #         y = cluster.get_list()
-
-    #         if cluster.has_clusters():
-    #             for x in reversed(y):
-    #                 layer._modifiers_list.insert(clusters_index, x)
-    #             # TODO: use remove_cluster for this?
-    #             layer._modifiers_list.remove(cluster)
-    #         else:
-    #             parser = self._clusters_parser
-    #             parse_result = parser._parse_modifiers_for_simple_clusters(y)
-    #             layer._modifiers_list.remove(cluster)
-    #             for x in reversed(parse_result):
-    #                 layer._modifiers_list.insert(clusters_index, x)
-
-    #         if removing_active:
-    #             layer.active_modifier_set_by_index(clusters_index)
-    #         return True
-    #     else:
-    #         raise ValueError
-
     def recursive_has_object(self, obj):
         return obj in self.get_full_list()\
                 and obj in self.get_full_actual_modifiers_list()
