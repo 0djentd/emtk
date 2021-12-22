@@ -68,8 +68,7 @@ class ClustersController():
             else:
                 batch = command
 
-            self._solve_batch(batch)
-            batches.append(batch)
+            batches.append(self._solve_batch(batch))
 
         for x in batches:
             i = []
