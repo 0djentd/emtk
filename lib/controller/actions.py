@@ -48,7 +48,7 @@ class ClustersAction():
         self.props = {}
 
     def __str__(self):
-        return f"[{self.verb} {self.subject} d:{self.dry} p:{self.props}]"
+        return f"[{self.verb} {self.subject.name} d:{self.dry} p:{self.props}]"
 
     def __repr__(self):
         return self.__str__()
@@ -82,10 +82,10 @@ class ClusterRequest():
         self.require = actions
 
     def __str__(self):
-        return f"ClusterRequest from {self.o} {self.require}"
+        return f"ClusterRequest from {self.o.name} {self.require}"
 
     def __repr__(self):
-        return f"ClusterRequest from {self.o} {self.require}"
+        return self.__str__()
 
 
 class ClustersCommand():
@@ -166,8 +166,11 @@ class ClustersCommand():
 
     def __str__(self):
         result = f'ClustersCommand {self._initial_action} ['
+        y = 0
         for x in self._actions_to_do:
-            result = result + f'{x}'
+            if y < 4:
+                y += 1
+                result = result + f'{x}'
         result = result + '] '
         a = ''
         d = ''
@@ -234,11 +237,7 @@ class ClustersBatchCommand():
         return result
 
     def __repr__(self):
-        result = 'ClustersBatchCommand ['
-        for x in self.commands:
-            result = result + f'{x}'
-        result = result + '] '
-        return result
+        return self.__str__()
 
     def check_this_batch_command_sanity(self):
         if len(self.commands) == 0:
