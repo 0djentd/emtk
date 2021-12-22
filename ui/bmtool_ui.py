@@ -189,15 +189,15 @@ class BMToolUi:
         if cluster.has_clusters():
             y3 = "L"
             if cluster_selected:
-                ui_t.append([f"{y2} {cluster.name {y3} {y} {y5}", 10])
+                ui_t.append([f"{y2} {cluster.name} {y3} {y} {y5}", 10])
             else:
-                ui_t.append([f"{y2} {cluster.name {y3} {y} {y5}", 1])
+                ui_t.append([f"{y2} {cluster.name} {y3} {y} {y5}", 1])
         else:
             y3 = "C"
             if cluster_selected:
-                ui_t.append([f"{y2} {cluster.name {y3} {y} {y5}", 10])
+                ui_t.append([f"{y2} {cluster.name} {y3} {y} {y5}", 10])
             else:
-                ui_t.append([f"{y2} {cluster.name {y3} {y} {y5}", 3])
+                ui_t.append([f"{y2} {cluster.name} {y3} {y} {y5}", 3])
 
         # Info about its clusters
         if cluster.has_clusters() and (cluster.collapsed is False):

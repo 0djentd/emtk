@@ -68,11 +68,17 @@ class ActiveClusterTrait():
     # TODO: this methods should be renamed
     @property
     def active_modifier(self):
-        return self.active_modifiers_get()
+        if len(self._modifiers_list) > 0:
+            return self.active_modifier_get()
+        else:
+            return None
 
     @active_modifier.setter
     def active_modifier(self, mod):
-        return self.active_modifier_set(mod)
+        if isinstance(mod, int):
+            return self.active_modifier_set_by_index(mod)
+        else:
+            return self.active_modifier_set(mod)
 
     def active_modifier_get(self):
         """Returns active modifier"""
