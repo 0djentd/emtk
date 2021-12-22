@@ -78,14 +78,6 @@ class ActiveClusterTrait():
         """Returns active modifier"""
         return self._mod
 
-    def active_modifier_get_type(self):
-        """Returns active modifier type"""
-        return self.modifier_get_type(self._mod)
-
-    def active_modifier_get_name(self):
-        """Returns active modifier type"""
-        return self.modifier_get_name(self._mod)
-
     def active_modifier_set_by_index(self, i):
         """Set active modifier by index"""
         self._mod = self._modifiers_list[i]

@@ -88,39 +88,6 @@ class ClustersListTrait():
     def _check_if_cluster_removed(self):
         pass
 
-    # =====================================
-    # THIS METHODS WORK ONLY WITH CLUSTERS.
-    # =====================================
-    # This method is for ExtendedModifiersList only
-    def modifier_get_name(self, mod):
-        """
-        Returns modifier name
-        Returns False, if no such modifier
-        """
-        return self.cluster_get_name(mod)
-
-    # This method is for ExtendedModifiersList only
-    def modifier_get_type(self, mod):
-        """
-        Returns modifier type
-        Returns False, if no such modifier
-        """
-        return self.cluster_get_type(mod)
-
-    # remove this?
-    def cluster_get_name(self, mod):
-        """
-        Returns cluster name.
-        """
-        return mod.get_this_cluster_name()
-
-    # remove this?
-    def cluster_get_type(self, mod):
-        """
-        Returns cluster type.
-        """
-        return mod.get_this_cluster_type()
-
     # =============
     # Actual modifier getters
     # Always return actual modifiers

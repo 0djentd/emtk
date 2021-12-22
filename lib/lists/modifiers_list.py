@@ -397,7 +397,7 @@ class ModifiersList(ModifiersListUtilsTrait):
         self._check_if_cluster_removed()
         y = []
         for x in self._modifiers_list:
-            if self.modifier_get_type(x) == m_type:
+            if x.type == m_type:
                 y.append(x)
         return y
 
@@ -448,7 +448,7 @@ class ModifiersList(ModifiersListUtilsTrait):
         """
 
         for mod in self._modifiers_list:
-            if self.modifier_get_type(mod) == m_type:
+            if mod.type == m_type:
                 return True
         return False
 
@@ -459,7 +459,7 @@ class ModifiersList(ModifiersListUtilsTrait):
         """
 
         for mod in self._modifiers_list:
-            if self.modifier_get_name(mod) == m_name:
+            if mod.name == m_name:
                 return True
         return False
 
@@ -491,8 +491,7 @@ class ModifiersList(ModifiersListUtilsTrait):
             y = self.get_index(mod) - x
             if y < 0:
                 return None
-            elif self.modifier_get_type(
-                    self.get_by_index(y)) == m_type:
+            elif self.get_by_index(y).type == m_type:
                 return self.get_by_index(y)
             x += 1
 
@@ -516,7 +515,7 @@ class ModifiersList(ModifiersListUtilsTrait):
             y = self.get_index(mod) + x
             if y >= m_list_len:
                 return None
-            elif self.modifier_get_type(self._modifiers_list[y]) == m_type:
+            elif self._modifiers_list[y].type == m_type:
                 return self.get_by_index(y)
             x += 1
 
@@ -585,7 +584,7 @@ class ModifiersList(ModifiersListUtilsTrait):
             if y < 0:
                 y = y + m_list_len
             # TODO: should be through methods?
-            if self.modifier_get_type(self._modifiers_list[y]) == m_type:
+            if self._modifiers_list[y].type == m_type:
                 return self.get_by_index(y)
             x += 1
 
@@ -613,7 +612,7 @@ class ModifiersList(ModifiersListUtilsTrait):
             y = self.get_index(mod) + x
             if y >= m_list_len:
                 y = y - m_list_len
-            if self.modifier_get_type(self._modifiers_list[y]) == m_type:
+            if self._modifiers_list[y].type == m_type:
                 return self._modifiers_list[y]
             x += 1
 
