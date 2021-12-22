@@ -147,22 +147,35 @@ class ModifiersList(ModifiersListUtilsTrait):
     def move_up(self, cluster):
         """
         Removes cluster from this list.
+        Returns None or False, if cluster already first in this list.
         """
-        self._move(cluster, direction='UP')
+        return self._move(cluster, direction='UP')
 
     def move_down(self, cluster):
         """
         Removes cluster from this list.
+        Returns None or False, if cluster already last in this list.
         """
-        self._move(cluster, direction='DOWN')
+        return self._move(cluster, direction='DOWN')
 
     def _move(self, cluster, direction):
+        """
+        Moves cluster or modifier in this list.
+        Returns None or False.
+        """
+        if len(self._modifiers_list) < 2:
+            return False
+
         i = self._modifiers_list.index(cluster)
 
         if direction == 'UP':
+            if i == 0:
+                return False
             cluster_to_move_through = self._modifiers_list[i-1]
             direction_2 = 'DOWN'
         elif direction == 'DOWN':
+            if i == len(self._modifiers_list) - 1:
+                return False
             cluster_to_move_through = self._modifiers_list[i+1]
             direction_2 = 'UP'
         else:
