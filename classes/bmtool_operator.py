@@ -233,10 +233,6 @@ class BMToolMod(ModifiersOperator):
                 self.clear(context)
                 return {'FINISHED'}
 
-            # Select currently active cluster.
-            cluster = self.m_list.get_cluster()
-            layer = self.m_list.get_active_cluster_layer()
-
             # Reset mode.
             self.bmtool_mode = self._BMTOOL_DEFAULT_MODE
 
@@ -251,10 +247,6 @@ class BMToolMod(ModifiersOperator):
                 self.report({'INFO'}, "Deconstructed cluster")
             else:
                 self.report({'ERROR'}, "Cant deconstruct cluster")
-
-            # Select currently active cluster.
-            cluster = self.m_list.get_cluster()
-            layer = self.m_list.get_active_cluster_layer()
 
         # Construct cluster from selection
         elif (event.type == self.bmtool_kbs['construct_deconstruct'])\
@@ -293,10 +285,6 @@ class BMToolMod(ModifiersOperator):
                 layer.start_selecting_clusters()
                 self._selecting_clusters = True
 
-            # Select currently active cluster.
-            cluster = self.m_list.get_cluster()
-            layer = self.m_list.get_active_cluster_layer()
-
         # Remove active cluster.
         elif (event.type == self.bmtool_kbs['apply_remove'])\
                 & (event.value == 'PRESS'):
@@ -320,10 +308,6 @@ class BMToolMod(ModifiersOperator):
             # Clear selection
             self._selecting_clusters = False
             layer.clear_cluster_selection()
-
-            # Select currently active cluster.
-            cluster = self.m_list.get_cluster()
-            layer = self.m_list.get_active_cluster_layer()
 
             # Reset mode.
             self.bmtool_mode = self._BMTOOL_DEFAULT_MODE
@@ -393,10 +377,6 @@ class BMToolMod(ModifiersOperator):
             # Clear selection
             self._selecting_clusters = False
             layer.clear_cluster_selection()
-
-            # Select currently active cluster.
-            cluster = self.m_list.get_cluster()
-            layer = self.m_list.get_active_cluster_layer()
 
         # Scroll through modifiers up.
         elif (event.type == self.bmtool_kbs['up'])\
