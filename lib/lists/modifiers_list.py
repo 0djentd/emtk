@@ -260,6 +260,29 @@ class ModifiersList(ModifiersListUtilsTrait):
                 return x.do(action)
         raise ValueError(f'No implementation for action type {action.verb}')
 
+    def move_to_index(self, mod, i):
+        """
+        Moves cluster to index.
+
+        Returns True if moved modifier.
+        Returns False if any errors.
+        """
+        # TODO: not tested
+        if i < self.get_list_length():
+            m_i = self.get_index(mod)
+            d_i = i - m_i
+            x = 0
+            if d_i > 0:
+                while x <= d_i:
+                    self.move_up(mod)
+                    x += 1
+                return True
+            elif d_i < 0:
+                while x >= d_i:
+                    self.move_up(mod)
+                    x -= 1
+                return True
+
     # =======================================================
     # THIS METHODS SHOULD BE SPECIFIED FOR OTHER OBJECT TYPES
     # AND ONLY USED IN NON-NESTED CLUSTERS.

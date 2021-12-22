@@ -287,6 +287,30 @@ class ClusterTrait():
     # ============================
     # TODO: rework this
     # TODO: does this actually require full clusters list?
+    def cluster_being_removed(self, modifiers_clusters_list):
+        """
+        Method reserved for object-specific actions on cluster remove in
+        ModifiersClustersList.
+
+        Passed arguments are list this cluster belongs to.
+
+        Returns True if cluster can be successfully removed.
+        Returns False if cluster shouldnt be removed.
+        """
+        return True
+
+    def cluster_being_applied(self, modifiers_clusters_list):
+        """
+        Method reserved for object-specific actions on cluster apply in
+        ModifiersClustersList.
+
+        Passed arguments are list this cluster belongs to.
+
+        Returns True if cluster can be successfully applied.
+        Returns False if cluster shouldnt be applied.
+        """
+        return True
+
     def cluster_being_moved(self, modifiers_clusters_list, direction):
         """
         Method reserved for object-specific actions on cluster move in
@@ -309,30 +333,6 @@ class ClusterTrait():
 
         Returns True if cluster can be successfully moved.
         Returns False if cluster shouldnt be moved.
-        """
-        return True
-
-    def cluster_being_removed(self, modifiers_clusters_list):
-        """
-        Method reserved for object-specific actions on cluster remove in
-        ModifiersClustersList.
-
-        Passed arguments are list this cluster belongs to.
-
-        Returns True if cluster can be successfully removed.
-        Returns False if cluster shouldnt be removed.
-        """
-        return True
-
-    def cluster_being_applied(self, modifiers_clusters_list):
-        """
-        Method reserved for object-specific actions on cluster apply in
-        ModifiersClustersList.
-
-        Passed arguments are list this cluster belongs to.
-
-        Returns True if cluster can be successfully applied.
-        Returns False if cluster shouldnt be applied.
         """
         return True
 
