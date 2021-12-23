@@ -22,7 +22,7 @@ try:
     import bpy
     _WITH_BPY = True
 except ModuleNotFoundError:
-    from ..dummy_modifiers import DummyBlenderModifier, DummyBlenderObj
+    from ..dummy_modifiers import DummyBlenderModifier
     _WITH_BPY = False
 
 from ..clusters.cluster_trait import ClusterTrait
