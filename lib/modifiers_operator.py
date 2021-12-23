@@ -25,6 +25,9 @@ from .clusters.modifiers_cluster import ModifiersCluster
 from .clusters.clusters_layer import ClustersLayer
 from .clusters.default_modifier_cluster import DefaultModifierCluster
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
 
 class ModifiersOperator():
     """
@@ -52,7 +55,7 @@ class ModifiersOperator():
         """
 
         for x in range(50):
-            logging.info(" ")
+            logger.info(" ")
 
         if cluster_types is None:
             clusters = []
@@ -65,14 +68,14 @@ class ModifiersOperator():
         else:
             TypeError
 
-        logging.info("================================")
-        logging.info("  MODIFIERS OPERATOR STARTED")
-        logging.info("================================")
-        logging.info(" ")
-        logging.info(" ")
-        logging.info("================================")
-        logging.info("Trying to create modifier lists")
-        logging.info("================================")
+        logger.info("================================")
+        logger.info("  MODIFIERS OPERATOR STARTED")
+        logger.info("================================")
+        logger.info(" ")
+        logger.info(" ")
+        logger.info("================================")
+        logger.info("Trying to create modifier lists")
+        logger.info("================================")
 
         if len(context.view_layer.objects.selected) != 0:
             self.selected_objects = []

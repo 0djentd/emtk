@@ -36,9 +36,9 @@ bl_info = {
     "category": "Interface"
 }
 
-logging.basicConfig(
-        format='%(module)s %(levelname)s:%(message)s',
-        level=logging.DEBUG)
+# logging.basicConfig(
+#         format='%(module)s %(levelname)s:%(message)s',
+#         level=logging.DEBUG)
 
 classes = [
     BMToolPreferences,

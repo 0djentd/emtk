@@ -30,6 +30,9 @@ except ModuleNotFoundError:
 from ....parser import ClustersParser
 from ....controller.clusters_controller import ClustersController
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
 
 class FirstLayerClustersListTrait():
     """
@@ -78,7 +81,7 @@ class FirstLayerClustersListTrait():
         Returns True, if found any modifiers
         and False if not
         """
-        logging.info("Creating modifiers list.")
+        logger.info("Creating modifiers list.")
         return self._create_modifiers_list(obj)
 
     def _create_modifiers_list(self, obj=None):
@@ -105,7 +108,7 @@ class FirstLayerClustersListTrait():
         # Get actual object modifiers
         modifiers_to_parse = []
         for modifier in self._object.modifiers:
-            logging.debug(f"Adding {modifier} to modifiers to parse")
+            logger.debug(f"Adding {modifier} to modifiers to parse")
             modifiers_to_parse.append(modifier)
 
         try:
@@ -120,16 +123,16 @@ class FirstLayerClustersListTrait():
 
         # Parse modifiers.
         if already_parsed is False:
-            logging.info("Modifiers not parsed.")
+            logger.info("Modifiers not parsed.")
             if len(modifiers_to_parse) > 0:
                 parse_result\
                         = self._clusters_parser.parse_recursively(
                             modifiers_to_parse)
                 if parse_result is False:
-                    logging.error(
+                    logger.error(
                             "Error while parsing. Cant create modifiers list.")
                     raise ValueError
-                logging.info("Setting parse result as a modifiers list.")
+                logger.info("Setting parse result as a modifiers list.")
                 self._modifiers_list = parse_result
                 self._mod = self._modifiers_list[0]
                 modified = True
@@ -138,25 +141,25 @@ class FirstLayerClustersListTrait():
         elif already_parsed:
             if len(modifiers_to_parse) > 0:
                 clusters_state = self.load_clusters_state()
-                logging.info("Modifiers already parsed.")
-                logging.info(clusters_state)
+                logger.info("Modifiers already parsed.")
+                logger.info(clusters_state)
                 parse_result = self._clusters_parser.parse_clusters_state(
                         modifiers_to_parse, clusters_state,
                         clusters_names=self.get_full_list_of_cluster_names())
                 if parse_result is False:
-                    logging.error(
+                    logger.error(
                             "Error while parsing. Cant create modifiers list.")
                     raise ValueError
-                logging.info("Parse result ")
-                logging.info(parse_result)
+                logger.info("Parse result ")
+                logger.info(parse_result)
                 self._modifiers_list = parse_result
                 self._mod = self._modifiers_list[0]
                 modified = True
 
         if self._MODIFIERS_LIST_V:
-            logging.info("===================================")
-            logging.info("Finished creating modifiers list")
-            logging.info("===================================")
+            logger.info("===================================")
+            logger.info("Finished creating modifiers list")
+            logger.info("===================================")
 
         if modified:
             return True
@@ -193,7 +196,7 @@ class FirstLayerClustersListTrait():
         if cluster_index is None:
             cluster_index = layer.get_list_length() - 1
 
-        logging.info("Adding modifier to modifiers list.")
+        logger.info("Adding modifier to modifiers list.")
 
         if _WITH_BPY:
             x = self._object.modifiers.new(m_name, m_type)
@@ -204,11 +207,11 @@ class FirstLayerClustersListTrait():
         z.append(x)
         result = self._clusters_parser._parse_modifiers(z)
 
-        logging.info(f"Created modifier {x}")
-        logging.debug(f"parse result is {result}")
+        logger.info(f"Created modifier {x}")
+        logger.debug(f"parse result is {result}")
         self._modifiers_list += result
 
-        logging.info("Finished adding modifier to modifiers list.")
+        logger.info("Finished adding modifier to modifiers list.")
         return x
 
     def create_cluster(self, cluster_type):
@@ -401,8 +404,8 @@ class FirstLayerClustersListTrait():
         elif not _WITH_BPY:
             self._object.props[name] = x
 
-        logging.info("Saved clusters")
-        logging.debug(f"{x}")
+        logger.info("Saved clusters")
+        logger.debug(f"{x}")
 
     def load_clusters_state(self, prop_name=None):
         """
@@ -431,8 +434,8 @@ class FirstLayerClustersListTrait():
 
         if previous_clusters is not False:
             x = json.loads(previous_clusters)
-            logging.info("Loaded clusters")
-            logging.debug(f"{x}")
+            logger.info("Loaded clusters")
+            logger.debug(f"{x}")
             return x
         else:
             return False

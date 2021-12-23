@@ -20,6 +20,9 @@ import copy
 import json
 import logging
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
 
 # TODO: this trait requires class to also inherit ObjectClustersListTrait
 class ActiveClusterTrait():
@@ -245,10 +248,10 @@ class ActiveClusterTrait():
         if (clusters is None) or (clusters == []):
             return False
 
-        logging.info("Constructiong clusters from selection.")
+        logger.info("Constructiong clusters from selection.")
 
         # Info
-        logging.debug(f"Selected clusters is {clusters}")
+        logger.debug(f"Selected clusters is {clusters}")
 
         # Check if removing active cluster
         removing_active = False
@@ -276,7 +279,7 @@ class ActiveClusterTrait():
 
         # If there is, reparse modifiers
         if parse_modifiers:
-            logging.info("Reparsing modifiers.")
+            logger.info("Reparsing modifiers.")
             modifiers = []
             for x in clusters:
                 modifiers += x.get_full_actual_modifiers_list()
@@ -287,21 +290,21 @@ class ActiveClusterTrait():
         # If there is only cluster layers,
         # try to create another layer from them
         else:
-            logging.info("Reparsing clusters.")
+            logger.info("Reparsing clusters.")
             result = self._clusters_parser._parse_clusters_recursively(
                     clusters)
 
         # If result is bad, revert changes.
         if result is False or None:
-            logging.error("Reparsing clusters failed.")
-            logging.debug(f"Reverting changes to {clusters}")
+            logger.error("Reparsing clusters failed.")
+            logger.debug(f"Reverting changes to {clusters}")
             for x in reversed(clusters):
                 self._modifiers_list.insert(clusters_index, x)
             return False
 
         # Info
-        logging.debug("Finished reparsing.")
-        logging.debug(f"Selected clusters reparse result is {result}")
+        logger.debug("Finished reparsing.")
+        logger.debug(f"Selected clusters reparse result is {result}")
 
         # Insert clusters.
         for x in reversed(result):

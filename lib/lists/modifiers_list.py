@@ -31,6 +31,9 @@ from ..controller.answers import (
                                   ActionDefaultDeconstuct
                                   )
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
 
 class ModifiersList(ModifiersListUtilsTrait):
     """
@@ -272,7 +275,7 @@ class ModifiersList(ModifiersListUtilsTrait):
             self.do_action(x)
 
     def do_action(self, action):
-        logging.debug(f'Cluster {self}, action is {action}')
+        logger.debug(f'Cluster {self}, action is {action}')
         for x in self._actions:
             if x.action_type == action.verb:
                 return x.do(action)
