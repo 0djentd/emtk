@@ -70,26 +70,6 @@ class BMTOOL_OT_bmtoole2(ModifiersOperator, Operator):
 
         self.m_list._modifiers_list[0].set_this_cluster_visibility(
                 (True, False, True, False))
-
-        x = self.m_list._modifiers_list[0].get_this_cluster_visibility()
-
-        self.report({'INFO'}, f"{x}")
-
-        x2 = len(self.m_list.get_first())
-
-        self.report({'INFO'}, f"{x2}")
-
-        self.report({'INFO'}, f"{self.m_list.get_first()}")
-
-        for line in self.m_list.modifiers_list_info_get():
-            self.report({'INFO'}, line)
-
-        for line in self.m_list._clusters_parser._additional_info_log:
-            self.report({'INFO'}, line)
-
-        for x in self.m_list.get_list():
-            self.report({'INFO'}, f"{x}")
-            for y in x.get_list():
-                self.report({'INFO'}, f"{y}")
-
+        del(self.selected_objects)
+        del(self.m_list)
         return {'FINISHED'}

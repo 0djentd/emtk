@@ -18,6 +18,8 @@
 
 import bpy
 
+import logging
+
 from . operators.bmtoolm import BMTOOL_OT_bmtoolm
 from . operators.bmtoole import BMTOOL_OT_bmtoole
 from . operators.bmtoole2 import BMTOOL_OT_bmtoole2
@@ -34,6 +36,7 @@ bl_info = {
     "category": "Interface"
 }
 
+logging.basicConfig(level=logging.DEBUG)
 
 classes = [
     BMToolPreferences,
@@ -51,6 +54,8 @@ def register():
     wm = bpy.context.window_manager
     kc = wm.keyconfigs.addon
 
+    logging.info("BMTool v1.0")
+
     if kc:
         km = kc.keymaps.new(name="Object Mode")
 
@@ -65,6 +70,8 @@ def register():
 def unregister():
     wm = bpy.context.window_manager
     kc = wm.keyconfigs.addon
+
+    logging.info("BMTool v1.0 removed.")
 
     if kc is not None:
         for km, kmi in addon_keymaps:
