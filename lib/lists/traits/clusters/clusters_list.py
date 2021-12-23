@@ -41,12 +41,9 @@ class ClustersListTrait():
 
     Version 5, removed a lot of methods.
 
-    Doesnt require modifiers to be on same object or even exist on
-    any object.
+    Version 6, uses ClustersActions.
     """
 
-    # TODO: rework docstring
-    # TODO: modifier priority
     # TODO: Add checks for passed function arguments
     # TODO: copying modifier settings
 
@@ -64,8 +61,7 @@ class ClustersListTrait():
     # in this methods.
     # ModifiersCluster is a SimpleModifiersList.
     #
-    # All methods that have 'cluster' in their name return Clusters, or even
-    # nested clusters.
+    # All methods that have 'cluster' in their name return Clusters, or layers.
     #
     # All methods that have 'recursive' or 'full' or 'deep' in their name
     # recursively calls cluster methods of same functional as called method.
@@ -250,6 +246,13 @@ class ClustersListTrait():
                 return True
         return False
 
+    # ---------------------
+    # Same method for both.
+    # ---------------------
+    def recursive_has_object(self, obj):
+        return obj in self.get_full_list()\
+                + obj in self.get_full_actual_modifiers_list()
+
     # ========================
     # LIST GETTERS
     # ========================
@@ -282,7 +285,7 @@ class ClustersListTrait():
                 result.append(x)
         return result
 
-    def get_clusters_clusters_list(self):
+    def get_full_layers_list(self):
         """
         Returns list of all of this layer clusters that contain other
         clusters in it, including nested ones.
@@ -323,7 +326,7 @@ class ClustersListTrait():
     # ==============================
     def get_full_list_by_type(self, m_type):
         """
-        Returns full list of clusters by type, including nested ones.
+        Returns full list of clusters by type.
         """
         self._check_if_cluster_removed()
         result = []
@@ -334,7 +337,7 @@ class ClustersListTrait():
 
     def get_full_list_by_name(self, m_name):
         """
-        Returns full list of clusters by name, including nested ones.
+        Returns full list of clusters by name.
         """
         self._check_if_cluster_removed()
         result = []
@@ -345,7 +348,7 @@ class ClustersListTrait():
 
     def get_full_list_by_tags(self, m_tags):
         """
-        Returns full list of clusters by tags, including nested ones.
+        Returns full list of clusters by tags.
         """
         self._check_if_cluster_removed()
         result = []
@@ -355,12 +358,11 @@ class ClustersListTrait():
         return result
 
     # ==============================
-    # Methods based on get_clusters_clusters_list
+    # Methods based on get_cluster_or_layer
     # ==============================
-    # TODO: rename this
-    def get_cluster_cluster_belongs_to(self, cluster):
+    def get_cluster_or_layer(self, cluster):
         """
-        Returns cluster cluster or modifier belongs to.
+        Returns cluster or layer that cluster or modifier belongs to.
         Also returns this ModifiersClustersList.
         Looks in all clusters.
         """
@@ -387,7 +389,7 @@ class ClustersListTrait():
         f = True
         c = cluster
         while f:
-            layer = self.get_cluster_cluster_belongs_to(c)
+            layer = self.get_cluster_or_layer(c)
             result.append(layer)
             if layer is self:
                 f = False
@@ -437,30 +439,31 @@ class ClustersListTrait():
                 result.append(x)
         return result
 
+    # TODO: this methods not really useful
     # ==============================
     # Methods based on get_full_actual_modifiers_list
     # ==============================
-    def get_full_actual_modifiers_list_by_type(self, m_type):
-        """
-        Returns full list of actual modifiers by type, including nested ones.
-        """
-        self._check_if_cluster_removed()
-        result = []
-        for x in self.get_full_actual_modifiers_list():
-            if x.type == m_type:
-                result.append(x)
-        return result
+    # def get_full_actual_modifiers_list_by_type(self, m_type):
+    #     """
+    #     Returns full list of actual modifiers by type, including nested ones.
+    #     """
+    #     self._check_if_cluster_removed()
+    #     result = []
+    #     for x in self.get_full_actual_modifiers_list():
+    #         if x.type == m_type:
+    #             result.append(x)
+    #     return result
 
-    def get_full_actual_modifiers_list_by_name(self, m_name):
-        """
-        Returns full list of actual modifiers by name, including nested ones.
-        """
-        self._check_if_cluster_removed()
-        result = []
-        for x in self.get_full_actual_modifiers_list():
-            if m_name in x.name:
-                result.append(x)
-        return result
+    # def get_full_actual_modifiers_list_by_name(self, m_name):
+    #     """
+    #     Returns full list of actual modifiers by name, including nested ones.
+    #     """
+    #     self._check_if_cluster_removed()
+    #     result = []
+    #     for x in self.get_full_actual_modifiers_list():
+    #         if m_name in x.name:
+    #             result.append(x)
+    #     return result
 
     # ==================
     # First and last actual cluster's modifier methods.
@@ -515,22 +518,3 @@ class ClustersListTrait():
                 return True
         else:
             raise ValueError
-
-    def recursive_has_object(self, obj):
-        return obj in self.get_full_list()\
-                and obj in self.get_full_actual_modifiers_list()
-
-    def check_obj_ref(self, s):
-        if not self.recursive_has_object(s):
-            o = None
-            for x in self.get_full_list():
-                if x.name == s.name:
-                    if x.__class__ == s.__class__:
-                        o = x
-            for x in self.get_full_actual_modifiers_list():
-                if x.name == s.name:
-                    if x.__class__ == s.__class__:
-                        o = x
-            if o != s:
-                raise ValueError(
-                    f'This object {o} reference is broken {s}')

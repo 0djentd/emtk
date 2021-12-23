@@ -249,7 +249,7 @@ class ClustersController():
         if action.subject not in self.e.get_all_clusters_and_modifiers():
             return
 
-        layer = self.e.get_cluster_cluster_belongs_to(action.subject)
+        layer = self.e.get_cluster_or_layer(action.subject)
         print(f'Applying {action} on layer {layer}')
         layer.do(action)
 

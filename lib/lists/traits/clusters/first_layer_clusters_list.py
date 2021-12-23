@@ -306,7 +306,7 @@ class FirstLayerClustersListTrait():
         """
         if not isinstance(layer, FirstLayerClustersListTrait):
             if layer.get_list_length() == 0:
-                layer_2 = self.get_cluster_cluster_belongs_to(layer)
+                layer_2 = self.get_cluster_or_layer(layer)
                 result = self.recursive_check_which_layer_should_be_removed(
                         layer_2)
                 if result is False:

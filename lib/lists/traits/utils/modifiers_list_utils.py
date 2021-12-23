@@ -65,33 +65,33 @@ class ModifiersListUtilsTrait():
         """
 
         ui_t = []
-        if cluster is False:
-            ui_t.append("----------------------------------")
-            ui_t.append("    Info about modifiers list    ")
+        # if cluster is False:
+        #     ui_t.append("----------------------------------")
+        #     ui_t.append("    Info about modifiers list    ")
 
-        # Check if modifiers_list at least kinda working
-        if not isinstance(self._modifiers_list, list):
-            ui_t.append("Modifiers list is not working correctly")
-            return ui_t
+        # # Check if modifiers_list at least kinda working
+        # if not isinstance(self._modifiers_list, list):
+        #     ui_t.append("Modifiers list is not working correctly")
+        #     return ui_t
 
-        # Info about cluster types
-        if self.has_clusters():
-            ui_t.append(f"ModifierCluster count is {self.get_list_length()}")
+        # # Info about cluster types
+        # if self.has_clusters():
+        #     ui_t.append(f"ModifierCluster count is {self.get_list_length()}")
 
-            # Info about all clusters.
-            for mod in self.get_full_list():
-                ui_t.append(" ")
-                if isinstance(mod, ModifiersListUtilsTrait):
-                    ui_t.append(f"Cluster {mod}")
-                    ui_t += mod._modifiers_list_info(True)
+        #     # Info about all clusters.
+        #     for mod in self.get_full_list():
+        #         ui_t.append(" ")
+        #         if isinstance(mod, ModifiersListUtilsTrait):
+        #             ui_t.append(f"Cluster {mod}")
+        #             ui_t += mod._modifiers_list_info(True)
 
-        # Info about actual modifiers
-        else:
-            if len(self._modifiers_list) > 0:
-                for mod in self.get_list():
-                    ui_t.append(f"{mod}")
-            else:
-                ui_t.append("This list is 0 modifiers long")
-        ui_t.append("----------------------------------")
-        ui_t.append(" ")
+        # # Info about actual modifiers
+        # else:
+        #     if len(self._modifiers_list) > 0:
+        #         for mod in self.get_list():
+        #             ui_t.append(f"{mod}")
+        #     else:
+        #         ui_t.append("This list is 0 modifiers long")
+        # ui_t.append("----------------------------------")
+        # ui_t.append(" ")
         return ui_t

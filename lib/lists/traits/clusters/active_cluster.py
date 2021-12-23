@@ -128,7 +128,7 @@ class ActiveClusterTrait():
         Returns list active cluster belongs to.
         """
 
-        return self.get_cluster_cluster_belongs_to(
+        return self.get_cluster_or_layer(
                 self.active_cluster_get_deep())
 
     # ===========================================

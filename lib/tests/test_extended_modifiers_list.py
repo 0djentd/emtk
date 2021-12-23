@@ -113,7 +113,7 @@ class ExtendedModifiersListTests():
 
     def test_all_clusters_have_active_modifier(self):
         result = False
-        for x in self.e.get_clusters_clusters_list():
+        for x in self.e.get_full_layers_list():
             if x._mod is None:
                 if not isinstance(result, list):
                     result = []
@@ -158,7 +158,7 @@ class ExtendedModifiersListTests():
 
     def test_clusters_active_modifier_is_in_the_list(self):
         result = False
-        for x in self.e.get_clusters_clusters_list():
+        for x in self.e.get_full_layers_list():
             if not self.e.has_cluster(self.e.active_modifier_get()):
                 if not isinstance(result, list):
                     result = []
@@ -167,7 +167,7 @@ class ExtendedModifiersListTests():
 
     def test_clusters_active_modifier_exists(self):
         result = False
-        for x in self.e.get_clusters_clusters_list():
+        for x in self.e.get_full_layers_list():
             if x._mod is None:
                 if not isinstance(result, list):
                     result = []
