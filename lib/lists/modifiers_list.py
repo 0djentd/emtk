@@ -16,14 +16,14 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+import logging
+
 from .traits.utils.modifiers_list_utils import ModifiersListUtilsTrait
 from ..controller.actions import (
-                                  ClusterRequest,
                                   ClustersAction,
                                   ClustersCommand,
                                   ClustersBatchCommand,
                                   )
-
 from ..controller.answers import (
                                   ActionDefaultRemove,
                                   ActionDefaultApply,
@@ -272,7 +272,7 @@ class ModifiersList(ModifiersListUtilsTrait):
             self.do_action(x)
 
     def do_action(self, action):
-        print(f'Cluster {self}, action is {action}')
+        logging.debug(f'Cluster {self}, action is {action}')
         for x in self._actions:
             if x.action_type == action.verb:
                 return x.do(action)
