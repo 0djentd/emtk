@@ -284,20 +284,20 @@ class ClusterTrait():
 
     """
     =========================================
-    Cluster type-specific additional actions.
+    Cluster subclass-specific additional actions.
     =========================================
 
     This three methods should return None, ClustersCommand or
     list of ClustersCommands (not ClustersBatchCommand).
     Command will be put before recived command in ClustersBatchCommand.
 
-    Intended usecase:
-    Additional ClustersCommands that are required for action to be
-    allowed by this cluster.
-
     Make sure not to change clusters state in this methods, because
     sometimes this methods will be called without actually performing
     action after.
+
+    Intended usecase:
+    Additional ClustersCommands that are required for action to be
+    allowed by this cluster.
     """
     def cluster_answer_case_self(self, action):
         """
@@ -320,7 +320,7 @@ class ClusterTrait():
 
     """
     ================================================
-    Cluster type-specific additional interpretation.
+    Cluster subclass-specific additional interpretation.
     ================================================
 
     This three methods called just before applying action and

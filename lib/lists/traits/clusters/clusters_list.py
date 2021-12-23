@@ -108,7 +108,7 @@ class ClustersListTrait():
         for x in self.get_full_actual_modifiers_list():
             if x.name == m_name:
                 return x
-        raise ValueError
+        raise ValueError(f'No modifier with name "{m_name}"')
 
     def get_first_actual_modifier(self):
         """

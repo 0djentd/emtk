@@ -120,11 +120,28 @@ class ModifiersList(ModifiersListUtilsTrait):
     def _check_if_cluster_removed(self):
         pass
 
+    """
+    =====================================
+    Clusters actions
+    =====================================
+
+    This methods create a new command and pass it to
+    interpreter. This will automatically add
+    necessary commands to it, creating a ClustersBatchCommand,
+    solve it and send to interpreters.
+
+    Use ClustersCommand and controller.solve(command)
+    instead if you want to check if
+    there is anything wrong with solved command.
+    """
     def remove(self, cluster=None):
         """
         Removes cluster or modifier from this list.
         If cluster is None, removes cluster itself.
         """
+        self._check_if_cluster_removed()
+        logger.info(f'Removing {cluster} on layer {self}')
+
         if cluster is None:
             cluster = self
         x = ClustersAction('REMOVE', cluster)
@@ -141,6 +158,9 @@ class ModifiersList(ModifiersListUtilsTrait):
         Removes cluster or modifier from this list.
         If cluster is None, applies cluster itself.
         """
+        self._check_if_cluster_removed()
+        logger.info(f'Applying {cluster} on layer {self}')
+
         if cluster is None:
             cluster = self
         x = ClustersAction('APPLY', cluster)
@@ -155,6 +175,7 @@ class ModifiersList(ModifiersListUtilsTrait):
     def move_up(self, cluster):
         """
         Removes cluster from this list.
+
         Returns None or False, if cluster already first in this list.
         """
         return self._move(cluster, direction='UP')
@@ -162,33 +183,46 @@ class ModifiersList(ModifiersListUtilsTrait):
     def move_down(self, cluster):
         """
         Removes cluster from this list.
+
         Returns None or False, if cluster already last in this list.
         """
         return self._move(cluster, direction='DOWN')
 
-    def _move(self, cluster, direction):
+    def _move(self, cluster, direction, allow_deconstruct=False):
         """
         Moves cluster or modifier in this list.
+        If allow_deconstruct is true, skips check
+        for position in list.
+
         Returns None or False.
         """
+        self._check_if_cluster_removed()
+        logger.info(f'Moving {cluster} on layer {self}')
+        logger.debug(f'Direction is {direction} allow_deconstruct={self}')
         if len(self._modifiers_list) < 2:
+            logger.info('Not enough modifiers.')
             return False
 
         i = self._modifiers_list.index(cluster)
 
         if direction == 'UP':
-            if i == 0:
+            if i == 0 and not allow_deconstruct:
+                logger.info('Already first in the list.')
                 return False
             cluster_to_move_through = self._modifiers_list[i-1]
             direction_2 = 'DOWN'
         elif direction == 'DOWN':
-            if i == len(self._modifiers_list) - 1:
+            if i == len(self._modifiers_list) - 1\
+                    and not allow_deconstruct:
+                logger.info('Already last in the list.')
                 return False
             cluster_to_move_through = self._modifiers_list[i+1]
             direction_2 = 'UP'
         else:
-            raise ValueError
+            raise ValueError(
+                    f"Direction should be either 'UP' or 'DOWN', not {direction}")
 
+        # This only used when moving actual modifiers with dry=true.
         length = len(
                 cluster_to_move_through.get_full_actual_modifiers_list())
 
@@ -226,6 +260,11 @@ class ModifiersList(ModifiersListUtilsTrait):
         self._controller.do([x, x_2])
 
     def deconstruct(self, cluster):
+        self._check_if_cluster_removed()
+        """
+        Deconstructs cluster on this layer.
+        """
+        logger.info(f'Deconstructing {cluster} on layer {self}')
         x = ClustersAction('DECONSTRUCT', cluster)
         x = ClustersCommand(x,
                             affect_clusters=False,
@@ -234,9 +273,13 @@ class ModifiersList(ModifiersListUtilsTrait):
                             dry_modifiers=False,
                             )
 
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug(f'Created {x}')
+
         self._controller.do(x)
 
     def ask(self, action):
+        self._check_if_cluster_removed()
         for x in self._actions:
             if x.action_type == action.verb:
                 return x.ask(action)
@@ -247,6 +290,7 @@ class ModifiersList(ModifiersListUtilsTrait):
         Do batch command, simple command or action of this
         modifiers list elements.
         """
+        self._check_if_cluster_removed()
         if not isinstance(action, list):
             action = [action]
 
@@ -267,19 +311,50 @@ class ModifiersList(ModifiersListUtilsTrait):
                 self.do_action(x)
 
     def do_batch(self, batch):
+        self._check_if_cluster_removed()
         for x in batch.commands:
             self.do_command(x)
 
     def do_command(self, command):
+        self._check_if_cluster_removed()
         for x in command.actions:
             self.do_action(x)
 
     def do_action(self, action):
+        self._check_if_cluster_removed()
         logger.debug(f'Cluster {self}, action is {action}')
         for x in self._actions:
             if x.action_type == action.verb:
                 return x.do(action)
         raise ValueError(f'No implementation for action type {action.verb}')
+
+    """
+    This three methods checks if all action.subjects can be
+    found in this list or its clusters.
+    """
+    def _check_batch(self, batch):
+        self._check_if_cluster_removed()
+        if not isinstance(batch, ClustersBatchCommand):
+            raise TypeError
+        for x in batch.commands:
+            self._check_command(x)
+
+    def _check_command(self, command):
+        self._check_if_cluster_removed()
+        if not isinstance(command, ClustersCommand):
+            raise TypeError
+        for x in command.actions:
+            self._check_action(x)
+
+    def _check_action(self, action):
+        self._check_if_cluster_removed()
+        if not isinstance(action, ClustersAction):
+            raise TypeError
+        for x in self.get_all_clusters_and_modifiers():
+            if x is action.subject:
+                return
+        raise ValueError
+
 
     def move_to_index(self, mod, i):
         """
@@ -288,6 +363,7 @@ class ModifiersList(ModifiersListUtilsTrait):
         Returns True if moved modifier.
         Returns False if any errors.
         """
+        self._check_if_cluster_removed()
         # TODO: not tested
         if i < self.get_list_length():
             m_i = self.get_index(mod)

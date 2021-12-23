@@ -220,12 +220,14 @@ class ActionDefaultDeconstuct(ActionDefaultTemplate):
 
         if action.subject.has_clusters():
             self.cluster._modifiers_list.remove(action.subject)
+            action.subject._cluster_removed = True
             for x in reversed(y):
                 self.cluster._modifiers_list.insert(i, x)
         else:
             parser = self.cluster._clusters_parser
             parse_result = parser._parse_modifiers_for_simple_clusters(y)
             self.cluster._modifiers_list.remove(action.subject)
+            action.subject._cluster_removed = True
             for x in reversed(parse_result):
                 self.cluster._modifiers_list.insert(i, x)
 
