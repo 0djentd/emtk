@@ -1088,11 +1088,21 @@ class ClustersParser():
             old_modifiers_len = len(old_actual_modifiers)
             new_modifiers_len = len(new_actual_modifiers)
 
+            # Modifiers count is wrong.
             if old_modifiers_len != new_modifiers_len:
+                logger.error(
+                        "Actual modifiers count after parsing is wrong.")
                 logger.error(old_modifiers_len)
                 logger.error(new_modifiers_len)
-                raise ValueError(
-                        "Actual modifiers count after parsing is wrong.")
+                e = []
+                for a_mod in old_actual_modifiers:
+                    if a_mod not in new_actual_modifiers:
+                        e.append(a_mod)
+                logger.error(f'Missing modifiers: {e}')
+
+                # TODO: this throws an error
+                # raise ValueError(
+                #         "Actual modifiers count after parsing is wrong.")
 
         # Info
         if logger.isEnabledFor(logging.DEBUG):

@@ -35,6 +35,9 @@ class DummyBlenderModifier():
     def __str__(self):
         return f'{self.name}, {self.type}'
 
+    def __repr__(self):
+        return self.__str__()
+
     @property
     def type(self):
         return self.m_type
