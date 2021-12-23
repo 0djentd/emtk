@@ -37,13 +37,14 @@ class ModifiersListUtilsTrait():
         """
         Returns list of strings with info about modifier or cluster.
         """
+        raise ValueError
 
-        mod_name = self.modifier_get_name(mod)
-        mod_type = self.modifier_get_type(mod)
-        mod_index = self.get_index(mod)
-        ui_t = []
-        ui_t.append(f"{mod_name} {mod_type} {mod_index}")
-        return ui_t
+        # mod_name = self.modifier_get_name(mod)
+        # mod_type = self.modifier_get_type(mod)
+        # mod_index = self.get_index(mod)
+        # ui_t = []
+        # ui_t.append(f"{mod_name} {mod_type} {mod_index}")
+        # return ui_t
 
     # ========================
     # Utility
@@ -53,18 +54,16 @@ class ModifiersListUtilsTrait():
         Returns list of strings with info about modifier list.
         Used from operator.
         """
-        x = copy.deepcopy(self._additional_info_log)
-        self._additional_info_log.clear()
-        x = x + self._modifiers_list_info()
-        return x
+        raise ValueError
 
     def _modifiers_list_info(self, cluster=False):
         """
         Returns list of strings with
         info about this modifiers list
         """
+        raise ValueError
 
-        ui_t = []
+        # ui_t = []
         # if cluster is False:
         #     ui_t.append("----------------------------------")
         #     ui_t.append("    Info about modifiers list    ")
@@ -94,4 +93,4 @@ class ModifiersListUtilsTrait():
         #         ui_t.append("This list is 0 modifiers long")
         # ui_t.append("----------------------------------")
         # ui_t.append(" ")
-        return ui_t
+        # return ui_t

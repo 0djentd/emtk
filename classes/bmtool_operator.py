@@ -17,6 +17,7 @@
 # ##### END GPL LICENSE BLOCK #####
 
 import copy
+import logging
 
 import bpy
 
@@ -118,14 +119,6 @@ class BMToolMod(ModifiersOperator):
         """
         Method that is initiated every frame or whatever.
         """
-        if self._BMTOOL_V:
-            if self._counter >= 30:
-                cluster = self.m_list.get_cluster()
-                layer = self.m_list.get_layer()
-                self._counter = 0
-            else:
-                self._counter += 1
-
         # Redraw UI
         if self._BMTOOL_UI:
             context.area.tag_redraw()
@@ -455,8 +448,6 @@ class BMToolMod(ModifiersOperator):
             if self.bmtool_mode != self._BMTOOL_DEFAULT_MODE:
                 self.bmtool_mode = self._BMTOOL_DEFAULT_MODE
             else:
-                for line in self.m_list.modifiers_list_info_get():
-                    self.report({'INFO'}, f"{line}")
                 self.clear(context)
                 return {'FINISHED'}
 
@@ -554,20 +545,15 @@ class BMToolMod(ModifiersOperator):
             bpy.types.SpaceView3D.draw_handler_remove(
                     self.bmtool_ui_draw_handler, 'WINDOW')
             context.area.tag_redraw()
-            if self._BMTOOL_V:
-                self.report({'INFO'}, "BMTool UI is removed")
+            logging.info("BMTool UI is removed")
         self.bmtool_modifier_remove(context)
         if bpy.context.preferences.addons['bmtools'].preferences.save_clusters:
             self.m_list.save_modifiers_state()
             self.m_list.save_clusters_state()
-            if self._BMTOOL_V:
-                self.report({'INFO'}, "Saved modifiers and clusters.")
+            logging.info("Saved modifiers and clusters.")
         del(self.selected_objects)
         del(self.m_list)
-        if self._BMTOOL_V:
-            self.report({'INFO'}, "Removed clusters from operator.")
-        if self._BMTOOL_V:
-            self.report({'INFO'}, "Modal operator finished")
+        logging.info("Modal operator finished")
 
     def invoke(self, context, event):
         """
@@ -601,8 +587,7 @@ class BMToolMod(ModifiersOperator):
 
         # Add UI
         if self._BMTOOL_UI:
-            if self._BMTOOL_V:
-                self.report({'INFO'}, "BMTool UI is created")
+            logging.info("BMTool UI is created")
             sv = bpy.types.SpaceView3D
             self.bmtool_ui_draw_handler = sv.draw_handler_add(
                     bmtool_modifier_ui_draw, (self, context),
@@ -641,8 +626,6 @@ class BMToolMod(ModifiersOperator):
         result = self.create_objects_modifiers_lists(context)
         if result is False or result is None:
             self.report({'ERROR'}, "Error while parsing clusters")
-            for line in self.m_list._additional_info_log:
-                self.report({'INFO'}, f"{line}")
             self.clear(context)
             return {'FINISHED'}
 
@@ -650,11 +633,6 @@ class BMToolMod(ModifiersOperator):
             self.report(
                     {'INFO'},
                     f"Created {len(self.selected_objects)} modifiers lists")
-            self.report(
-                    {'INFO'},
-                    f"m_list is {len(self.m_list.get_list())} modifiers")
-            for line in self.m_list._modifiers_list_info():
-                self.report({'INFO'}, f"{line}")
 
         # ==========================================
         # Create or select modifier on active object
@@ -688,9 +666,7 @@ class BMToolMod(ModifiersOperator):
                 self.bmtool_modifier_defaults(context)
 
                 if self._BMTOOL_V:
-                    self.report({'INFO'}, "Creating new modifier")
-                    self.report(
-                            {'INFO'}, f"{self.m_list.active_modifier_get()}")
+                    self.report({'INFO'}, "Created new modifier")
 
         # if not specified, and there is modifiers already
         # select first
@@ -709,7 +685,7 @@ class BMToolMod(ModifiersOperator):
         # Trigger active modifier change
         self.bmtool_modifier_update(context)
 
-        self.report({'INFO'}, "Finished initializing operator")
+        logging.info("Finished initializing operator")
 
         self.first_x = event.mouse_x
         self.first_y = event.mouse_y
@@ -718,25 +694,17 @@ class BMToolMod(ModifiersOperator):
         return {'RUNNING_MODAL'}
 
     def display_additional_info_about_bmtool(self, context):
-        self.report({'INFO'}, "BMTool is created")
-        self.report({'INFO'}, f"_BMTOOLM {self._BMTOOLM}")
-        self.report({'INFO'}, f"_DEFAULT_M_NAME {self._DEFAULT_M_NAME}")
-        self.report({'INFO'}, f"_DEFAULT_M_TYPE {self._DEFAULT_M_TYPE}")
-        self.report(
-                {'INFO'},
-                f"_BMTOOL_DEFAULT_MODE {self._BMTOOL_DEFAULT_MODE}")
-        self.report({'INFO'}, f"_BMTOOL_EDITMODE {self._BMTOOL_EDITMODE}")
-        self.report(
-                {'INFO'},
-                f"_BMTOOL_MODIFIER_CREATE {self._BMTOOL_MODIFIER_CREATE}")
-        self.report(
-                {'INFO'},
-                f"_BMTOOL_SINGLE_OBJECT {self._BMTOOL_SINGLE_OBJECT}")
-        self.report({'INFO'}, f"_BMTOOL_UI {self._BMTOOL_UI}")
-        self.report(
-                {'INFO'},
-                f"_BMTOOL_UI_STATUSBAR {self._BMTOOL_UI_STATUSBAR}")
-        self.report({'INFO'}, f"_BMTOOL_V {self._BMTOOL_V}")
+        logging.debug("BMTool is created")
+        logging.debug(f"_BMTOOLM {self._BMTOOLM}")
+        logging.debug(f"_DEFAULT_M_NAME {self._DEFAULT_M_NAME}")
+        logging.debug(f"_DEFAULT_M_TYPE {self._DEFAULT_M_TYPE}")
+        logging.debug(f"_BMTOOL_DEFAULT_MODE {self._BMTOOL_DEFAULT_MODE}")
+        logging.debug(f"_BMTOOL_EDITMODE {self._BMTOOL_EDITMODE}")
+        logging.debug(f"_BMTOOL_MODIFIER_CREATE {self._BMTOOL_MODIFIER_CREATE}")
+        logging.debug(f"_BMTOOL_SINGLE_OBJECT {self._BMTOOL_SINGLE_OBJECT}")
+        logging.debug(f"_BMTOOL_UI {self._BMTOOL_UI}")
+        logging.debug(f"_BMTOOL_UI_STATUSBAR {self._BMTOOL_UI_STATUSBAR}")
+        logging.debug(f"_BMTOOL_V {self._BMTOOL_V}")
 
     # --------------------------------
     # Operator-specific modal method 1

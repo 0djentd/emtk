@@ -16,6 +16,8 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+import logging
+
 from .lists.extended_modifiers_list import ExtendedModifiersList
 
 from .clusters.cluster_trait import ClusterTrait
@@ -50,7 +52,7 @@ class ModifiersOperator():
         """
 
         for x in range(50):
-            self.report({'INFO'}, " ")
+            logging.info(" ")
 
         if cluster_types is None:
             clusters = []
@@ -63,14 +65,14 @@ class ModifiersOperator():
         else:
             TypeError
 
-        self.report({'INFO'}, "================================")
-        self.report({'INFO'}, "  MODIFIERS OPERATOR STARTED")
-        self.report({'INFO'}, "================================")
-        self.report({'INFO'}, " ")
-        self.report({'INFO'}, " ")
-        self.report({'INFO'}, "================================")
-        self.report({'INFO'}, "Trying to create modifier lists")
-        self.report({'INFO'}, "================================")
+        logging.info("================================")
+        logging.info("  MODIFIERS OPERATOR STARTED")
+        logging.info("================================")
+        logging.info(" ")
+        logging.info(" ")
+        logging.info("================================")
+        logging.info("Trying to create modifier lists")
+        logging.info("================================")
 
         if len(context.view_layer.objects.selected) != 0:
             self.selected_objects = []
