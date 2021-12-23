@@ -100,7 +100,6 @@ class ModifiersList(ModifiersListUtilsTrait):
 
         self.__DUMMY_MODIFIERS = False
         self._modifiers_list = []
-        self._additional_info_log = []
         self._actions = []
         if not no_default_actions:
             default_actions = []

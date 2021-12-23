@@ -18,6 +18,7 @@
 
 import copy
 import json
+import logging
 
 
 # TODO: this trait requires class to also inherit ObjectClustersListTrait
@@ -244,10 +245,10 @@ class ActiveClusterTrait():
         if (clusters is None) or (clusters == []):
             return False
 
+        logging.info("Constructiong clusters from selection.")
+
         # Info
-        self._additional_info_log.append("Selected clusters is ")
-        for x in clusters:
-            self._additional_info_log.append(f"{x}")
+        logging.debug(f"Selected clusters is {clusters}")
 
         # Check if removing active cluster
         removing_active = False
@@ -275,8 +276,7 @@ class ActiveClusterTrait():
 
         # If there is, reparse modifiers
         if parse_modifiers:
-            self._additional_info_log.append(
-                    "reparsing modifiers.")
+            logging.info("Reparsing modifiers.")
             modifiers = []
             for x in clusters:
                 modifiers += x.get_full_actual_modifiers_list()
@@ -287,24 +287,21 @@ class ActiveClusterTrait():
         # If there is only cluster layers,
         # try to create another layer from them
         else:
-            self._additional_info_log.append(
-                    "reparsing clusters.")
+            logging.info("Reparsing clusters.")
             result = self._clusters_parser._parse_clusters_recursively(
                     clusters)
 
         # If result is bad, revert changes.
         if result is False or None:
-            self._additional_info_log.append(
-                    "reparsing clusters failed.")
+            logging.error("Reparsing clusters failed.")
+            logging.debug(f"Reverting changes to {clusters}")
             for x in reversed(clusters):
                 self._modifiers_list.insert(clusters_index, x)
             return False
 
         # Info
-        self._additional_info_log.append(
-                "Selected clusters reparse result is ")
-        for x in result:
-            self._additional_info_log.append(f"{x}")
+        logging.debug("Finished reparsing.")
+        logging.debug(f"Selected clusters reparse result is {result}")
 
         # Insert clusters.
         for x in reversed(result):

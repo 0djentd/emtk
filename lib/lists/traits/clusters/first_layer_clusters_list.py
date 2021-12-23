@@ -18,18 +18,17 @@
 
 import copy
 import json
-import time
+import logging
 
 try:
     import bpy
     _WITH_BPY = True
 except ModuleNotFoundError:
-    from ....dummy_modifiers import DummyBlenderModifier, DummyBlenderObj
+    from ....dummy_modifiers import DummyBlenderModifier
     _WITH_BPY = False
 
 from ....parser import ClustersParser
 from ....controller.clusters_controller import ClustersController
-from ....controller.actions import ClustersAction, ClusterRequest
 
 
 class FirstLayerClustersListTrait():
@@ -61,8 +60,15 @@ class FirstLayerClustersListTrait():
 
     def __str__(self):
         result = 'Extended Modifiers List, clusters: '
+        y = 0
         for x in self.get_full_list():
-            result = result + x.name + ' '
+            if y < 6:
+                y += 1
+                result = result + x.name + ' '
+            else:
+                length = len(self.get_full_list())
+                result = result + f'... total clusters number is {length}'
+                break
         return result
 
     def create_modifiers_list(self, obj=None):
@@ -72,15 +78,10 @@ class FirstLayerClustersListTrait():
         Returns True, if found any modifiers
         and False if not
         """
+        logging.info("Creating modifiers list.")
         return self._create_modifiers_list(obj)
 
     def _create_modifiers_list(self, obj=None):
-        ui_t = []
-
-        ui_t.append("======================")
-        ui_t.append("Creating modifiers list")
-        ui_t.append("======================")
-
         if obj is None and self._object is not None:
             obj = self._object
 
@@ -104,7 +105,7 @@ class FirstLayerClustersListTrait():
         # Get actual object modifiers
         modifiers_to_parse = []
         for modifier in self._object.modifiers:
-            ui_t.append(f"Adding {modifier} to modifiers to parse")
+            logging.debug(f"Adding {modifier} to modifiers to parse")
             modifiers_to_parse.append(modifier)
 
         try:
@@ -119,61 +120,43 @@ class FirstLayerClustersListTrait():
 
         # Parse modifiers.
         if already_parsed is False:
-            ui_t.append("Modifiers not parsed.")
+            logging.info("Modifiers not parsed.")
             if len(modifiers_to_parse) > 0:
                 parse_result\
                         = self._clusters_parser.parse_recursively(
                             modifiers_to_parse)
                 if parse_result is False:
-                    self._additional_info_log.append(
+                    logging.error(
                             "Error while parsing. Cant create modifiers list.")
-                    for line in self._clusters_parser._additional_info_log:
-                        self._additional_info_log.append(line)
-                    for line in ui_t:
-                        self._additional_info_log.append(line)
-                    self._modifiers_list = []
-                    return False
-                ui_t.append("Setting parse result as a modifiers list.")
+                    raise ValueError
+                logging.info("Setting parse result as a modifiers list.")
                 self._modifiers_list = parse_result
                 self._mod = self._modifiers_list[0]
                 modified = True
 
         # Restore clusters state.
         elif already_parsed:
-            ui_t.append("")
             if len(modifiers_to_parse) > 0:
                 clusters_state = self.load_clusters_state()
-                self._additional_info_log.append("Modifiers already parsed.")
-                self._additional_info_log += clusters_state
+                logging.info("Modifiers already parsed.")
+                logging.info(clusters_state)
                 parse_result = self._clusters_parser.parse_clusters_state(
                         modifiers_to_parse, clusters_state,
                         clusters_names=self.get_full_list_of_cluster_names())
                 if parse_result is False:
-                    self._additional_info_log.append(
+                    logging.error(
                             "Error while parsing. Cant create modifiers list.")
-                    for line in self._clusters_parser._additional_info_log:
-                        self._additional_info_log.append(line)
-                    for line in ui_t:
-                        self._additional_info_log.append(line)
-                    self._modifiers_list = []
-                    return False
-                self._additional_info_log.append("Parse result ")
-                for line in parse_result:
-                    self._additional_info_log.append(f"{line}")
+                    raise ValueError
+                logging.info("Parse result ")
+                logging.info(parse_result)
                 self._modifiers_list = parse_result
                 self._mod = self._modifiers_list[0]
                 modified = True
 
         if self._MODIFIERS_LIST_V:
-            ui_t.append("===================================")
-            ui_t.append("Finished creating modifiers list")
-            ui_t.append("===================================")
-            for line in self._clusters_parser._additional_info_log:
-                self._additional_info_log.append(line)
-            for line in self._modifiers_list_info():
-                ui_t.append(f"{line}")
-            for line in ui_t:
-                self._additional_info_log.append(line)
+            logging.info("===================================")
+            logging.info("Finished creating modifiers list")
+            logging.info("===================================")
 
         if modified:
             return True
@@ -210,15 +193,7 @@ class FirstLayerClustersListTrait():
         if cluster_index is None:
             cluster_index = layer.get_list_length() - 1
 
-        if self._MODIFIERS_LIST_V:
-            ui_t = []
-            ui_t.append("===================================")
-            ui_t.append("Add modifier to modifiers list")
-            ui_t.append("===================================")
-            for line in self._modifiers_list_info():
-                ui_t.append(f"{line}")
-            for line in ui_t:
-                self._additional_info_log.append(line)
+        logging.info("Adding modifier to modifiers list.")
 
         if _WITH_BPY:
             x = self._object.modifiers.new(m_name, m_type)
@@ -229,19 +204,11 @@ class FirstLayerClustersListTrait():
         z.append(x)
         result = self._clusters_parser._parse_modifiers(z)
 
-        ui_t.append(f"Created modifier {x}")
-        ui_t.append(f"parse result is {result}")
+        logging.info(f"Created modifier {x}")
+        logging.debug(f"parse result is {result}")
         self._modifiers_list += result
 
-        if self._MODIFIERS_LIST_V:
-            ui_t = []
-            ui_t.append("===================================")
-            ui_t.append("Finished add modifier to modifiers list")
-            ui_t.append("===================================")
-            for line in self._modifiers_list_info():
-                ui_t.append(f"{line}")
-            for line in ui_t:
-                self._additional_info_log.append(line)
+        logging.info("Finished adding modifier to modifiers list.")
         return x
 
     def create_cluster(self, cluster_type):
@@ -426,7 +393,6 @@ class FirstLayerClustersListTrait():
         else:
             raise TypeError
 
-        t_1 = time.time()
         y = self.get_clusters_state()
         x = json.dumps(y)
 
@@ -435,9 +401,8 @@ class FirstLayerClustersListTrait():
         elif not _WITH_BPY:
             self._object.props[name] = x
 
-        t_2 = time.time()
-        t_3 = t_2 - t_1
-        self._additional_info_log.append(f"Saved clusters, {t_3}")
+        logging.info("Saved clusters")
+        logging.debug(f"{x}")
 
     def load_clusters_state(self, prop_name=None):
         """
@@ -445,7 +410,6 @@ class FirstLayerClustersListTrait():
         from object property with prop_name.
         If no saved clusters, returns False.
         """
-        t_1 = time.time()
 
         if prop_name is None:
             name = 'PreviousClusters'
@@ -467,11 +431,8 @@ class FirstLayerClustersListTrait():
 
         if previous_clusters is not False:
             x = json.loads(previous_clusters)
-            t_2 = time.time()
-            t_3 = t_2 - t_1
-            self._additional_info_log.append(f"Loaded clusters, {t_3}")
-            for line in x:
-                self._additional_info_log.append(f"{line}")
+            logging.info("Loaded clusters")
+            logging.debug(f"{x}")
             return x
         else:
             return False
