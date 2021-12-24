@@ -55,61 +55,57 @@ class ClusterTrait():
         # This is variables that should be defined in ModifiersCluster type.
         # ===============================================================
 
-        # Name that should be returned by default to ModifiersList
-        self._MODCLUSTER_NAME = None
+        if dont_define_cluster:
+            x = {
+                 # Name that should be returned by default to ModifiersList
+                 'name': None,
 
-        # Type that should be returned to ModifiersList
-        self._MODCLUSTER_TYPE = None
+                 # Type that should be returned to ModifiersList
+                 'type': None,
 
-        # Priority interpreted by parser
-        self._MODCLUSTER_PRIORITY = None
+                 # Priority interpreted by parser
+                 'priority': None,
 
-        # If true, does not allows to clear cluster.
-        self._MODCLUSTER_NO_CLEAR = False
+                 # ModifiersCluster tags
+                 'default_tags': [],
 
-        # ModifiersCluster tags
-        self._MODCLUSTER_DEFAULT_TAGS = []
+                 # List of lists of possible modifier types that this
+                 # ModifiersCluster should consists of
+                 # Takes modifier order into consideration
+                 # If not at index 0, can be 'ANY'
+                 'by_type': [],
 
-        # List of lists of possible modifier types that this
-        # ModifiersCluster should consists of
-        # Takes modifier order into consideration
-        # If not at index 0, can be 'ANY'
-        self._MODCLUSTER_MODIFIERS_BY_TYPE = [[]]
+                 # List of lists of possible names for every modifier
+                 # in _MODCLUSTER_MODIFIERS_BY_TYPE
+                 # Takes modifier order into consideration
+                 # Can be 'ANY'
+                 'by_name': [],
 
-        # List of lists of possible names for every modifier
-        # in _MODCLUSTER_MODIFIERS_BY_TYPE
-        # Takes modifier order into consideration
-        # Can be 'ANY'
-        self._MODCLUSTER_MODIFIERS_BY_POSSIBLE_NAMES = [[]]
+                 # Can cluster's modifiers list be changed
+                 # after initialization?
+                 'dynamic': None,
 
-        # Can cluster's modifiers list be changed after initialization?
-        # why tho
-        self._MODCLUSTER_DYNAMIC = False
+                 # Can this cluster be created?
+                 # In other words, can its _MODIFIERS_BY_TYPE be used
+                 # to create new modifiers on object.
+                 'createable': None,
 
-        # TODO: why
-        # Variable for nested clusters.
-        # Use modifier clusters instead of usual modifier references.
-        self._MODIFIER_CLUSTERS = False
+                 # Force skip cluster sanity check.
+                 # Should be False.
+                 'sane': None,
 
-        # Force skip cluster sanity check.
-        # Should be False.
-        self._MODCLUSTER_IS_SANE = False
+                 # Dont throw an error when checking cluster sanity
+                 'kinda_sane': None,
+                 }
 
-        # Can this cluster be created?
-        # In other words, can its _MODIFIERS_BY_TYPE be used
-        # to create new modifiers on object.
-        self._MODCLUSTER_CREATEABLE = False
+            self._cluster_definition = x
 
-        # Additional info log.
-        self._MODCLUSTER_V = False
-
-        if not dont_define_cluster:
-
+        elif not dont_define_cluster:
             # Set cluster type name.
             if isinstance(cluster_name, str):
                 if len(cluster_name) == 0:
                     raise ValueError
-                self._MODCLUSTER_NAME = cluster_name
+                self._cluster_definition['name'] = cluster_name
             else:
                 raise TypeError
 
@@ -117,7 +113,7 @@ class ClusterTrait():
             if isinstance(cluster_type, str):
                 if len(cluster_type) == 0:
                     raise ValueError
-                self._MODCLUSTER_TYPE = cluster_type
+                self._cluster_definition['type'] = cluster_type
             else:
                 raise TypeError
 
@@ -126,9 +122,9 @@ class ClusterTrait():
                 for x in cluster_tags:
                     if not isinstance(x, str):
                         raise TypeError
-                self._MODCLUSTER_DEFAULT_TAGS = cluster_tags
+                self._cluster_definition['tags'] = cluster_tags
             elif cluster_tags is None:
-                self._MODCLUSTER_DEFAULT_TAGS = []
+                self._cluster_definition['tags'] = []
             else:
                 raise TypeError
 
@@ -142,7 +138,7 @@ class ClusterTrait():
                                     raise TypeError
                         else:
                             raise TypeError
-                self._MODCLUSTER_MODIFIERS_BY_TYPE = modifiers_by_type
+                self._cluster_definition['by_type'] = modifiers_by_type
             else:
                 raise TypeError
 
@@ -156,34 +152,40 @@ class ClusterTrait():
                                     raise TypeError
                         else:
                             raise TypeError
-                self._MODCLUSTER_MODIFIERS_BY_POSSIBLE_NAMES\
+                self._cluster_definition['by_name']\
                     = modifiers_by_name
             elif modifiers_by_name is None:
-                self._MODCLUSTER_MODIFIERS_BY_POSSIBLE_NAMES = []
-                for x in self._MODCLUSTER_MODIFIERS_BY_TYPE:
-                    self._MODCLUSTER_MODIFIERS_BY_POSSIBLE_NAMES.append('ANY')
+                self._cluster_definition['by_name'] = []
+                for x in self._cluster_definition['by_type']:
+                    self._cluster_definition['by_name'].append('ANY')
             else:
                 raise TypeError
 
             # Set cluster priority for parser.
             if isinstance(cluster_priority, int):
-                self._MODCLUSTER_PRIORITY = cluster_priority
+                self._cluster_definition['priority'] = cluster_priority
             elif cluster_priority is None:
-                self._MODCLUSTER_PRIORITY = 0
+                self._cluster_definition['priority'] = 0
             else:
                 raise TypeError
 
             # Allow cluster to skip sanity check.
             if cluster_is_sane is True:
-                self._MODCLUSTER_IS_SANE = True
+                self._cluster_definition['sane'] = True
             else:
-                self._MODCLUSTER_IS_SANE = False
+                self._cluster_definition['sane'] = False
+
+            # Allow cluster to be changed.
+            if cluster_is_sane is True:
+                self._cluster_definition['dynamic'] = True
+            else:
+                self._cluster_definition['dynamic'] = False
 
             # Allow to create cluster with its modifers
             if cluster_createable is True:
-                self._MODCLUSTER_CREATEABLE = True
+                self._cluster_definition['createable'] = True
             else:
-                self._MODCLUSTER_CREATEABLE = False
+                self._cluster_definition['createable'] = False
 
         # -------------------------------------------
         # Modifiers names that can be sometimes used
@@ -217,7 +219,7 @@ class ClusterTrait():
         if not dont_define_cluster\
                 and not self._MODCLUSTER_IS_SANE\
                 and not self.check_this_cluster_sanity():
-            raise ValueError
+            raise ValueError('This cluster cant be used.')
 
     def __str__(self):
         if not self._cluster_removed:
@@ -226,7 +228,63 @@ class ClusterTrait():
             result = f"Already removed cluster {self._MODCLUSTER_NAME}"
         return result
 
-    # Collapsed
+    # Cluster name
+    @property
+    def name(self):
+        return self.get_this_cluster_name()
+
+    @name.setter
+    def name(self, cluster_name):
+        return self.set_this_cluster_custom_name(cluster_name)
+
+    def get_this_cluster_name(self):
+        """
+        Returns this ModifiersCluster's custom name, or default name.
+        """
+        self._check_if_cluster_removed()
+        if self._modcluster_custom_name is not None:
+            return self._modcluster_custom_name
+        else:
+            return self._MODCLUSTER_NAME
+
+    def get_this_cluster_custom_name(self):
+        """
+        Returns this ModifiersCluster's custom name.
+        """
+        self._check_if_cluster_removed()
+        return self._modcluster_custom_name
+
+    def get_this_cluster_default_name(self):
+        """
+        Returns this ModifiersCluster's default name.
+        """
+        self._check_if_cluster_removed()
+        return self._MODCLUSTER_NAME
+
+    def set_this_cluster_custom_name(self, cluster_name):
+        """
+        Sets cluster custom cluster name.
+        Returns True or False, if cluster is not editable.
+        """
+        self._check_if_cluster_removed()
+        if isinstance(cluster_name, str):
+            self._modcluster_custom_name = cluster_name
+        else:
+            raise TypeError
+
+    # Cluster type
+    @property
+    def type(self):
+        return self.get_this_cluster_type()
+
+    def get_this_cluster_type(self):
+        """
+        Returns this ModifiersCluster's type
+        """
+        self._check_if_cluster_removed()
+        return self._MODCLUSTER_TYPE
+
+    # Collapsed/expanded
     @property
     def collapsed(self):
         return self.modcluster_collapsed
@@ -238,27 +296,11 @@ class ClusterTrait():
         elif not collapsed_val:
             self.modcluster_collapsed = False
 
-    @collapsed.deleter
-    def collapsed(self, collapsed_val):
-        del(self.modcluster_collapsed)
-
-    # Cluster name
-    @property
-    def name(self):
-        return self.get_this_cluster_name()
-
-    @name.setter
-    def name(self, cluster_name):
-        return self.set_this_cluster_custom_name(cluster_name)
-
-    # Cluster type
-    @property
-    def type(self):
-        return self.get_this_cluster_type()
-
-    # ============================
-    # Methods reserved for objects
-    # ============================
+    """
+    ===============================
+    Methods reserved for subclasses
+    ===============================
+    """
     def modcluster_extra_availability_check(self, modifiers):
         """
         Additional method reserved for custom types.
@@ -353,6 +395,10 @@ class ClusterTrait():
     # ModifiersCluster methods
     # ===========================
     def _check_if_cluster_removed(self):
+        """
+        This method throws an error when trying to access already
+        removed cluster.
+        """
         if self._cluster_removed:
             raise ValueError(f'Cluster {self} already removed.')
 
@@ -369,59 +415,21 @@ class ClusterTrait():
             return True
         return False
 
+    # TODO: remove
     def has_clusters(self):
         """
         Checks if this cluster have clusters in it.
+
         Returns False if this cluster consists of modifiers or something
         else.
         """
         return False
 
-    def get_this_cluster_type(self):
-        """
-        Returns this ModifiersCluster's type
-        """
-        self._check_if_cluster_removed()
-        return self._MODCLUSTER_TYPE
-
-    def get_this_cluster_name(self):
-        """
-        Returns this ModifiersCluster's custom name, or default name.
-        """
-        self._check_if_cluster_removed()
-        if self._modcluster_custom_name is not None:
-            return self._modcluster_custom_name
-        else:
-            return self._MODCLUSTER_NAME
-
-    def get_this_cluster_custom_name(self):
-        """
-        Returns this ModifiersCluster's custom name.
-        """
-        self._check_if_cluster_removed()
-        return self._modcluster_custom_name
-
-    def get_this_cluster_default_name(self):
-        """
-        Returns this ModifiersCluster's default name.
-        """
-        self._check_if_cluster_removed()
-        return self._MODCLUSTER_NAME
-
-    def set_this_cluster_custom_name(self, cluster_name):
-        """
-        Sets cluster custom cluster name.
-        Returns True or False, if cluster is not editable.
-        """
-        self._check_if_cluster_removed()
-        if isinstance(cluster_name, str):
-            self._modcluster_custom_name = cluster_name
-        else:
-            raise TypeError
-
-    # ===========================
-    # Cluster tags
-    # ===========================
+    """
+    ===========================
+    Cluster tags
+    ===========================
+    """
     def get_this_cluster_tags(self):
         """
         Returns this ModifiersCluster's custom tags, or default tags.
@@ -465,9 +473,11 @@ class ClusterTrait():
 
         return result
 
-    # ===========================
-    # Initializing cluster
-    # ===========================
+    """
+    ====================
+    Initializing cluster
+    ====================
+    """
     def set_this_cluster_modifiers(self, modifiers):
         """
         Replaces list of modifiers with modifiers.
@@ -508,9 +518,11 @@ class ClusterTrait():
         else:
             return False
 
-    # ===========================
-    # Clusters sorting
-    # ===========================
+    """
+    ================
+    Clusters sorting
+    ================
+    """
     def add_sorting_rule(self, sorting_rule):
         """
         Add new sorting rule for this cluster or
@@ -672,59 +684,6 @@ class ClusterTrait():
 
         return None
 
-    def check_this_cluster_sanity(self):
-        """
-        Checks if this cluster type would work properly.
-
-        Reccomended to check every time enabling new
-        cluster type or changing existing one.
-
-        Basically should always return False, because
-        modifiers clusters are kinda unusable and
-        overengeneered.
-
-        Returns True if not found any errors.
-        """
-
-        self._check_if_cluster_removed()
-
-        # Additional checks
-        if not self.check_this_cluster_sanity_custom():
-            raise ValueError
-
-        # If specified that cluster is sane
-        if self._MODCLUSTER_IS_SANE:
-            return True
-
-        l_1 = self._MODCLUSTER_MODIFIERS_BY_TYPE
-        len_1 = len(l_1)
-
-        l_2 = self._MODCLUSTER_MODIFIERS_BY_POSSIBLE_NAMES
-        len_2 = len(l_2)
-
-        if len(self._modcluster_specified_modifier_names) > 0:
-            if len_2 != len(self._modcluster_specified_modifier_names):
-                raise ValueError(
-                        'Length of specified modifiers names is wrong.')
-        if len_1 != len_2:
-            raise ValueError(
-                    f'Length of types ({l_1}) and names ({l_2}) is different.')
-        if len_1 == 0:
-            raise ValueError(
-                    'Length of modifiers types cant be 0.')
-        if self._MODCLUSTER_MODIFIERS_BY_TYPE[0] == ['ANY']:
-            raise ValueError(
-                    'First modifier cant be any, specify modifier type.')
-        for mod_types in self._MODCLUSTER_MODIFIERS_BY_TYPE:
-            if isinstance(mod_types, list):
-                if len(mod_types) == 0:
-                    raise ValueError('Modifier types length is 0.')
-        for mod_names in self._MODCLUSTER_MODIFIERS_BY_POSSIBLE_NAMES:
-            if isinstance(mod_names, list):
-                if len(mod_names) == 0:
-                    raise ValueError('Modifier names length is 0.')
-        return True
-
     # ===================
     # Cluster visibility
     # ===================
@@ -835,6 +794,59 @@ class ClusterTrait():
     # =======================================
     # Utility
     # =======================================
+    def check_this_cluster_sanity(self):
+        """
+        Checks if this cluster type would work properly.
+
+        Reccomended to check every time enabling new
+        cluster type or changing existing one.
+
+        Basically should always return False, because
+        modifiers clusters are kinda unusable and
+        overengeneered.
+
+        Returns True if not found any errors.
+        """
+
+        self._check_if_cluster_removed()
+
+        # Additional checks
+        if not self.check_this_cluster_sanity_custom():
+            raise ValueError
+
+        # If specified that cluster is sane
+        if self._MODCLUSTER_IS_SANE:
+            return True
+
+        l_1 = self._MODCLUSTER_MODIFIERS_BY_TYPE
+        len_1 = len(l_1)
+
+        l_2 = self._MODCLUSTER_MODIFIERS_BY_POSSIBLE_NAMES
+        len_2 = len(l_2)
+
+        if len(self._modcluster_specified_modifier_names) > 0:
+            if len_2 != len(self._modcluster_specified_modifier_names):
+                raise ValueError(
+                        'Length of specified modifiers names is wrong.')
+        if len_1 != len_2:
+            raise ValueError(
+                    f'Length of types ({l_1}) and names ({l_2}) is different.')
+        if len_1 == 0:
+            raise ValueError(
+                    'Length of modifiers types cant be 0.')
+        if self._MODCLUSTER_MODIFIERS_BY_TYPE[0] == ['ANY']:
+            raise ValueError(
+                    'First modifier cant be any, specify modifier type.')
+        for mod_types in self._MODCLUSTER_MODIFIERS_BY_TYPE:
+            if isinstance(mod_types, list):
+                if len(mod_types) == 0:
+                    raise ValueError('Modifier types length is 0.')
+        for mod_names in self._MODCLUSTER_MODIFIERS_BY_POSSIBLE_NAMES:
+            if isinstance(mod_names, list):
+                if len(mod_names) == 0:
+                    raise ValueError('Modifier names length is 0.')
+        return True
+
     def serialize_this_cluster_type(self):
         x = {}
 
@@ -843,8 +855,8 @@ class ClusterTrait():
         else:
             c = 'ModifiersCluster'
 
-        x.update({'cluster_class': f'{c}'})
-        x.update({'cluster_name': self._MODCLUSTER_NAME})
+        x.update({'cluster_trait_subclass': f'{c}'})
+        x.update({'name': self._MODCLUSTER_NAME})
         x.update({'cluster_type': self._MODCLUSTER_TYPE})
         x.update({'modifiers_by_types':
                  self._MODCLUSTER_MODIFIERS_BY_TYPE})

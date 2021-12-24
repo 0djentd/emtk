@@ -35,30 +35,30 @@ def deserialize_cluster_type(serialized_cluster_type, *args, **kwargs):
         t = type(serialized_cluster_type)
         raise TypeError(f'Serialized cluster type should be dict, not {t}')
 
-    if x['cluster_class'] == 'ModifiersCluster':
+    if x['cluster_trait_subclass'] == 'ModifiersCluster':
         result = ModifiersCluster(
-                                  cluster_name=x['cluster_name'],
-                                  cluster_type=x['cluster_type'],
-                                  modifiers_by_type=x['modifiers_by_types'],
-                                  modifiers_by_name=x['modifiers_by_names'],
-                                  cluster_tags=x['cluster_tags'],
-                                  cluster_priority=x['cluster_priority'],
-                                  cluster_is_sane=x['cluster_is_sane'],
-                                  cluster_createable=x['cluster_createable'],
+                                  cluster_name=x['name'],
+                                  cluster_type=x['type'],
+                                  modifiers_by_type=x['by_type'],
+                                  modifiers_by_name=x['by_name'],
+                                  cluster_tags=x['tags'],
+                                  cluster_priority=x['priority'],
+                                  cluster_is_sane=x['sane'],
+                                  cluster_createable=x['createable'],
                                   dont_define_cluster=False,
                                   *args, **kwargs
                                   )
 
-    elif x['cluster_class'] == 'ClustersLayer':
+    elif x['cluster_trait_subclass'] == 'ClustersLayer':
         result = ClustersLayer(
-                               cluster_name=x['cluster_name'],
-                               cluster_type=x['cluster_type'],
-                               modifiers_by_type=x['modifiers_by_types'],
-                               modifiers_by_name=x['modifiers_by_names'],
-                               cluster_tags=x['cluster_tags'],
-                               cluster_priority=x['cluster_priority'],
-                               cluster_is_sane=x['cluster_is_sane'],
-                               cluster_createable=x['cluster_createable'],
+                               cluster_name=x['name'],
+                               cluster_type=x['type'],
+                               modifiers_by_type=x['by_type'],
+                               modifiers_by_name=x['by_name'],
+                               cluster_tags=x['tags'],
+                               cluster_priority=x['priority'],
+                               cluster_is_sane=x['sane'],
+                               cluster_createable=x['createable'],
                                dont_define_cluster=False,
                                *args, **kwargs
                                )
