@@ -22,7 +22,7 @@ try:
     import bpy
     _WITH_BPY = True
 except ModuleNotFoundError:
-    from ..dummy_modifiers import DummyBlenderModifier, DummyBlenderObj
+    from ..dummy_modifiers import DummyBlenderModifier
     _WITH_BPY = False
 
 
@@ -55,7 +55,7 @@ class DefaultModifierCluster(
 
     def get_this_cluster_type(self):
         if not self._modcluster_initialized or len(self._modifiers_list) == 0:
-            return self.get_this_cluster_default_type()
+            return self._MODCLUSTER_TYPE
         else:
             return self._modifiers_list[0].type
 

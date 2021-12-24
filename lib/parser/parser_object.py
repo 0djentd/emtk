@@ -32,7 +32,7 @@ from ..lists.traits.clusters.active_cluster import ActiveClusterTrait
 from ..lists.traits.modifiers.active_modifier import ActiveModifierTrait
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 
 class ClustersParser():
