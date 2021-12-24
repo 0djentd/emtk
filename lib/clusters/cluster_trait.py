@@ -84,6 +84,7 @@ class ClusterTrait():
 
         # Can cluster's modifiers list be changed after initialization?
         # why tho
+        # Add multiple setting for various actions.
         self._MODCLUSTER_DYNAMIC = False
 
         # TODO: why
@@ -99,9 +100,6 @@ class ClusterTrait():
         # In other words, can its _MODIFIERS_BY_TYPE be used
         # to create new modifiers on object.
         self._MODCLUSTER_CREATEABLE = False
-
-        # Additional info log.
-        self._MODCLUSTER_V = False
 
         if not dont_define_cluster:
 
