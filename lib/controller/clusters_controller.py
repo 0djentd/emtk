@@ -35,6 +35,9 @@ from .actions import (
 
 from ..lists.traits.clusters.clusters_list import ClustersListTrait
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
 
 class ClustersController():
     """
@@ -82,7 +85,7 @@ class ClustersController():
         """
         if not isinstance(batch, ClustersBatchCommand):
             raise TypeError
-        logging.debug(f'Solving {batch}')
+        logger.debug(f'Solving {batch}')
 
         s = True
 
@@ -122,7 +125,7 @@ class ClustersController():
         clusters and modifiers to command.
         """
 
-        logging.debug(f'Populating {command}')
+        logger.debug(f'Populating {command}')
 
         if _WITH_BPY:
             modifiers_type = bpy.types.Modifier
@@ -147,16 +150,16 @@ class ClustersController():
                     clusters = reversed(clusters)
                 else:
                     clusters = command.initial_action.subject.get_full_list()
-                logging.debug(f'Adding clusters actions for {clusters}')
+                logger.debug(f'Adding clusters actions for {clusters}')
                 for x in clusters:
                     a = ClustersAction(command.initial_action.verb, x)
                     a.props = command.initial_action.props
                     a.dry = command.dry_clusters
-                    logging.debug(f'adding {a}')
+                    logger.debug(f'adding {a}')
                     actions.append(a)
             else:
                 o = command.initial_action.subject
-                logging.debug(
+                logger.debug(
                         f'Not adding clusters actions, {o} has no clusters.')
 
         if command.affect_modifiers:
@@ -167,18 +170,18 @@ class ClustersController():
             else:
                 modifiers = command.initial_action.\
                         subject.get_full_actual_modifiers_list()
-            logging.debug(f'Adding modifiers actions for {modifiers}')
+            logger.debug(f'Adding modifiers actions for {modifiers}')
             for x in modifiers:
                 a = ClustersAction(command.initial_action.verb, x)
                 a.props = command.initial_action.props
                 a.dry = command.dry_modifiers
-                logging.debug(f'adding {a}')
+                logger.debug(f'adding {a}')
                 actions.append(a)
         actions = self._sort_actions_by_layer_depth(
                 actions)
-        logging.debug(f'{actions}')
+        logger.debug(f'{actions}')
         command.actions = actions
-        logging.debug(f'Populated {command}')
+        logger.debug(f'Populated {command}')
         return command
 
     def _get_command_deps(self, command):
@@ -236,12 +239,12 @@ class ClustersController():
     # =========
     # TODO: to be removed
     def _apply_batch(self, batch):
-        logging.debug(f'Applying {batch}')
+        logger.debug(f'Applying {batch}')
         for x in batch.commands:
             self._apply_command(x)
 
     def _apply_command(self, command):
-        logging.debug(f'Applying {command}')
+        logger.debug(f'Applying {command}')
         for x in command.actions:
             self._apply_action(x)
 
@@ -252,7 +255,7 @@ class ClustersController():
             return
 
         layer = self.e.get_cluster_or_layer(action.subject)
-        logging.debug(f'Applying {action} on layer {layer}')
+        logger.debug(f'Applying {action} on layer {layer}')
         layer.do(action)
 
     # ==========
