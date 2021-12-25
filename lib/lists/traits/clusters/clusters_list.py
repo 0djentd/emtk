@@ -18,68 +18,25 @@
 
 from ....clusters.cluster_trait import ClusterTrait
 
+from ....controller.answers import ActionDefaultDeconstuct
+
 
 class ClustersListTrait():
     """
-    Simple list of Modifiers Clusters with, or without modifiers.
-
-    Doesnt require modifiers to be on same object or even exist on
-    any object.
-
-    Has different methods for finding specific modifiers, such as
-    finding next modifier of specific type starting from specific
-    modifier, returning list of modifiers of specific type etc.
-
-    Version 3, now can use clusters.
-
-    Version 4, dropped support for MODCLUSTERS_LITE, as it has no use.
-    Now ModifiersClustersList cant have modifiers in it.
-    Every modifier should be a part of cluster.
-
-    DefaultModifierCluster is generic cluster that represents
-    single modifier with cluster attributes.
+    Class that should be inherited by any ModifiersList subclass that uses
+    clusters.
 
     Version 5, removed a lot of methods.
 
     Version 6, uses ClustersActions.
     """
 
-    # TODO: Add checks for passed function arguments
-    # TODO: copying modifier settings
-
-    # ============================================================
-    #
-    #               MODIFIERS LIST METHODS NAMING
-    #
-    # ============================================================
-    # All methods that have 'actual_modifier' in their name
-    # return actual Blender modifiers references, and assume that arguments
-    # use Blender modifiers.
-    #
-    # All methods that have 'modifier' in their name return Cluster modifiers
-    # unless used within SimpleModifiersList, which uses actual_modifiers
-    # in this methods.
-    # ModifiersCluster is a SimpleModifiersList.
-    #
-    # All methods that have 'cluster' in their name return Clusters, or layers.
-    #
-    # All methods that have 'recursive' or 'full' or 'deep' in their name
-    # recursively calls cluster methods of same functional as called method.
-    # This also means that nested clusters will use same method.
-    # NestedModifiersCluster use ModifiersClustersList.
-    #
-    # All methods that have 'loop' in their name iterate 'around' list, used
-    # for creating tools that have some kind of UI. They work on single
-    # layer, unless specified.
-    #
-    # Most methods that dont have anything of above in their name doesnt have
-    # anything to do with modifiers and operate on lists in general.
-    # ============================================================
-
-    _MODIFIERS_LIST_V = True
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, *args, no_default_actions=False, **kwargs):
+        super().__init__(
+                         no_default_actions=no_default_actions,
+                         *args, **kwargs)
+        if not no_default_actions:
+            self.add_action_answer(ActionDefaultDeconstuct(self))
 
     def _check_if_cluster_removed(self):
         pass

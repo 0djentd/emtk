@@ -674,7 +674,7 @@ class ClusterTrait():
 
         return None
 
-    def check_this_cluster_sanity(self):
+    def check_this_cluster_sanity(self, raise_error=True):
         """
         Checks if this cluster type would work properly.
 
@@ -704,27 +704,31 @@ class ClusterTrait():
         l_2 = self._MODCLUSTER_MODIFIERS_BY_POSSIBLE_NAMES
         len_2 = len(l_2)
 
+        result = ''
+
         if len(self._modcluster_specified_modifier_names) > 0:
             if len_2 != len(self._modcluster_specified_modifier_names):
-                raise ValueError(
-                        'Length of specified modifiers names is wrong.')
+                result += 'Length of specified modifiers names is wrong.'
         if len_1 != len_2:
-            raise ValueError(
-                    f'Length of types ({l_1}) and names ({l_2}) is different.')
+            result +=\
+                    f'Length of types ({l_1}) and names ({l_2}) is different.'
         if len_1 == 0:
-            raise ValueError(
-                    'Length of modifiers types cant be 0.')
+            result += 'Length of modifiers types cant be 0.'
         if self._MODCLUSTER_MODIFIERS_BY_TYPE[0] == ['ANY']:
-            raise ValueError(
-                    'First modifier cant be any, specify modifier type.')
+            result +=\
+                    'First modifier cant be any, specify modifier type.'
         for mod_types in self._MODCLUSTER_MODIFIERS_BY_TYPE:
             if isinstance(mod_types, list):
                 if len(mod_types) == 0:
-                    raise ValueError('Modifier types length is 0.')
+                    result += 'Modifier types length is 0.'
         for mod_names in self._MODCLUSTER_MODIFIERS_BY_POSSIBLE_NAMES:
             if isinstance(mod_names, list):
                 if len(mod_names) == 0:
-                    raise ValueError('Modifier names length is 0.')
+                    result += 'Modifier names length is 0.'
+        if raise_error and result != '':
+            raise ValueError(result)
+        elif not raise_error and result != '':
+            return result
         return True
 
     # ===================

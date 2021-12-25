@@ -24,7 +24,9 @@ from ..controller.actions import (
                                   ClustersCommand,
                                   ClustersBatchCommand,
                                   )
+
 from ..controller.answers import (
+                                  ClusterActionAnswer,
                                   ActionDefaultRemove,
                                   ActionDefaultApply,
                                   ActionDefaultMove,
@@ -91,7 +93,7 @@ class ModifiersList(ModifiersListUtilsTrait):
     _MODIFIERS_LIST_V = True
 
     def __init__(self, obj=None, *args, no_obj=None,
-                 actions=None, no_default_actions=False,
+                 no_default_actions=False,
                  **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -103,16 +105,14 @@ class ModifiersList(ModifiersListUtilsTrait):
 
         self.__DUMMY_MODIFIERS = False
         self._modifiers_list = []
-        self._actions = []
+        self._actions = {}
+        # TODO: create different action answers
+        # for clusters and modifiers list.
         if not no_default_actions:
-            default_actions = []
-            default_actions.append(ActionDefaultRemove(self))
-            default_actions.append(ActionDefaultApply(self))
-            default_actions.append(ActionDefaultDeconstuct(self))
-            default_actions.append(ActionDefaultMove(self))
-            self._actions.extend(default_actions)
-        if actions is not None and isinstance(actions, list):
-            self._actions.extend(actions)
+            self.add_action_answer(ActionDefaultRemove(self))
+            self.add_action_answer(ActionDefaultApply(self))
+            self.add_action_answer(ActionDefaultMove(self))
+            self.add_action_answer(ActionDefaultDeconstuct(self))
 
     def __len__(self):
         return len(self._modifiers_list)
@@ -280,14 +280,11 @@ class ModifiersList(ModifiersListUtilsTrait):
 
     def ask(self, action):
         self._check_if_cluster_removed()
-        for x in self._actions:
-            if x.action_type == action.verb:
-                return x.ask(action)
-        raise ValueError(f'No implementation for action type {action.verb}')
+        self._actions[action.verb].ask(action)
 
     def do(self, action):
         """
-        Do batch command, simple command or action of this
+        Do batch command, simple command or action on this
         modifiers list elements.
         """
         self._check_if_cluster_removed()
@@ -323,10 +320,11 @@ class ModifiersList(ModifiersListUtilsTrait):
     def do_action(self, action):
         self._check_if_cluster_removed()
         logger.debug(f'Cluster {self}, action is {action}')
-        for x in self._actions:
-            if x.action_type == action.verb:
-                return x.do(action)
-        raise ValueError(f'No implementation for action type {action.verb}')
+        if action.subject not in self._modifiers_list:
+            layer = self.get_cluster_or_layer(action.subject)
+            layer.do_action(action)
+        else:
+            self._actions[action.verb].do(action)
 
     """
     This three methods checks if all action.subjects can be
@@ -354,7 +352,6 @@ class ModifiersList(ModifiersListUtilsTrait):
             if x is action.subject:
                 return
         raise ValueError
-
 
     def move_to_index(self, mod, i):
         """
@@ -733,3 +730,15 @@ class ModifiersList(ModifiersListUtilsTrait):
             return self._modifiers_list[x + 1]
         else:
             return self._modifiers_list[0]
+
+    def add_action_answer(self, action_answer):
+        """
+        Adds new ClusterActionAnswer to this cluster.
+        Replaces existing one with same action_answer.action_type.
+        """
+        if not isinstance(action_answer, ClusterActionAnswer):
+            raise TypeError
+
+        self._actions.update({action_answer.action_type: action_answer})
+        return
+
