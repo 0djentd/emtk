@@ -50,7 +50,6 @@ def get_modifier_state(modifier):
 
         # Add attribute name and value to result.
         result.update({x: y})
-        logger.debug(f'Added {result["x"]}')
 
     # Add extra_info
     result.update({'extra_info': {}})
@@ -73,7 +72,7 @@ def restore_modifier_state(modifier, modifier_state):
 
     for x in modifier_state:
         if x == 'type'\
-                of x == 'extra_info':
+                or x == 'extra_info':
             logger.debug(f'Skipping {x}')
             continue
         setattr(modifier, modifier_state[x], x)

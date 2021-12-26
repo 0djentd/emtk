@@ -18,9 +18,9 @@
 
 # import copy
 import json
-from .modifiers_cluster import ModifiersCluster
-from .clusters_layer import ClustersLayer
-from .cluster_trait import ClusterTrait
+from ..clusters.modifiers_cluster import ModifiersCluster
+from ..clusters.clusters_layer import ClustersLayer
+from ..clusters.cluster_trait import ClusterTrait
 
 
 def deserialize_cluster_type(serialized_cluster_type, *args, **kwargs):
