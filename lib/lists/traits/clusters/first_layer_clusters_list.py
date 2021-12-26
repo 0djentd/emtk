@@ -156,10 +156,7 @@ class FirstLayerClustersListTrait():
                 self._mod = self._modifiers_list[0]
                 modified = True
 
-        if self._MODIFIERS_LIST_V:
-            logger.info("===================================")
-            logger.info("Finished creating modifiers list")
-            logger.info("===================================")
+        logger.info("Finished creating modifiers list")
 
         if modified:
             return True

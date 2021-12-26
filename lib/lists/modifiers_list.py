@@ -197,7 +197,7 @@ class ModifiersList(ModifiersListUtilsTrait):
             direction_2 = 'UP'
         else:
             raise ValueError(
-                    f"Direction should be either 'UP' or 'DOWN', not {direction}")
+                    "Direction should be either 'UP' or 'DOWN'")
 
         # This only used when moving actual modifiers with dry=true.
         length = len(
@@ -236,6 +236,30 @@ class ModifiersList(ModifiersListUtilsTrait):
 
         self._controller.do([x, x_2])
 
+    def move_to_index(self, mod, i):
+        """
+        Moves cluster to index.
+
+        Returns True if moved modifier.
+        Returns False if any errors.
+        """
+        self._check_if_cluster_removed()
+        # TODO: not tested
+        if i < self.get_list_length():
+            m_i = self.get_index(mod)
+            d_i = i - m_i
+            x = 0
+            if d_i > 0:
+                while x <= d_i:
+                    self.move_up(mod)
+                    x += 1
+                return True
+            elif d_i < 0:
+                while x >= d_i:
+                    self.move_up(mod)
+                    x -= 1
+                return True
+
     def ask(self, action):
         self._check_if_cluster_removed()
         self._actions[action.verb].ask(action)
@@ -252,10 +276,7 @@ class ModifiersList(ModifiersListUtilsTrait):
         # Check all elements first
         # TODO: function for this
         for x in action:
-            if not isinstance(x, ClustersBatchCommand)\
-                    and not isinstance(x, ClustersCommand)\
-                    and not isinstance(x, ClustersAction):
-                raise TypeError(f'Expected ClustersAction, got {type(x)}')
+            self._check_controller_action(x)
 
         for x in action:
             if isinstance(x, ClustersBatchCommand):
@@ -284,10 +305,20 @@ class ModifiersList(ModifiersListUtilsTrait):
         else:
             self._actions[action.verb].do(action)
 
-    """
-    This three methods checks if all action.subjects can be
-    found in this list or its clusters.
-    """
+    def _check_controller_action(self, x):
+        """
+        This methods checks if all action.subjects can be
+        found in this list or its clusters.
+        """
+        if isinstance(x, ClustersBatchCommand):
+            self._check_batch(x)
+        elif isinstance(x, ClustersCommand):
+            self._check_command(x)
+        elif isinstance(x, ClustersAction):
+            self._check_action(x)
+        else:
+            raise TypeError
+
     def _check_batch(self, batch):
         self._check_if_cluster_removed()
         if not isinstance(batch, ClustersBatchCommand):
@@ -311,65 +342,37 @@ class ModifiersList(ModifiersListUtilsTrait):
                 return
         raise ValueError
 
-    def move_to_index(self, mod, i):
+    def add_action_answer(self, action_answer):
         """
-        Moves cluster to index.
+        Adds new ClusterActionAnswer to this cluster.
+        Replaces existing one with same action_answer.action_type.
+        """
+        if not isinstance(action_answer, ClusterActionAnswer):
+            raise TypeError
 
-        Returns True if moved modifier.
-        Returns False if any errors.
-        """
-        self._check_if_cluster_removed()
-        # TODO: not tested
-        if i < self.get_list_length():
-            m_i = self.get_index(mod)
-            d_i = i - m_i
-            x = 0
-            if d_i > 0:
-                while x <= d_i:
-                    self.move_up(mod)
-                    x += 1
-                return True
-            elif d_i < 0:
-                while x >= d_i:
-                    self.move_up(mod)
-                    x -= 1
-                return True
+        self._actions.update({action_answer.action_type: action_answer})
+        return
 
     # ==============================================
-    # This methods work on _modifiers_list's level.
+    # This methods work on _modifiers_list
     # This means that they dont differ simple or nested clusters and modifiers
     # ==============================================
-    def get_full_actual_modifiers_list(self):
+    def get_list(self):
         self._check_if_cluster_removed()
+        return self._modifiers_list
+
+    # This methods are different in clusters list.
+    def get_full_actual_modifiers_list(self):
         return self.get_list()
 
     def get_actual_full_actual_modifiers_list(self):
-        self._check_if_cluster_removed()
-        return self.get_actual_list()
-
-    def get_list(self):
-        """
-        Returns shallow copy of this layer's list.
-        Should be used instead of get_actual_list
-        when possible.
-        """
-        self._check_if_cluster_removed()
-        return self._modifiers_list
+        return self.get_list()
 
     def get_full_list(self):
         return self.get_list()
 
     def get_all_clusters_and_modifiers(self):
         return self.get_list()
-
-    def get_actual_list(self):
-        """
-        Returns reference to this layer's list.
-        Its better idea to usual get_list when possible instead
-        of this method.
-        """
-        self._check_if_cluster_removed()
-        return self._modifiers_list
 
     def get_list_in_range_not_inclusive(self, mod1, mod2):
         """
@@ -525,6 +528,7 @@ class ModifiersList(ModifiersListUtilsTrait):
         x = 1
         m_list_len = self.get_list_length()
         while x < m_list_len + 1:
+
             # y = index of modifier that should be returned
             # created on every iteration
             y = self.get_index(mod) - x
@@ -688,15 +692,3 @@ class ModifiersList(ModifiersListUtilsTrait):
             return self._modifiers_list[x + 1]
         else:
             return self._modifiers_list[0]
-
-    def add_action_answer(self, action_answer):
-        """
-        Adds new ClusterActionAnswer to this cluster.
-        Replaces existing one with same action_answer.action_type.
-        """
-        if not isinstance(action_answer, ClusterActionAnswer):
-            raise TypeError
-
-        self._actions.update({action_answer.action_type: action_answer})
-        return
-
