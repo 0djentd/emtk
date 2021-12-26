@@ -41,6 +41,7 @@ class ModifiersList():
     Base class for all modifiers and clusters lists.
     """
 
+    # TODO: update dat docstring
     # ============================================================
     #
     #               MODIFIERS LIST METHODS NAMING
@@ -263,6 +264,7 @@ class ModifiersList():
         self._check_if_cluster_removed()
         self._actions[action.verb].ask(action)
 
+    # TODO: remove
     def do(self, action):
         """
         Do batch command, simple command or action on this
@@ -273,14 +275,15 @@ class ModifiersList():
             action = [action]
 
         # Check all elements first
-        # TODO: function for this
         for x in action:
             self._check_controller_action(x)
 
         for x in action:
             if isinstance(x, ClustersBatchCommand):
+                raise TypeError
                 self.do_batch(x)
             elif isinstance(x, ClustersCommand):
+                raise TypeError
                 self.do_command(x)
             elif isinstance(x, ClustersAction):
                 self.do_action(x)
@@ -665,9 +668,8 @@ class ModifiersList():
         """
         self._check_if_cluster_removed()
 
-        # TODO: changed index_get to get_index
-        x = self.get_index(mod)
-        y = self.get_list_length()
+        x = self._modifiers_list.index(mod)
+        y = len(self._modifiers_list)
         if x > 0:
             return self._modifiers_list[x-1]
         else:
@@ -685,8 +687,8 @@ class ModifiersList():
         """
         self._check_if_cluster_removed()
 
-        x = self.get_index(mod)
-        y = self.get_list_length()
+        x = self._modifiers_list.index(mod)
+        y = len(self._modifiers_list)
         if x < (y - 1):
             return self._modifiers_list[x + 1]
         else:

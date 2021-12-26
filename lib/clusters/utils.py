@@ -76,24 +76,3 @@ def serialize_cluster_type(cluster_type):
     if not isinstance(cluster_type, ClusterTrait):
         raise TypeError
     return cluster_type.serialize_this_cluster_type()
-
-
-def get_types_from_object_props(self, obj, addon_name, prop_name):
-    """
-    Returns cluster types from object prop.
-    """
-    return
-
-
-def get_types_from_scene_prop(self, obj, addon_name, prop_name):
-    """
-    Returns cluster types from scene prop.
-    """
-    return
-
-
-def get_types_from_addon_prefs(self, obj, addon_name, prop_name):
-    """
-    Returns cluster types from addon prefs.
-    """
-    return

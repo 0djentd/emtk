@@ -16,6 +16,8 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+import logging
+
 try:
     import bpy
     _WITH_BPY = True
@@ -24,6 +26,9 @@ except ModuleNotFoundError:
     _WITH_BPY = False
 
 from .actions import ClustersAction, ClusterRequest, ClustersCommand
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 class ClusterActionAnswer():
@@ -158,7 +163,10 @@ class ActionDefaultRemove(ActionDefaultTemplate):
             if _WITH_BPY:
                 mod_name = action.subject.name
                 self.cluster._modifiers_list.remove(action.subject)
-                bpy.ops.object.modifier_remove(modifier=mod_name)
+                new_context = bpy.context.copy()
+                new_context['selected_objects'] = [self.cluster._object]
+                new_context['active_object'] = self.cluster._object
+                bpy.ops.object.modifier_remove(new_context, modifier=mod_name)
             else:
                 mod_name = action.subject.name
                 self.cluster._modifiers_list.remove(action.subject)
@@ -191,7 +199,10 @@ class ActionDefaultApply(ActionDefaultTemplate):
             if _WITH_BPY:
                 mod_name = action.subject.name
                 self.cluster._modifiers_list.remove(action.subject)
-                bpy.ops.object.modifier_apply(modifier=mod_name)
+                new_context = bpy.context.copy()
+                new_context['selected_objects'] = [self.cluster._object]
+                new_context['active_object'] = self.cluster._object
+                bpy.ops.object.modifier_apply(new_context, modifier=mod_name)
             else:
                 mod_name = action.subject.name
                 self.cluster._modifiers_list.remove(action.subject)
@@ -270,11 +281,16 @@ class ActionDefaultMove(ClusterActionAnswer):
 
         if isinstance(action.subject, modifiers_type):
             mod_name = action.subject.name
+            if _WITH_BPY:
+                new_context = bpy.context.copy()
+                new_context['selected_objects'] = [self.cluster._object]
+                new_context['active_object'] = self.cluster._object
+
             if action.props['direction'] == 'UP':
                 for x in range(action.props['length']):
                     if _WITH_BPY:
                         bpy.ops.object.modifier_move_up(
-                                modifier=mod_name)
+                                new_context, modifier=mod_name)
                     else:
                         self.cluster._object.modifier_move_up(
                                 modifier=mod_name)
@@ -284,7 +300,7 @@ class ActionDefaultMove(ClusterActionAnswer):
                 for x in range(action.props['length']):
                     if _WITH_BPY:
                         bpy.ops.object.modifier_move_down(
-                                modifier=mod_name)
+                                new_context, modifier=mod_name)
                     else:
                         self.cluster._object.modifier_move_down(
                                 modifier=mod_name)
