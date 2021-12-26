@@ -18,7 +18,6 @@
 
 import logging
 
-from .traits.utils.modifiers_list_utils import ModifiersListUtilsTrait
 from ..controller.actions import (
                                   ClustersAction,
                                   ClustersCommand,
@@ -37,7 +36,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-class ModifiersList(ModifiersListUtilsTrait):
+class ModifiersList():
     """
     Base class for all modifiers and clusters lists.
     """
@@ -74,7 +73,7 @@ class ModifiersList(ModifiersListUtilsTrait):
     def __init__(self, obj=None, *args, no_obj=None,
                  no_default_actions=False,
                  **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__()
 
         if not no_obj:
             if obj is None:
