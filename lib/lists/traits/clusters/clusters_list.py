@@ -16,9 +16,17 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-from ....clusters.cluster_trait import ClusterTrait
+import logging
 
+from ....clusters.cluster_trait import ClusterTrait
 from ....controller.answers import ActionDefaultDeconstuct
+from ....controller.actions import (
+                                    ClustersAction,
+                                    ClustersCommand,
+                                    )
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 class ClustersListTrait():
@@ -40,6 +48,27 @@ class ClustersListTrait():
 
     def _check_if_cluster_removed(self):
         pass
+
+    # ====================
+    # Actions
+    # ====================
+    def deconstruct(self, cluster):
+        self._check_if_cluster_removed()
+        """
+        Deconstructs cluster on this layer.
+        """
+        logger.info(f'Deconstructing {cluster} on layer {self}')
+        x = ClustersAction('DECONSTRUCT', cluster)
+        x = ClustersCommand(x,
+                            affect_clusters=False,
+                            affect_modifiers=False,
+                            dry_clusters=False,
+                            dry_modifiers=False,
+                            )
+
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug(f'Created {x}')
+        self._controller.do(x)
 
     # =============
     # Actual modifier getters
@@ -400,16 +429,16 @@ class ClustersListTrait():
     # ==============================
     # Methods based on get_full_actual_modifiers_list
     # ==============================
-    # def get_full_actual_modifiers_list_by_type(self, m_type):
-    #     """
-    #     Returns full list of actual modifiers by type, including nested ones.
-    #     """
-    #     self._check_if_cluster_removed()
-    #     result = []
-    #     for x in self.get_full_actual_modifiers_list():
-    #         if x.type == m_type:
-    #             result.append(x)
-    #     return result
+    def get_full_actual_modifiers_list_by_type(self, m_type):
+        """
+        Returns full list of actual modifiers by type, including nested ones.
+        """
+        self._check_if_cluster_removed()
+        result = []
+        for x in self.get_full_actual_modifiers_list():
+            if x.type == m_type:
+                result.append(x)
+        return result
 
     # def get_full_actual_modifiers_list_by_name(self, m_name):
     #     """
@@ -467,7 +496,6 @@ class ClustersListTrait():
         if not isinstance(new_cluster_name, str):
             raise TypeError
 
-        # TODO: not tested
         elif self.recursive_has_cluster(cluster):
             if isinstance(new_cluster_name, str):
                 cluster.set_this_cluster_custom_name(new_cluster_name)

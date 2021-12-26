@@ -22,7 +22,7 @@ from bpy.types import Menu
 # Modifiers pie menu
 class VIEW_3D_MT_PIE_bmtools_pie_1(Menu):
     bl_label = "BMTools"
-    bl_idname = "BMTools_MT_PIE_bmtpie"
+    bl_idname = "BMTOOLS_MT_PIE_bmtpie"
 
     def draw(self, context):
         layout = self.layout

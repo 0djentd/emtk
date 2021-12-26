@@ -39,26 +39,8 @@ logger.setLevel(logging.DEBUG)
 
 class ModifiersList(ModifiersListUtilsTrait):
     """
-    Simple list of Blender modifiers without Modifiers Clusters.
-
-    Doesnt require modifiers to be on same object or even exist on
-    any object.
-
-    All methods assuming that passed modifiers, their names, types
-    and such are actual Blender modifiers. Same goes for returned values.
-
-    Has different methods for finding specific modifiers, such as
-    finding next modifier of specific type starting from specific
-    modifier, returning list of modifiers of specific type etc.
-
-    Doesnt require modifiers to be on same object or even exist on
-    any object.
+    Base class for all modifiers and clusters lists.
     """
-
-    # TODO: rework name and docstring
-    # TODO: Add checks for passed function arguments
-    # TODO: copying modifier settings
-    # TODO: proper log
 
     # ============================================================
     #
@@ -89,9 +71,6 @@ class ModifiersList(ModifiersListUtilsTrait):
     # anything to do with modifiers and operate on list in general.
     # ============================================================
 
-    # Additional info
-    _MODIFIERS_LIST_V = True
-
     def __init__(self, obj=None, *args, no_obj=None,
                  no_default_actions=False,
                  **kwargs):
@@ -106,8 +85,6 @@ class ModifiersList(ModifiersListUtilsTrait):
         self.__DUMMY_MODIFIERS = False
         self._modifiers_list = []
         self._actions = {}
-        # TODO: create different action answers
-        # for clusters and modifiers list.
         if not no_default_actions:
             self.add_action_answer(ActionDefaultRemove(self))
             self.add_action_answer(ActionDefaultApply(self))
@@ -258,25 +235,6 @@ class ModifiersList(ModifiersListUtilsTrait):
             x_2.reverse_by_layer = False
 
         self._controller.do([x, x_2])
-
-    def deconstruct(self, cluster):
-        self._check_if_cluster_removed()
-        """
-        Deconstructs cluster on this layer.
-        """
-        logger.info(f'Deconstructing {cluster} on layer {self}')
-        x = ClustersAction('DECONSTRUCT', cluster)
-        x = ClustersCommand(x,
-                            affect_clusters=False,
-                            affect_modifiers=False,
-                            dry_clusters=False,
-                            dry_modifiers=False,
-                            )
-
-        if logger.isEnabledFor(logging.DEBUG):
-            logger.debug(f'Created {x}')
-
-        self._controller.do(x)
 
     def ask(self, action):
         self._check_if_cluster_removed()
