@@ -35,7 +35,6 @@ class ClusterTrait():
 
     def __init__(self,
                  *args,
-                 cluster_definition=None,
                  cluster_name=None,
                  cluster_type=None,
                  modifiers_by_type=None,
@@ -52,46 +51,22 @@ class ClusterTrait():
 
         super().__init__(no_obj=True, *args, **kwargs)
 
-        if cluster_definition is None:
-            cluster_definition = {}
-        elif not isinstance(cluster_definition, dict):
-            raise TypeError
-
-        # Replace dict values with kw, if specified.
-        if cluster_name is not None\
-                or 'name' not in cluster_definition:
-            cluster_definition['name'] = cluster_name
-        if cluster_type is not None\
-                or 'type' not in cluster_definition:
-            cluster_definition['type'] = cluster_type
-        if modifiers_by_type is not None\
-                or 'by_type' not in cluster_definition:
-            cluster_definition['by_type'] = modifiers_by_type
-        if modifiers_by_name is not None\
-                or 'by_name' not in cluster_definition:
-            cluster_definition['by_name'] = modifiers_by_name
-        if cluster_tags is not None\
-                or 'tags' not in cluster_definition:
-            cluster_definition['tags'] = cluster_tags
-        if cluster_priority is not None\
-                or 'priority' not in cluster_definition:
-            cluster_definition['priority'] = cluster_priority
-        if cluster_is_sane is not None\
-                or 'sane' not in cluster_definition:
-            cluster_definition['sane'] = cluster_is_sane
-        if cluster_is_kinda_sane is not None\
-                or 'kinda_sane' not in cluster_definition:
-            cluster_definition['kinda_sane'] = cluster_is_kinda_sane
-        if cluster_dynamic is not None\
-                or 'dynamic' not in cluster_definition:
-            cluster_definition['dynamic'] = cluster_dynamic
-        if cluster_createable is not None\
-                or 'createable' not in cluster_definition:
-            cluster_definition['createable'] = cluster_createable
+        x = {
+             'name': cluster_name,
+             'type': cluster_type,
+             'by_type': modifiers_by_type,
+             'by_name': modifiers_by_name,
+             'tags': cluster_tags,
+             'priority': cluster_priority,
+             'sane': cluster_is_sane,
+             'kinda_sane': cluster_is_kinda_sane,
+             'dynamic': cluster_dynamic,
+             'createable': cluster_createable,
+             }
 
         # Check dict.
-        self._cluster_definition = self._check_cluster_defenition(
-                cluster_definition)
+        self._cluster_definition\
+            = self._check_cluster_defenition(x)
 
         # Cluster shouldnt be used, if it is already
         # removed from clusters list.
