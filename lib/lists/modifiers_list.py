@@ -41,6 +41,7 @@ class ModifiersList():
     Base class for all modifiers and clusters lists.
     """
 
+    # TODO: update dat docstring
     # ============================================================
     #
     #               MODIFIERS LIST METHODS NAMING

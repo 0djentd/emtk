@@ -29,7 +29,6 @@ except ModuleNotFoundError:
 
 from ....parser import ClustersParser
 from ....controller.clusters_controller import ClustersController
-from ....utils.modifiers import get_modifier_state
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -445,10 +444,11 @@ class FirstLayerClustersListTrait():
         """
         Returns current object actual modifiers info.
         """
-        result = []
-        for x in self._object.modifiers:
-            result.append(get_modifier_state(x))
-        return result
+        modifiers = self._object.modifiers
+        y = []
+        for i, mod in enumerate(modifiers):
+            y.append([i, mod.name, mod.type])
+        return y
 
     def save_modifiers_state(self, prop_name=None):
         """
@@ -473,7 +473,6 @@ class FirstLayerClustersListTrait():
         elif not _WITH_BPY:
             self._object.props[name] = x
 
-    # TODO: what is dat
     def load_modifiers_state(self, prop_name=None):
         """
         Returns previous object actual modifiers info
