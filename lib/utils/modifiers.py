@@ -20,17 +20,27 @@ import logging
 import copy
 import json
 
-import bpy
+try:
+    import bpy
+    _WITH_BPY = True
+except ModuleNotFoundError:
+    from ..dummy_modifiers import DummyBlenderModifier
+    _WITH_BPY = False
 
 logger = logging.getLogger(__package__)
+logger.setLevel(logging.INFO)
 
 
 def get_modifier_state(modifier):
     """
     Returns dict with info about modifier's properties.
     """
-    if not isinstance(modifier, bpy.types.Modifier):
-        raise TypeError
+    if _WITH_BPY:
+        if not isinstance(modifier, bpy.types.Modifier):
+            raise TypeError
+    else:
+        if not isinstance(modifier, DummyBlenderModifier):
+            raise TypeError
 
     logger.info(f'Trying to get modifier state for {modifier}')
     result = {}
@@ -54,7 +64,7 @@ def get_modifier_state(modifier):
     # Add extra_info
     result.update({'extra_info': {}})
     logger.debug(f'Result is {result}')
-    logger.debug('Finished saving modifier state.')
+    logger.debug('Finished getting modifier state.')
     return result
 
 
@@ -63,8 +73,13 @@ def restore_modifier_state(modifier, modifier_state):
     Restores modifier state.
     """
     logger.info(f'Restoring {modifier_state} for {modifier}')
-    if not isinstance(modifier, bpy.types.Modifier):
-        raise TypeError
+    if _WITH_BPY:
+        if not isinstance(modifier, bpy.types.Modifier):
+            raise TypeError
+    else:
+        if not isinstance(modifier, DummyBlenderModifier):
+            raise TypeError
+
     if not isinstance(modifier_state, dict):
         raise TypeError
     if modifier.type != modifier_state.type:
