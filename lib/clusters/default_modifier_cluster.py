@@ -35,18 +35,17 @@ class DefaultModifierCluster(
     clusters list.
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(
-                         cluster_type="DEFAULT_MODIFIER_CLUSTER",
-                         cluster_name="Default Modifier",
-                         modifiers_by_type=['ANY'],
-                         modifiers_by_name=['ANY'],
-                         cluster_is_sane=True,
-                         cluster_is_kinda_sane=False,
-                         cluster_createable=True,
-                         cluster_dynamic=True,
-                         *args, **kwargs,
-                         )
+    def __init__(self):
+        x = {
+             'type': "DEFAULT_MODIFIER_CLUSTER",
+             'name': "Default Modifier",
+             'by_type': ['ANY'],
+             'by_name': ['ANY'],
+             'is_sane': True,
+             'createable': True,
+             'dynamic': True,
+             }
+        super().__init__(cluster_definition=x)
 
     def get_this_cluster_name(self):
         if not self._cluster_props['initialized']\

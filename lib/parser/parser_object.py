@@ -145,8 +145,7 @@ class ClustersParser():
         It should always be specified when partially reparsing list.
 
         Returns clusters ready to be put into ClustersList.
-        Returns False if cant parse for some reason, for example if
-        there are some modifiers that cant be used in any cluster.
+        Returns False if cant parse for some reason.
         """
         if not isinstance(modifiers_to_parse, list):
             raise TypeError
@@ -611,24 +610,24 @@ class ClustersParser():
             cluster_type = copy.deepcopy(default_cluster_type)
 
             # Clear custom modifiers names, if any.
-            cluster_type._cluster_props['by_name'] = []
+            cluster_type._modcluster_specified_modifier_names = []
 
             # Add custom modifier names to make sure correct modifier
             # will be used in parse.
             for mod in x[1]:
                 modifier_names = []
                 modifier_names.append(mod[3])
-                cluster_type._cluster_props['by_name'].append(
+                cluster_type._modcluster_specified_modifier_names.append(
                         modifier_names)
 
             # Check if length is correct
-            if len(cluster_type._cluster_props['by_name']) \
+            if len(cluster_type._modcluster_specified_modifier_names) \
                     != cluster_type.get_this_cluster_possible_length():
                 logger.debug(
                         "Specified names list length is wrong.")
                 raise ValueError
 
-            cluster_names = cluster_type._cluster_props['by_name']
+            cluster_names = cluster_type._modcluster_specified_modifier_names
             logger.debug(
                     f"Modifiers names {cluster_names}")
 
@@ -655,7 +654,7 @@ class ClustersParser():
         """
         for x in clusters:
             x.remove_tag_from_this_cluster('RESTORED')
-            x._cluster_props['by_name'] = []
+            x._modcluster_specified_modifier_names = []
 
     # =============================
     #
@@ -748,17 +747,17 @@ class ClustersParser():
             for x in available_to_parser_cluster_types:
                 logger.debug("-------")
                 logger.debug(
-                        f"{x._cluster_definition['type']}")
-                logger.debug(
                         f"{x.get_this_cluster_tags()}")
                 logger.debug(
-                        f"{x}, {len(x._cluster_definition['by_name'])} mods")
+                        f"{x}, {len(x._MODCLUSTER_MODIFIERS_BY_TYPE)} mods")
                 logger.debug(
-                        f"{x._cluster_definition['by_type']}")
+                        f"{x._MODCLUSTER_MODIFIERS_BY_TYPE}")
                 logger.debug(
-                        f"{x._cluster_definition['by_name']}")
+                        f"{x._MODCLUSTER_MODIFIERS_BY_POSSIBLE_NAMES}")
                 logger.debug(
-                        f"modcluster priority is {x._cluster_definition['priority']}")
+                        f"{x._modcluster_specified_modifier_names}")
+                logger.debug(
+                        f"modcluster priority is {x._MODCLUSTER_PRIORITY}")
                 logger.debug(" ")
 
         # TODO: this doesnt works as expected
