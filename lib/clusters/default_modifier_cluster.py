@@ -35,27 +35,27 @@ class DefaultModifierCluster(
     clusters list.
     """
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(
-                         cluster_type="DEFAULT_MODIFIER_CLUSTER",
-                         cluster_name="Default Modifier",
-                         modifiers_by_type=['ANY'],
-                         modifiers_by_name=['ANY'],
-                         cluster_is_sane=True,
-                         cluster_createable=True,
-                         *args, **kwargs)
-
-        self._MODCLUSTER_DYNAMIC = False
+    def __init__(self):
+        x = {
+             'type': "DEFAULT_MODIFIER_CLUSTER",
+             'name': "Default Modifier",
+             'by_type': ['ANY'],
+             'by_name': ['ANY'],
+             'is_sane': True,
+             'createable': True,
+             'dynamic': True,
+             }
+        super().__init__(cluster_definition=x)
 
     def get_this_cluster_name(self):
-        if not self._cluster_definition['initialized']\
+        if not self._cluster_props['initialized']\
                 or len(self._modifiers_list) == 0:
             return self.get_this_cluster_default_name()
         else:
             return self._modifiers_list[0].name
 
     def get_this_cluster_type(self):
-        if not self._cluster_definition['initialized']\
+        if not self._cluster_props['initialized']\
                 or len(self._modifiers_list) == 0:
             return self._cluster_definition['type']
         else:
@@ -101,13 +101,13 @@ class DefaultModifierCluster(
                 raise TypeError('Cluster needs actual Blender modifier.')
 
         # If havent set modifiers already
-        if self._cluster_definition['initialized'] is False:
+        if self._cluster_props['initialized'] is False:
             self._modifiers_list = modifiers
-            self._cluster_definition['initialized'] = True
+            self._cluster_props['initialized'] = True
             return True
 
         # If allowed to reset modifiers
-        elif self._MODCLUSTER_DYNAMIC:
+        elif self._cluster_definition['dynamic']:
             self._modifiers_list = modifiers
             return True
         else:
