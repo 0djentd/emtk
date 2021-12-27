@@ -46,6 +46,7 @@ class ClusterTrait():
                  cluster_priority=None,
                  cluster_is_sane=None,
                  cluster_createable=None,
+                 cluster_initialized=None,
                  dont_define_cluster=None,
                  **kwargs
                  ):
@@ -96,6 +97,7 @@ class ClusterTrait():
                  'sane': None,
 
                  # Dont throw an error when checking cluster sanity
+                 # TODO: what is dat
                  'kinda_sane': None,
                  }
 
@@ -190,6 +192,11 @@ class ClusterTrait():
             else:
                 self._cluster_definition['createable'] = False
 
+            if cluster_initialized is True:
+                self._cluster_definition['initialized'] = True
+            else:
+                self._cluster_definition['initialized'] = False
+
         self._cluster_props = {}
 
         # -------------------------------------------
@@ -222,7 +229,7 @@ class ClusterTrait():
 
         # Check cluster sanity.
         if not dont_define_cluster\
-                and not self._MODCLUSTER_IS_SANE\
+                and not self._cluster_definition['sane']\
                 and not self.check_this_cluster_sanity():
             raise ValueError('This cluster cant be used.')
 
@@ -478,7 +485,7 @@ class ClusterTrait():
                 result = True
 
         for x in y:
-            self._modcluster_custom_tags.remove(x)
+            self._cluster_props['tags'].remove(x)
 
         return result
 

@@ -38,7 +38,7 @@ class ExtendedModifiersListTests():
     def test_all_clusters_initialized(self):
         result = True
         for x in self.e.get_full_list():
-            if not x._modcluster_initialized:
+            if not x._cluster_definition['initialized']:
                 if not isinstance(result, list):
                     result = []
                 result.append(x)
