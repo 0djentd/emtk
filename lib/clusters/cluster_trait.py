@@ -226,9 +226,13 @@ class ClusterTrait():
                 and not self.check_this_cluster_sanity():
             raise ValueError('This cluster cant be used.')
 
+    def __repr__(self):
+        return self.__str__()
+
     def __str__(self):
         if not self._cluster_removed:
-            result = f"{self.get_this_cluster_default_name()}"
+            name = self.get_this_cluster_name()
+            result = f"Cluster {name}, {self.get_this_cluster_type()}"
         else:
             result = f"Already removed cluster {self._MODCLUSTER_NAME}"
         return result

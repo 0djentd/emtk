@@ -18,13 +18,14 @@
 
 import logging
 
-from .traits.utils.modifiers_list_utils import ModifiersListUtilsTrait
 from ..controller.actions import (
                                   ClustersAction,
                                   ClustersCommand,
                                   ClustersBatchCommand,
                                   )
+
 from ..controller.answers import (
+                                  ClusterActionAnswer,
                                   ActionDefaultRemove,
                                   ActionDefaultApply,
                                   ActionDefaultMove,
@@ -35,29 +36,12 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-class ModifiersList(ModifiersListUtilsTrait):
+class ModifiersList():
     """
-    Simple list of Blender modifiers without Modifiers Clusters.
-
-    Doesnt require modifiers to be on same object or even exist on
-    any object.
-
-    All methods assuming that passed modifiers, their names, types
-    and such are actual Blender modifiers. Same goes for returned values.
-
-    Has different methods for finding specific modifiers, such as
-    finding next modifier of specific type starting from specific
-    modifier, returning list of modifiers of specific type etc.
-
-    Doesnt require modifiers to be on same object or even exist on
-    any object.
+    Base class for all modifiers and clusters lists.
     """
 
-    # TODO: rework name and docstring
-    # TODO: Add checks for passed function arguments
-    # TODO: copying modifier settings
-    # TODO: proper log
-
+    # TODO: update dat docstring
     # ============================================================
     #
     #               MODIFIERS LIST METHODS NAMING
@@ -87,13 +71,10 @@ class ModifiersList(ModifiersListUtilsTrait):
     # anything to do with modifiers and operate on list in general.
     # ============================================================
 
-    # Additional info
-    _MODIFIERS_LIST_V = True
-
     def __init__(self, obj=None, *args, no_obj=None,
-                 actions=None, no_default_actions=False,
+                 no_default_actions=False,
                  **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__()
 
         if not no_obj:
             if obj is None:
@@ -103,16 +84,12 @@ class ModifiersList(ModifiersListUtilsTrait):
 
         self.__DUMMY_MODIFIERS = False
         self._modifiers_list = []
-        self._actions = []
+        self._actions = {}
         if not no_default_actions:
-            default_actions = []
-            default_actions.append(ActionDefaultRemove(self))
-            default_actions.append(ActionDefaultApply(self))
-            default_actions.append(ActionDefaultDeconstuct(self))
-            default_actions.append(ActionDefaultMove(self))
-            self._actions.extend(default_actions)
-        if actions is not None and isinstance(actions, list):
-            self._actions.extend(actions)
+            self.add_action_answer(ActionDefaultRemove(self))
+            self.add_action_answer(ActionDefaultApply(self))
+            self.add_action_answer(ActionDefaultMove(self))
+            self.add_action_answer(ActionDefaultDeconstuct(self))
 
     def __len__(self):
         return len(self._modifiers_list)
@@ -220,7 +197,7 @@ class ModifiersList(ModifiersListUtilsTrait):
             direction_2 = 'UP'
         else:
             raise ValueError(
-                    f"Direction should be either 'UP' or 'DOWN', not {direction}")
+                    "Direction should be either 'UP' or 'DOWN'")
 
         # This only used when moving actual modifiers with dry=true.
         length = len(
@@ -259,103 +236,6 @@ class ModifiersList(ModifiersListUtilsTrait):
 
         self._controller.do([x, x_2])
 
-    def deconstruct(self, cluster):
-        self._check_if_cluster_removed()
-        """
-        Deconstructs cluster on this layer.
-        """
-        logger.info(f'Deconstructing {cluster} on layer {self}')
-        x = ClustersAction('DECONSTRUCT', cluster)
-        x = ClustersCommand(x,
-                            affect_clusters=False,
-                            affect_modifiers=False,
-                            dry_clusters=False,
-                            dry_modifiers=False,
-                            )
-
-        if logger.isEnabledFor(logging.DEBUG):
-            logger.debug(f'Created {x}')
-
-        self._controller.do(x)
-
-    def ask(self, action):
-        self._check_if_cluster_removed()
-        for x in self._actions:
-            if x.action_type == action.verb:
-                return x.ask(action)
-        raise ValueError(f'No implementation for action type {action.verb}')
-
-    def do(self, action):
-        """
-        Do batch command, simple command or action of this
-        modifiers list elements.
-        """
-        self._check_if_cluster_removed()
-        if not isinstance(action, list):
-            action = [action]
-
-        # Check all elements first
-        # TODO: function for this
-        for x in action:
-            if not isinstance(x, ClustersBatchCommand)\
-                    and not isinstance(x, ClustersCommand)\
-                    and not isinstance(x, ClustersAction):
-                raise TypeError(f'Expected ClustersAction, got {type(x)}')
-
-        for x in action:
-            if isinstance(x, ClustersBatchCommand):
-                self.do_batch(x)
-            elif isinstance(x, ClustersCommand):
-                self.do_command(x)
-            elif isinstance(x, ClustersAction):
-                self.do_action(x)
-
-    def do_batch(self, batch):
-        self._check_if_cluster_removed()
-        for x in batch.commands:
-            self.do_command(x)
-
-    def do_command(self, command):
-        self._check_if_cluster_removed()
-        for x in command.actions:
-            self.do_action(x)
-
-    def do_action(self, action):
-        self._check_if_cluster_removed()
-        logger.debug(f'Cluster {self}, action is {action}')
-        for x in self._actions:
-            if x.action_type == action.verb:
-                return x.do(action)
-        raise ValueError(f'No implementation for action type {action.verb}')
-
-    """
-    This three methods checks if all action.subjects can be
-    found in this list or its clusters.
-    """
-    def _check_batch(self, batch):
-        self._check_if_cluster_removed()
-        if not isinstance(batch, ClustersBatchCommand):
-            raise TypeError
-        for x in batch.commands:
-            self._check_command(x)
-
-    def _check_command(self, command):
-        self._check_if_cluster_removed()
-        if not isinstance(command, ClustersCommand):
-            raise TypeError
-        for x in command.actions:
-            self._check_action(x)
-
-    def _check_action(self, action):
-        self._check_if_cluster_removed()
-        if not isinstance(action, ClustersAction):
-            raise TypeError
-        for x in self.get_all_clusters_and_modifiers():
-            if x is action.subject:
-                return
-        raise ValueError
-
-
     def move_to_index(self, mod, i):
         """
         Moves cluster to index.
@@ -380,41 +260,121 @@ class ModifiersList(ModifiersListUtilsTrait):
                     x -= 1
                 return True
 
+    def ask(self, action):
+        self._check_if_cluster_removed()
+        self._actions[action.verb].ask(action)
+
+    # TODO: remove
+    def do(self, action):
+        """
+        Do batch command, simple command or action on this
+        modifiers list elements.
+        """
+        self._check_if_cluster_removed()
+        if not isinstance(action, list):
+            action = [action]
+
+        # Check all elements first
+        for x in action:
+            self._check_controller_action(x)
+
+        for x in action:
+            if isinstance(x, ClustersBatchCommand):
+                raise TypeError
+                self.do_batch(x)
+            elif isinstance(x, ClustersCommand):
+                raise TypeError
+                self.do_command(x)
+            elif isinstance(x, ClustersAction):
+                self.do_action(x)
+
+    def do_batch(self, batch):
+        self._check_if_cluster_removed()
+        for x in batch.commands:
+            self.do_command(x)
+
+    def do_command(self, command):
+        self._check_if_cluster_removed()
+        for x in command.actions:
+            self.do_action(x)
+
+    def do_action(self, action):
+        self._check_if_cluster_removed()
+        logger.debug(f'Cluster {self}, action is {action}')
+        if action.subject not in self._modifiers_list:
+            layer = self.get_cluster_or_layer(action.subject)
+            layer.do_action(action)
+        else:
+            self._actions[action.verb].do(action)
+
+    def _check_controller_action(self, x):
+        """
+        This methods checks if all action.subjects can be
+        found in this list or its clusters.
+        """
+        if isinstance(x, ClustersBatchCommand):
+            self._check_batch(x)
+        elif isinstance(x, ClustersCommand):
+            self._check_command(x)
+        elif isinstance(x, ClustersAction):
+            self._check_action(x)
+        else:
+            raise TypeError
+
+    def _check_batch(self, batch):
+        self._check_if_cluster_removed()
+        if not isinstance(batch, ClustersBatchCommand):
+            raise TypeError
+        for x in batch.commands:
+            self._check_command(x)
+
+    def _check_command(self, command):
+        self._check_if_cluster_removed()
+        if not isinstance(command, ClustersCommand):
+            raise TypeError
+        for x in command.actions:
+            self._check_action(x)
+
+    def _check_action(self, action):
+        self._check_if_cluster_removed()
+        if not isinstance(action, ClustersAction):
+            raise TypeError
+        for x in self.get_all_clusters_and_modifiers():
+            if x is action.subject:
+                return
+        raise ValueError
+
+    def add_action_answer(self, action_answer):
+        """
+        Adds new ClusterActionAnswer to this cluster.
+        Replaces existing one with same action_answer.action_type.
+        """
+        if not isinstance(action_answer, ClusterActionAnswer):
+            raise TypeError
+
+        self._actions.update({action_answer.action_type: action_answer})
+        return
+
     # ==============================================
-    # This methods work on _modifiers_list's level.
+    # This methods work on _modifiers_list
     # This means that they dont differ simple or nested clusters and modifiers
     # ==============================================
-    def get_full_actual_modifiers_list(self):
+    def get_list(self):
         self._check_if_cluster_removed()
+        return self._modifiers_list
+
+    # This methods are different in clusters list.
+    def get_full_actual_modifiers_list(self):
         return self.get_list()
 
     def get_actual_full_actual_modifiers_list(self):
-        self._check_if_cluster_removed()
-        return self.get_actual_list()
-
-    def get_list(self):
-        """
-        Returns shallow copy of this layer's list.
-        Should be used instead of get_actual_list
-        when possible.
-        """
-        self._check_if_cluster_removed()
-        return self._modifiers_list
+        return self.get_list()
 
     def get_full_list(self):
         return self.get_list()
 
     def get_all_clusters_and_modifiers(self):
         return self.get_list()
-
-    def get_actual_list(self):
-        """
-        Returns reference to this layer's list.
-        Its better idea to usual get_list when possible instead
-        of this method.
-        """
-        self._check_if_cluster_removed()
-        return self._modifiers_list
 
     def get_list_in_range_not_inclusive(self, mod1, mod2):
         """
@@ -570,6 +530,7 @@ class ModifiersList(ModifiersListUtilsTrait):
         x = 1
         m_list_len = self.get_list_length()
         while x < m_list_len + 1:
+
             # y = index of modifier that should be returned
             # created on every iteration
             y = self.get_index(mod) - x
@@ -707,9 +668,8 @@ class ModifiersList(ModifiersListUtilsTrait):
         """
         self._check_if_cluster_removed()
 
-        # TODO: changed index_get to get_index
-        x = self.get_index(mod)
-        y = self.get_list_length()
+        x = self._modifiers_list.index(mod)
+        y = len(self._modifiers_list)
         if x > 0:
             return self._modifiers_list[x-1]
         else:
@@ -727,8 +687,8 @@ class ModifiersList(ModifiersListUtilsTrait):
         """
         self._check_if_cluster_removed()
 
-        x = self.get_index(mod)
-        y = self.get_list_length()
+        x = self._modifiers_list.index(mod)
+        y = len(self._modifiers_list)
         if x < (y - 1):
             return self._modifiers_list[x + 1]
         else:

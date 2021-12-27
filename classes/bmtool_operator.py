@@ -24,6 +24,9 @@ import bpy
 from ..lib.modifiers_operator import ModifiersOperator
 from ..ui.bmtool_ui import bmtool_modifier_ui_draw
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
 
 # Modal modifier operator base class
 class BMToolMod(ModifiersOperator):
@@ -545,15 +548,15 @@ class BMToolMod(ModifiersOperator):
             bpy.types.SpaceView3D.draw_handler_remove(
                     self.bmtool_ui_draw_handler, 'WINDOW')
             context.area.tag_redraw()
-            logging.info("BMTool UI is removed")
+            logger.info("BMTool UI is removed")
         self.bmtool_modifier_remove(context)
         if bpy.context.preferences.addons['bmtools'].preferences.save_clusters:
             self.m_list.save_modifiers_state()
             self.m_list.save_clusters_state()
-            logging.info("Saved modifiers and clusters.")
+            logger.info("Saved modifiers and clusters.")
         del(self.selected_objects)
         del(self.m_list)
-        logging.info("Modal operator finished")
+        logger.info("Modal operator finished")
 
     def invoke(self, context, event):
         """
@@ -587,7 +590,7 @@ class BMToolMod(ModifiersOperator):
 
         # Add UI
         if self._BMTOOL_UI:
-            logging.info("BMTool UI is created")
+            logger.info("BMTool UI is created")
             sv = bpy.types.SpaceView3D
             self.bmtool_ui_draw_handler = sv.draw_handler_add(
                     bmtool_modifier_ui_draw, (self, context),
@@ -685,7 +688,7 @@ class BMToolMod(ModifiersOperator):
         # Trigger active modifier change
         self.bmtool_modifier_update(context)
 
-        logging.info("Finished initializing operator")
+        logger.info("Finished initializing operator")
 
         self.first_x = event.mouse_x
         self.first_y = event.mouse_y
@@ -694,17 +697,17 @@ class BMToolMod(ModifiersOperator):
         return {'RUNNING_MODAL'}
 
     def display_additional_info_about_bmtool(self, context):
-        logging.debug("BMTool is created")
-        logging.debug(f"_BMTOOLM {self._BMTOOLM}")
-        logging.debug(f"_DEFAULT_M_NAME {self._DEFAULT_M_NAME}")
-        logging.debug(f"_DEFAULT_M_TYPE {self._DEFAULT_M_TYPE}")
-        logging.debug(f"_BMTOOL_DEFAULT_MODE {self._BMTOOL_DEFAULT_MODE}")
-        logging.debug(f"_BMTOOL_EDITMODE {self._BMTOOL_EDITMODE}")
-        logging.debug(f"_BMTOOL_MODIFIER_CREATE {self._BMTOOL_MODIFIER_CREATE}")
-        logging.debug(f"_BMTOOL_SINGLE_OBJECT {self._BMTOOL_SINGLE_OBJECT}")
-        logging.debug(f"_BMTOOL_UI {self._BMTOOL_UI}")
-        logging.debug(f"_BMTOOL_UI_STATUSBAR {self._BMTOOL_UI_STATUSBAR}")
-        logging.debug(f"_BMTOOL_V {self._BMTOOL_V}")
+        logger.debug("BMTool is created")
+        logger.debug(f"_BMTOOLM {self._BMTOOLM}")
+        logger.debug(f"_DEFAULT_M_NAME {self._DEFAULT_M_NAME}")
+        logger.debug(f"_DEFAULT_M_TYPE {self._DEFAULT_M_TYPE}")
+        logger.debug(f"_BMTOOL_DEFAULT_MODE {self._BMTOOL_DEFAULT_MODE}")
+        logger.debug(f"_BMTOOL_EDITMODE {self._BMTOOL_EDITMODE}")
+        logger.debug(f"_BMTOOL_MODIFIER_CREATE {self._BMTOOL_MODIFIER_CREATE}")
+        logger.debug(f"_BMTOOL_SINGLE_OBJECT {self._BMTOOL_SINGLE_OBJECT}")
+        logger.debug(f"_BMTOOL_UI {self._BMTOOL_UI}")
+        logger.debug(f"_BMTOOL_UI_STATUSBAR {self._BMTOOL_UI_STATUSBAR}")
+        logger.debug(f"_BMTOOL_V {self._BMTOOL_V}")
 
     # --------------------------------
     # Operator-specific modal method 1

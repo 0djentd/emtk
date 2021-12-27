@@ -492,8 +492,7 @@ class LayersTests(
         self.assertEqual(t, x[0: -1])
 
 
-class MovingTests(
-        ExtendedModifiersListTests, unittest.TestCase):
+class MovingTests(unittest.TestCase):
     """
     Cluster layers and complex clusters.
     """
@@ -584,6 +583,12 @@ class MovingTests(
         self.moved_cluster = self.e.get_by_index(1)
         self.moved_cluster_2 = self.e.get_by_index(2)
         self.e.move_down(self.moved_cluster)
+
+    def tearDown(self):
+        del(self.o)
+        del(self.e)
+        del(self.moved_cluster)
+        del(self.moved_cluster_2)
 
     def test_moved_cluster_up(self):
         self.assertEqual(self.moved_cluster, self.e.get_by_index(2))

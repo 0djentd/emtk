@@ -22,6 +22,7 @@ import logging
 
 from . operators.bmtoolm import BMTOOL_OT_bmtoolm
 from . operators.bmtoole import BMTOOL_OT_bmtoole
+from . operators.add_cluster_type import BMTOOL_OT_add_cluster_type_object
 from . operators.bmtoole2 import BMTOOL_OT_bmtoole2
 from . operators.bmtoolm_lite import BMTOOL_OT_bmtoolm_2
 from . utils.bmtool_preferences import BMToolPreferences
@@ -46,7 +47,8 @@ classes = [
     BMTOOL_OT_bmtoole,
     BMTOOL_OT_bmtoole2,
     BMTOOL_OT_bmtoolm_2,
-    VIEW_3D_MT_PIE_bmtools_pie_1
+    BMTOOL_OT_add_cluster_type_object,
+    VIEW_3D_MT_PIE_bmtools_pie_1,
 ]
 
 addon_keymaps = []
@@ -62,7 +64,7 @@ def register():
         km = kc.keymaps.new(name="Object Mode")
 
         kmi = km.keymap_items.new("wm.call_menu_pie", "V", "PRESS", alt=True)
-        kmi.properties.name = "BMTools_MT_PIE_bmtpie"
+        kmi.properties.name = "BMTOOLS_MT_PIE_bmtpie"
         addon_keymaps.append((km, kmi))
 
     for cls in classes:

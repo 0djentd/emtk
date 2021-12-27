@@ -727,16 +727,16 @@ class ClustersParser():
         # One of SUCCESS, POSSIBLE, FOUND or False
         iteration_result = None
 
-        if _WITH_BPY:
-            modifier_type = bpy.types.Modifier
-        elif not _WITH_BPY:
-            modifier_type = DummyBlenderModifier
-
-        for x in modifiers_to_parse:
-            logger.debug(f"{x}")
+        # if _WITH_BPY:
+        #     modifier_type = bpy.types.Modifier
+        # elif not _WITH_BPY:
+        #     modifier_type = DummyBlenderModifier
 
         if logger.isEnabledFor(logging.DEBUG):
             # Info
+            for x in modifiers_to_parse:
+                logger.debug(f"{x}")
+
             logger.debug("===================================")
             logger.debug("       CLUSTERS PARSER LOG")
             logger.debug("===================================")
@@ -760,18 +760,20 @@ class ClustersParser():
                         f"modcluster priority is {x._MODCLUSTER_PRIORITY}")
                 logger.debug(" ")
 
-        # Actual modifiers before parsing
-        old_actual_modifiers = []
+        # TODO: this doesnt works as expected
+        # idk why
+        # # Actual modifiers before parsing
+        # old_actual_modifiers = []
 
-        # Sanity checks
-        if parser_sanity_checks:
-            # Get actual modifiers before parsing for sanity check
-            for x in modifiers_to_parse:
-                if isinstance(x, modifier_type):
-                    old_actual_modifiers.append(x)
-                else:
-                    y = copy.copy(x.get_full_actual_modifiers_list())
-                    old_actual_modifiers += y
+        # # Sanity checks
+        # if parser_sanity_checks:
+        #     # Get actual modifiers before parsing for sanity check
+        #     for x in modifiers_to_parse:
+        #         if isinstance(x, modifier_type):
+        #             old_actual_modifiers.append(x)
+        #         else:
+        #             y = copy.copy(x.get_full_actual_modifiers_list())
+        #             old_actual_modifiers.extend(y)
 
         # Sequence of modifiers that currently being
         # parsed inside iteration loop
@@ -1073,36 +1075,39 @@ class ClustersParser():
                         raise ValueError(
                                 "Parse result is not a cluster list, why?")
 
-            new_actual_modifiers = []
+            # new_actual_modifiers = []
 
-            # Get actual modifiers after parsing for sanity check
-            for x in parse_result:
-                if x[0] == 'SKIP':
-                    y2 = x[1].get_full_actual_modifiers_list()
-                    y = copy.copy(y2)
-                    new_actual_modifiers += y
-                else:
-                    y = copy.copy(x[2])
-                    new_actual_modifiers += y
+            # # Get actual modifiers after parsing for sanity check
+            # for x in parse_result:
+            #     if x[0] == 'SKIP':
+            #         y2 = x[1].get_full_actual_modifiers_list()
+            #         y = copy.copy(y2)
+            #         new_actual_modifiers.extend(y)
+            #     else:
+            #         if not x[1].has_clusters():
+            #             y = copy.copy(x[2])
+            #             new_actual_modifiers.append(y)
 
-            old_modifiers_len = len(old_actual_modifiers)
-            new_modifiers_len = len(new_actual_modifiers)
+            # old_modifiers_len = len(old_actual_modifiers)
+            # new_modifiers_len = len(new_actual_modifiers)
 
-            # Modifiers count is wrong.
-            if old_modifiers_len != new_modifiers_len:
-                logger.error(
-                        "Actual modifiers count after parsing is wrong.")
-                logger.error(old_modifiers_len)
-                logger.error(new_modifiers_len)
-                e = []
-                for a_mod in old_actual_modifiers:
-                    if a_mod not in new_actual_modifiers:
-                        e.append(a_mod)
-                logger.error(f'Missing modifiers: {e}')
+            # # Modifiers count is wrong.
+            # if old_modifiers_len != new_modifiers_len:
+            #     logger.error(
+            #             "Actual modifiers count after parsing is wrong.")
+            #     logger.error(old_modifiers_len)
+            #     logger.error(new_modifiers_len)
+            #     e = []
+            #     for a_mod in old_actual_modifiers:
+            #         if a_mod not in new_actual_modifiers:
+            #             e.append(a_mod)
+            #     logger.error(f'Missing modifiers: {e}')
 
-                # TODO: this throws an error
-                # raise ValueError(
-                #         "Actual modifiers count after parsing is wrong.")
+            #     # TODO: this throws an error
+            #     # but i kinda feel like its because
+            #     # of sanity check itself
+            #     # raise ValueError(
+            #     #         "Actual modifiers count after parsing is wrong.")
 
         # Info
         if logger.isEnabledFor(logging.DEBUG):

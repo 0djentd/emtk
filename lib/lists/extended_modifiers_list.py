@@ -32,9 +32,9 @@ class ExtendedModifiersList(
                             ModifiersList
                             ):
     """
-    First layer of clusters list with methods for editing, adding, removing,
+    Clusters list with methods for editing, adding, removing,
     sorting and parsing clusters or modifiers on multiple clusters layers of
-    same Blender object.
+    the same Blender object.
     """
 
     def __init__(self, *args, **kwargs):

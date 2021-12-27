@@ -16,11 +16,17 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-# import copy
+import logging
 import json
-from .modifiers_cluster import ModifiersCluster
-from .clusters_layer import ClustersLayer
-from .cluster_trait import ClusterTrait
+
+import bpy
+
+from ..clusters.modifiers_cluster import ModifiersCluster
+from ..clusters.clusters_layer import ClustersLayer
+from ..clusters.cluster_trait import ClusterTrait
+
+
+logger = logging.getLogger(__package__)
 
 
 def deserialize_cluster_type(serialized_cluster_type, *args, **kwargs):
@@ -77,23 +83,90 @@ def serialize_cluster_type(cluster_type):
         raise TypeError
     return cluster_type.serialize_this_cluster_type()
 
+def get_cluster_types_from_settings(addon_name, group):
+    """
+    Returns list of deserialized but not unwrapped
+    cluster types from addon settings.
+    """
+    if not isinstance(addon_name, str):
+        raise TypeError
+    if not isinstance(group, str) and not isinstance(group, int):
+        raise TypeError
 
-def get_types_from_object_props(self, obj, addon_name, prop_name):
-    """
-    Returns cluster types from object prop.
-    """
-    return
+    cluster_types = []
+    result = []
+    c = bpy.context.preferences.addons[addon_name].preferences.cluster_types
+    for x in c:
+        cluster_types.append(deserialize_cluster_type(x))
+    for x in cluster_types:
+        if x['group'] == group:
+            result.append(x)
+    return result
 
 
-def get_types_from_scene_prop(self, obj, addon_name, prop_name):
+def get_cluster_types_from_object(obj, addon_name, group,
+                                  *args, dont_add_prop=True):
     """
-    Returns cluster types from scene prop.
+    Returns list of deserialized but not unwrapped
+    cluster types from addon settings.
     """
-    return
+    if not isinstance(addon_name, str):
+        raise TypeError
+    if not isinstance(group, str) and not isinstance(group, int):
+        raise TypeError
+
+    cluster_types = []
+    result = []
+    prop_name = f'{addon_name}{group}'
+
+    try:
+        c = getattr(obj, prop_name)
+    except KeyError:
+        if not dont_add_prop:
+            setattr(obj, prop_name, json.dumps([]))
+        return []
+
+    for x in c:
+        cluster_types.append(deserialize_cluster_type(x))
+    for x in cluster_types:
+        if x['group'] == group:
+            result.append(x)
+    return result
 
 
-def get_types_from_addon_prefs(self, obj, addon_name, prop_name):
+def save_cluster_type_to_object(
+                                obj,
+                                addon_name,
+                                group,
+                                deserialized_cluster_type_to_add,
+                                ):
     """
-    Returns cluster types from addon prefs.
+    Saves cluster type to object props.
     """
+    if not isinstance(obj, bpy.types.Object):
+        raise TypeError
+    if not isinstance(deserialized_cluster_type_to_add, str):
+        raise TypeError
+    if len(deserialized_cluster_type_to_add) == 0:
+        raise ValueError
+
+    deserialized_cluster_types = get_cluster_types_from_object(
+            obj, addon_name, group, dont_add_prop=False)
+
+    duplicates = []
+
+    for x in deserialized_cluster_types:
+        if deserialized_cluster_type_to_add.cluster_name == x.cluster_name:
+            duplicates.append(x)
+
+    for x in duplicates:
+        deserialized_cluster_types.remove(x)
+
+    deserialized_cluster_types.append(
+            deserialized_cluster_type_to_add)
+
+    serialized_cluster_types = json.dumps(
+            deserialized_cluster_types)
+
+    setattr(obj, f'{addon_name}{group}', serialized_cluster_types)
     return

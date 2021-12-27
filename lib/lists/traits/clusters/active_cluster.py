@@ -234,7 +234,7 @@ class ActiveClusterTrait():
         """
         clusters = copy.copy(self.get_cluster_selection())
         if direction == 'DOWN':
-            clusters.revert()
+            clusters.reverse()
         for x in clusters:
             self.deconstruct(x)
 

@@ -51,58 +51,27 @@ class ClustersController():
         """
         Finds actions required for action, command or a batch, creates
         commands in a batch, solves and performs them.
-
-        This methods should not be used, if you need any control
-        over ClustersActions that would be performed.
-
-        Returns None.
         """
-        logger.info(f'Solving and applying {command}')
-        batch = self.solve(command)
-        self.apply(batch)
-
-    def solve(self, command):
-        """
-        Solves ClustersBatchCommand, ClustersCommand
-        or ClustersAction.
-
-        Returns solved ClustersBatchCommand.
-        """
-        logger.info(f'Solving {command}')
-        if not isinstance(command, ClustersBatchCommand):
-            if not isinstance(command, ClustersCommand):
-                if not isinstance(command, ClustersAction):
-                    raise TypeError
-                else:
-                    batch = ClustersBatchCommand(
-                            ClustersCommand(command))
-            else:
-                batch = ClustersBatchCommand(command)
+        if not isinstance(command, list):
+            commands = [command]
         else:
-            batch = command
+            commands = command
 
-        self._solve_batch(batch)
-
-        return batch
-
-    def apply(self, batch):
-        """
-        Performs actions stored in ClustersBatchCommand,
-        ClustersCommand or ClustersAction
-        for this controller's ExtendedModifiersList.
-
-        Returns None.
-        """
-        logger.info(f'Applying {batch}')
-        if not isinstance(batch, ClustersBatchCommand):
-            if not isinstance(batch, ClustersCommand):
-                if not isinstance(batch, ClustersAction):
-                    raise TypeError
+        for command in commands:
+            if not isinstance(command, ClustersBatchCommand):
+                if not isinstance(command, ClustersCommand):
+                    if not isinstance(command, ClustersAction):
+                        raise TypeError
+                    else:
+                        batch = ClustersBatchCommand(
+                                ClustersCommand(command))
                 else:
-                    self._apply_action(batch)
+                    batch = ClustersBatchCommand(command)
             else:
-                self._apply_command(batch)
-        else:
+                batch = command
+
+            self._solve_batch(batch)
+
             self._apply_batch(batch)
 
     # ==============

@@ -19,6 +19,7 @@
 from bpy.types import Operator
 
 from ..lib.modifiers_operator import ModifiersOperator
+from ..lib.utils.modifiers import get_modifier_state
 
 
 class BMTOOL_OT_bmtoole2(ModifiersOperator, Operator):
@@ -70,6 +71,7 @@ class BMTOOL_OT_bmtoole2(ModifiersOperator, Operator):
 
         self.m_list._modifiers_list[0].set_this_cluster_visibility(
                 (True, False, True, False))
+        print(get_modifier_state(self.m_list._object.modifiers['Bevel']))
         del(self.selected_objects)
         del(self.m_list)
         return {'FINISHED'}
