@@ -19,7 +19,7 @@
 import unittest
 from lib.clusters.modifiers_cluster import ModifiersCluster
 from lib.clusters.clusters_layer import ClustersLayer
-from lib.clusters.utils import serialize_cluster_type, deserialize_cluster_type
+from lib.utils.clusters import serialize_cluster_type, deserialize_cluster_type
 
 
 class ClustersSerializationTests():

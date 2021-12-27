@@ -19,7 +19,12 @@
 import logging
 import json
 
-import bpy
+try:
+    import bpy
+    _WITH_BPY = True
+except ModuleNotFoundError:
+    # from ....dummy_modifiers import DummyBlenderModifier
+    _WITH_BPY = False
 
 from ..clusters.modifiers_cluster import ModifiersCluster
 from ..clusters.clusters_layer import ClustersLayer
@@ -83,6 +88,7 @@ def serialize_cluster_type(cluster_type):
         raise TypeError
     return cluster_type.serialize_this_cluster_type()
 
+
 def get_cluster_types_from_settings(addon_name, group):
     """
     Returns list of deserialized but not unwrapped
@@ -95,7 +101,11 @@ def get_cluster_types_from_settings(addon_name, group):
 
     cluster_types = []
     result = []
-    c = bpy.context.preferences.addons[addon_name].preferences.cluster_types
+    if _WITH_BPY:
+        c = bpy.context.preferences.addons[
+                addon_name].preferences.cluster_types
+    else:
+        raise TypeError
     for x in c:
         cluster_types.append(deserialize_cluster_type(x))
     for x in cluster_types:
@@ -143,7 +153,10 @@ def save_cluster_type_to_object(
     """
     Saves cluster type to object props.
     """
-    if not isinstance(obj, bpy.types.Object):
+    if _WITH_BPY:
+        if not isinstance(obj, bpy.types.Object):
+            raise TypeError
+    else:
         raise TypeError
     if not isinstance(deserialized_cluster_type_to_add, str):
         raise TypeError
