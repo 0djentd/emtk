@@ -113,6 +113,7 @@ class ModifiersOperator():
             """
 
             clusters = get_cluster_types_from_settings('bmtools')
+            clusters.extend(get_cluster_types_from_obj(obj, 'bmtools')
             logger.debug(f'Found {clusters} in addon settings.')
         else:
             clusters = self._default_cluster_types()

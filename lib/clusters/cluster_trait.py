@@ -818,13 +818,16 @@ class ClusterTrait():
         return True
 
     def serialize_this_cluster_type(self):
+        result = json.dumps(self.get_this_cluster_definition())
+        return result
+
+    def get_this_cluster_definition(self):
         x = copy.copy(self._cluster_definition)
 
+        # TODO: use some attribute instead
         if self.has_clusters():
             c = 'ClustersLayer'
         else:
             c = 'ModifiersCluster'
-
         x.update({'cluster_trait_subclass': f'{c}'})
-        result = json.dumps(x)
-        return result
+        return x

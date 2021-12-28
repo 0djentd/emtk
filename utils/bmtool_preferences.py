@@ -63,7 +63,7 @@ class BMToolPreferences(AddonPreferences):
 
     cluster_types: StringProperty(
             name="ClusterTypes",
-            default=""
+            default="[]"
             )
 
     def draw(self, context):
