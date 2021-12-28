@@ -180,11 +180,11 @@ class ClusterTrait():
             if not isinstance(y, str):
                 raise TypeError
 
-        x = self._additional_check_cluster_definition(x)
+        # x = self._additional_check_cluster_definition(x)
         return x
 
-    def _additional_check_cluster_definition(self, cluster_type_def):
-        return cluster_type_def
+    # def _additional_check_cluster_definition(self, cluster_type_def):
+    #     return cluster_type_def
 
     # def __repr__(self):
     #     return self.__str__()
