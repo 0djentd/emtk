@@ -359,6 +359,7 @@ class ModifiersList():
     # This means that they dont differ simple or nested clusters and modifiers
     # ==============================================
     def get_list(self):
+        """Returns list of objects"""
         self._check_if_cluster_removed()
         return self._modifiers_list
 
@@ -376,10 +377,7 @@ class ModifiersList():
         return self.get_list()
 
     def get_list_in_range_not_inclusive(self, mod1, mod2):
-        """
-        Returns list of objects between two objects.
-        Not inclusive.
-        """
+        """Returns list of objects between two objects. Not inclusive."""
         self._check_if_cluster_removed()
 
         if (mod1 is None) or (mod2 is None):
@@ -404,8 +402,7 @@ class ModifiersList():
 
     def get_list_in_range_inclusive(self, mod1, mod2):
         """
-        Returns list of objects between two objects.
-        Inclusive.
+        Returns list of objects between two objects. Inclusive.
         If two references of same object, returns list
         with one object.
         """
@@ -427,16 +424,12 @@ class ModifiersList():
             return e
 
     def get_list_length(self):
-        """
-        Returns length of list of objects.
-        """
+        """Returns length of list of objects."""
         self._check_if_cluster_removed()
         return len(self._modifiers_list)
 
     def get_list_by_type(self, m_type):
-        """
-        Returns list of m_type objects.
-        """
+        """Returns list of m_type objects."""
         self._check_if_cluster_removed()
         y = []
         for x in self._modifiers_list:
@@ -445,30 +438,22 @@ class ModifiersList():
         return y
 
     def get_by_index(self, i):
-        """
-        Returns object by index.
-        """
+        """Returns object by index."""
         self._check_if_cluster_removed()
         return self._modifiers_list[i]
 
     def get_index(self, mod):
-        """
-        Returns index of object.
-        """
+        """Returns index of object."""
         self._check_if_cluster_removed()
         return self._modifiers_list.index(mod)
 
     def get_first(self):
-        """
-        Returns first object.
-        """
+        """Returns first object."""
         self._check_if_cluster_removed()
         return self._modifiers_list[0]
 
     def get_last(self):
-        """
-        Returns last object.
-        """
+        """Returns last object."""
         self._check_if_cluster_removed()
         return self._modifiers_list[-1]
 
@@ -476,31 +461,20 @@ class ModifiersList():
     # INFO ABOUT LIST
     # ===============
     def has_modifier(self, mod):
-        """
-        Returns True, if found object in list.
-        Can return False.
-        """
+        """Returns True, if found object in list."""
         if mod in self.get_list():
             return True
         return False
 
     def has_modifier_by_type(self, m_type):
-        """
-        Returns True if found any mod of m_type.
-        Can return False.
-        """
-
+        """Returns True if found any mod of m_type."""
         for mod in self._modifiers_list:
             if mod.type == m_type:
                 return True
         return False
 
     def has_modifier_by_name(self, m_name):
-        """
-        Returns True if found any objects with m_name.
-        Can return False.
-        """
-
+        """Returns True if found any objects with m_name."""
         for mod in self._modifiers_list:
             if mod.name == m_name:
                 return True
