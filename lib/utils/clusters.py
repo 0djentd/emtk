@@ -35,6 +35,9 @@ logger = logging.getLogger(__package__)
 logger.setLevel(logging.DEBUG)
 
 
+# TODO: Save cluster definitions serialized list of serialized dicts.
+# This will allow to skip dict if it raises any errors.
+
 def deserialize_cluster_type(cluster_type, *args, **kwargs):
     """
     Takes string with info about cluster type or dict as argument.
@@ -104,7 +107,6 @@ def get_cluster_types_from_settings(addon_name, group=None):
     """
     Returns list of cluster types from addon settings.
     """
-
     logger.info(f'Trying to get cluster types from settings for {addon_name}')
 
     c = _get_cluster_types_definitions_from_settings(addon_name)
@@ -125,11 +127,23 @@ def save_cluster_type_to_settings(
     """
     Saves cluster type to addon setting.
     """
-
     cluster_definition = cluster_type.serialize_this_cluster_type()
     cluster_definition = json.loads(cluster_definition)
     _save_cluster_type_definition_to_settings(
             cluster_definition, addon_name, group)
+
+
+def remove_cluster_type_from_settings(
+                                      cluster_type,
+                                      addon_name,
+                                      group=None,
+                                      ):
+    """
+    Removes cluster type from settings.
+    """
+    t = serialize_cluster_type(cluster_type)
+    t = json.loads(t)
+    remove_cluster_type_from_settings(t, addon_name, group)
 
 
 def _save_cluster_type_definition_to_settings(cluster, addon_name, group):
@@ -175,6 +189,34 @@ def _get_cluster_types_definitions_from_settings(addon_name):
     if not isinstance(c, list):
         raise TypeError
     return c
+
+
+def _remove_cluster_type_definition_from_settings(
+                                                  cluster_type,
+                                                  addon_name,
+                                                  group=None,
+                                                  ):
+    if not isinstance(cluster_type, dict):
+        raise TypeError
+    if not isinstance(addon_name, str):
+        raise TypeError
+    if not isinstance(group, str) and group is not None:
+        raise TypeError
+
+    remove = []
+    t = _get_cluster_types_definitions_from_settings(addon_name)
+
+    if group is not None:
+        t = _filter_by_attr(t, 'group', group)
+
+    for x in t:
+        if x == cluster_type:
+            remove.append(x)
+
+    for x in remove:
+        t.remove(x)
+
+    bpy.context.preferences.addons[addon_name].preferences.cluster_types = t
 
 
 # ===================
@@ -263,16 +305,16 @@ def _get_cluster_types_definitions_from_settings(addon_name):
 
 # TODO: remove type checks
 # Utils
-def _replace_cluster_type(cluster_types, cluster_type):
-    if not isinstance(cluster_types, list):
-        raise TypeError(f'Expected list, got {type(cluster_types)}')
-    for x in cluster_types:
+def _replace_cluster_type(definitions, cluster_type):
+    if not isinstance(definitions, list):
+        raise TypeError(f'Expected list, got {type(definitions)}')
+    for x in definitions:
         if not isinstance(x, dict):
             raise TypeError(f'Expected dict, got {type(x)}')
     if not isinstance(cluster_type, dict):
-        raise TypeError(f'Expected list, got {type(cluster_types)}')
+        raise TypeError(f'Expected list, got {type(definitions)}')
 
-    clusters = cluster_types[:]
+    clusters = definitions[:]
     cluster = cluster_type
     remove = []
     for x in clusters:
@@ -288,17 +330,17 @@ def _replace_cluster_type(cluster_types, cluster_type):
     return clusters
 
 
-def _filter_by_attr(cluster_types, attr_name, value):
-    if not isinstance(cluster_types, list):
-        raise TypeError(f'Expected list, got {type(cluster_types)}')
-    for x in cluster_types:
+def _filter_by_attr(definitions, attr_name, value):
+    if not isinstance(definitions, list):
+        raise TypeError(f'Expected list, got {type(definitions)}')
+    for x in definitions:
         if not isinstance(x, dict):
             raise TypeError(f'Expected dict, got {type(x)}')
     if not isinstance(attr_name, str):
         raise TypeError(f'Expected str, got {type(attr_name)}')
 
     result = []
-    for x in cluster_types:
+    for x in definitions:
         if x[attr_name] == value:
             result.append(x)
     return result

@@ -33,8 +33,10 @@ logger.setLevel(logging.INFO)
 
 def get_modifier_state(modifier):
     """
-    Returns dict with info about modifier's properties.
+    Returns dict with modifier's properties that can be
+    serialized.
     """
+
     if _WITH_BPY:
         if not isinstance(modifier, bpy.types.Modifier):
             raise TypeError
@@ -70,7 +72,7 @@ def get_modifier_state(modifier):
 
 def restore_modifier_state(modifier, modifier_state):
     """
-    Restores modifier state.
+    Restores modifier state from dict.
     """
     logger.info(f'Restoring {modifier_state} for {modifier}')
     if _WITH_BPY:
