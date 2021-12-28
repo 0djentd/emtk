@@ -17,17 +17,14 @@
 # ##### END GPL LICENSE BLOCK #####
 
 import logging
-import json
 
 from .lists.extended_modifiers_list import ExtendedModifiersList
 
 from .clusters.cluster_trait import ClusterTrait
 from .clusters.modifiers_cluster import ModifiersCluster
 from .clusters.clusters_layer import ClustersLayer
-from .clusters.default_modifier_cluster import DefaultModifierCluster
 
 from .utils.clusters import get_cluster_types_from_settings
-from .utils.clusters import save_cluster_type_to_settings
 
 try:
     import bpy
@@ -45,13 +42,6 @@ class ModifiersOperator():
     Have methods for selecting objects in view layer,
     switching active object, selecting objects by properties.
     """
-
-    # Reference to active object's ModifierList
-    # m_list
-
-    # Selected objects is a list of ModifierList objects for all
-    # selected objects, including active object.
-    # selected_objects = None
 
     def create_objects_modifiers_lists(self, context,
                                        cluster_types=None,
@@ -87,11 +77,17 @@ class ModifiersOperator():
         logger.info("Trying to create modifier lists")
         logger.info("================================")
 
-        if len(context.view_layer.objects.selected) != 0:
-            self.selected_objects = []
+        if len(context.view_layer.objects.selected) == 0:
+            return False
 
-            # Available cluster types
+        self.selected_objects = []
+
+        if _WITH_BPY:
             """
+            =======================
+            Available cluster types
+            =======================
+
             How this thing should work:
             Cluster types can be stroed in a few different ways.
 
@@ -115,38 +111,26 @@ class ModifiersOperator():
             Its also possible to save it to text file.
             This can be kinda useful, but idk.
             """
-            if _WITH_BPY:
-                clusters = self._default_cluster_types()
-                logger.debug(clusters)
-                for x in clusters:
-                    logger.debug(x)
-                    save_cluster_type_to_settings(x, 'bmtools')
-                clusters = get_cluster_types_from_settings('bmtools')
-                logger.debug(clusters)
-            else:
-                clusters = self._default_cluster_types()
-                logger.debug(clusters)
 
-            for obj in context.view_layer.objects.selected:
-                # Create extended modifiers list and initialize it for obj
-                obj_mod_list = ExtendedModifiersList(
-                        obj, cluster_types=clusters)
-
-                # Create modifiers list for object and parse it
-                result = obj_mod_list.create_modifiers_list(obj)
-                if result is False or result is None:
-                    return False
-
-                # Add modifiers list references
-                self.selected_objects.append(obj_mod_list)
-
-                # Create active object's list reference
-                if obj == context.view_layer.objects.active:
-                    self.m_list = obj_mod_list
-            return True
+            clusters = get_cluster_types_from_settings('bmtools')
+            logger.debug(f'Found {clusters} in addon settings.')
         else:
-            # for finishing modal operators
-            return False
+            clusters = self._default_cluster_types()
+            logger.debug(clusters)
+
+        # Create extended modifiers lists and initialize
+        # it for selected objects
+        for obj in context.view_layer.objects.selected:
+            obj_mod_list = ExtendedModifiersList(
+                    obj, cluster_types=clusters)
+            if not obj_mod_list.create_modifiers_list(obj):
+                return False
+
+            # Add modifiers list references
+            self.selected_objects.append(obj_mod_list)
+            if obj == context.view_layer.objects.active:
+                self.m_list = obj_mod_list
+        return True
 
     def select_object(self, context, obj):
         """
@@ -202,6 +186,9 @@ class ModifiersOperator():
         self.update_object_list(context)
 
     def _default_cluster_types(self):
+        """
+        Some cluster types to add to addon settings or use without bpy.
+        """
         clusters = []
         cluster = ModifiersCluster(
                                    cluster_name='Beveled Boolean',

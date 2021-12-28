@@ -32,19 +32,27 @@ from ..clusters.cluster_trait import ClusterTrait
 
 
 logger = logging.getLogger(__package__)
+logger.setLevel(logging.DEBUG)
 
 
-def deserialize_cluster_type(serialized_cluster_type, *args, **kwargs):
+def deserialize_cluster_type(cluster_type, *args, **kwargs):
     """
-    Takes string with info about cluster type as argument.
+    Takes string with info about cluster type or dict as argument.
 
     Returns cluster type instance.
     """
-    x = json.loads(serialized_cluster_type)
+    if not isinstance(cluster_type, str):
+        raise TypeError(f'Expected str, not {type(cluster_type)}')
+    return deserialize_cluster_type_definition(
+            json.loads(cluster_type))
 
-    if not isinstance(x, dict):
-        t = type(serialized_cluster_type)
-        raise TypeError(f'Serialized cluster type should be dict, not {t}')
+
+def deserialize_cluster_type_definition(cluster_type_definition,
+                                        *args, **kwargs):
+    if not isinstance(cluster_type_definition, dict):
+        raise TypeError(f'Expected dict, not {type(cluster_type_definition)}')
+
+    x = cluster_type_definition
 
     if x['cluster_trait_subclass'] == 'ModifiersCluster':
         result = ModifiersCluster(
@@ -85,7 +93,7 @@ def serialize_cluster_type(cluster_type):
     through deserialize_cluster_type.
     """
     if not isinstance(cluster_type, ClusterTrait):
-        raise TypeError
+        raise TypeError(f'Expected ClusterTrait, not {type(cluster_type)}')
     return cluster_type.serialize_this_cluster_type()
 
 
@@ -97,11 +105,15 @@ def get_cluster_types_from_settings(addon_name, group=None):
     Returns list of cluster types from addon settings.
     """
 
+    logger.info(f'Trying to get cluster types from settings for {addon_name}')
+
     c = _get_cluster_types_definitions_from_settings(addon_name)
-    c = _filter_by_group(c, group)
+    c = _filter_by_attr(c, 'group', group)
     result = []
-    for x in result:
-        result.append(deserialize_cluster_type(c))
+    for x in c:
+        y = deserialize_cluster_type_definition(x)
+        logger.info(f'Deserialized {x} as {y}')
+        result.append(y)
     return result
 
 
@@ -124,13 +136,15 @@ def _save_cluster_type_definition_to_settings(cluster, addon_name, group):
     """
     Saves cluster type definition to addon settings.
     """
-    _check_cluster_definition(cluster)
+    logger.info(f'Saving {cluster} to {addon_name} settings, group {group}')
 
     # Get clusters that are already in settings.
     c = _get_cluster_types_definitions_from_settings(addon_name)
-    c = _filter_by_group(c, group)
+    logger.debug(f'Found types: {c}')
+    c = _filter_by_attr(c, 'group', group)
     cluster['group'] = group
     c = _replace_cluster_type(c, cluster)
+    logger.debug(f'Types after adding cluster type: {c}')
 
     # Save to settings
     serialized_cluster_types = json.dumps(c)
@@ -140,38 +154,27 @@ def _save_cluster_type_definition_to_settings(cluster, addon_name, group):
 
 def _get_cluster_types_definitions_from_settings(addon_name):
     """
-    Returns cluster type definitions from addon settings.
+    Returns list of cluster type definitions from addon settings.
     """
     if not isinstance(addon_name, str):
         raise TypeError
+
+    logger.debug(f'Trying to get clusters definitions for {addon_name}')
 
     if _WITH_BPY:
         c = bpy.context.preferences.addons[
                 addon_name].preferences.cluster_types
         if c == '':
             c = []
+            logger.error('No cluster types found in settings')
         else:
             c = json.loads(c)
+            logger.debug(f'Found {c} in addon settings')
     else:
         raise TypeError
-    return c
-
-
-def _check_cluster_definition(cluster_definition):
-    """
-    Raises error if cluster definition is not usable.
-    """
-    if not isinstance(cluster_definition, dict):
+    if not isinstance(c, list):
         raise TypeError
-    z = ['name',
-         'type',
-         'by_type',
-         'by_name',
-         'priority',
-         'dynamic']
-    for x in z:
-        if x not in cluster_definition:
-            raise ValueError
+    return c
 
 
 # ===================
@@ -258,8 +261,17 @@ def _check_cluster_definition(cluster_definition):
 #     return
 
 
+# TODO: remove type checks
 # Utils
 def _replace_cluster_type(cluster_types, cluster_type):
+    if not isinstance(cluster_types, list):
+        raise TypeError(f'Expected list, got {type(cluster_types)}')
+    for x in cluster_types:
+        if not isinstance(x, dict):
+            raise TypeError(f'Expected dict, got {type(x)}')
+    if not isinstance(cluster_type, dict):
+        raise TypeError(f'Expected list, got {type(cluster_types)}')
+
     clusters = cluster_types[:]
     cluster = cluster_type
     remove = []
@@ -276,20 +288,17 @@ def _replace_cluster_type(cluster_types, cluster_type):
     return clusters
 
 
-def _filter_by_group(cluster_types, group=None):
+def _filter_by_attr(cluster_types, attr_name, value):
     if not isinstance(cluster_types, list):
         raise TypeError(f'Expected list, got {type(cluster_types)}')
     for x in cluster_types:
         if not isinstance(x, dict):
-            raise TypeError
+            raise TypeError(f'Expected dict, got {type(x)}')
+    if not isinstance(attr_name, str):
+        raise TypeError(f'Expected str, got {type(attr_name)}')
 
-    if group is None:
-        return cluster_types[:]
-    elif not isinstance(group, str):
-        raise TypeError
-
-    clusters = []
+    result = []
     for x in cluster_types:
-        if x['group'] == group:
-            clusters.append(x)
-    return clusters
+        if x[attr_name] == value:
+            result.append(x)
+    return result
