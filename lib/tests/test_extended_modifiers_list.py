@@ -467,7 +467,6 @@ class LayersTests(
         clusters.append(cluster)
 
         self.e = ExtendedModifiersList(self.o, cluster_types=clusters)
-        print(self.e)
 
     def test_first_cluster_is_double_bevel(self):
         self.assertEqual(self.e.get_first().type, 'BEVEL_CLUSTER')

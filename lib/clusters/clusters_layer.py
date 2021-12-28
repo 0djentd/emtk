@@ -32,10 +32,10 @@ except ModuleNotFoundError:
 
 
 class ClustersLayer(
-                    ClusterTrait,
                     ActiveClusterTrait,
                     SortableClustersListTrait,
                     ClustersListTrait,
+                    ClusterTrait,
                     ModifiersList
                     ):
 
@@ -45,6 +45,3 @@ class ClustersLayer(
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-    def has_clusters(self):
-        return True
