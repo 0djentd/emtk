@@ -111,7 +111,8 @@ class ModifiersOperator():
             cluster = DefaultModifierCluster()
             clusters.append(cluster)
 
-            cluster = ModifiersCluster(cluster_name='Beveled Boolean',
+            cluster = ModifiersCluster(
+                                       cluster_name='Beveled Boolean',
                                        cluster_type='BEVELED_BOOLEAN',
                                        modifiers_by_type=[
                                            ['BOOLEAN'], ['BEVEL']],
@@ -121,7 +122,8 @@ class ModifiersOperator():
                                        )
             clusters.append(cluster)
 
-            cluster = ModifiersCluster(cluster_name='Triple Bevel',
+            cluster = ModifiersCluster(None,
+                                       cluster_name='Triple Bevel',
                                        cluster_type='TRIPLE_BEVEL',
                                        modifiers_by_type=[
                                            ['BEVEL'], ['BEVEL'], ['BEVEL']],
@@ -132,7 +134,8 @@ class ModifiersOperator():
                                        )
             clusters.append(cluster)
 
-            cluster = ClustersLayer(cluster_name='Double Triple Bevel Cluster',
+            cluster = ClustersLayer(None,
+                                    cluster_name='Double Triple Bevel Cluster',
                                     cluster_type='BEVEL_CLUSTER',
                                     modifiers_by_type=[
                                         ['TRIPLE_BEVEL'], ['TRIPLE_BEVEL']],

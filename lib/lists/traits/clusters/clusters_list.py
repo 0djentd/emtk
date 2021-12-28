@@ -49,6 +49,9 @@ class ClustersListTrait():
     def _check_if_cluster_removed(self):
         pass
 
+    def has_clusters(self):
+        return True
+
     # ====================
     # Actions
     # ====================

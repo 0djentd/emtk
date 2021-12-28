@@ -26,8 +26,6 @@ except ModuleNotFoundError:
     from ..dummy_modifiers import DummyBlenderModifier
     _WITH_BPY = False
 
-# from ..controller.actions import ClustersAction, ClusterRequest
-
 
 class ClusterTrait():
     """
@@ -35,171 +33,72 @@ class ClusterTrait():
     cluster used in ClustersList.
     """
 
-    def __init__(self, *args,
+    def __init__(self,
+                 *args,
+                 cluster_definition=None,
                  cluster_name=None,
                  cluster_type=None,
                  modifiers_by_type=None,
-
-                 # Arguments that can be skipped
                  modifiers_by_name=None,
                  cluster_tags=None,
                  cluster_priority=None,
                  cluster_is_sane=None,
+                 cluster_is_kinda_sane=None,
+                 cluster_dynamic=None,
                  cluster_createable=None,
-                 cluster_initialized=None,
                  dont_define_cluster=None,
                  **kwargs
                  ):
 
         super().__init__(no_obj=True, *args, **kwargs)
 
-        # ===============================================================
-        # This is variables that should be defined in ModifiersCluster type.
-        # ===============================================================
+        if cluster_definition is None:
+            cluster_definition = {}
+        elif not isinstance(cluster_definition, dict):
+            raise TypeError
 
-        if dont_define_cluster:
-            x = {
-                 # Name that should be returned by default to ModifiersList
-                 'name': None,
+        # Replace dict values with kw, if specified.
+        if cluster_name is not None\
+                or 'name' not in cluster_definition:
+            cluster_definition['name'] = cluster_name
+        if cluster_type is not None\
+                or 'type' not in cluster_definition:
+            cluster_definition['type'] = cluster_type
+        if modifiers_by_type is not None\
+                or 'by_type' not in cluster_definition:
+            cluster_definition['by_type'] = modifiers_by_type
+        if modifiers_by_name is not None\
+                or 'by_name' not in cluster_definition:
+            cluster_definition['by_name'] = modifiers_by_name
+        if cluster_tags is not None\
+                or 'tags' not in cluster_definition:
+            cluster_definition['tags'] = cluster_tags
+        if cluster_priority is not None\
+                or 'priority' not in cluster_definition:
+            cluster_definition['priority'] = cluster_priority
+        if cluster_is_sane is not None\
+                or 'sane' not in cluster_definition:
+            cluster_definition['sane'] = cluster_is_sane
+        if cluster_is_kinda_sane is not None\
+                or 'kinda_sane' not in cluster_definition:
+            cluster_definition['kinda_sane'] = cluster_is_kinda_sane
+        if cluster_dynamic is not None\
+                or 'dynamic' not in cluster_definition:
+            cluster_definition['dynamic'] = cluster_dynamic
+        if cluster_createable is not None\
+                or 'createable' not in cluster_definition:
+            cluster_definition['createable'] = cluster_createable
 
-                 # Type that should be returned to ModifiersList
-                 'type': None,
+        # Check dict.
+        self._cluster_definition = self._check_cluster_defenition(
+                cluster_definition)
 
-                 # Priority interpreted by parser
-                 'priority': None,
-
-                 # ModifiersCluster tags
-                 'default_tags': [],
-
-                 # List of lists of possible modifier types that this
-                 # ModifiersCluster should consists of
-                 # Takes modifier order into consideration
-                 # If not at index 0, can be 'ANY'
-                 'by_type': [],
-
-                 # List of lists of possible names for every modifier
-                 # in _MODCLUSTER_MODIFIERS_BY_TYPE
-                 # Takes modifier order into consideration
-                 # Can be 'ANY'
-                 'by_name': [],
-
-                 # Can cluster's modifiers list be changed
-                 # after initialization?
-                 'dynamic': None,
-
-                 # Can this cluster be created?
-                 # In other words, can its _MODIFIERS_BY_TYPE be used
-                 # to create new modifiers on object.
-                 'createable': None,
-
-                 # Force skip cluster sanity check.
-                 # Should be False.
-                 'sane': None,
-
-                 # Dont throw an error when checking cluster sanity
-                 # TODO: what is dat
-                 'kinda_sane': None,
-                 }
-
-            self._cluster_definition = x
-
-        elif not dont_define_cluster:
-            self._cluster_definition = {}
-
-            # Set cluster type name.
-            if isinstance(cluster_name, str):
-                if len(cluster_name) == 0:
-                    raise ValueError
-                self._cluster_definition['name'] = cluster_name
-            else:
-                raise TypeError
-
-            # Set cluster type that will be returned to ClustersList.
-            if isinstance(cluster_type, str):
-                if len(cluster_type) == 0:
-                    raise ValueError
-                self._cluster_definition['type'] = cluster_type
-            else:
-                raise TypeError
-
-            # Set cluster type default tags.
-            if isinstance(cluster_tags, list):
-                for x in cluster_tags:
-                    if not isinstance(x, str):
-                        raise TypeError
-                self._cluster_definition['tags'] = cluster_tags
-            elif cluster_tags is None:
-                self._cluster_definition['tags'] = []
-            else:
-                raise TypeError
-
-            # Set cluster type modifiers by type.
-            if isinstance(modifiers_by_type, list):
-                for x in modifiers_by_type:
-                    if not isinstance(x, str):
-                        if isinstance(x, list):
-                            for y in x:
-                                if not isinstance(y, str):
-                                    raise TypeError
-                        else:
-                            raise TypeError
-                self._cluster_definition['by_type'] = modifiers_by_type
-            else:
-                raise TypeError
-
-            # Set cluster type modifiers by names.
-            if isinstance(modifiers_by_name, list):
-                for x in modifiers_by_name:
-                    if not isinstance(x, str):
-                        if isinstance(x, list):
-                            for y in x:
-                                if not isinstance(y, str):
-                                    raise TypeError
-                        else:
-                            raise TypeError
-                self._cluster_definition['by_name']\
-                    = modifiers_by_name
-            elif modifiers_by_name is None:
-                self._cluster_definition['by_name'] = []
-                for x in self._cluster_definition['by_type']:
-                    self._cluster_definition['by_name'].append('ANY')
-            else:
-                raise TypeError
-
-            # Set cluster priority for parser.
-            if isinstance(cluster_priority, int):
-                self._cluster_definition['priority'] = cluster_priority
-            elif cluster_priority is None:
-                self._cluster_definition['priority'] = 0
-            else:
-                raise TypeError
-
-            # Allow cluster to skip sanity check.
-            if cluster_is_sane is True:
-                self._cluster_definition['sane'] = True
-            else:
-                self._cluster_definition['sane'] = False
-
-            # Allow cluster to be changed.
-            if cluster_is_sane is True:
-                self._cluster_definition['dynamic'] = True
-            else:
-                self._cluster_definition['dynamic'] = False
-
-            # Allow to create cluster with its modifers
-            if cluster_createable is True:
-                self._cluster_definition['createable'] = True
-            else:
-                self._cluster_definition['createable'] = False
-
-            if cluster_initialized is True:
-                self._cluster_definition['initialized'] = True
-            else:
-                self._cluster_definition['initialized'] = False
+        # Cluster shouldnt be used, if it is already
+        # removed from clusters list.
+        self._cluster_removed = False
 
         self._cluster_props = {}
 
-        # -------------------------------------------
         # Modifiers names that can be sometimes used
         # instead of default ones.
         self._cluster_props['by_name'] = []
@@ -219,10 +118,6 @@ class ClusterTrait():
         # Sorting rules.
         self._sorting_rules = []
 
-        # Cluster shouldnt be used, if it is already
-        # removed from clusters list.
-        self._cluster_removed = False
-
         # Should this cluster content be shown collapsed in ui?
         # Also stops recursive active_modifier_get_deep()
         self.modcluster_collapsed = True
@@ -233,16 +128,99 @@ class ClusterTrait():
                 and not self.check_this_cluster_sanity():
             raise ValueError('This cluster cant be used.')
 
-    def __repr__(self):
-        return self.__str__()
+    def _check_cluster_defenition(self, cluster_definition):
+        """
+        Checks types in cluster definition and add default
+        values.
 
-    def __str__(self):
-        if not self._cluster_removed:
-            name = self.get_this_cluster_name()
-            result = f"Cluster {name}, {self.get_this_cluster_type()}"
-        else:
-            result = f"Already removed cluster {self._MODCLUSTER_NAME}"
-        return result
+        Returns cluster definition.
+        """
+        x = cluster_definition
+        if not isinstance(x, dict):
+            raise TypeError
+
+        # Check if essential values specified.
+        if x['name'] is None\
+                or x['type'] is None\
+                or x['by_type'] is None:
+            raise TypeError
+
+        # Replace None with default values where
+        # it is possible.
+        if x['tags'] is None:
+            x['tags'] = []
+        if x['by_name'] is None:
+            x['by_name'] = []
+        if x['priority'] is None:
+            x['priority'] = 0
+        if x['createable'] is None:
+            x['createable'] = True
+        if x['dynamic'] is None:
+            x['dynamic'] = False
+        if x['sane'] is None:
+            x['sane'] = False
+        if x['kinda_sane'] is None:
+            x['kinda_sane'] = False
+
+        # Check types.
+        if not isinstance(x, dict)\
+                or not isinstance(x['name'], str)\
+                or not isinstance(x['type'], str)\
+                or not isinstance(x['tags'], list)\
+                or not isinstance(x['by_type'], list)\
+                or not isinstance(x['by_name'], list)\
+                or not isinstance(x['priority'], int)\
+                or not isinstance(x['createable'], bool)\
+                or not isinstance(x['dynamic'], bool)\
+                or not isinstance(x['sane'], bool)\
+                or not isinstance(x['kinda_sane'], bool):
+            raise TypeError
+
+        # Check length.
+        if len(x['name']) == 0\
+                or len(x['type']) == 0\
+                or len(x['by_type']) == 0:
+            raise ValueError
+
+        # Check types in lists.
+        for y in x['by_name']:
+            if isinstance(y, list):
+                if len(y) == 0:
+                    raise ValueError
+                for z in y:
+                    if not isinstance(z, str):
+                        raise TypeError
+            elif not isinstance(y, str):
+                raise TypeError
+        for y in x['by_type']:
+            if isinstance(y, list):
+                if len(y) == 0:
+                    raise ValueError
+                for z in y:
+                    if not isinstance(z, str):
+                        raise TypeError
+            elif not isinstance(y, str):
+                raise TypeError
+        for y in x['tags']:
+            if not isinstance(y, str):
+                raise TypeError
+
+        x = self._additional_check_cluster_definition(x)
+        return x
+
+    def _additional_check_cluster_definition(self, cluster_type_def):
+        return cluster_type_def
+
+    # def __repr__(self):
+    #     return self.__str__()
+
+    # def __str__(self):
+    #     if not self._cluster_removed:
+    #         name = self.get_this_cluster_name()
+    #         result = f"Cluster {name}, {self.get_this_cluster_type()}"
+    #     else:
+    #         result = f"Already removed cluster {self._MODCLUSTER_NAME}"
+    #     return result
 
     # Cluster name
     @property
