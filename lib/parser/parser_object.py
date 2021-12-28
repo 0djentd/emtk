@@ -32,7 +32,7 @@ from ..lists.traits.clusters.active_cluster import ActiveClusterTrait
 from ..lists.traits.modifiers.active_modifier import ActiveModifierTrait
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 
 class ClustersParser():
@@ -268,6 +268,7 @@ class ClustersParser():
         cluster_type = copy.deepcopy(cluster_type_to_add)
 
         logger.info("Trying to update cluster types list")
+        logger.info(cluster_type)
 
         y = None
 
@@ -275,10 +276,11 @@ class ClustersParser():
         for x in self._available_cluster_types:
             if x.get_this_cluster_default_name()\
                     == cluster_type.get_this_cluster_default_name():
+                logger.info(f"{cluster_type} is a duplacate.")
                 if self._ClustersParser__REPLACE_ON_UPDATE:
                     y = x
                 else:
-                    return False
+                    raise ValueError
 
         # Delete duplicate
         if y is not None:
@@ -290,10 +292,11 @@ class ClustersParser():
         for x in self._available_layer_types:
             if x.get_this_cluster_default_name()\
                     == cluster_type.get_this_cluster_default_name():
+                logger.info(f"{cluster_type} is a duplacate.")
                 if self._ClustersParser__REPLACE_ON_UPDATE:
                     y = x
                 else:
-                    return False
+                    raise ValueError
 
         # Delete duplicate in layers.
         if y is not None:
@@ -304,8 +307,10 @@ class ClustersParser():
             # Check cluster for any usual errors
             if cluster_type.check_this_cluster_sanity():
                 if cluster_type.has_clusters():
+                    logger.info(f"Added {cluster_type} to layers")
                     self._available_layer_types.append(cluster_type)
                 else:
+                    logger.info(f"Added {cluster_type} to clusters")
                     self._available_cluster_types.append(cluster_type)
 
                 cluster_type.modcluster_index\
@@ -323,6 +328,14 @@ class ClustersParser():
             else:
                 self._available_cluster_types.append(cluster_type)
             result = True
+
+        for x in self._available_cluster_types:
+            if x.has_clusters():
+                raise TypeError
+
+        for x in self._available_layer_types:
+            if not x.has_clusters():
+                raise TypeError
 
         logger.info(f"Modifiers cluster availability is {result}")
         logger.info("Finished updating cluster types list")
@@ -516,6 +529,10 @@ class ClustersParser():
 
         logger.debug("-------------------------")
         logger.debug("Trying to parse_clusters_recursively.")
+        logger.debug(f'additional_types {additional_types}')
+        logger.debug(f'no_available_types {no_available_types}')
+        logger.debug(f'clusters_names {clusters_names}')
+        logger.debug(f'layers_to_create {layers_to_create}')
         if additional_types is not None:
             logger.debug("Using additional types:")
             for x in additional_types:

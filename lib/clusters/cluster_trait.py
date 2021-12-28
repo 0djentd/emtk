@@ -189,13 +189,14 @@ class ClusterTrait():
     # def __repr__(self):
     #     return self.__str__()
 
-    # def __str__(self):
-    #     if not self._cluster_removed:
-    #         name = self.get_this_cluster_name()
-    #         result = f"Cluster {name}, {self.get_this_cluster_type()}"
-    #     else:
-    #         result = f"Already removed cluster {self._MODCLUSTER_NAME}"
-    #     return result
+    def __str__(self):
+        if not self._cluster_removed and self._cluster_props['initialized']:
+            name = self.get_this_cluster_name()
+            result = f"Cluster {name}, {self.get_this_cluster_type()}"
+        else:
+            result\
+                = f"Already removed cluster {self._cluster_definition['name']}"
+        return result
 
     # Cluster name
     @property

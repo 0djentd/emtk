@@ -122,7 +122,7 @@ class ModifiersOperator():
                                        )
             clusters.append(cluster)
 
-            cluster = ModifiersCluster(None,
+            cluster = ModifiersCluster(
                                        cluster_name='Triple Bevel',
                                        cluster_type='TRIPLE_BEVEL',
                                        modifiers_by_type=[
@@ -134,7 +134,7 @@ class ModifiersOperator():
                                        )
             clusters.append(cluster)
 
-            cluster = ClustersLayer(None,
+            cluster = ClustersLayer(
                                     cluster_name='Double Triple Bevel Cluster',
                                     cluster_type='BEVEL_CLUSTER',
                                     modifiers_by_type=[

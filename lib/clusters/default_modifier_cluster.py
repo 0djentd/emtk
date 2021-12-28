@@ -60,7 +60,7 @@ class DefaultModifierCluster(
                 or len(self._modifiers_list) == 0:
             return self._cluster_definition['type']
         else:
-            return self._modifiers_list[0].type
+            return f'{self._modifiers_list[0].type}_CLUSTER'
 
     # Check if passed argument are actually Blender modifier
     def modcluster_extra_availability_check(self, mod):
