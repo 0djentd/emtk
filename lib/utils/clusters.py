@@ -40,61 +40,6 @@ logger.setLevel(logging.DEBUG)
 # This will allow to skip dict if it raises any errors.
 # TODO: remove type checks for release
 
-# ========
-# WRAPPERS
-# ========
-
-
-# SETTINGS
-# def get_cluster_types_from_settings(addon_name, group=None):
-#     """Returns list of cluster types from addon settings."""
-#     c = get_cluster_types_definitions_from_settings(addon_name)
-#     if group is not None:
-#         c = _filter_by_attr(c, 'group', group)
-#     return instantiate_cluster_types_from_definitions(c)
-#
-#
-# def save_cluster_type_to_settings(
-#         cluster_type, addon_name, group=None):
-#     """Save cluster type to addon setting."""
-#     d = cluster_type.get_this_cluster_definition()
-#     save_cluster_type_definition_to_settings(
-#             d, addon_name, group)
-#
-#
-# def remove_cluster_type_from_settings(
-#         cluster_type, addon_name, group=None):
-#     """Removes cluster type from settings."""
-#     t = cluster_type.get_this_cluster_definition()
-#     remove_cluster_type_definition_from_settings(t, addon_name, group)
-#
-#
-# # OBJECT
-# def get_cluster_types_from_obj(
-#         obj, addon_name, group=None, dont_add_prop=False):
-#     """Returns list of cluster types definitions from obj.
-#     Obj can be object, scene, or view layer."""
-#     t = get_cluster_types_definitions_from_obj(
-#             obj, addon_name, dont_add_prop)
-#     if group is not None:
-#         t = _filter_by_attr(t, 'group', group)
-#     return instantiate_cluster_types_from_definitions(t)
-#
-#
-# def save_cluster_type_to_obj(
-#         obj, cluster_type, addon_name, group=None, dont_add_prop=False):
-#     """Saves cluster type to obj prop"""
-#     d = cluster_type.get_this_cluster_definition()
-#     save_cluster_type_definition_to_obj(
-#             obj, d, addon_name, group, dont_add_prop=False)
-#
-#
-# def remove_cluster_type_from_obj(
-#         obj, cluster_type, addon_name, group=None):
-#     """Removes cluster type from settings."""
-#     t = cluster_type.get_this_cluster_definition()
-#     remove_cluster_type_definition_from_obj(obj, t, addon_name, group)
-
 
 # ==========================
 # Cluster types from settings
