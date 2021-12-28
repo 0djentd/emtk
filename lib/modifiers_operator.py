@@ -17,6 +17,7 @@
 # ##### END GPL LICENSE BLOCK #####
 
 import logging
+import json
 
 from .lists.extended_modifiers_list import ExtendedModifiersList
 
@@ -25,8 +26,17 @@ from .clusters.modifiers_cluster import ModifiersCluster
 from .clusters.clusters_layer import ClustersLayer
 from .clusters.default_modifier_cluster import DefaultModifierCluster
 
+from .utils.clusters import get_cluster_types_from_settings
+from .utils.clusters import save_cluster_type_to_settings
+
+try:
+    import bpy
+    _WITH_BPY = True
+except ModuleNotFoundError:
+    _WITH_BPY = False
+
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 
 class ModifiersOperator():
@@ -80,7 +90,6 @@ class ModifiersOperator():
         if len(context.view_layer.objects.selected) != 0:
             self.selected_objects = []
 
-            # TODO: this shouldnt be here.
             # Available cluster types
             """
             How this thing should work:
@@ -101,49 +110,22 @@ class ModifiersOperator():
             Not very usefull for the same reason as the first one.
 
             Third is to save to addon prefs.
-            This kinda works. There should be some kind of sorting
-            within addon prefs tho. Like one-level folders or something idk.
+            This kinda works. Sorted by groups.
 
             Its also possible to save it to text file.
             This can be kinda useful, but idk.
             """
-            clusters = []
-            cluster = DefaultModifierCluster()
-            clusters.append(cluster)
-
-            cluster = ModifiersCluster(
-                                       cluster_name='Beveled Boolean',
-                                       cluster_type='BEVELED_BOOLEAN',
-                                       modifiers_by_type=[
-                                           ['BOOLEAN'], ['BEVEL']],
-                                       modifiers_by_name=[['ANY'], ['ANY']],
-                                       cluster_priority=0,
-                                       cluster_createable=True,
-                                       )
-            clusters.append(cluster)
-
-            cluster = ModifiersCluster(
-                                       cluster_name='Triple Bevel',
-                                       cluster_type='TRIPLE_BEVEL',
-                                       modifiers_by_type=[
-                                           ['BEVEL'], ['BEVEL'], ['BEVEL']],
-                                       modifiers_by_name=[
-                                           ['ANY'], ['ANY'], ['ANY']],
-                                       cluster_priority=0,
-                                       cluster_createable=True,
-                                       )
-            clusters.append(cluster)
-
-            cluster = ClustersLayer(
-                                    cluster_name='Double Triple Bevel Cluster',
-                                    cluster_type='BEVEL_CLUSTER',
-                                    modifiers_by_type=[
-                                        ['TRIPLE_BEVEL'], ['TRIPLE_BEVEL']],
-                                    modifiers_by_name=[['ANY'], ['ANY']],
-                                    cluster_priority=0,
-                                    cluster_createable=True,
-                                    )
-            clusters.append(cluster)
+            if _WITH_BPY:
+                clusters = self._default_cluster_types()
+                logger.debug(clusters)
+                for x in clusters:
+                    logger.debug(x)
+                    save_cluster_type_to_settings(x, 'bmtools')
+                clusters = get_cluster_types_from_settings('bmtools')
+                logger.debug(clusters)
+            else:
+                clusters = self._default_cluster_types()
+                logger.debug(clusters)
 
             for obj in context.view_layer.objects.selected:
                 # Create extended modifiers list and initialize it for obj
@@ -218,3 +200,43 @@ class ModifiersOperator():
         context.view_layer.objects.active = modifiers_list._object
         self.m_list = modifiers_list
         self.update_object_list(context)
+
+    def _default_cluster_types(self):
+        clusters = []
+        cluster = ModifiersCluster(
+                                   cluster_name='Beveled Boolean',
+                                   cluster_type='BEVELED_BOOLEAN',
+                                   modifiers_by_type=[
+                                       ['BOOLEAN'], ['BEVEL']],
+                                   modifiers_by_name=[
+                                       ['ANY'], ['ANY']],
+                                   cluster_priority=0,
+                                   cluster_createable=True,
+                                   )
+        clusters.append(cluster)
+
+        cluster = ModifiersCluster(
+                                   cluster_name='Triple Bevel',
+                                   cluster_type='TRIPLE_BEVEL',
+                                   modifiers_by_type=[['BEVEL'],
+                                                      ['BEVEL'],
+                                                      ['BEVEL']],
+                                   modifiers_by_name=[
+                                       ['ANY'], ['ANY'], ['ANY']],
+                                   cluster_priority=0,
+                                   cluster_createable=True,
+                                   )
+        clusters.append(cluster)
+
+        cluster = ClustersLayer(
+                                cluster_name='Double Bevel Cluster',
+                                cluster_type='BEVEL_CLUSTER',
+                                modifiers_by_type=[
+                                    ['TRIPLE_BEVEL'],
+                                    ['TRIPLE_BEVEL']],
+                                modifiers_by_name=[['ANY'], ['ANY']],
+                                cluster_priority=0,
+                                cluster_createable=True,
+                                )
+        clusters.append(cluster)
+        return clusters

@@ -89,97 +89,207 @@ def serialize_cluster_type(cluster_type):
     return cluster_type.serialize_this_cluster_type()
 
 
-def get_cluster_types_from_settings(addon_name, group):
+# ==========================
+# Cluster types from settings
+# ==========================
+def get_cluster_types_from_settings(addon_name, group=None):
     """
-    Returns list of deserialized but not unwrapped
-    cluster types from addon settings.
+    Returns list of cluster types from addon settings.
+    """
+
+    c = _get_cluster_types_definitions_from_settings(addon_name)
+    c = _filter_by_group(c, group)
+    result = []
+    for x in result:
+        result.append(deserialize_cluster_type(c))
+    return result
+
+
+def save_cluster_type_to_settings(
+                                  cluster_type,
+                                  addon_name,
+                                  group=None,
+                                  ):
+    """
+    Saves cluster type to addon setting.
+    """
+
+    cluster_definition = cluster_type.serialize_this_cluster_type()
+    cluster_definition = json.loads(cluster_definition)
+    _save_cluster_type_definition_to_settings(
+            cluster_definition, addon_name, group)
+
+
+def _save_cluster_type_definition_to_settings(cluster, addon_name, group):
+    """
+    Saves cluster type definition to addon settings.
+    """
+    _check_cluster_definition(cluster)
+
+    # Get clusters that are already in settings.
+    c = _get_cluster_types_definitions_from_settings(addon_name)
+    c = _filter_by_group(c, group)
+    cluster['group'] = group
+    c = _replace_cluster_type(c, cluster)
+
+    # Save to settings
+    serialized_cluster_types = json.dumps(c)
+    bpy.context.preferences.addons[
+            addon_name].preferences.cluster_types = serialized_cluster_types
+
+
+def _get_cluster_types_definitions_from_settings(addon_name):
+    """
+    Returns cluster type definitions from addon settings.
     """
     if not isinstance(addon_name, str):
         raise TypeError
-    if not isinstance(group, str) and not isinstance(group, int):
-        raise TypeError
 
-    cluster_types = []
-    result = []
     if _WITH_BPY:
         c = bpy.context.preferences.addons[
                 addon_name].preferences.cluster_types
+        if c == '':
+            c = []
+        else:
+            c = json.loads(c)
     else:
         raise TypeError
-    for x in c:
-        cluster_types.append(deserialize_cluster_type(x))
-    for x in cluster_types:
-        if x['group'] == group:
-            result.append(x)
-    return result
+    return c
 
 
-def get_cluster_types_from_object(obj, addon_name, group,
-                                  *args, dont_add_prop=True):
+def _check_cluster_definition(cluster_definition):
     """
-    Returns list of deserialized but not unwrapped
-    cluster types from addon settings.
+    Raises error if cluster definition is not usable.
     """
-    if not isinstance(addon_name, str):
+    if not isinstance(cluster_definition, dict):
         raise TypeError
-    if not isinstance(group, str) and not isinstance(group, int):
-        raise TypeError
-
-    cluster_types = []
-    result = []
-    prop_name = f'{addon_name}{group}'
-
-    try:
-        c = getattr(obj, prop_name)
-    except KeyError:
-        if not dont_add_prop:
-            setattr(obj, prop_name, json.dumps([]))
-        return []
-
-    for x in c:
-        cluster_types.append(deserialize_cluster_type(x))
-    for x in cluster_types:
-        if x['group'] == group:
-            result.append(x)
-    return result
+    z = ['name',
+         'type',
+         'by_type',
+         'by_name',
+         'priority',
+         'dynamic']
+    for x in z:
+        if x not in cluster_definition:
+            raise ValueError
 
 
-def save_cluster_type_to_object(
-                                obj,
-                                addon_name,
-                                group,
-                                deserialized_cluster_type_to_add,
-                                ):
-    """
-    Saves cluster type to object props.
-    """
-    if _WITH_BPY:
-        if not isinstance(obj, bpy.types.Object):
-            raise TypeError
-    else:
-        raise TypeError
-    if not isinstance(deserialized_cluster_type_to_add, str):
-        raise TypeError
-    if len(deserialized_cluster_type_to_add) == 0:
+# ===================
+# Object cluster types
+# ===================
+# def get_cluster_types_from_object(obj, addon_name, prop=None, group=None,
+#                                   *args, dont_add_prop=True):
+#     """
+#     Returns list of deserialized but not unwrapped
+#     cluster types from addon settings.
+#     """
+#     if not isinstance(addon_name, str):
+#         raise TypeError
+#     if not isinstance(prop, str) and not isinstance(prop, int):
+#         raise TypeError
+#     if not isinstance(group, str) and not isinstance(group, int):
+#         raise TypeError
+# 
+#     cluster_types = []
+#     result = []
+# 
+#     for x in c:
+#         cluster_types.append(deserialize_cluster_type(x))
+#     for x in cluster_types:
+#         if x['group'] == group:
+#             result.append(x)
+#     return result
+# 
+# 
+# def get_cluster_types_from_object(obj, addon_name, prop=None, group=None,
+#                                   *args, dont_add_prop=True):
+#     if prop is None:
+#         prop = 'cluster_types'
+#     prop_name = f'{addon_name}{prop}'
+#     try:
+#         c = getattr(obj, prop_name)
+#     except KeyError:
+#         if not dont_add_prop:
+#             setattr(obj, prop_name, json.dumps([]))
+#         return []
+# 
+# def save_cluster_type_to_object(
+#                                 obj,
+#                                 deserialized_cluster_type_to_add,
+#                                 addon_name,
+#                                 group=None,
+#                                 ):
+#     """
+#     Saves cluster type to object props.
+#     """
+#     if _WITH_BPY:
+#         if not isinstance(obj, bpy.types.Object):
+#             raise TypeError
+#     else:
+#         raise TypeError
+#     if not isinstance(deserialized_cluster_type_to_add, str):
+#         raise TypeError
+#     if len(deserialized_cluster_type_to_add) == 0:
+#         raise ValueError
+#     if not isinstance(addon_name, str):
+#         raise TypeError
+#     if not isinstance(group, str) and not isinstance(group, None):
+#         raise TypeError
+# 
+#     deserialized_cluster_types = get_cluster_types_from_object(
+#             obj, addon_name, group, dont_add_prop=False)
+# 
+#     duplicates = []
+# 
+#     for x in deserialized_cluster_types:
+#         if deserialized_cluster_type_to_add.cluster_name == x.cluster_name:
+#             duplicates.append(x)
+# 
+#     for x in duplicates:
+#         deserialized_cluster_types.remove(x)
+# 
+#     deserialized_cluster_types.append(
+#             deserialized_cluster_type_to_add)
+# 
+#     serialized_cluster_types = json.dumps(
+#             deserialized_cluster_types)
+# 
+#     setattr(obj, addon_name, serialized_cluster_types)
+#     return
+
+
+# Utils
+def _replace_cluster_type(cluster_types, cluster_type):
+    clusters = cluster_types[:]
+    cluster = cluster_type
+    remove = []
+    for x in clusters:
+        if x['name'] == cluster['name']\
+                or x['type'] == cluster['type']:
+            remove.append(x)
+    if len(remove) > 1:
         raise ValueError
+    else:
+        for x in remove:
+            clusters.remove(x)
+        clusters.append(cluster)
+    return clusters
 
-    deserialized_cluster_types = get_cluster_types_from_object(
-            obj, addon_name, group, dont_add_prop=False)
 
-    duplicates = []
+def _filter_by_group(cluster_types, group=None):
+    if not isinstance(cluster_types, list):
+        raise TypeError(f'Expected list, got {type(cluster_types)}')
+    for x in cluster_types:
+        if not isinstance(x, dict):
+            raise TypeError
 
-    for x in deserialized_cluster_types:
-        if deserialized_cluster_type_to_add.cluster_name == x.cluster_name:
-            duplicates.append(x)
+    if group is None:
+        return cluster_types[:]
+    elif not isinstance(group, str):
+        raise TypeError
 
-    for x in duplicates:
-        deserialized_cluster_types.remove(x)
-
-    deserialized_cluster_types.append(
-            deserialized_cluster_type_to_add)
-
-    serialized_cluster_types = json.dumps(
-            deserialized_cluster_types)
-
-    setattr(obj, f'{addon_name}{group}', serialized_cluster_types)
-    return
+    clusters = []
+    for x in cluster_types:
+        if x['group'] == group:
+            clusters.append(x)
+    return clusters

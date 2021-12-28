@@ -61,6 +61,11 @@ class BMToolPreferences(AddonPreferences):
             default=""
             )
 
+    cluster_types: StringProperty(
+            name="ClusterTypes",
+            default=""
+            )
+
     def draw(self, context):
         layout = self.layout
         layout.label(text="BMTool options")
@@ -74,3 +79,4 @@ class BMToolPreferences(AddonPreferences):
         if self.custom_cluster_types:
             layout.prop(self, "always_add_custom_cluster_types")
             layout.prop(self, "saved_cluster_types")
+            layout.prop(self, "cluster_types")

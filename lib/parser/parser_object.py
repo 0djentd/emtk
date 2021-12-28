@@ -342,10 +342,6 @@ class ClustersParser():
         logger.info(" ")
         return result
 
-    def _get_new_cluster_type_index(self):
-        self._last_cluster_type_index += 1
-        return self._last_cluster_type_index - 1
-
     # ==============================
     # cluster types
     # ===============================
@@ -1373,7 +1369,6 @@ class ClustersParser():
 
         return cluster
 
-    # TODO: move to util
     def _get_clusters_names(self, clusters):
         """
         Returns list of custom names from list of clusters.
@@ -1383,6 +1378,10 @@ class ClustersParser():
             result.append(x.get_this_cluster_name())
 
         return result
+
+    def _get_new_cluster_type_index(self):
+        self._last_cluster_type_index += 1
+        return self._last_cluster_type_index - 1
 
     # ====================================
     # TODO: this methods should be removed.
