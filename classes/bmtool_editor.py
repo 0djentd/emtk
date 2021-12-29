@@ -52,6 +52,46 @@ class ModifierEditor():
 
     bmtool_mode = _DEFAULT_EDITOR_MODE
 
+    # {{{
+    """
+    Type example:
+    EDITOR_TYPE = ['BEVEL_CLUSTER', 'BEVEL', 'BEVELED_BOOLEAN']
+
+    Modal mapping decides what modifiers to use when editing.
+    TODO: this is kinda bad
+    Examples:
+    MODIFIER_MAPPING = {'cluster': BEVEL_CLUSTER,
+                        'modifiers': ['get_first()', 'get_first().get_last()']
+                        }
+
+    MODIFIER_MAPPING = {'cluster': DOUBLE_BEVEL,
+                        'modifiers': ['get_list()[1]']
+                        }
+
+    Attributes example:
+    [
+     {'attr': 'segments',  # Attribut name
+      'mods': [<MODIFIER_MAPPING>, <MODIFIER_MAPPING>]  # Modal mappings
+      'type': 'int',  # Attribute type
+      'min': 0,  # Min value
+      'kb': 'S',  # Shortcut
+      'sens': 0.00005},  # Sens for modal editing
+
+     {'attr': 'harden_normals',
+      'mods': [<MODIFIER_MAPPING>, <MODIFIER_MAPPING>]
+      'type': 'bool',
+      'kb': 'H',
+      'sens': 0.00005},
+
+     {'attr': 'angle',
+      'mods': [<MODIFIER_MAPPING>]
+      'type': 'float',
+      'min': 0,
+      'kb': 'A',
+      'sens': 0.0005}
+      ]
+    """  # {{{
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

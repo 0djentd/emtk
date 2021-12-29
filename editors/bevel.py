@@ -22,70 +22,29 @@ import math
 
 
 # Bevel modifier editor
-class BMToolEditorBevel(ModifierEditor):
-    _MODIFIER_EDITOR_NAME = 'Bevel Editor'
-    _DEFAULT_M_NAME = 'Bevel'
-    _DEFAULT_M_TYPE = 'BEVEL'
-    _MODIFIER_CREATEABLE = True
+class bmtooleditorbevel(modifiereditor):
+    _modifier_editor_name = 'bevel editor'
+    _default_m_name = 'bevel'
+    _default_m_type = 'bevel'
+    _modifier_createable = true
 
-    bmtool_mode = "Select mode"
+    bmtool_mode = "select mode"
 
-    """
-    Type example:
-    EDITOR_TYPE = ['BEVEL_CLUSTER', 'BEVEL', 'BEVELED_BOOLEAN']
-
-    Modal mapping decides what modifiers to use when editing.
-    TODO: this is kinda bad
-    Examples:
-    MODIFIER_MAPPING = {'cluster': BEVEL_CLUSTER,
-                        'modifiers': ['get_first()', 'get_first().get_last()']
-                        }
-
-    MODIFIER_MAPPING = {'cluster': DOUBLE_BEVEL,
-                        'modifiers': ['get_list()[1]']
-                        }
-
-    Attributes example:
-    [
-     {'attr': 'segments',  # Attribut name
-      'mods': [<MODIFIER_MAPPING>, <MODIFIER_MAPPING>]  # Modal mappings
-      'type': 'int',  # Attribute type
-      'min': 0,  # Min value
-      'kb': 'S',  # Shortcut
-      'sens': 0.00005},  # Sens for modal editing
-
-     {'attr': 'harden_normals',
-      'mods': [<MODIFIER_MAPPING>, <MODIFIER_MAPPING>]
-      'type': 'bool',
-      'kb': 'H',
-      'sens': 0.00005},
-
-     {'attr': 'angle',
-      'mods': [<MODIFIER_MAPPING>]
-      'type': 'float',
-      'min': 0,
-      'kb': 'A',
-      'sens': 0.0005}
-      ]
-    """
-
-    # TODO: Remove this
-    # what even is that thing {{{
+    # todo: remove this
     def bevel_segment_count(self, m_list):
         y = 0
         for x in m_list.get_list():
-            if x.type == 'BEVEL':
+            if x.type == 'bevel':
                 y += x.get_by_index(0).segments
         return y
-    # }}}
 
     def bmtool_editor_modal_2(
             self, context, event, m_list, selected_objects):
-        """Editor-specific modal method"""
+        """editor-specific modal method"""
         mod = m_list.active_modifier_get().get_by_index(0)
-        if event.type == 'MOUSEMOVE':
+        if event.type == 'mousemove':
 
-            # Modal editing
+            # modal editing
             if self.bmtool_mode == "width":
                 mod.width = self.delta_d(context, event) * 0.000008
             elif self.bmtool_mode == "segments":
@@ -97,21 +56,21 @@ class BMToolEditorBevel(ModifierEditor):
                         self.delta_d(context, event) * 0.0001)
 
         # Modal editing modes switcher
-        elif (event.type == 'W') & (event.value == 'PRESS'):
+        elif event.type == 'W' & event.value == 'PRESS':
             self.bmtool_mode = "width"
-        elif (event.type == 'S') & (event.value == 'PRESS'):
+        elif event.type == 'S' & event.value == 'PRESS':
             self.bmtool_mode = "segments"
-        elif (event.type == 'D') & (event.value == 'PRESS'):
+        elif event.type == 'D' & event.value == 'PRESS':
             self.bmtool_mode = "profile"
-        elif (event.type == 'A') & (event.value == 'PRESS'):
+        elif event.type == 'A' & event.value == 'PRESS':
             self.bmtool_mode = "angle"
 
         # Modifier-specific actions
-        elif (event.type == 'H') & (event.value == 'PRESS'):
+        elif event.type == 'H' & event.value == 'PRESS':
             mod.harden_normals = not mod.harden_normals
-        elif (event.type == 'C') & (event.value == 'PRESS'):
+        elif event.type == 'C' & event.value == 'PRESS':
             mod.use_clamp_overlap = not mod.use_clamp_overlap
-        elif (event.type == 'G') & (event.value == 'PRESS'):
+        elif event.type == 'G' & event.value == 'PRESS':
             self.bmtool_modifier_defaults(context)
         elif (event.type == 'F') & (event.value == 'PRESS'):
             bpy.ops.object.shade_smooth()
