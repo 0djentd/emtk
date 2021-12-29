@@ -40,9 +40,6 @@ class ClustersParser():
     Base class for objects that should be able to parse clusters.
     """
 
-    # Additional info.
-    _MODIFIERS_LIST_V = True
-
     def __init__(self, *args,
                  skip_parser=None,
                  cluster_types=None,
@@ -124,11 +121,14 @@ class ClustersParser():
             for x in cluster_types:
                 self.update_cluster_types_list(x)
 
-    # =============================
-    # Parse_result is a list
-    # of lists with string, cluster
-    # and modifiers.
-    # =============================
+    """
+    parse_result is a list of lists with string, cluster and modifiers.
+    Example:
+    [['CREATE', <TRIPLE_BEVEL>, [<BEVEL>, <BEVEL>, <BEVEL>],
+     ['CREATE', <TRIPLE_BEVEL>, [<BEVEL>, <BEVEL>, <BEVEL>],
+     ['SKIP', <DOUBLE_BEVEL>, None]]
+    """
+
     def parse_recursively(self, modifiers_to_parse,
                           additional_types=None,
                           no_available_types=False,
@@ -150,7 +150,6 @@ class ClustersParser():
         """
         if not isinstance(modifiers_to_parse, list):
             raise TypeError
-
         if clusters_names is None:
             clusters_names = []
 
@@ -341,49 +340,6 @@ class ClustersParser():
         logger.info("Finished updating cluster types list")
         logger.info(" ")
         return result
-
-    # ==============================
-    # cluster types
-    # ===============================
-    def _get_cluster_type_by_name(self, cluster_type_name):
-        """
-        Returns one of available to this object cluster
-        types by name.
-        """
-        logger.debug(
-                f"Trying to find cluster type by name {cluster_type_name}")
-        for x in self._available_cluster_types:
-            if x.get_this_cluster_default_name() == cluster_type_name:
-                logger.debug(f"Found {x}")
-                return x
-        for x in self._available_layer_types:
-            if x.get_this_cluster_default_name() == cluster_type_name:
-                logger.debug(f"Found {x}")
-                return x
-        raise ValueError(
-                f"Cant find cluster with name {cluster_type_name}\
-                        in {self._available_layer_types}\
-                        and {self._available_cluster_types}")
-
-    def _get_cluster_type_by_type(self, cluster_type):
-        """
-        Returns one of available to this object cluster
-        types by type.
-        """
-        logger.debug(
-                f"Trying to find cluster type by type {cluster_type}")
-        for x in self._available_cluster_types:
-            if x.get_this_cluster_type == cluster_type:
-                logger.debug(f"Found {x}")
-                return x
-        for x in self._available_layer_types:
-            if x.get_this_cluster_type == cluster_type:
-                logger.debug(f"Found {x}")
-                return x
-        raise ValueError(
-                f"Cant find cluster with type {cluster_type}\
-                        in {self._available_layer_types}\
-                        and {self._available_cluster_types}")
 
     # ==============================
     # Wrappers
@@ -594,6 +550,49 @@ class ClustersParser():
 
         return parse_result
 
+    # ==============================
+    # cluster types
+    # ===============================
+    def _get_cluster_type_by_name(self, cluster_type_name):
+        """
+        Returns one of available to this object cluster
+        types by name.
+        """
+        logger.debug(
+                f"Trying to find cluster type by name {cluster_type_name}")
+        for x in self._available_cluster_types:
+            if x.get_this_cluster_default_name() == cluster_type_name:
+                logger.debug(f"Found {x}")
+                return x
+        for x in self._available_layer_types:
+            if x.get_this_cluster_default_name() == cluster_type_name:
+                logger.debug(f"Found {x}")
+                return x
+        raise ValueError(
+                f"Cant find cluster with name {cluster_type_name}\
+                        in {self._available_layer_types}\
+                        and {self._available_cluster_types}")
+
+    def _get_cluster_type_by_type(self, cluster_type):
+        """
+        Returns one of available to this object cluster
+        types by type.
+        """
+        logger.debug(
+                f"Trying to find cluster type by type {cluster_type}")
+        for x in self._available_cluster_types:
+            if x.get_this_cluster_type == cluster_type:
+                logger.debug(f"Found {x}")
+                return x
+        for x in self._available_layer_types:
+            if x.get_this_cluster_type == cluster_type:
+                logger.debug(f"Found {x}")
+                return x
+        raise ValueError(
+                f"Cant find cluster with type {cluster_type}\
+                        in {self._available_layer_types}\
+                        and {self._available_cluster_types}")
+
     # ===================
     # Loading clusters state
     # ====================
@@ -662,13 +661,12 @@ class ClustersParser():
         return result
 
     def _clean_restored_clusters(self, clusters):
-        """
-        Remove restored clusters attributes that are
-        only required during parse.
-        """
+        """Remove restored clusters attributes that are
+        only required during parse."""
         for x in clusters:
             x.remove_tag_from_this_cluster('RESTORED')
             x._cluster_props['by_name'] = []
+        return clusters
 
     # =============================
     #
@@ -771,7 +769,7 @@ class ClustersParser():
                 logger.debug(
                         f"{x._cluster_definition['by_name']}")
                 logger.debug(
-                        f"modcluster priority is {x._cluster_definition['priority']}")
+                        f"priority is {x._cluster_definition['priority']}")
                 logger.debug(" ")
 
         # TODO: this doesnt works as expected
