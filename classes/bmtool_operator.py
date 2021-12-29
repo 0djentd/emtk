@@ -114,9 +114,9 @@ class BMToolMod(ModifiersOperator):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-    # Check if modifier can be used
     @classmethod
     def poll(self, context):
+        """Check if operator can be used."""
         if context.area.type != 'VIEW_3D':
             return False
         elif context.mode != 'OBJECT' and self._BMTOOL_EDITMODE is False:
@@ -130,9 +130,7 @@ class BMToolMod(ModifiersOperator):
         return True
 
     def modal(self, context, event):
-        """
-        Method that is initiated every frame or whatever.
-        """
+        """Method that is initiated every frame or whatever."""
 
         # Redraw UI
         if self._BMTOOL_UI:
@@ -501,12 +499,12 @@ class BMToolMod(ModifiersOperator):
         return True
 
     def _modal_editor(self, context, event):
+        """This methods is reserved for clusters editors."""
         return self.bmtool_modal_2(context, event)
 
     def _modal_digits_set(self, event):
         """This thing writes a string that can be used in modal operator
         to get integer, float, or string.
-        Returns True, if event type was in digits list.
         """
         for x in self._MODAL_DIGITS:
             if event.type == x and event.value == 'PRESS':
@@ -524,9 +522,7 @@ class BMToolMod(ModifiersOperator):
         return True
 
     def _modal_str_set(self, event):
-        """This thing writes a string that can be used in modal operator.
-        Returns True, if event type was in letters and digits list.
-        """
+        """This thing writes a string that can be used in modal operator."""
         for x in self._MODAL_LETTERS:
             if event.type == x and event.value == 'PRESS':
                 if event.shift:
