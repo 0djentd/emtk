@@ -30,6 +30,27 @@ class BMToolEditorBevel(ModifierEditor):
 
     bmtool_mode = "Select mode"
 
+    """
+    Type example:
+    EDITOR_TYPE = ['BEVEL_CLUSTER', 'BEVEL', 'BEVELED_BOOLEAN']
+
+    Modifiers mapping example:
+    MODIFIER_MAPPING = {'BEVEL_CLUSTER': 'get_first()',
+                        'BEVEL': None,  # this means obj itself is modifier
+                        'BEVELED_BOOLEAN': 'get_next_by_type('BEVEL')}
+
+    Attributes example:
+    [{'attr': 'segments',
+      'mods': [<MODIFIER_MAPPING>, <MODIFIER_MAPPING>]
+      'type': 'uint',
+      'sens': 0.00005},
+     {'attr': 'angle',
+      'mods': [<MODIFIER_MAPPING>]
+      'type': 'uint',
+      'sens': 0.0005}]
+    """
+
+    # TODO: Remove this
     def bevel_segment_count(self, m_list):
         y = 0
         for x in m_list.get_list():
@@ -37,11 +58,8 @@ class BMToolEditorBevel(ModifierEditor):
                 y += x.get_by_index(0).segments
         return y
 
-    # ----------------------------
-    # Editor-specific modal method
-    # ----------------------------
-    # TODO: dont use delta_d
     def bmtool_editor_modal_2(
+        """Editor-specific modal method"""
             self, context, event, m_list, selected_objects):
         mod = m_list.active_modifier_get().get_by_index(0)
         if event.type == 'MOUSEMOVE':

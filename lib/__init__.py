@@ -23,7 +23,7 @@ from .sorting_rule import SortingRule
 from .lists.extended_modifiers_list import ExtendedModifiersList
 
 __all__ = [
-           ExtendedModifiersList
+           ExtendedModifiersList,
            ModifiersCluster,
            ClustersLayer,
            DummyBlenderObj,
