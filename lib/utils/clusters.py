@@ -29,16 +29,12 @@ except ModuleNotFoundError:
 
 from ..clusters.modifiers_cluster import ModifiersCluster
 from ..clusters.clusters_layer import ClustersLayer
-from ..clusters.cluster_trait import ClusterTrait
-
 
 logger = logging.getLogger(__package__)
 logger.setLevel(logging.DEBUG)
 
-
 # TODO: Save cluster definitions serialized list of serialized dicts.
 # This will allow to skip dict if it raises any errors.
-# TODO: remove type checks for release
 
 
 # ==========================
@@ -50,7 +46,8 @@ def get_cluster_types_definitions_from_settings(addon_name, group=None):
 
     c = bpy.context.preferences.addons[
             addon_name].preferences.cluster_types
-    c = json.loads(c)
+
+    c = _deserialize_cluster_type_definitions_list(c)
 
     # Check list
     if not isinstance(c, list):
@@ -86,7 +83,7 @@ def save_cluster_type_definition_to_settings(
     c = _add_replace_cluster_type(c, cluster)
 
     # write
-    c = json.dumps(c)
+    c = _serialize_cluster_type_definitions_list(c)
     bpy.context.preferences.addons[
             addon_name].preferences.cluster_types = c
 
@@ -100,29 +97,35 @@ def remove_cluster_type_definition_from_settings(
     if not isinstance(group, str) and group is not None:
         raise TypeError
 
+    # load
     t = get_cluster_types_definitions_from_settings(addon_name, group)
+
+    # remove def
     t = _remove_cluster_type(t, cluster)
+
+    # write
+    t = _serialize_cluster_type_definitions_list(t)
     bpy.context.preferences.addons[addon_name].preferences.cluster_types = t
 
 
 # ===================
 # Object cluster types
 # ===================
-def get_cluster_types_definitions_from_obj(
-        obj, addon_name, dont_add_prop=False):
-    if obj is None:
-        raise TypeError
-    if not isinstance(addon_name, str):
-        raise TypeError
-    try:
-        t = obj[addon_name]
-    except KeyError:
-        if not dont_add_prop:
-            obj[addon_name] = '[]'
-            t = obj[addon_name]
-        else:
-            raise KeyError
-    return t
+# def get_cluster_types_definitions_from_obj(
+#         obj, addon_name, dont_add_prop=False):
+#     if obj is None:
+#         raise TypeError
+#     if not isinstance(addon_name, str):
+#         raise TypeError
+#     try:
+#         t = obj[addon_name]
+#     except KeyError:
+#         if not dont_add_prop:
+#             obj[addon_name] = '[]'
+#             t = obj[addon_name]
+#         else:
+#             raise KeyError
+#     return t
 
 
 # def save_cluster_type_definition_to_obj(
@@ -246,3 +249,36 @@ def deserialize_cluster_type_definition(cluster_type_definition,
     else:
         raise TypeError(f'Cant deserialize {x["cluster_class"]}')
     return result
+
+
+# =================================
+# Cluster types definitions list rw
+# =================================
+def _serialize_cluster_type_definitions_list(definitions_list):
+    clusters = []
+    # TODO: info about version
+    for x in definitions_list:
+        result = json.dumps(x)
+        clusters.append(result)
+    return json.dumps(clusters)
+
+
+def _deserialize_cluster_type_definitions_list(
+        serialized_definitions_list):
+    """
+    Skips list elements that throw an error.
+    """
+    try:
+        definitions_list = json.loads(serialized_definitions_list)
+    except json.decoder.JSONDecodeError:
+        logger.error(
+                f'Cant deserialize {serialized_definitions_list}, skipping.')
+        definitions_list = []
+    clusters = []
+    for x in definitions_list:
+        try:
+            result = json.loads(x)
+            clusters.append(result)
+        except json.decoder.JSONDecodeError:
+            logger.error(f'Cant deserialize {x}, skipping.')
+    return clusters
