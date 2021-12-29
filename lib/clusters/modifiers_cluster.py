@@ -39,3 +39,20 @@ class ModifiersCluster(
     @property
     def modifiers(self):
         return copy.copy(self._modifiers_list)
+
+    def get_modifiers_for_instantiation(self):
+        """
+        Returns list of names and types of modifiers
+        that are required to create this cluster.
+        Returns None, if cluster cant be created.
+        """
+        if not self._cluster_definition['createable']:
+            return None
+
+        modifiers = []
+        for x, y in zip(self._cluster_definition['by_name'],
+                        self._cluster_definition['by_type']):
+            if x == 'ANY' or y == 'ANY':
+                return None
+            modifiers.append(x, y)
+        return modifiers

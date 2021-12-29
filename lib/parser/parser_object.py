@@ -198,7 +198,7 @@ class ClustersParser():
                     logger.error("Error while parsing modifiers")
                     return False
 
-            clusters_names += self._get_clusters_names(parse_result)
+            clusters_names += _get_clusters_names(parse_result)
 
         # If passed clusters, just continue with them.
         else:
@@ -245,7 +245,7 @@ class ClustersParser():
                 clusters_names=clusters_names)
 
         # Clean some variables in created clusters.
-        self._clean_restored_clusters(parse_result)
+        _clean_restored_clusters(parse_result)
 
         logger.debug(f"result is {parse_result}")
         logger.debug("FINISHED RESTORING CLUSTERS STATE")
@@ -524,7 +524,7 @@ class ClustersParser():
                 logger.error("Error while parsing clusters")
                 return False
 
-            new_clusters_names += self._get_clusters_names(parse_result)
+            new_clusters_names += _get_clusters_names(parse_result)
 
             # Old clusters.
             old_cluster_types = []
@@ -550,10 +550,53 @@ class ClustersParser():
 
         return parse_result
 
+    # TODO: remove this method
+    def _parse_modifiers_for_simple_clusters(self, modifiers_to_parse,
+                                             additional_types=None,
+                                             no_available_types=False):
+        """
+        Parses modfiers_to_parse against this object's
+        simple _available_cluster_types.
+        Object should already have
+        available clusters list.
+
+        Returns parse result list consisting of clusters.
+        Returns False if not found any or cant parse
+        passed modifiers list.
+        Returns None, if doesnt work correctly.
+        """
+        cluster_types = []
+        if not no_available_types:
+            cluster_types += self._available_cluster_types
+        if additional_types is not None:
+            compatible_additional = []
+            for x in additional_types:
+                if x.has_clusters():
+                    compatible_additional.append(x)
+            cluster_types += compatible_additional
+
+        simple_clusters = []
+        e = copy.copy(modifiers_to_parse)
+        for x in cluster_types:
+            if x.get_this_cluster_possible_length() == 1:
+                # TODO: probably no need to do that
+                y = copy.deepcopy(x)
+                simple_clusters.append(y)
+
+        parse_result = self._clusters_parser(e,
+                                             simple_clusters
+                                             )
+
+        unwrapped_result = self._unwrap_parse_result(parse_result, ['CREATE'])
+
+        clusters = self._initialize_clusters(unwrapped_result)
+
+        return clusters
+
     # ==============================
     # cluster types
     # ===============================
-    def _get_cluster_type_by_name(self, cluster_type_name):
+    def get_cluster_type_by_name(self, cluster_type_name):
         """
         Returns one of available to this object cluster
         types by name.
@@ -573,7 +616,7 @@ class ClustersParser():
                         in {self._available_layer_types}\
                         and {self._available_cluster_types}")
 
-    def _get_cluster_type_by_type(self, cluster_type):
+    def get_cluster_type_by_type(self, cluster_type):
         """
         Returns one of available to this object cluster
         types by type.
@@ -615,7 +658,7 @@ class ClustersParser():
                 raise ValueError
 
             # Get cluster with default name that was saved.
-            default_cluster_type = self._get_cluster_type_by_name(cluster_name)
+            default_cluster_type = self.get_cluster_type_by_name(cluster_name)
             logger.debug(f"found {default_cluster_type}")
 
             # Get a copy of cluster type to modifiy it for later
@@ -660,14 +703,6 @@ class ClustersParser():
 
         return result
 
-    def _clean_restored_clusters(self, clusters):
-        """Remove restored clusters attributes that are
-        only required during parse."""
-        for x in clusters:
-            x.remove_tag_from_this_cluster('RESTORED')
-            x._cluster_props['by_name'] = []
-        return clusters
-
     # =============================
     #
     #       CLUSTERS PARSER
@@ -675,7 +710,7 @@ class ClustersParser():
     # =============================
     def _clusters_parser(self, mods,
                          available_to_parser_cluster_types, *,
-                         max_iterations=200,
+                         max_iterations=500,
                          parser_sanity_checks=True
                          ):
         """
@@ -739,11 +774,6 @@ class ClustersParser():
         # One of SUCCESS, POSSIBLE, FOUND or False
         iteration_result = None
 
-        # if _WITH_BPY:
-        #     modifier_type = bpy.types.Modifier
-        # elif not _WITH_BPY:
-        #     modifier_type = DummyBlenderModifier
-
         if logger.isEnabledFor(logging.DEBUG):
             # Info
             for x in modifiers_to_parse:
@@ -772,8 +802,13 @@ class ClustersParser():
                         f"priority is {x._cluster_definition['priority']}")
                 logger.debug(" ")
 
-        # TODO: this doesnt works as expected
-        # idk why
+        # if _WITH_BPY:
+        #     modifier_type = bpy.types.Modifier
+        # elif not _WITH_BPY:
+        #     modifier_type = DummyBlenderModifier
+
+        # # TODO: this doesnt works as expected
+        # # idk why
         # # Actual modifiers before parsing
         # old_actual_modifiers = []
 
@@ -1314,7 +1349,7 @@ class ClustersParser():
             x[1]._mod = x[1].get_first()
 
         # Set cluster name.
-        x[1] = self._cluster_number_format(
+        x[1] = cluster_number_format(
                 x[1], clusters_names)
 
         # Set controller and parser.
@@ -1323,106 +1358,71 @@ class ClustersParser():
 
         return x
 
-    def _cluster_number_format(
-            self, cluster, clusters_names=None):
-        """
-        Changes cluster's custom name, if cluster with same default
-        of custom name exists in clusters list.
-
-        Returns cluster with changed name.
-        """
-
-        if clusters_names is None:
-            clusters_names = []
-
-        # DefaultModifierCluster cant have duplicated name already
-        if isinstance(cluster, DefaultModifierCluster):
-            return cluster
-
-        # If it already have custom name for whatever reason
-        if cluster.get_this_cluster_name()\
-                == cluster.get_this_cluster_custom_name():
-            return cluster
-
-        # Number of clusters with this name
-        y = 0
-
-        # String to add to cluster name
-        e = cluster.get_this_cluster_name()
-
-        # Find existing clusters with similar name
-        for x in clusters_names:
-            if e in x:
-                y += 1
-
-        # Formats name to "cluster_name.cluster_number"
-        e += "."
-        if y <= 100:
-            e += "0"
-        if y <= 10:
-            e += "0"
-        e += f"{y}"
-
-        cluster.set_this_cluster_custom_name(e)
-
-        return cluster
-
-    def _get_clusters_names(self, clusters):
-        """
-        Returns list of custom names from list of clusters.
-        """
-        result = []
-        for x in clusters:
-            result.append(x.get_this_cluster_name())
-
-        return result
-
     def _get_new_cluster_type_index(self):
+        """Returns unique for this parser cluster type index."""
         self._last_cluster_type_index += 1
         return self._last_cluster_type_index - 1
 
-    # ====================================
-    # TODO: this methods should be removed.
-    # maybe not idk.
-    # ====================================
-    def _parse_modifiers_for_simple_clusters(self, modifiers_to_parse,
-                                             additional_types=None,
-                                             no_available_types=False):
-        """
-        Parses modfiers_to_parse against this object's
-        simple _available_cluster_types.
-        Object should already have
-        available clusters list.
 
-        Returns parse result list consisting of clusters.
-        Returns False if not found any or cant parse
-        passed modifiers list.
-        Returns None, if doesnt work correctly.
-        """
-        cluster_types = []
-        if not no_available_types:
-            cluster_types += self._available_cluster_types
-        if additional_types is not None:
-            compatible_additional = []
-            for x in additional_types:
-                if x.has_clusters():
-                    compatible_additional.append(x)
-            cluster_types += compatible_additional
+# =============
+# UTILS
+# =============
+def _get_clusters_names(clusters):
+    """Returns list of custom names from list of clusters."""
+    result = []
+    for x in clusters:
+        result.append(x.get_this_cluster_name())
+    return result
 
-        simple_clusters = []
-        e = copy.copy(modifiers_to_parse)
-        for x in cluster_types:
-            if x.get_this_cluster_possible_length() == 1:
-                # TODO: probably no need to do that
-                y = copy.deepcopy(x)
-                simple_clusters.append(y)
 
-        parse_result = self._clusters_parser(e,
-                                             simple_clusters
-                                             )
+def cluster_number_format(
+        cluster, clusters_names=None):
+    """Changes cluster's custom name, if cluster with same default
+    of custom name exists in clusters list.
 
-        unwrapped_result = self._unwrap_parse_result(parse_result, ['CREATE'])
+    Returns cluster with changed name.
+    """
 
-        clusters = self._initialize_clusters(unwrapped_result)
+    if clusters_names is None:
+        clusters_names = []
 
-        return clusters
+    # DefaultModifierCluster cant have duplicated name already
+    if isinstance(cluster, DefaultModifierCluster):
+        return cluster
+
+    # If it already have custom name for whatever reason
+    if cluster.get_this_cluster_name()\
+            == cluster.get_this_cluster_custom_name():
+        return cluster
+
+    # Number of clusters with this name
+    y = 0
+
+    # String to add to cluster name
+    e = cluster.get_this_cluster_name()
+
+    # Find existing clusters with similar name
+    for x in clusters_names:
+        if e in x:
+            y += 1
+
+    # Formats name to "cluster_name.cluster_number"
+    e += "."
+    if y <= 100:
+        e += "0"
+    if y <= 10:
+        e += "0"
+    e += f"{y}"
+
+    cluster.set_this_cluster_custom_name(e)
+
+    return cluster
+
+
+def _clean_restored_clusters(clusters):
+    """Remove restored clusters attributes that are
+    only required during parse."""
+    for x in clusters:
+        x.remove_tag_from_this_cluster('RESTORED')
+        x._cluster_props['by_name'] = []
+    return clusters

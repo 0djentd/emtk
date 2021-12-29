@@ -78,6 +78,14 @@ class ClustersListTrait():
             logger.debug(f'Created {x}')
         self._controller.do(x)
 
+    def create(self, cluster_type_instance):
+        self._check_if_cluster_removed()
+        """
+        Creates cluster or layer on this layer.
+        """
+        logger.info(f'Creating {cluster_type_instance} on layer {self}')
+        
+
     # =============
     # Actual modifier getters
     # Always return actual modifiers

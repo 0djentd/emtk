@@ -170,6 +170,7 @@ class ClustersController():
             else:
                 modifiers = command.initial_action.\
                         subject.get_full_actual_modifiers_list()
+
             logger.debug(f'Adding modifiers actions for {modifiers}')
             for x in modifiers:
                 a = ClustersAction(command.initial_action.verb, x)
@@ -177,6 +178,7 @@ class ClustersController():
                 a.dry = command.dry_modifiers
                 logger.debug(f'adding {a}')
                 actions.append(a)
+
         actions = self._sort_actions_by_layer_depth(
                 actions)
         logger.debug(f'{actions}')

@@ -45,3 +45,20 @@ class ClustersLayer(
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+    def get_clusters_for_instantiation(self):
+        """
+        Returns list of names and types of clusters or
+        layers that are required to create this layer.
+        Returns None, if cluster cant be created.
+        """
+        if not self._cluster_definition['createable']:
+            return None
+
+        clusters = []
+        for x, y in zip(self._cluster_definition['by_name'],
+                        self._cluster_definition['by_type']):
+            if x == 'ANY' or y == 'ANY':
+                return None
+            clusters.append(x, y)
+        return clusters
