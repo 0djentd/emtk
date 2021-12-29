@@ -35,40 +35,39 @@ from ..controller.answers import (
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+"""
+=============================
+MODIFIERS LIST METHODS NAMING
+=============================
+
+ModifiersCluster is a Cluster without clusters in it.
+ClustersLayer, or Layer, is a Cluster too, but without modifiers.
+
+All methods that have 'actual_modifier' in their name
+return actual Blender modifiers references, and assume that arguments
+use Blender modifiers instead of clusters.
+
+All methods that have 'cluster' in their name return Clusters or Layers.
+
+All methods that have 'recursive' in their name recursively calls cluster
+methods of same functional as called method.
+
+All methods that have 'loop' in their name iterate 'around' list, used
+for creating tools that have some kind of UI. They work on single
+layer, unless specified.
+
+Almost all methods that dont have anything of above in their name
+doesnt have anything to do with modifiers and operate on list in general.
+"""
+
 
 class ModifiersList():
-    """Base class for all modifiers and clusters lists.
     """
+    Base class for all modifiers and clusters lists.
 
-    # ============================================================
-    #
-    #               MODIFIERS LIST METHODS NAMING
-    #
-    # ============================================================
-    # All methods that have 'actual_modifier' in their name
-    # return actual Blender modifiers references, and assume that arguments
-    # use Blender modifiers.
-    #
-    # All methods that have 'modifier' in their name return Cluster modifiers
-    # unless used within SimpleModifiersList, which uses ActualModifiers.
-    # ModifiersCluster is a SimpleModifiersList.
-    #
-    # All methods that have 'cluster' in their name return Clusters, or even
-    # nested clusters.
-    #
-    # All methods that have 'recursive' in their name recursively calls cluster
-    # methods of same functional as called method. This also means that nested
-    # clusters are supported.
-    # NestedModifiersCluster use ModifiersClustersList.
-    #
-    # All methods that have 'loop' in their name iterate 'around' list, used
-    # for creating tools that have some kind of UI. They work on single
-    # layer, unless specified.
-    #
-    # All methods that dont have anything of above in their name doesnt have
-    # anything to do with modifiers and operate on list in general.
-    # ============================================================
-
+    It only used as base class for cluster_trait
+    and first_layer_clusters_list.
+    """
     def __init__(self, obj=None, *args, no_obj=None,
                  no_default_actions=False,
                  **kwargs):

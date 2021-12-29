@@ -41,15 +41,21 @@ class ClusterActionAnswer():
     case_all methods are used when action subject
     is anywhere in nested clusters.
     """
-    def __init__(self, cluster, *args, action_type, **kwargs):
+    def __init__(self, cluster, *args,
+                 action_type, only_interpret=False,
+                 **kwargs):
+
         self.cluster = cluster
         self.action_type = action_type
+        self._only_interpret = only_interpret
 
     def ask(self, action):
         """
         Returns cluster response to action.
         """
-        if action.subject is self.cluster:
+        if self._only_interpret:
+            actions = []
+        elif action.subject is self.cluster:
             actions = self._answer_case_self(action)
         elif action.subject in self.cluster.get_list():
             actions = self._answer_case_list(action)

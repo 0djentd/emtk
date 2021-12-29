@@ -29,6 +29,7 @@ except ModuleNotFoundError:
 
 from ....parser import ClustersParser
 from ....controller.clusters_controller import ClustersController
+from ....controller.answers import ActionDefaultRemove
 from ....utils.modifiers import get_modifier_state
 
 logger = logging.getLogger(__name__)
@@ -48,13 +49,21 @@ class FirstLayerClustersListTrait():
     # editing.
     _EXTENDED_MODIFIERS_LIST_VERSION = (0, 1, 0)
 
-    def __init__(self, *args, no_parse=None, **kwargs):
+    def __init__(self, *args,
+                 no_default_actions=None,
+                 no_parse=None, **kwargs):
+
         super().__init__(*args, **kwargs)
         self._controller = ClustersController(self, *args, **kwargs)
+
         self._controller._object = self._object
         self._clusters_parser = ClustersParser(*args, **kwargs)
         self._clusters_parser._object = self._object
         self._clusters_parser._controller = self._controller
+
+        if not no_default_actions:
+            self.add_action_answer(
+                    ActionDefaultRemove(self, only_interpret=True))
         if not no_parse:
             self.create_modifiers_list()
 
