@@ -52,8 +52,7 @@ class BMToolMod(ModifiersOperator):
     # Use statusbar to display modifier info.
     _BMTOOL_UI_STATUSBAR = False
 
-    # Keymap for bmtoolm.
-    bmtool_kbs = {
+    bmtool_kbs = {  # {{{
                   'visibility_1': 'V',
                   'visibility_2': 'B',
                   'sort': 'T',
@@ -94,7 +93,7 @@ class BMToolMod(ModifiersOperator):
                             'NUMPAD_7': '7',
                             'NUMPAD_8': '8',
                             'NUMPAD_9': '9',
-                            }
+                            }  # }}}
 
     # ------------------------------------------------------------
     # Some variables that are created when operator is initialized
@@ -503,7 +502,7 @@ class BMToolMod(ModifiersOperator):
         """This methods is reserved for clusters editors."""
         return self.bmtool_modal_2(context, event)
 
-    def _modal_digits_set(self, event):
+    def _modal_digits_set(self, event):  # {{{
         """This thing writes a string that can be used in modal operator
         to get integer, float, or string.
         """
@@ -552,7 +551,7 @@ class BMToolMod(ModifiersOperator):
             self._mode = self._previous_mode
         else:
             return False
-        return True
+        return True  # }}}
 
     """
     This two methods are used to get variable value from modal input mode.
@@ -571,9 +570,7 @@ class BMToolMod(ModifiersOperator):
         self._modal_str_clear()
         return result
 
-    """
-    Modal input mode utils.
-    """
+    # Digits input mode utils.{{{
     def _modal_numbers_get_val(self, t='ANY'):
         if len(self.bmtool_modal_numbers_str) == 0:
             return None
@@ -607,6 +604,7 @@ class BMToolMod(ModifiersOperator):
 
     def _modal_str_clear(self):
         self.bmtool_modal_str = ''
+    # }}}
 
     def clear(self, context):
         """Removes operator.
@@ -630,7 +628,7 @@ class BMToolMod(ModifiersOperator):
         del(self.m_list)
         logger.info("Modal operator finished")
 
-    def invoke(self, context, event):# {{{
+    def invoke(self, context, event):  # {{{
         """Method that is invoked once per operator usage."""
 
         # ------------------------------
@@ -694,7 +692,7 @@ class BMToolMod(ModifiersOperator):
         self.first_y = event.mouse_y
 
         context.window_manager.modal_handler_add(self)
-        return {'RUNNING_MODAL'}# }}}
+        return {'RUNNING_MODAL'}  # }}}
 
     # Methods reserved for operators. {{{
     def bmtool_modal_1(self, context, event):
@@ -734,11 +732,9 @@ class BMToolMod(ModifiersOperator):
         This method is called when encountered FINISHED or CANCELLED in
         BMToolMod modal methods.
         """
-        return# }}}
+        return
+    # }}}
 
-    # =====
-    # UTILS
-    # =====
     def _display_additional_info_about_bmtool(self, context):
         logger.debug("BMTool is created")
         logger.debug(f"_BMTOOLM {self._BMTOOLM}")
