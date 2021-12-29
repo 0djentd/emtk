@@ -25,13 +25,12 @@ from ..editors.weightednormal import BMToolEditorWeightedNormal
 from ..editors.bevel import BMToolEditorBevel
 
 
-# Tool for editing all modifiers of an object
 class BMTOOL_OT_bmtoolm(BMToolUi, BMToolMod, Operator):
+    """Tool for editing all modifiers of an object."""
+
     bl_idname = "object.bmtoolm"
     bl_label = "BMToolM"
     bl_description = "Edit modifiers on selected objects"
-
-    _BMTOOLM = True
 
     # List of all editors
     # _editors[]
@@ -43,9 +42,7 @@ class BMTOOL_OT_bmtoolm(BMToolUi, BMToolMod, Operator):
     # _active_editor
 
     def __init__(self):
-        """
-        Creates list of all editors
-        """
+        """Creates list of all editors."""
 
         self._editors = []
         self._possible_editors = []
@@ -57,14 +54,41 @@ class BMTOOL_OT_bmtoolm(BMToolUi, BMToolMod, Operator):
         editor = BMToolEditorBevel()
         self._editors.append(editor)
 
+    def add_editor(self, editor):
+        """Adds new editor type or replaces existing one."""
+        self.remove_editor(editor)
+        self._initialize_bmtoolm_editor(editor)
+        self._editors.append(editor)
+
+    def remove_editor(self, editor):
+        """Removes editor from this operator."""
+        remove = []
+        for x in self._editors:
+            if editor.props['name'] == x.props['name']\
+                    and editor.props['cluster_types']\
+                    == x.props['cluster_types']:
+                remove.append(x)
+        for x in remove:
+            if x is self._active_editor:
+                raise ValueError
+            self._editors.remove(x)
+
     def get_editor(self):
-        """Returns currently active editor"""
+        """Returns currently active editor."""
         if self._active_editor in self._possible_editors:
             return self._active_editor
         elif self._active_editor is None:
             return
         else:
             raise TypeError
+
+    def _get_editors(self, cluster):
+        """Returns list of possible editors for cluster."""
+        editors_list = []
+        for editor in self._editors:
+            if cluster.type in editor.props['cluster_types']:
+                editors_list.append(editor)
+        return editors_list
 
     def sel_previous_editor(self):
         """Selects previous possible editor."""
@@ -81,14 +105,6 @@ class BMTOOL_OT_bmtoolm(BMToolUi, BMToolMod, Operator):
             self._active_editor = self._possible_editors[i + 1]
         else:
             self._active_editor = self._possible_editors[0]
-
-    def _get_editors(self, cluster):
-        """Returns list of editors for cluster."""
-        editors_list = []
-        for editor in self._editors:
-            if cluster.type in editor.props['cluster_types']:
-                editors_list.append(editor)
-        return editors_list
 
     def bmtool_modifier_update(self, context):
         """
@@ -179,5 +195,8 @@ class BMTOOL_OT_bmtoolm(BMToolUi, BMToolMod, Operator):
         Additional invoke method
         """
         for editor in self._editors:
-            editor.first_x = event.mouse_x
-            editor.first_y = event.mouse_y
+            self._initialize_bmtoolm_editor(editor)
+
+    def _initialize_bmtoolm_editor(self, editor):
+        editor.first_x = self.first_x
+        editor.first_y = self.first_y
