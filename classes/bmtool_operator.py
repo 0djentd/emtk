@@ -18,6 +18,7 @@
 
 import copy
 import logging
+import string
 
 import bpy
 
@@ -83,6 +84,34 @@ class BMToolMod(ModifiersOperator):
                   'collapse': 'R',
                   'exit': 'Q'
                   }
+
+    _MODAL_LETTERS = string.ascii_uppercase
+
+    _MODAL_DIGITS = {
+                     'ZERO': '0',
+                     'ONE': '1',
+                     'TWO': '2',
+                     'THREE': '3',
+                     'FOUR': '4',
+                     'FIVE': '5',
+                     'SIX': '6',
+                     'SEVEN': '7',
+                     'EIGHT': '8',
+                     'NINE': '9',
+                     }
+
+    _MODAL_DIGITS_NUMPAD = {
+                            'NUMPAD_0': '0',
+                            'NUMPAD_1': '1',
+                            'NUMPAD_2': '2',
+                            'NUMPAD_3': '3',
+                            'NUMPAD_4': '4',
+                            'NUMPAD_5': '5',
+                            'NUMPAD_6': '6',
+                            'NUMPAD_7': '7',
+                            'NUMPAD_8': '8',
+                            'NUMPAD_9': '9',
+                            }
 
     # ------------------------------------------------------------
     # Some variables that are created when operator is initialized
@@ -471,36 +500,24 @@ class BMToolMod(ModifiersOperator):
 
         return {'RUNNING_MODAL'}
 
-    def _modal_numbers_set(self, event):
+    # INT, STR, FLOAT
+    def _modal_digits_set(self, event):
+        """This thing writes a string that can be used in modal operator
+        to get integer, float, or string.
+        Returns True, if event type was in digits list.
         """
-        This thing writes a string that can be later converted to int or float.
-        """
-        if (event.type == 'ZERO') & (event.value == 'PRESS'):
-            self.bmtool_modal_numbers_str = self.bmtool_modal_numbers_str + '0'
-        elif (event.type == 'ONE') & (event.value == 'PRESS'):
-            self.bmtool_modal_numbers_str = self.bmtool_modal_numbers_str + '1'
-        elif (event.type == 'TWO') & (event.value == 'PRESS'):
-            self.bmtool_modal_numbers_str = self.bmtool_modal_numbers_str + '2'
-        elif (event.type == 'THREE') & (event.value == 'PRESS'):
-            self.bmtool_modal_numbers_str = self.bmtool_modal_numbers_str + '3'
-        elif (event.type == 'FOUR') & (event.value == 'PRESS'):
-            self.bmtool_modal_numbers_str = self.bmtool_modal_numbers_str + '4'
-        elif (event.type == 'FIVE') & (event.value == 'PRESS'):
-            self.bmtool_modal_numbers_str = self.bmtool_modal_numbers_str + '5'
-        elif (event.type == 'SIX') & (event.value == 'PRESS'):
-            self.bmtool_modal_numbers_str = self.bmtool_modal_numbers_str + '6'
-        elif (event.type == 'SEVEN') & (event.value == 'PRESS'):
-            self.bmtool_modal_numbers_str = self.bmtool_modal_numbers_str + '7'
-        elif (event.type == 'EIGHT') & (event.value == 'PRESS'):
-            self.bmtool_modal_numbers_str = self.bmtool_modal_numbers_str + '8'
-        elif (event.type == 'NINE') & (event.value == 'PRESS'):
-            self.bmtool_modal_numbers_str = self.bmtool_modal_numbers_str + '9'
-        elif (event.type == 'PERIOD') & (event.value == 'PRESS'):
+        for x in self._MODAL_DIGITS:
+            if event.type == x and event.value == 'PRESS':
+                self.bmtool_modal_numbers_str\
+                    = self.bmtool_modal_numbers_str + self._MODAL_DIGITS[x]
+                return True
+        if event.type == 'PERIOD' and event.value == 'PRESS':
             self.bmtool_modal_numbers_str = self.bmtool_modal_numbers_str + '.'
-        elif (event.type == 'BACK-SPACE') & (event.value == 'PRESS'):
+        elif event.type == 'BACK-SPACE' and event.value == 'PRESS':
             self.bmtool_modal_numbers_str = self.bmtool_modal_numbers_str[0:-1]
         else:
             return False
+        return True
 
     def _modal_numbers_get_val(self, t='ANY'):
         """
@@ -532,6 +549,45 @@ class BMToolMod(ModifiersOperator):
 
     def _modal_numbers_clear(self):
         self.bmtool_modal_numbers_str = ''
+
+    # STR
+    def _modal_str_set(self, event):
+        """This thing writes a string that can be used in modal operator.
+        Returns True, if event type was in letters and digits list.
+        """
+        for x in self._MODAL_LETTERS:
+            if event.type == x and event.value == 'PRESS':
+                if event.shift:
+                    self.bmtool_modal_str\
+                            = self.bmtool_modal_str + x
+                else:
+                    self.bmtool_modal_str\
+                            = self.bmtool_modal_str + x.lower()
+                return True
+        for x in self._MODAL_DIGITS:
+            if event.type == x and event.value == 'PRESS':
+                self.bmtool_modal_str = self.bmtool_modal_str + x
+                return True
+        if event.type == 'PERIOD' and event.value == 'PRESS':
+            self.bmtool_modal_numbers_str = self.bmtool_modal_numbers_str + '.'
+        elif event.type == 'MINUS' and event.value == 'PRESS':
+            if event.shift:
+                self.bmtool_modal_numbers_str\
+                        = self.bmtool_modal_numbers_str + '_'
+            else:
+                self.bmtool_modal_numbers_str\
+                        = self.bmtool_modal_numbers_str + '-'
+        elif event.type == 'BACK-SPACE' and event.value == 'PRESS':
+            self.bmtool_modal_numbers_str = self.bmtool_modal_numbers_str[0:-1]
+        else:
+            return False
+        return True
+
+    def _modal_str_get(self):
+        return self.bmtool_modal_str
+
+    def _modal_str_clear(self):
+        self.bmtool_modal_str = ''
 
     def clear(self, context):
         """

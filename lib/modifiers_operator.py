@@ -56,9 +56,6 @@ class ModifiersOperator():
         Returns False if no objects selected
         """
 
-        for x in range(50):
-            logger.info(" ")
-
         if cluster_types is None:
             clusters = []
         elif isinstance(cluster_types, list):
@@ -70,6 +67,8 @@ class ModifiersOperator():
         else:
             TypeError
 
+        for x in range(50):
+            logger.info(" ")
         logger.info("================================")
         logger.info("  MODIFIERS OPERATOR STARTED")
         logger.info("================================")
@@ -82,15 +81,17 @@ class ModifiersOperator():
         if len(context.view_layer.objects.selected) == 0:
             return False
 
-        # Add some cluster types
-        default_clusters = self._default_cluster_types()
-        for x in default_clusters:
-            y = x.get_this_cluster_definition()
-            if y not in clusters:
-                save_cluster_type_definition_to_settings(y, 'bmtools')
+        # # Add some cluster types
+        # default_clusters = self._default_cluster_types()
+        # for x in default_clusters:
+        #     y = x.get_this_cluster_definition()
+        #     if y not in clusters:
+        #         save_cluster_type_definition_to_settings(y, 'bmtools')
 
-        if bpy.context.preferences.addons['bmtools'].preferences.custom_cluster_types is True\
-                and bpy.context.preferences.addons['bmtools'].preferences.always_add_custom_cluster_types is True\
+        if bpy.context.preferences.addons[
+                'bmtools'].preferences.custom_cluster_types is True\
+                and bpy.context.preferences.addons[
+                'bmtools'].preferences.always_add_custom_cluster_types is True\
                 and _WITH_BPY is True:
             clusters = get_cluster_types_definitions_from_settings('bmtools')
             clusters = instantiate_clusters_from_definitions(clusters)
