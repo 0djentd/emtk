@@ -16,18 +16,13 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+import copy
+
 from .cluster_trait import ClusterTrait
 
 from ..lists.modifiers_list import ModifiersList
 from ..lists.traits.modifiers.active_modifier \
         import ActiveModifierTrait
-
-try:
-    import bpy
-    _WITH_BPY = True
-except ModuleNotFoundError:
-    from ..dummy_modifiers import DummyBlenderModifier, DummyBlenderObj
-    _WITH_BPY = False
 
 
 class ModifiersCluster(
@@ -40,3 +35,7 @@ class ModifiersCluster(
     """
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+    @property
+    def modifiers(self):
+        return copy.copy(self._modifiers_list)

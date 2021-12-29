@@ -16,6 +16,7 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+import copy
 import logging
 
 from ....clusters.cluster_trait import ClusterTrait
@@ -51,6 +52,10 @@ class ClustersListTrait():
 
     def has_clusters(self):
         return True
+
+    @property
+    def clusters(self):
+        return copy.copy(self._modifiers_list)
 
     # ====================
     # Actions

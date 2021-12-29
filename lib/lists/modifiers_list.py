@@ -152,24 +152,19 @@ class ModifiersList():
         self._controller.do(x)
 
     def move_up(self, cluster):
-        """
-        Removes cluster from this list.
-
-        Returns None or False, if cluster already first in this list.
+        """Moves cluster or modifier in this list.
+        Returns True, if successfully moved cluster or modifier.
         """
         return self._move(cluster, direction='UP')
 
     def move_down(self, cluster):
-        """
-        Removes cluster from this list.
-
-        Returns None or False, if cluster already last in this list.
+        """Moves cluster or modifier in this list.
+        Returns True, if successfully moved cluster or modifier.
         """
         return self._move(cluster, direction='DOWN')
 
     def _move(self, cluster, direction, allow_deconstruct=False):
-        """
-        Moves cluster or modifier in this list.
+        """Moves cluster or modifier in this list.
         If allow_deconstruct is true, skips check
         for position in list.
 
@@ -237,6 +232,7 @@ class ModifiersList():
             x_2.reverse_by_layer = False
 
         self._controller.do([x, x_2])
+        return True
 
     def move_to_index(self, mod, i):
         """
