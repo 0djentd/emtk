@@ -41,21 +41,15 @@ logger.setLevel(logging.DEBUG)
 # Cluster types from settings
 # ==========================
 def get_cluster_types_definitions_from_settings(addon_name, group=None):
+    """Returns cluster types definitions from addon preferences."""
     if not isinstance(addon_name, str):
+        raise TypeError
+    if not isinstance(group, str) and group is not None:
         raise TypeError
 
     c = bpy.context.preferences.addons[
             addon_name].preferences.cluster_types
-
     c = _deserialize_cluster_type_definitions_list(c)
-
-    # Check list
-    if not isinstance(c, list):
-        raise TypeError
-    for x in c:
-        if not isinstance(x, dict):
-            raise TypeError
-
     if group is not None:
         c = _filter_by_attr(c, 'group', group)
     return c
@@ -63,26 +57,13 @@ def get_cluster_types_definitions_from_settings(addon_name, group=None):
 
 def save_cluster_type_definition_to_settings(
         cluster, addon_name, group=None):
-    if not isinstance(cluster, dict):
-        raise TypeError
-    if not isinstance(addon_name, str):
-        raise TypeError
-    if not isinstance(group, str) and group is not None:
-        raise TypeError
-
-    # load
+    """Adds cluster type definition to addon preferences."""
     c = get_cluster_types_definitions_from_settings(addon_name, group)
-
-    # and add group to definition.
     if group is not None:
         cluster['group'] = group
     else:
         cluster['group'] = 'ANY'
-
-    # add new def
     c = _add_replace_cluster_type(c, cluster)
-
-    # write
     c = _serialize_cluster_type_definitions_list(c)
     bpy.context.preferences.addons[
             addon_name].preferences.cluster_types = c
@@ -90,47 +71,64 @@ def save_cluster_type_definition_to_settings(
 
 def remove_cluster_type_definition_from_settings(
         cluster, addon_name, group=None):
-    if not isinstance(cluster, dict):
-        raise TypeError
-    if not isinstance(addon_name, str):
-        raise TypeError
-    if not isinstance(group, str) and group is not None:
-        raise TypeError
-
-    # load
+    """Removes cluster type definition from addon preferences."""
     t = get_cluster_types_definitions_from_settings(addon_name, group)
-
-    # remove def
     t = _remove_cluster_type(t, cluster)
-
-    # write
     t = _serialize_cluster_type_definitions_list(t)
-    bpy.context.preferences.addons[addon_name].preferences.cluster_types = t
+    bpy.context.preferences.addons[
+            addon_name].preferences.cluster_types = t
 
 
 # ===================
 # Object cluster types
 # ===================
-# def get_cluster_types_definitions_from_obj(
-#         obj, addon_name, dont_add_prop=False):
-#     if obj is None:
-#         raise TypeError
-#     if not isinstance(addon_name, str):
-#         raise TypeError
-#     try:
-#         t = obj[addon_name]
-#     except KeyError:
-#         if not dont_add_prop:
-#             obj[addon_name] = '[]'
-#             t = obj[addon_name]
-#         else:
-#             raise KeyError
-#     return t
+def get_cluster_types_definitions_from_obj(
+        obj, addon_name, group=None, dont_add_prop=False):
+    """Returns cluster types definitions from object."""
+    if obj is None:
+        raise TypeError
+    if not isinstance(addon_name, str):
+        raise TypeError
+    if not isinstance(dont_add_prop, bool):
+        raise TypeError
+
+    try:
+        t = obj[addon_name]
+    except KeyError:
+        if not dont_add_prop:
+            obj[addon_name] = '[]'
+            t = obj[addon_name]
+        else:
+            raise KeyError
+    if group is not None:
+        c = _filter_by_attr(t, 'group', group)
+    return c
 
 
-# def save_cluster_type_definition_to_obj(
-#         obj, addon_name, dont_add_prop=False):
-#     return
+def save_cluster_type_definition_to_obj(
+        obj, cluster, addon_name, group=None, dont_add_prop=False):
+    """Adds cluster type definition to object."""
+    c = get_cluster_types_definitions_from_obj(
+            obj, addon_name, group, dont_add_prop)
+
+    # and add group to definition.
+    if group is not None:
+        cluster['group'] = group
+    else:
+        cluster['group'] = 'ANY'
+    c = _add_replace_cluster_type(c, cluster)
+    c = _serialize_cluster_type_definitions_list(c)
+    obj[addon_name] = c
+
+
+def remove_cluster_type_definition_from_obj(
+        obj, cluster, addon_name, group=None, dont_add_prop=False):
+    """Removes cluster type definition from object."""
+    c = get_cluster_types_definitions_from_obj(
+            obj, addon_name, group, dont_add_prop)
+    c = _remove_cluster_type(c, cluster)
+    c = _serialize_cluster_type_definitions_list(c)
+    obj[addon_name] = c
 
 
 # =======
@@ -151,6 +149,7 @@ def _add_replace_cluster_type(definitions, cluster_type):
 
     c = copy.copy(definitions)
     cluster = cluster_type
+
     remove = []
     for x in c:
         if x['name'] == cluster['name']\
@@ -160,7 +159,6 @@ def _add_replace_cluster_type(definitions, cluster_type):
             remove.append(x)
     for x in remove:
         c.remove(x)
-
     c.append(cluster)
     return c
 
@@ -173,6 +171,7 @@ def _remove_cluster_type(definitions, cluster_type):
             raise TypeError(f'Expected dict, got {type(x)}')
     if not isinstance(cluster_type, dict):
         raise TypeError(f'Expected dict, got {type(cluster_type)}')
+
     remove = []
     for x in definitions:
         if x == cluster_type:
