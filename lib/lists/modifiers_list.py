@@ -37,8 +37,7 @@ logger.setLevel(logging.DEBUG)
 
 
 class ModifiersList():
-    """
-    Base class for all modifiers and clusters lists.
+    """Base class for all modifiers and clusters lists.
     """
 
     # ============================================================
@@ -235,12 +234,7 @@ class ModifiersList():
         return True
 
     def move_to_index(self, mod, i):
-        """
-        Moves cluster to index.
-
-        Returns True if moved modifier.
-        Returns False if any errors.
-        """
+        """Moves cluster to index. Returns True if moved modifier."""
         self._check_if_cluster_removed()
         # TODO: not tested
         if i < self.get_list_length():

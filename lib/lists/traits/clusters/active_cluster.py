@@ -26,11 +26,7 @@ logger.setLevel(logging.DEBUG)
 
 # TODO: this trait requires class to also inherit ObjectClustersListTrait
 class ActiveClusterTrait():
-    """
-    Active cluster and selection for clusters list.
-
-    Selection works on single layer of clusters.
-    """
+    """Active cluster and selection for clusters list."""
 
     # Active_modifier doesnt neccessary means that this is an actual modifier.
     # It mostly used for clusters, as every modifier is a cluster anyways.
@@ -69,9 +65,10 @@ class ActiveClusterTrait():
         """
         return self.get_active_cluster_layer()
 
-    # TODO: this methods should be renamed
+    # TODO: rename all this methods to active.
     @property
     def active_modifier(self):
+        """Returns active modifier or None, if no modifiers."""
         if len(self._modifiers_list) > 0:
             return self.active_modifier_get()
         else:
