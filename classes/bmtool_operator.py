@@ -502,7 +502,8 @@ class BMToolMod(ModifiersOperator):
         """This methods is reserved for clusters editors."""
         return self.bmtool_modal_2(context, event)
 
-    def _modal_digits_set(self, event):  # {{{
+    # Difits and letters methods  {{{
+    def _modal_digits_set(self, event):
         """This thing writes a string that can be used in modal operator
         to get integer, float, or string.
         """
@@ -570,7 +571,7 @@ class BMToolMod(ModifiersOperator):
         self._modal_str_clear()
         return result
 
-    # Digits input mode utils.{{{
+    # Digits and letters input mode utils.{{{
     def _modal_numbers_get_val(self, t='ANY'):
         if len(self.bmtool_modal_numbers_str) == 0:
             return None
@@ -606,7 +607,7 @@ class BMToolMod(ModifiersOperator):
         self.bmtool_modal_str = ''
     # }}}
 
-    def clear(self, context):
+    def clear(self, context):  # {{{
         """Removes operator.
 
         Used when encountering FINISHED or CANCELLED in modal method
@@ -626,7 +627,7 @@ class BMToolMod(ModifiersOperator):
             logger.info("Saved modifiers and clusters.")
         del(self.selected_objects)
         del(self.m_list)
-        logger.info("Modal operator finished")
+        logger.info("Modal operator finished")  # }}}
 
     def invoke(self, context, event):  # {{{
         """Method that is invoked once per operator usage."""
