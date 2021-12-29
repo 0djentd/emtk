@@ -354,11 +354,9 @@ class BMToolMod(ModifiersOperator):
                 if (cluster.collapsed is False)\
                         & (cluster.has_clusters() is False):
                     cluster.collapsed = True
-
                 elif (cluster.collapsed is True)\
                         & (cluster.has_clusters() is False):
                     layer.collapsed = True
-
                 elif (cluster.collapsed is True)\
                         & (cluster.has_clusters() is True):
                     layer.collapsed = True

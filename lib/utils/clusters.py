@@ -30,6 +30,8 @@ except ModuleNotFoundError:
 from ..clusters.modifiers_cluster import ModifiersCluster
 from ..clusters.clusters_layer import ClustersLayer
 
+_cluster_utils_type_checks = True
+
 logger = logging.getLogger(__package__)
 logger.setLevel(logging.DEBUG)
 
@@ -40,7 +42,8 @@ logger.setLevel(logging.DEBUG)
 # ==========================
 # Cluster types from settings
 # ==========================
-def get_cluster_types_definitions_from_settings(addon_name, group=None):
+def get_cluster_types_definitions_from_settings(
+        addon_name, group=None):
     """Returns cluster types definitions from addon preferences."""
     if not isinstance(addon_name, str):
         raise TypeError
@@ -91,13 +94,12 @@ def get_cluster_types_definitions_from_obj(
         raise TypeError
     if not isinstance(dont_add_prop, bool):
         raise TypeError
-
     try:
-        t = obj[addon_name]
+        t = obj[f'{addon_name}_cluster_types']
     except KeyError:
         if not dont_add_prop:
-            obj[addon_name] = '[]'
-            t = obj[addon_name]
+            obj[f'{addon_name}_cluster_types'] = '[]'
+            t = obj[f'{addon_name}_cluster_types']
         else:
             raise KeyError
     if group is not None:
@@ -110,7 +112,6 @@ def save_cluster_type_definition_to_obj(
     """Adds cluster type definition to object."""
     c = get_cluster_types_definitions_from_obj(
             obj, addon_name, group, dont_add_prop)
-
     # and add group to definition.
     if group is not None:
         cluster['group'] = group
@@ -118,7 +119,7 @@ def save_cluster_type_definition_to_obj(
         cluster['group'] = 'ANY'
     c = _add_replace_cluster_type(c, cluster)
     c = _serialize_cluster_type_definitions_list(c)
-    obj[addon_name] = c
+    obj[f'{addon_name}_cluster_types'] = c
 
 
 def remove_cluster_type_definition_from_obj(
@@ -128,7 +129,7 @@ def remove_cluster_type_definition_from_obj(
             obj, addon_name, group, dont_add_prop)
     c = _remove_cluster_type(c, cluster)
     c = _serialize_cluster_type_definitions_list(c)
-    obj[addon_name] = c
+    obj[f'{addon_name}_cluster_types'] = c
 
 
 # =======
@@ -139,13 +140,14 @@ def _add_replace_cluster_type(definitions, cluster_type):
     Adds cluster type definition to list of definitions.
     Replaces existing one with same name and type.
     """
-    if not isinstance(definitions, list):
-        raise TypeError(f'Expected list, got {type(definitions)}')
-    for x in definitions:
-        if not isinstance(x, dict):
-            raise TypeError(f'Expected dict, got {type(x)}')
-    if not isinstance(cluster_type, dict):
-        raise TypeError(f'Expected list, got {type(definitions)}')
+    if _cluster_utils_type_checks:
+        if not isinstance(definitions, list):
+            raise TypeError(f'Expected list, got {type(definitions)}')
+        for x in definitions:
+            if not isinstance(x, dict):
+                raise TypeError(f'Expected dict, got {type(x)}')
+        if not isinstance(cluster_type, dict):
+            raise TypeError(f'Expected list, got {type(definitions)}')
 
     c = copy.copy(definitions)
     cluster = cluster_type
@@ -164,14 +166,15 @@ def _add_replace_cluster_type(definitions, cluster_type):
 
 
 def _remove_cluster_type(definitions, cluster_type):
-    if not isinstance(definitions, list):
-        raise TypeError(f'Expected list, got {type(definitions)}')
-    for x in definitions:
-        if not isinstance(x, dict):
-            raise TypeError(f'Expected dict, got {type(x)}')
-    if not isinstance(cluster_type, dict):
-        raise TypeError(f'Expected dict, got {type(cluster_type)}')
-
+    if _cluster_utils_type_checks:
+        if not isinstance(definitions, list):
+            raise TypeError(f'Expected list, got {type(definitions)}')
+        for x in definitions:
+            if not isinstance(x, dict):
+                raise TypeError(f'Expected dict, got {type(x)}')
+        if not isinstance(cluster_type, dict):
+            raise TypeError(f'Expected dict, got {type(cluster_type)}')
+    definitions = copy.copy(definitions)
     remove = []
     for x in definitions:
         if x == cluster_type:
@@ -182,14 +185,14 @@ def _remove_cluster_type(definitions, cluster_type):
 
 
 def _filter_by_attr(definitions, attr_name, value):
-    if not isinstance(definitions, list):
-        raise TypeError(f'Expected list, got {type(definitions)}')
-    for x in definitions:
-        if not isinstance(x, dict):
-            raise TypeError(f'Expected dict, got {type(x)}')
-    if not isinstance(attr_name, str):
-        raise TypeError(f'Expected str, got {type(attr_name)}')
-
+    if _cluster_utils_type_checks:
+        if not isinstance(definitions, list):
+            raise TypeError(f'Expected list, got {type(definitions)}')
+        for x in definitions:
+            if not isinstance(x, dict):
+                raise TypeError(f'Expected dict, got {type(x)}')
+        if not isinstance(attr_name, str):
+            raise TypeError(f'Expected str, got {type(attr_name)}')
     result = []
     for x in definitions:
         if x[attr_name] == value:
@@ -197,21 +200,10 @@ def _filter_by_attr(definitions, attr_name, value):
     return result
 
 
-def instantiate_cluster_types_from_definitions(cluster_types_definitions):
-    if not isinstance(cluster_types_definitions, list):
-        raise TypeError
-    result = []
-    for x in cluster_types_definitions:
-        if not isinstance(x, dict):
-            raise TypeError
-        result.append(deserialize_cluster_type_definition(x))
-    return result
-
-
 # =========================
 # instantiated cluster type
 # =========================
-def deserialize_cluster_type_definition(cluster_type_definition,
+def instantiate_cluster_from_definition(cluster_type_definition,
                                         *args, **kwargs):
     if not isinstance(cluster_type_definition, dict):
         raise TypeError(f'Expected dict, not {type(cluster_type_definition)}')
@@ -247,6 +239,15 @@ def deserialize_cluster_type_definition(cluster_type_definition,
                                )
     else:
         raise TypeError(f'Cant deserialize {x["cluster_class"]}')
+    return result
+
+
+def instantiate_clusters_from_definitions(cluster_types_definitions):
+    if not isinstance(cluster_types_definitions, list):
+        raise TypeError
+    result = []
+    for x in cluster_types_definitions:
+        result.append(instantiate_cluster_from_definition(x))
     return result
 
 

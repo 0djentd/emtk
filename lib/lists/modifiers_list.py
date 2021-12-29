@@ -80,7 +80,6 @@ class ModifiersList():
                 raise ValueError
 
         self._object = obj
-
         self.__DUMMY_MODIFIERS = False
         self._modifiers_list = []
         self._actions = {}
