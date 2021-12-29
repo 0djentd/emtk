@@ -29,10 +29,8 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-# Modal modifier operator base class
 class BMToolMod(ModifiersOperator):
-    """
-    Base class for modal operators that use Blender modifier stack
+    """Base class for modal operators that use Blender modifier stack
     through ModififersOperator and ExtendedModifiersList.
     """
 
@@ -44,6 +42,9 @@ class BMToolMod(ModifiersOperator):
 
     # Dont let to use operator if more than one object is selected.
     _BMTOOL_SINGLE_OBJECT = False
+
+    # TODO: Operator can be used without modifiers
+    _BMTOOL_NO_MODIFIERS = False
 
     # Create draw handler.
     _BMTOOL_UI = False
@@ -129,7 +130,7 @@ class BMToolMod(ModifiersOperator):
             return False
         return True
 
-    def modal(self, context, event):
+    def modal(self, context, event): # {{{
         """Method that is initiated every frame or whatever."""
 
         # Redraw UI
@@ -496,7 +497,7 @@ class BMToolMod(ModifiersOperator):
                 self.bmtool_modifier_update(context)
         else:
             return False
-        return True
+        return True# }}}
 
     def _modal_editor(self, context, event):
         """This methods is reserved for clusters editors."""
@@ -629,7 +630,7 @@ class BMToolMod(ModifiersOperator):
         del(self.m_list)
         logger.info("Modal operator finished")
 
-    def invoke(self, context, event):
+    def invoke(self, context, event):# {{{
         """Method that is invoked once per operator usage."""
 
         # ------------------------------
@@ -693,11 +694,9 @@ class BMToolMod(ModifiersOperator):
         self.first_y = event.mouse_y
 
         context.window_manager.modal_handler_add(self)
-        return {'RUNNING_MODAL'}
+        return {'RUNNING_MODAL'}# }}}
 
-    # =======================================
-    # This methods are reserved for operators.
-    # =======================================
+    # Methods reserved for operators. {{{
     def bmtool_modal_1(self, context, event):
         """Operator-specific modal method 1
 
@@ -735,7 +734,7 @@ class BMToolMod(ModifiersOperator):
         This method is called when encountered FINISHED or CANCELLED in
         BMToolMod modal methods.
         """
-        return
+        return# }}}
 
     # =====
     # UTILS
