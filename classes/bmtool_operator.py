@@ -66,6 +66,7 @@ class BMToolMod(ModifiersOperator):
                   'exit': 'Q'
                   }
 
+    # This three variables used in modal input mode.
     _MODAL_LETTERS = string.ascii_uppercase
 
     _MODAL_DIGITS = {
@@ -132,31 +133,32 @@ class BMToolMod(ModifiersOperator):
         """
         Method that is initiated every frame or whatever.
         """
+
         # Redraw UI
         if self._BMTOOL_UI:
             context.area.tag_redraw()
         if self._BMTOOL_UI_STATUSBAR:
             context.workspace.status_text_set()
 
-        # Active cluster reference
+        # Active cluster and layer reference.
         cluster = self.m_list.get_cluster()
-
-        # Active cluster layer
         layer = self.m_list.get_layer()
 
         """
         This is different modes of this operator.
+        {'ACTIONS', 'EDITOR', 'INT', 'STR'}
 
-        'ACTIONS' is modal loop for general actions on clusters list,
-        for example applying, moving and switching visibility of modifiers.
+        'ACTIONS' is modal loop for general actions on clusters list.
+        Example: applying, moving and switching visibility of modifiers.
 
         'EDITOR' is bmtool_editor modal loop.
         It is used for modal editing of modifiers and clusters properties
         within editor.
+        Example: bevel angle editing.
 
-        This two methods always switch back to previous mode:
         'DIGITS' is digits input mode.
         'STR' is string input mode.
+        This two methods always switch back to previous mode.
         """
         if self._mode = 'ACTIONS':
             a = self._modal_actions(context, event)
@@ -168,10 +170,9 @@ class BMToolMod(ModifiersOperator):
             a = self._modal_str_set(context, event)
         if a is not True and a is not False:
             return a
-        return {'RUNNING_MODAL'}
 
         # Exit out of modifier editing mode or finish operator.
-        elif (event.type == self.bmtool_kbs['exit'])\
+        if (event.type == self.bmtool_kbs['exit'])\
                 & (event.value == 'PRESS'):
             if self.bmtool_mode != self._BMTOOL_DEFAULT_MODE:
                 self.bmtool_mode = self._BMTOOL_DEFAULT_MODE
@@ -191,18 +192,6 @@ class BMToolMod(ModifiersOperator):
         elif event.type in {'RIGHTMOUSE', 'ESC'}:
             self.clear(context)
             return {'CANCELLED'}
-
-        # ------------------------------
-        # Operator-specific modal
-        # ------------------------------
-        else:
-            result = self.bmtool_modal_2(context, event)
-            if result == {'FINISHED'}:
-                self.clear(context)
-                return {'FINISHED'}
-            elif result == {'CANCELLED'}:
-                self.clear(context)
-                return {'CANCELLED'}
 
         return {'RUNNING_MODAL'}
 
@@ -514,7 +503,6 @@ class BMToolMod(ModifiersOperator):
     def _modal_editor(self, context, event):
         return self.bmtool_modal_2(context, event)
 
-    # INT, STR, FLOAT
     def _modal_digits_set(self, event):
         """This thing writes a string that can be used in modal operator
         to get integer, float, or string.
@@ -535,38 +523,6 @@ class BMToolMod(ModifiersOperator):
             return False
         return True
 
-    def _modal_numbers_get_val(self, t='ANY'):
-        """
-        Returns numbers that were typed with _modal_numbers_set.
-        """
-        if len(self.bmtool_modal_numbers_str) == 0:
-            return None
-
-        if t == 'ANY':
-            if '.' in self.bmtool_modal_numbers_str:
-                return float(self.bmtool_modal_numbers_str)
-            else:
-                return int(self.bmtool_modal_numbers_str)
-        elif t == 'INT':
-            i = None
-            for z, x in enumerate(self.bmtool_modal_numbers_str):
-                if x == '.':
-                    i = z
-            return int(self.bmtool_modal_numbers_str[0:i])
-        elif t == 'FLOAT':
-            result = copy.copy(self.bmtool_modal_numbers_str)
-            f = False
-            for x in self.bmtool_modal_numbers_str:
-                if x == '.':
-                    f = True
-            if f is False:
-                result = result + '.0'
-            return float(result)
-
-    def _modal_numbers_clear(self):
-        self.bmtool_modal_numbers_str = ''
-
-    # STR
     def _modal_str_set(self, event):
         """This thing writes a string that can be used in modal operator.
         Returns True, if event type was in letters and digits list.
@@ -601,6 +557,54 @@ class BMToolMod(ModifiersOperator):
             return False
         return True
 
+    """
+    This two methods are used to get variable value from modal input mode.
+    """
+    def modal_digits_pop(self, number_type='ANY'):
+        """Returns number that were typed in 'DIGITS' mode.
+        number_type can be either 'ANY', 'INT' or 'FLOAT'.
+        """
+        result = self._modal_numbers_get_val(t)
+        self._modal_numbers_clear()
+        return result
+
+    def modal_str_pop(self):
+        """Returns string that were typed in 'STRING' mode."""
+        result = self.bmtool_modal_str
+        self._modal_str_clear()
+        return result
+
+    """
+    Modal input mode utils.
+    """
+    def _modal_numbers_get_val(self, t='ANY'):
+        if len(self.bmtool_modal_numbers_str) == 0:
+            return None
+
+        if t == 'ANY':
+            if '.' in self.bmtool_modal_numbers_str:
+                return float(self.bmtool_modal_numbers_str)
+            else:
+                return int(self.bmtool_modal_numbers_str)
+        elif t == 'INT':
+            i = None
+            for z, x in enumerate(self.bmtool_modal_numbers_str):
+                if x == '.':
+                    i = z
+            return int(self.bmtool_modal_numbers_str[0:i])
+        elif t == 'FLOAT':
+            result = copy.copy(self.bmtool_modal_numbers_str)
+            f = False
+            for x in self.bmtool_modal_numbers_str:
+                if x == '.':
+                    f = True
+            if f is False:
+                result = result + '.0'
+            return float(result)
+
+    def _modal_numbers_clear(self):
+        self.bmtool_modal_numbers_str = ''
+
     def _modal_str_get(self):
         return self.bmtool_modal_str
 
@@ -608,8 +612,7 @@ class BMToolMod(ModifiersOperator):
         self.bmtool_modal_str = ''
 
     def clear(self, context):
-        """
-        Removes operator.
+        """Removes operator.
 
         Used when encountering FINISHED or CANCELLED in modal method
         to remove no longer needed properies, handlers or whatever.
@@ -631,29 +634,7 @@ class BMToolMod(ModifiersOperator):
         logger.info("Modal operator finished")
 
     def invoke(self, context, event):
-        """
-        Method that is invoked once per operator usage.
-        """
-
-        if context.area.type != 'VIEW_3D':
-            self.report({'WARNING'}, "Not inside View3D")
-            return {'CANCELLED'}
-        elif context.mode != 'OBJECT' and self._BMTOOL_EDITMODE is False:
-            self.report({'WARNING'}, "Should be in object mode")
-            return {'CANCELLED'}
-        elif len(context.selected_objects) > 1 and self._BMTOOL_SINGLE_OBJECT:
-            self.report({'WARNING'}, "More than one object selected")
-            return {'CANCELLED'}
-        elif len(context.selected_objects) == 0:
-            self.report({'WARNING'}, "No object selected")
-            return {'CANCELLED'}
-        elif context.object.type != 'MESH':
-            self.report({'WARNING'}, "Selected object cant be edited")
-            return {'CANCELLED'}
-
-        # Displays info about operator variables on invoke
-        if self._BMTOOL_V:
-            self.display_additional_info_about_bmtool(context)
+        """Method that is invoked once per operator usage."""
 
         # ------------------------------
         # Operator-specific
@@ -704,56 +685,6 @@ class BMToolMod(ModifiersOperator):
             self.clear(context)
             return {'FINISHED'}
 
-        if self._BMTOOL_V:
-            self.report(
-                    {'INFO'},
-                    f"Created {len(self.selected_objects)} modifiers lists")
-
-        # ==========================================
-        # Create or select modifier on active object
-        # ==========================================
-        # If custom operator specified that it needs to create new modifier
-        if self._BMTOOL_MODIFIER_CREATE:
-            mod_new = self.m_list.create_modifier(
-                    self._DEFAULT_M_NAME, self._DEFAULT_M_TYPE)
-            self.m_list.active_modifier_set(mod_new)
-
-        # if operator specified _DEFAULT_M_NAME
-        # and _DEFAULT_M_TYPE on initialisation
-        # and is not _BMTOOLM
-        elif not self._BMTOOLM:
-
-            # select existing
-            if self.m_list.has_modifier_by_type(
-                    self._DEFAULT_M_TYPE) and self.m_list.get_list_length(
-                            ) > 0:
-
-                # select mod of _DEFAULT_M_TYPE
-                list_by_type\
-                        = self.m_list.get_list_by_type(self._DEFAULT_M_TYPE)
-                self.m_list.active_modifier_set(list_by_type[-1])
-
-            # create new
-            else:
-                mod_new = self.m_list.create_modifier(
-                        self._DEFAULT_M_NAME, self._DEFAULT_M_TYPE)
-                self.m_list.active_modifier_set(mod_new)
-                self.bmtool_modifier_defaults(context)
-
-                if self._BMTOOL_V:
-                    self.report({'INFO'}, "Created new modifier")
-
-        # if not specified, and there is modifiers already
-        # select first
-        elif self.m_list.get_list_length() > 0:
-            self.m_list.active_modifier_set(self.m_list.get_first())
-
-        # If not usual modifier operator and no modifiers
-        else:
-            self.report({'ERROR'}, "Cant create modifier or select one.")
-            self.clear(context)
-            return {'CANCELLED'}
-
         # For cluster selection
         self._selecting_clusters = False
 
@@ -768,7 +699,52 @@ class BMToolMod(ModifiersOperator):
         context.window_manager.modal_handler_add(self)
         return {'RUNNING_MODAL'}
 
-    def display_additional_info_about_bmtool(self, context):
+    # =======================================
+    # This methods are reserved for operators.
+    # =======================================
+    def bmtool_modal_1(self, context, event):
+        """Operator-specific modal method 1
+
+        Used before any other modal editing
+        This method is called before BMToolMod modal method.
+        """
+        return
+
+    def bmtool_modal_2(self, context, event):
+        """Operator-specific modal method 2.
+
+        All modal editing should be here.
+        This method is called after BMToolMod modal method.
+        """
+        return
+
+    def bmtool_modifier_update(self, context):
+        """Operator-specific modifier update.
+
+        This method is called every time active modifier changed
+        in BMToolMod.
+        """
+        return
+
+    def bmtool_operator_inv(self, context, event):
+        """Operator-specific inv. method.
+
+        This method is called before BMToolMod invoke.
+        """
+        return
+
+    def bmtool_operator_remove(self, context):
+        """Operator-specific remove method
+
+        This method is called when encountered FINISHED or CANCELLED in
+        BMToolMod modal methods.
+        """
+        return
+
+    # =====
+    # UTILS
+    # =====
+    def _display_additional_info_about_bmtool(self, context):
         logger.debug("BMTool is created")
         logger.debug(f"_BMTOOLM {self._BMTOOLM}")
         logger.debug(f"_DEFAULT_M_NAME {self._DEFAULT_M_NAME}")
@@ -780,76 +756,3 @@ class BMToolMod(ModifiersOperator):
         logger.debug(f"_BMTOOL_UI {self._BMTOOL_UI}")
         logger.debug(f"_BMTOOL_UI_STATUSBAR {self._BMTOOL_UI_STATUSBAR}")
         logger.debug(f"_BMTOOL_V {self._BMTOOL_V}")
-
-    # --------------------------------
-    # Operator-specific modal method 1
-    # --------------------------------
-    # Used before any other modal editing
-    def bmtool_modal_1(self, context, event):
-        """
-        This method is called before BMToolMod modal method.
-        """
-        return
-
-    # --------------------------------
-    # Operator-specific modal method 2.
-    # --------------------------------
-    # All modal editing should be here.
-    def bmtool_modal_2(self, context, event):
-        """
-        This method is called after BMToolMod modal method.
-        """
-        return
-
-    # -------------------------------
-    # Operator-specific modifier add method.
-    # -------------------------------
-    def bmtool_modifier_add(self, context):
-        """
-        This method is called when BMToolMod trying to create
-        modifier and _BMTOOLM is true.
-        """
-        return
-
-    # ------------------------------
-    # Default operator modifier-specific settings.
-    # TODO: what even is this?
-    # TODO: should require modifier.
-    # ------------------------------
-    def bmtool_modifier_defaults(self, context):
-        """
-        This method is called when BMToolMod trying to set modifier defaults
-        and _BMTOOLM is true.
-        """
-        return
-
-    # ------------------------------
-    # Operator-specific modifier update.
-    # ------------------------------
-    def bmtool_modifier_update(self, context):
-        """
-        This method is called every time active modifier changed
-        in BMToolMod.
-        """
-        return
-
-    # ------------------------------
-    # Operator-specific inv. method.
-    # ------------------------------
-    # TODO: this method should be renamed.
-    def bmtool_modifier_inv(self, context, event):
-        """
-        This method is called before BMToolMod invoke.
-        """
-        return
-
-    # -------------------------------
-    # Operator-specific remove method
-    # -------------------------------
-    # TODO: this method should be renamed.
-    def bmtool_modifier_remove(self, context):
-        """
-        This method is called when encountered FINISHED or CANCELLED in
-        BMToolMod modal methods.
-        """
-        return
