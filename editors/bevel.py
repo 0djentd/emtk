@@ -72,7 +72,7 @@ class bmtooleditorbevel(modifiereditor):
             mod.use_clamp_overlap = not mod.use_clamp_overlap
         elif event.type == 'G' & event.value == 'PRESS':
             self.bmtool_modifier_defaults(context)
-        elif (event.type == 'F') & (event.value == 'PRESS'):
+        elif event.type == 'F' & event.value == 'PRESS':
             bpy.ops.object.shade_smooth()
             bpy.context.object.data.use_auto_smooth = True
 
