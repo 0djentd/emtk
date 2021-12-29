@@ -39,19 +39,6 @@ class BMToolMod(ModifiersOperator):
     # Default bmtool modal editing mode.
     _BMTOOL_DEFAULT_MODE = "Please select BMTool mode"
 
-    # If False, can only operate on _DEFAULT_M_TYPE.
-    # TODO: rename this thing.
-    _BMTOOLM = False
-
-    # Default name and type for operators that are
-    # intended to be used with one type of modifiers only.
-    # Ignored if _BMTOOLM is True.
-    _DEFAULT_M_NAME = None
-    _DEFAULT_M_TYPE = None
-
-    # Create modifier even if there is already one of _DEFAULT_M_TYPE.
-    _BMTOOL_MODIFIER_CREATE = False
-
     # Allows operator to be used in edit mode.
     _BMTOOL_EDITMODE = False
 
@@ -63,12 +50,6 @@ class BMToolMod(ModifiersOperator):
 
     # Use statusbar to display modifier info.
     _BMTOOL_UI_STATUSBAR = False
-
-    # Display additional info about active modifier and modifiers list.
-    _BMTOOL_V = True
-
-    # Counter for displaying additional info.
-    _counter = 30
 
     # Keymap for bmtoolm.
     bmtool_kbs = {
@@ -163,6 +144,69 @@ class BMToolMod(ModifiersOperator):
         # Active cluster layer
         layer = self.m_list.get_layer()
 
+        """
+        This is different modes of this operator.
+
+        'ACTIONS' is modal loop for general actions on clusters list,
+        for example applying, moving and switching visibility of modifiers.
+
+        'EDITOR' is bmtool_editor modal loop.
+        It is used for modal editing of modifiers and clusters properties
+        within editor.
+
+        This two methods always switch back to previous mode:
+        'DIGITS' is digits input mode.
+        'STR' is string input mode.
+        """
+        if self._mode = 'ACTIONS':
+            a = self._modal_actions(context, event)
+        elif self._mode = 'EDITOR':
+            a = self._modal_editor(context, event)
+        elif self._mode = 'INT':
+            a = self._modal_numbers_set(context, event)
+        elif self._mode = 'STR':
+            a = self._modal_str_set(context, event)
+        if a is not True and a is not False:
+            return a
+        return {'RUNNING_MODAL'}
+
+        # Exit out of modifier editing mode or finish operator.
+        elif (event.type == self.bmtool_kbs['exit'])\
+                & (event.value == 'PRESS'):
+            if self.bmtool_mode != self._BMTOOL_DEFAULT_MODE:
+                self.bmtool_mode = self._BMTOOL_DEFAULT_MODE
+            else:
+                self.clear(context)
+                return {'FINISHED'}
+
+        # Finish.
+        elif event.type == 'LEFTMOUSE':
+            if self.bmtool_mode != self._BMTOOL_DEFAULT_MODE:
+                self.bmtool_mode = self._BMTOOL_DEFAULT_MODE
+            else:
+                self.clear(context)
+                return {'FINISHED'}
+
+        # Cancell.
+        elif event.type in {'RIGHTMOUSE', 'ESC'}:
+            self.clear(context)
+            return {'CANCELLED'}
+
+        # ------------------------------
+        # Operator-specific modal
+        # ------------------------------
+        else:
+            result = self.bmtool_modal_2(context, event)
+            if result == {'FINISHED'}:
+                self.clear(context)
+                return {'FINISHED'}
+            elif result == {'CANCELLED'}:
+                self.clear(context)
+                return {'CANCELLED'}
+
+        return {'RUNNING_MODAL'}
+
+    def _modal_actions(self, context, event):
         # Modifier visibility
         if (event.type == self.bmtool_kbs['visibility_1'])\
                 & (event.value == 'PRESS'):
@@ -463,42 +507,12 @@ class BMToolMod(ModifiersOperator):
 
                 # Trigger active modifier change.
                 self.bmtool_modifier_update(context)
-
-        # Exit out of modifier editing mode or finish operator.
-        elif (event.type == self.bmtool_kbs['exit'])\
-                & (event.value == 'PRESS'):
-            if self.bmtool_mode != self._BMTOOL_DEFAULT_MODE:
-                self.bmtool_mode = self._BMTOOL_DEFAULT_MODE
-            else:
-                self.clear(context)
-                return {'FINISHED'}
-
-        # Finish.
-        elif event.type == 'LEFTMOUSE':
-            if self.bmtool_mode != self._BMTOOL_DEFAULT_MODE:
-                self.bmtool_mode = self._BMTOOL_DEFAULT_MODE
-            else:
-                self.clear(context)
-                return {'FINISHED'}
-
-        # Cancell.
-        elif event.type in {'RIGHTMOUSE', 'ESC'}:
-            self.clear(context)
-            return {'CANCELLED'}
-
-        # ------------------------------
-        # Operator-specific modal
-        # ------------------------------
         else:
-            result = self.bmtool_modal_2(context, event)
-            if result == {'FINISHED'}:
-                self.clear(context)
-                return {'FINISHED'}
-            elif result == {'CANCELLED'}:
-                self.clear(context)
-                return {'CANCELLED'}
+            return False
+        return True
 
-        return {'RUNNING_MODAL'}
+    def _modal_editor(self, context, event):
+        return self.bmtool_modal_2(context, event)
 
     # INT, STR, FLOAT
     def _modal_digits_set(self, event):
@@ -515,6 +529,8 @@ class BMToolMod(ModifiersOperator):
             self.bmtool_modal_numbers_str = self.bmtool_modal_numbers_str + '.'
         elif event.type == 'BACK-SPACE' and event.value == 'PRESS':
             self.bmtool_modal_numbers_str = self.bmtool_modal_numbers_str[0:-1]
+        elif event.type == 'RETURN' and event.value == 'PRESS':
+            self._mode = self._previous_mode
         else:
             return False
         return True
@@ -579,6 +595,8 @@ class BMToolMod(ModifiersOperator):
                         = self.bmtool_modal_numbers_str + '-'
         elif event.type == 'BACK-SPACE' and event.value == 'PRESS':
             self.bmtool_modal_numbers_str = self.bmtool_modal_numbers_str[0:-1]
+        elif event.type == 'RETURN' and event.value == 'PRESS':
+            self._mode = self._previous_mode
         else:
             return False
         return True
