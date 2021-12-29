@@ -175,8 +175,10 @@ class ActionDefaultRemove(ActionDefaultTemplate):
             action.subject._cluster_removed = True
             self.cluster._modifiers_list.remove(action.subject)
 
-        if removing_active and len(self.cluster._modifiers_list) > 0:
+        if removing_active and len(self.cluster._modifiers_list) > (i + 1):
             self.cluster.active_modifier_set_by_index(i)
+        elif removing_active and len(self.cluster._modifiers_list) == (i + 1):
+            self.cluster.active_modifier_set_by_index(i - 1)
 
 
 class ActionDefaultApply(ActionDefaultTemplate):

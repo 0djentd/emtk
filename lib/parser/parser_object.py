@@ -114,12 +114,12 @@ class ClustersParser():
         # Dont use default cluster.
         if not no_default_cluster:
             default_modififer_cluster = DefaultModifierCluster()
-            self.update_cluster_types_list(default_modififer_cluster)
+            self.update_cluster_types(default_modififer_cluster)
 
         # Available cluster types.
         if isinstance(cluster_types, list):
             for x in cluster_types:
-                self.update_cluster_types_list(x)
+                self.update_cluster_types(x)
 
     """
     parse_result is a list of lists with string, cluster and modifiers.
@@ -251,21 +251,12 @@ class ClustersParser():
         logger.debug("FINISHED RESTORING CLUSTERS STATE")
         return parse_result
 
-    def update_cluster_types_list(self, cluster_type_to_add):
-        """
-        Adds cluster type to _available_cluster_types or
-        _available_layer_types, depending on ModifiersCluster
-        subclass.
-
-        Returns True if added
-        Returns False if cant be added
-        """
-
+    def update_cluster_types(self, cluster_type_to_add):
+        """Adds cluster type to available cluster types"""
         if not isinstance(cluster_type_to_add, ClusterTrait):
             raise TypeError
 
         cluster_type = copy.deepcopy(cluster_type_to_add)
-
         logger.info("Trying to update cluster types list")
         logger.info(cluster_type)
 
@@ -340,6 +331,16 @@ class ClustersParser():
         logger.info("Finished updating cluster types list")
         logger.info(" ")
         return result
+
+    def remove_cluster_type(self, cluster_type_to_remove):
+        """Removes cluster type from available types."""
+        if not isinstance(cluster_type_to_remove, ClusterTrait):
+            raise TypeError
+
+        if cluster_type_to_remove in self._available_cluster_types:
+            self._available_cluster_types.remove(cluster_type_to_remove)
+        if cluster_type_to_remove in self._available_layer_types:
+            self._available_layer_types.remove(cluster_type_to_remove)
 
     # ==============================
     # Wrappers

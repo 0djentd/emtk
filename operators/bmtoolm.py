@@ -164,8 +164,8 @@ class BMTOOL_OT_bmtoolm(BMToolUi, BMToolMod, Operator):
         """
 
         ui_t = []
-        ui_t.append("BMToolM 2")
-        ui_t.append(" ")
+        # ui_t.append("BMToolM 2")
+        # ui_t.append(" ")
         if self._active_editor is not None:
             ui_t.append(
                     f"Editor - {self._active_editor._MODIFIER_EDITOR_NAME}")

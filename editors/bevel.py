@@ -59,8 +59,8 @@ class BMToolEditorBevel(ModifierEditor):
         return y
 
     def bmtool_editor_modal_2(
-        """Editor-specific modal method"""
             self, context, event, m_list, selected_objects):
+        """Editor-specific modal method"""
         mod = m_list.active_modifier_get().get_by_index(0)
         if event.type == 'MOUSEMOVE':
 

@@ -56,7 +56,7 @@ class FirstLayerClustersListTrait():
         self._clusters_parser._object = self._object
         self._clusters_parser._controller = self._controller
         if not no_parse:
-            self._create_modifiers_list()
+            self.create_modifiers_list()
 
     def __str__(self):
         result = 'Extended Modifiers List, clusters: '
@@ -79,9 +79,6 @@ class FirstLayerClustersListTrait():
         and False if not
         """
         logger.info("Creating modifiers list.")
-        return self._create_modifiers_list(obj)
-
-    def _create_modifiers_list(self, obj=None):
         if obj is None and self._object is not None:
             obj = self._object
 
@@ -160,9 +157,13 @@ class FirstLayerClustersListTrait():
         else:
             return False
 
-    # TODO: this method should be removed
-    def update_cluster_types_list(self, cluster):
-        return self._clusters_parser.update_cluster_types_list(cluster)
+    def update_cluster_types(self, cluster):
+        """Add new cluster type"""
+        return self._clusters_parser.update_cluster_types(cluster)
+
+    def remove_cluster_type(self, cluster):
+        """Remove cluster type"""
+        return self._clusters_parser.remove_cluster_type(cluster)
 
     def ask(self, question):
         """
