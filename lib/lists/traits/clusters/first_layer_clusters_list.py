@@ -48,10 +48,6 @@ class FirstLayerClustersListTrait():
     # editing.
     _EXTENDED_MODIFIERS_LIST_VERSION = (0, 1, 0)
 
-    # List of versions that uncompatible with current
-    # version.
-    _EXTENDED_MODIFIERS_LIST_NO_COMPAT = [(0, 2, 0), (0, 0, 5)]
-
     def __init__(self, *args, no_parse=None, **kwargs):
         super().__init__(*args, **kwargs)
         self._controller = ClustersController(self, *args, **kwargs)

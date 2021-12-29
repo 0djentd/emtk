@@ -29,10 +29,12 @@ class ClustersAction():
 
     @property
     def verb(self):
+        """Returns actions's verb."""
         return self._verb
 
     @property
     def subject(self):
+        """Returns actions's subject."""
         return self._subject
 
     def __init__(self, verb, subject, layer=None):
@@ -89,9 +91,7 @@ class ClusterRequest():
 
 
 class ClustersCommand():
-    """
-    This is an object that represents any number of actions.
-
+    """This is an object that represents any number of actions.
     It should always have at least one action.
     """
 

@@ -18,6 +18,12 @@
 
 import logging
 
+try:
+    import bpy
+    _WITH_BPY = True
+except ModuleNotFoundError:
+    _WITH_BPY = False
+
 from .lists.extended_modifiers_list import ExtendedModifiersList
 
 from .clusters.cluster_trait import ClusterTrait
@@ -83,8 +89,15 @@ class ModifiersOperator():
         #     if y not in clusters:
         #         save_cluster_type_definition_to_settings(y, 'bmtools')
 
-        clusters = get_cluster_types_definitions_from_settings('bmtools')
-        clusters = instantiate_clusters_from_definitions(clusters)
+        if bpy.context.preferences.addons[
+                'bmtools'].preferences.custom_cluster_types\
+                and bpy.context.preferences.addons[
+                        'bmtools'].preferences.always_add_custom_cluster_types\
+                and _WITH_BPY:
+            clusters = get_cluster_types_definitions_from_settings('bmtools')
+            clusters = instantiate_clusters_from_definitions(clusters)
+        else:
+            clusters = []
 
         # Create extended modifiers lists and initialize
         # it for selected objects

@@ -43,22 +43,14 @@ class BMToolPreferences(AddonPreferences):
             default='BMToolM mesh backup'
             )
 
-    # TODO: not implemented
     custom_cluster_types: BoolProperty(
             name="Use custom cluster types.",
             default=True
             )
 
-    # TODO: not implemented
     always_add_custom_cluster_types: BoolProperty(
             name="Always add custom cluster types.",
             default=True
-            )
-
-    # TODO: not implemented
-    saved_cluster_types: StringProperty(
-            name="Saved cluster types.",
-            default=""
             )
 
     cluster_types: StringProperty(
