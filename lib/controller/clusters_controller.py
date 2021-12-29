@@ -336,10 +336,10 @@ class ClustersController():
         return result
 
     def _deserialize_action(self, action):
-        subject = _find_obj(action[1], action.[2], action.[2])
+        subject = self._find_obj(action[1], action[2], action[2])
         return ClustersAction(action[0], subject)
 
-    def _find_obj(obj_name, obj_type, obj_class):
+    def _find_obj(self, obj_name, obj_type, obj_class):
         if not isinstance(obj_name, str):
             raise TypeError
         if not isinstance(obj_type, str):

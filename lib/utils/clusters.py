@@ -36,6 +36,32 @@ logger = logging.getLogger(__package__)
 logger.setLevel(logging.DEBUG)
 
 
+"""
+How this thing should work:
+Cluster types can be stored in a few different ways.
+
+First is saving it with an object to props.
+
+This is kinda not very useful, because generally if
+you are manually creating cluster type, then
+you probably want to use it on other objects as well.
+And if you are writing addon that require custom cluster
+type, then you can easily create one in script itself
+when its being invoked. Not to say that it may be
+also much more useful to create a new ClustersLayer or
+ModifiersCluster subclass to begin with.
+
+Second is saving it to scene or layer props.
+Not very usefull for the same reason as the first one.
+
+Third is to save to addon prefs.
+This kinda works. Sorted by groups.
+
+Its also possible to save it to text file.
+This can be kinda useful, but idk.
+"""
+
+
 # ===================
 # Addon cluster types
 # ===================
@@ -44,7 +70,7 @@ def get_cluster_types_definitions_from_settings(
     """Returns cluster types definitions from addon preferences."""
     if not isinstance(addon_name, str):
         raise TypeError
-    if len(addon_name) < 1
+    if len(addon_name) < 1:
         raise ValueError
     if not isinstance(group, str) and group is not None:
         raise TypeError
