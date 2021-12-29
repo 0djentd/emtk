@@ -385,16 +385,6 @@ class ClusterTrait():
             return True
         return False
 
-    # TODO: remove
-    def has_clusters(self):
-        """
-        Checks if this cluster have clusters in it.
-
-        Returns False if this cluster consists of modifiers or something
-        else.
-        """
-        return False
-
     """
     ===========================
     Cluster tags

@@ -92,8 +92,12 @@ class ModifiersList():
     def __len__(self):
         return len(self._modifiers_list)
 
+    # This method is different in clusters.
     def _check_if_cluster_removed(self):
         pass
+
+    def has_clusters(self):
+        return False
 
     """
     =====================================

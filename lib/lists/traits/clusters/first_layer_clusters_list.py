@@ -238,9 +238,7 @@ class FirstLayerClustersListTrait():
     # Utility
     # ===============
     def get_full_list_of_cluster_names(self):
-        """
-        Returns full list of custom cluster names.
-        """
+        """Returns full list of custom cluster names."""
         result = []
         for x in self.get_full_list():
             result.append(x.get_this_cluster_name())
@@ -265,66 +263,9 @@ class FirstLayerClustersListTrait():
                 return False
         return True
 
-    def _check_which_layer_should_be_removed(self, layer):
-        """
-        Checks if there is no clusters on layers.
-
-        Returns lowest level clusters layer that should be removed.
-        Returns False, if no layer should be removed.
-        """
-        if not isinstance(layer, FirstLayerClustersListTrait):
-            if layer.get_list_length() == 0:
-                layer_2 = self.get_cluster_or_layer(layer)
-                result = self.recursive_check_which_layer_should_be_removed(
-                        layer_2)
-                if result is False:
-                    return layer
-                else:
-                    return result
-        return False
-
-    def get_actual_modifier_index(self, modifier_or_cluster, get_last=False):
-        """
-        Returns actual modifier index or index of first cluster's
-        actual modifier.
-        If get_last is True, looks for last actual modifier.
-        """
-        # TODO: this probably dont works.
-        if _WITH_BPY:
-            if isinstance(modifier_or_cluster, bpy.types.Modifier):
-                mod = modifier_or_cluster
-        elif not _WITH_BPY:
-            if isinstance(modifier_or_cluster, DummyBlenderModifier):
-                mod = modifier_or_cluster
-        else:
-            if get_last is False:
-                mod = self.recursive_get_first_actual_modifier(
-                        modifier_or_cluster)
-            else:
-                mod = self.recursive_get_last_actual_modifier(
-                        modifier_or_cluster)
-
-        x = self.get_full_actual_modifiers_list()
-        return x.index(mod)
-
-    def has_clusters(self):
-        """
-        This method exists to stop recursive methods.
-        """
-        return True
-
     # =================
     # Storing modifiers state
     # ================
-    def get_metainfo(self):
-        """
-        Returns list with some info about version of ExtendedModifiersList.
-        """
-        result = []
-        result.append("ExtendedModifiersList")
-        result.append(self._EXTENDED_MODIFIERS_LIST_VERSION)
-        return result
-
     def get_clusters_state(self):
         """
         Returns list with info about current clusters state.
@@ -442,17 +383,14 @@ class FirstLayerClustersListTrait():
     # saving modifiers state for fast check.
     # ==========================
     def get_modifiers_state(self):
-        """
-        Returns current object actual modifiers info.
-        """
+        """Returns current object actual modifiers info."""
         result = []
         for x in self._object.modifiers:
             result.append(get_modifier_state(x))
         return result
 
     def save_modifiers_state(self, prop_name=None):
-        """
-        Saves current object actual modifiers info
+        """Saves current object actual modifiers info
         to object property with prop_name.
         """
         if prop_name is None:
@@ -478,7 +416,6 @@ class FirstLayerClustersListTrait():
         """
         Returns previous object actual modifiers info
         from object property with prop_name.
-
         If no saved modifiers, returns False.
         """
         if prop_name is None:
@@ -504,6 +441,7 @@ class FirstLayerClustersListTrait():
         """
         Compares previous modifiers stack state with
         existing one.
+
         Returns True, if modifiers list changed since last
         save_modifiers_state usage.
         """
