@@ -291,7 +291,7 @@ class ClustersController():
     # =========
     # Serialize
     # =========
-    def serialize_batch_command(self, batch):
+    def _serialize_batch_command(self, batch):
         result = []
         for x in batch.commands:
             result.append(self._serialize_command(x))
@@ -306,24 +306,55 @@ class ClustersController():
 
     def _serialize_action(self, action):
         result = [action.verb, action.subject.name, action.subject.type]
+
+        if _WITH_BPY:
+            modifiers_type = bpy.types.Modifier
+        else:
+            modifiers_type = DummyBlenderModifier
+
+        if isinstance(action.subject, modifiers_type):
+            result.append('MODIFIER')
+        else:
+            result.append('CLUSTER')
         return result
 
     # =========
     # Deserialize
     # =========
-    # def deserialize_batch_command(self, batch):
-    #     result = []
-    #     for x in batch.commands:
-    #         result.append(self._deserialize_command(x))
-    #     result = json.dumps(result)
-    #     return result
+    def deserialize_batch_command(self, batch):
+        result = []
+        for x in batch.commands:
+            action = self._deserialize_command(x)
+            result.append(action)
+        return result
 
-    # def _deserialize_command(self, command):
-    #     result = []
-    #     for x in command.actions:
-    #         result.append(self._deserialize_action(x))
-    #     return result
+    def _deserialize_command(self, command):
+        result = []
+        for x in command.actions:
+            action = self._deserialize_action(x)
+            result.append(action)
+        return result
 
-    # def _deserialize_action(self, action):
-    #     result = [action.verb, action.subject.name, action.subject.type]
-    #     return result
+    def _deserialize_action(self, action):
+        subject = _find_obj(action[1], action.[2], action.[2])
+        return ClustersAction(action[0], subject)
+
+    def _find_obj(obj_name, obj_type, obj_class):
+        if not isinstance(obj_name, str):
+            raise TypeError
+        if not isinstance(obj_type, str):
+            raise TypeError
+        if not isinstance(obj_class, str):
+            raise TypeError
+
+        if obj_class == 'MODIFIER':
+            obj_list = self.e.get_full_actual_modifiers_list()
+        elif obj_class == 'CLUSTER':
+            obj_list = self.e.get_full_list()
+        else:
+            raise TypeError
+
+        for x in obj_list:
+            if x.type == obj_type:
+                if x.name == obj_name:
+                    return x
