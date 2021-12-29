@@ -35,20 +35,22 @@ _cluster_utils_type_checks = True
 logger = logging.getLogger(__package__)
 logger.setLevel(logging.DEBUG)
 
-# TODO: Save cluster definitions serialized list of serialized dicts.
-# This will allow to skip dict if it raises any errors.
 
-
-# ==========================
-# Cluster types from settings
-# ==========================
+# ===================
+# Addon cluster types
+# ===================
 def get_cluster_types_definitions_from_settings(
         addon_name, group=None):
     """Returns cluster types definitions from addon preferences."""
     if not isinstance(addon_name, str):
         raise TypeError
+    if len(addon_name) < 1
+        raise ValueError
     if not isinstance(group, str) and group is not None:
         raise TypeError
+    if group is not None:
+        if len(group) < 1:
+            raise ValueError
 
     c = bpy.context.preferences.addons[
             addon_name].preferences.cluster_types
@@ -92,8 +94,13 @@ def get_cluster_types_definitions_from_obj(
         raise TypeError
     if not isinstance(addon_name, str):
         raise TypeError
+    if len(addon_name) < 1:
+        raise ValueError
     if not isinstance(dont_add_prop, bool):
         raise TypeError
+    if group is not None:
+        if len(group) < 1:
+            raise ValueError
     try:
         t = obj[f'{addon_name}_cluster_types']
     except KeyError:
@@ -149,6 +156,10 @@ def _add_replace_cluster_type(definitions, cluster_type):
         if not isinstance(cluster_type, dict):
             raise TypeError(f'Expected list, got {type(definitions)}')
 
+    logger.debug('Adding cluster definiton')
+    logger.debug(f'{cluster_type}')
+    logger.debug(f'{definitions}')
+
     c = copy.copy(definitions)
     cluster = cluster_type
 
@@ -162,6 +173,8 @@ def _add_replace_cluster_type(definitions, cluster_type):
     for x in remove:
         c.remove(x)
     c.append(cluster)
+
+    logger.debug(f'{definitions}')
     return c
 
 
@@ -174,6 +187,11 @@ def _remove_cluster_type(definitions, cluster_type):
                 raise TypeError(f'Expected dict, got {type(x)}')
         if not isinstance(cluster_type, dict):
             raise TypeError(f'Expected dict, got {type(cluster_type)}')
+
+    logger.debug('Removing cluster definiton')
+    logger.debug(f'{cluster_type}')
+    logger.debug(f'{definitions}')
+
     definitions = copy.copy(definitions)
     remove = []
     for x in definitions:
@@ -181,6 +199,8 @@ def _remove_cluster_type(definitions, cluster_type):
             remove.append(x)
     for x in remove:
         definitions.remove(x)
+
+    logger.debug(f'{definitions}')
     return definitions
 
 
@@ -193,23 +213,33 @@ def _filter_by_attr(definitions, attr_name, value):
                 raise TypeError(f'Expected dict, got {type(x)}')
         if not isinstance(attr_name, str):
             raise TypeError(f'Expected str, got {type(attr_name)}')
+
+    logger.info('Filtered cluster definitions by attribute')
+    logger.debug(f'{attr_name}, {value}')
+    logger.debug(f'{definitions}')
+
     result = []
     for x in definitions:
         if x[attr_name] == value:
             result.append(x)
+
+    logger.debug(f'{result}')
     return result
 
 
 # =========================
 # instantiated cluster type
 # =========================
+# TODO: rework this method
 def instantiate_cluster_from_definition(cluster_type_definition,
                                         *args, **kwargs):
     if not isinstance(cluster_type_definition, dict):
         raise TypeError(f'Expected dict, not {type(cluster_type_definition)}')
 
-    x = cluster_type_definition
+    logger.info('Instantiating cluster from definition')
+    logger.debug(f'{cluster_type_definition}')
 
+    x = cluster_type_definition
     if x['cluster_trait_subclass'] == 'ModifiersCluster':
         result = ModifiersCluster(
                                   cluster_name=x['name'],
@@ -239,6 +269,8 @@ def instantiate_cluster_from_definition(cluster_type_definition,
                                )
     else:
         raise TypeError(f'Cant deserialize {x["cluster_class"]}')
+
+    logger.debug(f'{result}')
     return result
 
 
@@ -255,25 +287,32 @@ def instantiate_clusters_from_definitions(cluster_types_definitions):
 # Cluster types definitions list rw
 # =================================
 def _serialize_cluster_type_definitions_list(definitions_list):
+    logger.debug('Serializing clusters definitions')
+    logger.debug(f'{definitions_list}')
+
     clusters = []
     # TODO: info about version
     for x in definitions_list:
         result = json.dumps(x)
         clusters.append(result)
-    return json.dumps(clusters)
+    result = json.dumps(clusters)
+
+    logger.debug(f'{result}')
+    return result
 
 
 def _deserialize_cluster_type_definitions_list(
         serialized_definitions_list):
-    """
-    Skips list elements that throw an error.
-    """
+    logger.debug('Deserializing clusters definitions')
+    logger.debug(f'{serialized_definitions_list}')
+
     try:
         definitions_list = json.loads(serialized_definitions_list)
     except json.decoder.JSONDecodeError:
         logger.error(
                 f'Cant deserialize {serialized_definitions_list}, skipping.')
         definitions_list = []
+
     clusters = []
     for x in definitions_list:
         try:
@@ -281,4 +320,6 @@ def _deserialize_cluster_type_definitions_list(
             clusters.append(result)
         except json.decoder.JSONDecodeError:
             logger.error(f'Cant deserialize {x}, skipping.')
+
+    logger.debug(f'{clusters}')
     return clusters

@@ -24,13 +24,9 @@ from .clusters.cluster_trait import ClusterTrait
 from .clusters.modifiers_cluster import ModifiersCluster
 from .clusters.clusters_layer import ClustersLayer
 
-from .utils.clusters import get_cluster_types_from_settings
-
-try:
-    import bpy
-    _WITH_BPY = True
-except ModuleNotFoundError:
-    _WITH_BPY = False
+from .utils.clusters import (get_cluster_types_definitions_from_settings,
+                             save_cluster_type_definition_to_settings,
+                             instantiate_clusters_from_definitions)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -80,47 +76,45 @@ class ModifiersOperator():
         if len(context.view_layer.objects.selected) == 0:
             return False
 
-        self.selected_objects = []
+        """
+        =======================
+        Available cluster types
+        =======================
 
-        if _WITH_BPY:
-            """
-            =======================
-            Available cluster types
-            =======================
+        How this thing should work:
+        Cluster types can be stroed in a few different ways.
 
-            How this thing should work:
-            Cluster types can be stroed in a few different ways.
+        First is saving it with an object to props.
 
-            First is saving it with an object to props.
+        This is kinda not very useful, because generally if
+        you are manually creating cluster type, then
+        you probably want to use it on other objects as well.
+        And if you are writing addon that require custom cluster
+        type, then you can easily create one in script itself
+        when its being invoked. Not to say that it may be
+        also much more useful to create a new ClustersLayer or
+        ModifiersCluster subclass to begin with.
 
-            This is kinda not very useful, because generally if
-            you are manually creating cluster type, then
-            you probably want to use it on other objects as well.
-            And if you are writing addon that require custom cluster
-            type, then you can easily create one in script itself
-            when its being invoked. Not to say that it may be
-            also much more useful to create a new ClustersLayer or
-            ModifiersCluster subclass to begin with.
+        Second is saving it to scene or layer props.
+        Not very usefull for the same reason as the first one.
 
-            Second is saving it to scene or layer props.
-            Not very usefull for the same reason as the first one.
+        Third is to save to addon prefs.
+        This kinda works. Sorted by groups.
 
-            Third is to save to addon prefs.
-            This kinda works. Sorted by groups.
-
-            Its also possible to save it to text file.
-            This can be kinda useful, but idk.
-            """
-
-            clusters = get_cluster_types_from_settings('bmtools')
-            clusters.extend(get_cluster_types_from_obj(obj, 'bmtools')
-            logger.debug(f'Found {clusters} in addon settings.')
-        else:
-            clusters = self._default_cluster_types()
-            logger.debug(clusters)
+        Its also possible to save it to text file.
+        This can be kinda useful, but idk.
+        """
+        clusters = get_cluster_types_definitions_from_settings('bmtools')
+        default_clusters = self._default_cluster_types()
+        for x in default_clusters:
+            y = x.get_this_cluster_definition()
+            if y not in clusters:
+                save_cluster_type_definition_to_settings(y, 'bmtools')
+        clusters = instantiate_clusters_from_definitions(clusters)
 
         # Create extended modifiers lists and initialize
         # it for selected objects
+        self.selected_objects = []
         for obj in context.view_layer.objects.selected:
             obj_mod_list = ExtendedModifiersList(
                     obj, cluster_types=clusters)
