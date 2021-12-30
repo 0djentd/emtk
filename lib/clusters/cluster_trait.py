@@ -28,12 +28,11 @@ except ModuleNotFoundError:
 
 
 class ClusterTrait():
-    """
-    This ModifiersList trait should be in every
+    """This ModifiersList trait should be in every
     cluster used in ClustersList.
     """
 
-    def __init__(self,
+    def __init__(self,  # {{{
                  *args,
                  cluster_name=None,
                  cluster_type=None,
@@ -102,8 +101,9 @@ class ClusterTrait():
                 and not self._cluster_definition['sane']\
                 and not self.check_this_cluster_sanity():
             raise ValueError('This cluster cant be used.')
+        # }}}
 
-    def _check_cluster_defenition(self, cluster_definition):
+    def _check_cluster_defenition(self, cluster_definition):  # {{{
         """
         Checks types in cluster definition and add default
         values.
@@ -180,6 +180,7 @@ class ClusterTrait():
             if not isinstance(y, str):
                 raise TypeError
         return x
+    # }}}
 
     def __repr__(self):
         return self.__str__()
@@ -193,6 +194,7 @@ class ClusterTrait():
                 = f"Already removed cluster {self._cluster_definition['name']}"
         return result
 
+    # Props {{{
     # Cluster name
     @property
     def name(self):
@@ -260,12 +262,10 @@ class ClusterTrait():
             self._cluster_props['collapsed'] = True
         elif not collapsed_val:
             self._cluster_props['collapsed'] = False
+    # }}}
 
-    """
-    ===============================
-    Methods reserved for subclasses
-    ===============================
-    """
+    # Methods reserved for subclasses {{{
+    # {{{
     def modcluster_extra_availability_check(self, modifiers):
         """
         Additional method reserved for custom types.
@@ -288,12 +288,11 @@ class ClusterTrait():
         Should return True or False.
         """
         return True
+    # }}}
+
+    # Cluster subclass-specific additional actions. {{{
 
     """
-    =========================================
-    Cluster subclass-specific additional actions.
-    =========================================
-
     This three methods should return None, ClustersCommand or
     list of ClustersCommands (not ClustersBatchCommand).
     Command will be put before recived command in ClustersBatchCommand.
@@ -324,12 +323,11 @@ class ClusterTrait():
         cluster's layers and modifiers clusters.
         """
         return
+    # }}}
+
+    # Cluster subclass-specific additional interpretation. {{{
 
     """
-    ================================================
-    Cluster subclass-specific additional interpretation.
-    ================================================
-
     This three methods called just before applying action and
     should return None.
 
@@ -355,36 +353,10 @@ class ClusterTrait():
         cluster's layers and modifiers clusters.
         """
         return
+    # }}}
+    # }}}
 
-    # ===========================
-    # ModifiersCluster methods
-    # ===========================
-    def _check_if_cluster_removed(self):
-        """
-        This method throws an error when trying to access already
-        removed cluster.
-        """
-        if self._cluster_removed:
-            raise ValueError(f'Cluster {self} already removed.')
-
-    def is_complex(self):
-        """
-        Checks if this cluster cant be considered as usual modifier.
-
-        Returns True if modifier cluster consists of more than
-        one blender modifier.
-        Also returns True if has no modifiers at all.
-        """
-
-        if self.get_list_length() != 1:
-            return True
-        return False
-
-    """
-    ===========================
-    Cluster tags
-    ===========================
-    """
+    # Cluster tags {{{
     def get_this_cluster_tags(self):
         """
         Returns this ModifiersCluster's custom tags, or default tags.
@@ -427,12 +399,9 @@ class ClusterTrait():
             self._cluster_props['tags'].remove(x)
 
         return result
+    # }}}
 
-    """
-    ====================
-    Initializing cluster
-    ====================
-    """
+    # Initializing cluster  {{{
     def set_this_cluster_modifiers(self, modifiers):
         """
         Replaces list of modifiers with modifiers.
@@ -472,12 +441,9 @@ class ClusterTrait():
 
         else:
             return False
+    # }}}
 
-    """
-    ================
-    Clusters sorting
-    ================
-    """
+    # Clusters sorting {{{
     def add_sorting_rule(self, sorting_rule):
         """
         Add new sorting rule for this cluster or
@@ -527,10 +493,9 @@ class ClusterTrait():
             return []
         else:
             return self._sorting_rules
+    # }}}
 
-    # ==========
-    # Parsing
-    # ==========
+    # Parsing {{{
     def get_this_cluster_possible_length(self):
         """
         Returns maximum possible modifiers sequence length for this cluster.
@@ -638,10 +603,9 @@ class ClusterTrait():
             return additional_checks
 
         return None
+    # }}}
 
-    # ===================
-    # Cluster visibility
-    # ===================
+    # Cluster visibility  {{{
     def get_this_cluster_visibility(self):
         """
         Returns list with info about this cluster visability
@@ -745,10 +709,9 @@ class ClusterTrait():
             i += 1
 
         self.set_this_cluster_visibility(new_cluster_vis)
+    # }}}
 
-    # =======================================
-    # Utility
-    # =======================================
+    # Utility {{{
     def check_this_cluster_sanity(self):
         """
         Checks if this cluster type would work properly.
@@ -816,3 +779,27 @@ class ClusterTrait():
             c = 'ModifiersCluster'
         x.update({'cluster_trait_subclass': f'{c}'})
         return x
+
+    def _check_if_cluster_removed(self):
+        """
+        This method throws an error when trying to access already
+        removed cluster.
+        """
+        if self._cluster_removed:
+            raise ValueError(f'Cluster {self} already removed.')
+
+    # TODO: remove this method
+    def is_complex(self):
+        """
+        Checks if this cluster cant be considered as usual modifier.
+
+        Returns True if modifier cluster consists of more than
+        one blender modifier.
+        Also returns True if has no modifiers at all.
+        """
+
+        if self.get_list_length() != 1:
+            return True
+        return False
+
+    # }}}

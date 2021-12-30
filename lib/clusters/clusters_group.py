@@ -31,9 +31,7 @@ class ClustersGroup(
     """
 
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        self._MODCLUSTER_DYNAMIC = True
+        super().__init__(*args, cluster_dynamic=True, **kwargs)
 
     def add_cluster_to_this_group(self, cluster, direction='DOWN'):
         """
@@ -45,7 +43,8 @@ class ClustersGroup(
         Returns True or False, if add cluster.
         """
         if not self.recursive_has_cluster(cluster):
-            if self._modcluster_initialized and self._MODCLUSTER_DYNAMIC:
+            if self._modcluster_initialized\
+                    and self._cluster_definition['dynamic'] is True:
                 if direction == 'DOWN':
                     self._modifiers_list.append(cluster)
                 elif direction == 'UP':

@@ -23,13 +23,6 @@ from ..lists.traits.clusters.sortable_clusters_list\
 from ..lists.traits.clusters.active_cluster import ActiveClusterTrait
 from .cluster_trait import ClusterTrait
 
-try:
-    import bpy
-    _WITH_BPY = True
-except ModuleNotFoundError:
-    from ..dummy_modifiers import DummyBlenderModifier, DummyBlenderObj
-    _WITH_BPY = False
-
 
 class ClustersLayer(
                     ActiveClusterTrait,
