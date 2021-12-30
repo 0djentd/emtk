@@ -32,9 +32,10 @@ logger.setLevel(logging.INFO)
 
 
 def get_modifier_state(modifier):
-    """
-    Returns dict with modifier's properties that can be
+    """Returns dict with modifier's properties that can be
     serialized.
+
+    'extra_info' not used when restoring modifier props.
     """
 
     if _WITH_BPY:
@@ -71,29 +72,28 @@ def get_modifier_state(modifier):
 
 
 def restore_modifier_state(modifier, modifier_state):
-    """
-    Restores modifier state from dict.
-    """
+    """Restores modifier state from dict."""
     logger.info(f'Restoring {modifier_state} for {modifier}')
-    if _WITH_BPY:
-        if not isinstance(modifier, bpy.types.Modifier):
-            raise TypeError
-    else:
-        if not isinstance(modifier, DummyBlenderModifier):
-            raise TypeError
 
+    if _WITH_BPY:
+        modifier_type = bpy.types.Modifier
+    else:
+        modifier_type = DummyBlenderModifier
+
+    if not isinstance(modifier, modifier_type):
+        raise TypeError
     if not isinstance(modifier_state, dict):
         raise TypeError
-    if modifier.type != modifier_state.type:
+    if modifier.type != modifier_state['type']:
         raise ValueError('Wrong modifier type.')
 
+    _IGNORE_MODIFIER_ATTR = ['type', 'extra_info']
+
     for x in modifier_state:
-        if x == 'type'\
-                or x == 'extra_info':
+        if x in _IGNORE_MODIFIER_ATTR\
+                or 'is_' in x:
             logger.debug(f'Skipping {x}')
             continue
-        setattr(modifier, modifier_state[x], x)
+        setattr(modifier, x, modifier_state[x])
         logger.debug(f'Restored {modifier_state[x]}')
-
     logger.debug('Finished restoring modifier state.')
-    return

@@ -30,7 +30,7 @@ except ModuleNotFoundError:
 from ....parser import ClustersParser
 from ....controller.clusters_controller import ClustersController
 from ....controller.answers import ActionDefaultRemove
-from ....utils.modifiers import get_modifier_state
+from ....utils.modifiers import get_modifier_state, restore_modifier_state
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -239,6 +239,24 @@ class FirstLayerClustersListTrait():
                 cluster, modifiers, clusters_names)
         self._modifiers_list.append(cluster)
         return True
+
+    def duplicate(self, cluster):
+        """
+        Duplicates cluster modifiers and reparses them.
+        This will add parsed cluster to first layer.
+        """
+        modifiers = []
+        for x in cluster.get_full_actual_modifiers_list():
+            modifier_props = get_modifier_state(x)
+            if _WITH_BPY:
+                modifiers.append(
+                        self._object.modifiers.new(x.name, x.type))
+            if not _WITH_BPY:
+                modifiers.append(
+                        self._object.modifier_add(x.name, x.type))
+            restore_modifier_state(modifiers[-1], modifier_props)
+        result = self._clusters_parser.parse_recursively(modifiers)
+        self._modifiers_list.extend(result)
 
     # ===============
     # Utility

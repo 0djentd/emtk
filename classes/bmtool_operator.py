@@ -266,7 +266,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
                 & (event.value == 'PRESS'):
             layer.apply_sorting_rules()  # }}}
 
-        # Add new modifier of the same type and switch to it{{{
+        # Duplicate cluster modifiers and parse {{{
         elif (event.type == self.__bmtool_kbs['add_new'])\
                 & (event.value == 'PRESS'):
 
@@ -279,8 +279,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
                 self.bmtool_modifier_defaults(context)
 
             else:
-                self.bmtool_modifier_add(context)
-                self.bmtool_modifier_defaults(context)
+                self.m_list.duplicate(cluster)
 
             # Trigger active modifier change
             self.bmtool_modifier_update(context)  # }}}
