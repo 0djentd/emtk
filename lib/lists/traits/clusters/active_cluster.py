@@ -23,7 +23,6 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-# TODO: this trait requires class to also inherit ObjectClustersListTrait
 class ActiveClusterTrait():
     """Active cluster and selection for clusters list."""
 
