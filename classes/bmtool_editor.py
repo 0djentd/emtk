@@ -44,22 +44,22 @@ class ModifierEditor(BMToolModalInput):
                       # Editor name to be shown in ui
                       'name' = name,
 
-                      # Cluster types that this editor
+                      # List of cluster types that this editor
                       # can be used with.
                       # Example:
-                      # ['BEVEL_CLUSTER', 'DOUBLE_BEVEL']
+                      # ['BEVEL_CLUSTER', 'BEVEL']
                       'cluster_types' = []
                       }
     # }}}
 
     # Editor methods {{{
-    def editor_inv(self, context, clusters)
+    def editor_switched_to(self, context, clusters)
         """Called every time editor is switched to."""
-        return self.inv(self, context, clusters)
+        return self.switched_to(self, context, clusters)
 
-    def editor_rm(self, context, event, cluster):
+    def editor_switched_from(self, context, event, cluster):
         """Called every time editor is switched from."""
-        return self.rm(self, context, clusters)
+        return self.switched_from(self, context, clusters)
 
     def editor_modal_pre(self, context, event, cluster):
         """Modal method 1."""
@@ -71,11 +71,11 @@ class ModifierEditor(BMToolModalInput):
     # }}}
 
     # Editor-specific method placeholders {{{
-    def inv(self, context, clusters)
+    def switched_to(self, context, clusters)
         """Called every time editor is switched to."""
         raise ValueError('No editor-specific method.')
 
-    def rm(self, context, event, cluster):
+    def switched_from(self, context, cluster):
         """Called every time editor is switched from."""
         raise ValueError('No editor-specific method.')
 
@@ -90,65 +90,34 @@ class ModifierEditor(BMToolModalInput):
 
 
 class ModifierEditorTemplate(ModifierEditor):
-    # example {{{
-    """
-    Modal mapping decides what modifiers to use when editing.
-    TODO: this is kinda bad
-    Examples:
-    MODIFIER_MAPPING = {'cluster': BEVEL_CLUSTER,
-                        'modifiers': ['get_first()', 'get_first().get_last()']
-                        }
-
-    MODIFIER_MAPPING = {'cluster': DOUBLE_BEVEL,
-                        'modifiers': ['get_list()[1]']
-                        }
-
-    Attributes example:
-    [
-     {'attr': 'segments',  # Attribut name
-      'mods': [<MODIFIER_MAPPING>, <MODIFIER_MAPPING>]  # Modal mappings
-      'type': 'int',  # Attribute type
-      'min': 0,  # Min value
-      'kb': 'S',  # Shortcut
-      'sens': 0.00005},  # Sens for modal editing
-
-     {'attr': 'harden_normals',
-      'mods': [<MODIFIER_MAPPING>, <MODIFIER_MAPPING>]
-      'type': 'bool',
-      'kb': 'H',
-      'sens': 0.00005},
-
-     {'attr': 'angle',
-      'mods': [<MODIFIER_MAPPING>]
-      'type': 'float',
-      'min': 0,
-      'kb': 'A',
-      'sens': 0.0005}
-      ]
-    """  # }}}
+    """Base class for editors that only use modifiers attributes."""
 
     # Variables {{{
-    _mappings = [
-                 {'mapping_name': '1',
-                  'cluster': 'BEVEL_CLUSTER',
-                  'mods': [{'attr': 'get_first', 'args': ''}]}
-                 ]
-
-    _attributes = [
-                   {'attr': 'segments',
-                    'map': '1',
-                    'type': 'int',
-                    'min': 0,
-                    'kb': 'S',
-                    'sens': 0.00005},
-                   {'attr': 'harden_normals',
-                    'map': '1',
-                    'type': 'int',
-                    'kb': 'S',
-                    'sens': 0.00005},
-                   ]
-
+    # Modifiers mapping example:
+    # MODIFIER_MAPPING = {'cluster': BEVEL_CLUSTER,
+    #                     'modifiers': ['get_first()', 'get_first().get_last()']
+    #                     }
+    # 
+    # List of modifiers mappings.
+    # _mappings = []
+    # 
+    # List of available to editor modifiers attributes
+    # _attributes = [
+    #                {'attr': 'segments',
+    #                 'map': '1',
+    #                 'type': 'int',
+    #                 'min': 0,
+    #                 'kb': 'S',
+    #                 'sens': 0.00005},
+    #                {'attr': 'harden_normals',
+    #                 'map': '1',
+    #                 'type': 'int',
+    #                 'kb': 'S',
+    #                 'sens': 0.00005},
+    #                ]
+    #
     # Currently active editor mode.
+    # (one of _attributes['attr'])
     # self.mode
 
     _DEFAULT_MODE = 'SELECT_MODE'
@@ -158,31 +127,32 @@ class ModifierEditorTemplate(ModifierEditor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.mode = self.__DEFAULT_MODE
+        self._mappings = None
+        self._attributes = None
 
     # Editor methods {{{
-    def inv(self, context, clusters)
+    def editor_switched_to(self, context, clusters)
         """Called every time editor is switched to."""
         self.mode = self.__DEFAULT_MODE
-        return self.inv(self, context, clusters)
+        return self.switched_to(self, context, clusters)
 
-    def rm(self, context, event, clusters):
+    def editor_switched_from(self, context, clusters):
         """Called every time editor is switched from."""
-        # Resets editor's mode, kinda should be in every editor
         self.mode = self.__DEFAULT_MODE
-        return self.rm(self, context, clusters)
+        return self.switched_from(self, context, clusters)
 
-    def modal_pre(self, context, event, clusters):
+    def editor_modal_pre(self, context, event, clusters):
         """Modal method 1."""
         return self.modal_pre(self, context, event, clusters)
 
-    def modal(
+    def editor_modal(
             self, context, event, clusters):
         """Modal method 2"""
+        self.__modal_attrs(context, event, clusters)
         return self.modal(self, context, event, clusters)
     # }}}
 
-    def modal_attrs(self, context, event, clusters):  # {{{
-
+    def __modal_attrs(self, context, event, clusters):  # {{{
         if self.mode == self._DEFAULT_MODE:
             for x in self._attributes:
                 if event.type == x['kb']\
@@ -198,15 +168,12 @@ class ModifierEditorTemplate(ModifierEditor):
 
                     # Modes switcher
                     else:
-                        self.mode = x['attr']
+                        self.mode = x
             return
 
-        # Get active attr by mode
-        x = None
-        for a in self._attributes:
-            if a['attr'] == self.mode:
-                x = a
-        if x is None:
+        # Get active _attributes element
+        x = self.mode
+        if x is None or x == self.__DEFAULT_MODE:
             raise ValueError
 
         # Modal attr editing
@@ -225,7 +192,8 @@ class ModifierEditorTemplate(ModifierEditor):
                 val = float(val)
                 for x in mods:
                     setattr(x, x['attr'], val)
-        return  # }}}
+        return
+    # }}}
 
     # Utils {{{
     def _get_mod_mapping(self, mapping_name):
@@ -233,6 +201,7 @@ class ModifierEditorTemplate(ModifierEditor):
             if x['name'] == mapping_name:
                 return x
 
+    # TODO: what is dat
     def _get_mods_for_attr(self, x, cluster):
         mapping = self._get_mod_mapping(x['map'])
         mods = []
