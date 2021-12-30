@@ -16,6 +16,7 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+import math
 import copy
 import logging
 import string
@@ -157,3 +158,25 @@ class BMToolModalInput():
 
     def __str_clear(self):
         self.bmtool_modal_str = ''  # }}}
+
+    # delta_d {{{
+    # TODO: should be in utils
+    # Returns VL
+    # VL = vector length
+    # VL from object center (currently from initialisation)
+    # TODO: should take into consideration distance to object center.
+    # TODO: should use object center as center.
+    # TODO: should not change settings when changing mode
+    def delta_d(self, event):
+        x = self.__vec_len(self.first_x, event.mouse_x,
+                           self.first_y, event.mouse_y
+                           )
+        y = pow(x, 2)
+        return y
+
+    # Vector length
+    def __vec_len(self, x1, x2, y1, y2):
+        delta_x = x1 - x2
+        delta_y = y1 - y2
+        return math.sqrt(pow(delta_x, 2) + pow(delta_y, 2))
+    # }}}

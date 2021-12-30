@@ -27,18 +27,107 @@ from .bmtool_input import BMToolModalInput
 
 
 class ModifierEditor(BMToolModalInput):
-    """
-    Modifier editor base class
-    Designed to be used with BMToolM
-    """
+    """Editor base class"""
 
-    # Editor definition {{{
-    props = {
-             'name': None,              # Editor name
-             'cluster_types': [None],   # Clusters types
-                                        # this editor can be used with
-             }
+    # Constructor {{{
+    def __init__(self, *args, name, cluster_types, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not isinstance(name, str):
+            raise TypeError
+        if not isinstance(cluster_types, list):
+            cluster_types = [cluster_types]
+        for x in cluster_types:
+            if not isinstance(x, str):
+                raise TypeError
 
+        self.props = {
+                      # Editor name to be shown in ui
+                      'name' = name,
+
+                      # Cluster types that this editor
+                      # can be used with.
+                      # Example:
+                      # ['BEVEL_CLUSTER', 'DOUBLE_BEVEL']
+                      'cluster_types' = []
+                      }
+    # }}}
+
+    # Editor methods {{{
+    def editor_inv(self, context, clusters)
+        """Called every time editor is switched to."""
+        return self.inv(self, context, clusters)
+
+    def editor_rm(self, context, event, cluster):
+        """Called every time editor is switched from."""
+        return self.rm(self, context, clusters)
+
+    def editor_modal_pre(self, context, event, cluster):
+        """Modal method 1."""
+        return self.modal_pre(self, context, event, cluster)
+
+    def editor_modal(self, context, event, cluster):
+        """Modal method 2"""
+        return self.modal(self, context, event, cluster)
+    # }}}
+
+    # Editor-specific method placeholders {{{
+    def inv(self, context, clusters)
+        """Called every time editor is switched to."""
+        raise ValueError('No editor-specific method.')
+
+    def rm(self, context, event, cluster):
+        """Called every time editor is switched from."""
+        raise ValueError('No editor-specific method.')
+
+    def modal_pre(self, context, event, cluster):
+        """Modal method 1."""
+        raise ValueError('No editor-specific method.')
+
+    def modal(self, context, event, cluster):
+        """Modal method 2"""
+        raise ValueError('No editor-specific method.')
+    # }}}
+
+
+class ModifierEditorTemplate(ModifierEditor):
+    # example {{{
+    """
+    Modal mapping decides what modifiers to use when editing.
+    TODO: this is kinda bad
+    Examples:
+    MODIFIER_MAPPING = {'cluster': BEVEL_CLUSTER,
+                        'modifiers': ['get_first()', 'get_first().get_last()']
+                        }
+
+    MODIFIER_MAPPING = {'cluster': DOUBLE_BEVEL,
+                        'modifiers': ['get_list()[1]']
+                        }
+
+    Attributes example:
+    [
+     {'attr': 'segments',  # Attribut name
+      'mods': [<MODIFIER_MAPPING>, <MODIFIER_MAPPING>]  # Modal mappings
+      'type': 'int',  # Attribute type
+      'min': 0,  # Min value
+      'kb': 'S',  # Shortcut
+      'sens': 0.00005},  # Sens for modal editing
+
+     {'attr': 'harden_normals',
+      'mods': [<MODIFIER_MAPPING>, <MODIFIER_MAPPING>]
+      'type': 'bool',
+      'kb': 'H',
+      'sens': 0.00005},
+
+     {'attr': 'angle',
+      'mods': [<MODIFIER_MAPPING>]
+      'type': 'float',
+      'min': 0,
+      'kb': 'A',
+      'sens': 0.0005}
+      ]
+    """  # }}}
+
+    # Variables {{{
     _mappings = [
                  {'mapping_name': '1',
                   'cluster': 'BEVEL_CLUSTER',
@@ -58,9 +147,39 @@ class ModifierEditor(BMToolModalInput):
                     'kb': 'S',
                     'sens': 0.00005},
                    ]
-    # }}}
+
+    # Currently active editor mode.
+    # self.mode
 
     _DEFAULT_MODE = 'SELECT_MODE'
+
+    # }}}
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.mode = self.__DEFAULT_MODE
+
+    # Editor methods {{{
+    def inv(self, context, clusters)
+        """Called every time editor is switched to."""
+        self.mode = self.__DEFAULT_MODE
+        return self.inv(self, context, clusters)
+
+    def rm(self, context, event, clusters):
+        """Called every time editor is switched from."""
+        # Resets editor's mode, kinda should be in every editor
+        self.mode = self.__DEFAULT_MODE
+        return self.rm(self, context, clusters)
+
+    def modal_pre(self, context, event, clusters):
+        """Modal method 1."""
+        return self.modal_pre(self, context, event, clusters)
+
+    def modal(
+            self, context, event, clusters):
+        """Modal method 2"""
+        return self.modal(self, context, event, clusters)
+    # }}}
 
     def modal_attrs(self, context, event, clusters):  # {{{
 
@@ -107,106 +226,6 @@ class ModifierEditor(BMToolModalInput):
                 for x in mods:
                     setattr(x, x['attr'], val)
         return  # }}}
-
-    # {{{
-    """
-    Type example:
-    EDITOR_TYPE = ['BEVEL_CLUSTER', 'BEVEL', 'BEVELED_BOOLEAN']
-
-    Modal mapping decides what modifiers to use when editing.
-    TODO: this is kinda bad
-    Examples:
-    MODIFIER_MAPPING = {'cluster': BEVEL_CLUSTER,
-                        'modifiers': ['get_first()', 'get_first().get_last()']
-                        }
-
-    MODIFIER_MAPPING = {'cluster': DOUBLE_BEVEL,
-                        'modifiers': ['get_list()[1]']
-                        }
-
-    Attributes example:
-    [
-     {'attr': 'segments',  # Attribut name
-      'mods': [<MODIFIER_MAPPING>, <MODIFIER_MAPPING>]  # Modal mappings
-      'type': 'int',  # Attribute type
-      'min': 0,  # Min value
-      'kb': 'S',  # Shortcut
-      'sens': 0.00005},  # Sens for modal editing
-
-     {'attr': 'harden_normals',
-      'mods': [<MODIFIER_MAPPING>, <MODIFIER_MAPPING>]
-      'type': 'bool',
-      'kb': 'H',
-      'sens': 0.00005},
-
-     {'attr': 'angle',
-      'mods': [<MODIFIER_MAPPING>]
-      'type': 'float',
-      'min': 0,
-      'kb': 'A',
-      'sens': 0.0005}
-      ]
-    """  # }}}
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.mode = self._DEFAULT_MODE
-
-    # Editor method placeholders {{{
-    def bmtool_editor_inv(
-            self, context, m_list, selected_objects):
-        """
-        Editor invoke method, called every time editor is switched to
-        """
-        self.bmtool_mode = self._DEFAULT_EDITOR_MODE
-        return
-
-    def bmtool_editor_remove(
-            self, context, m_list, selected_objects):
-        """
-        Editor remove method, called every time editor is switched from
-        """
-        # Resets editor's mode, kinda should be in every editor
-        self.bmtool_mode = self._DEFAULT_EDITOR_MODE
-        return
-
-    def bmtool_editor_modal_1(
-            self, context, event, m_list, selected_objects, delta_d):
-        """
-        Modal method 1
-        """
-        return
-
-    def bmtool_editor_modal_2(
-            self, context, event, m_list, selected_objects, delta_d):
-        """
-        Modal method 2
-        """
-        self.delta_d = delta_d
-        self.m_list = m_list
-        self.bmtool_modal_2(context, event)
-        return
-    # }}}
-
-    # TODO: should be in utils
-    # Returns VL
-    # VL = vector length
-    # VL from object center (currently from initialisation)
-    # TODO: should take into consideration distance to object center.
-    # TODO: should use object center as center.
-    # TODO: should not change settings when changing mode
-    def delta_d(self, event):
-        x = self.vec_len(self.first_x, event.mouse_x,
-                         self.first_y, event.mouse_y
-                         )
-        y = pow(x, 2)
-        return y
-
-    # Vector length
-    def vec_len(self, x1, x2, y1, y2):
-        delta_x = x1 - x2
-        delta_y = y1 - y2
-        return math.sqrt(pow(delta_x, 2) + pow(delta_y, 2))
 
     # Utils {{{
     def _get_mod_mapping(self, mapping_name):
