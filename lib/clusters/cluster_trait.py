@@ -182,18 +182,6 @@ class ClusterTrait():
         return x
     # }}}
 
-    def __repr__(self):
-        return self.__str__()
-
-    def __str__(self):
-        if not self._cluster_removed and self._cluster_props['initialized']:
-            name = self.get_this_cluster_name()
-            result = f"Cluster {name}, {self.get_this_cluster_type()}"
-        else:
-            result\
-                = f"Already removed cluster {self._cluster_definition['name']}"
-        return result
-
     # Props {{{
     # Cluster name
     @property
@@ -712,6 +700,7 @@ class ClusterTrait():
     # }}}
 
     # Utility {{{
+    # TODO: allow checking without throwing error
     def check_this_cluster_sanity(self):
         """
         Checks if this cluster type would work properly.
@@ -732,7 +721,6 @@ class ClusterTrait():
         if not self.check_this_cluster_sanity_custom():
             raise ValueError
 
-        # If specified that cluster is sane
         if self._cluster_definition['sane']:
             return True
 
@@ -788,18 +776,15 @@ class ClusterTrait():
         if self._cluster_removed:
             raise ValueError(f'Cluster {self} already removed.')
 
-    # TODO: remove this method
-    def is_complex(self):
-        """
-        Checks if this cluster cant be considered as usual modifier.
+    def __repr__(self):
+        return self.__str__()
 
-        Returns True if modifier cluster consists of more than
-        one blender modifier.
-        Also returns True if has no modifiers at all.
-        """
-
-        if self.get_list_length() != 1:
-            return True
-        return False
-
+    def __str__(self):
+        if not self._cluster_removed and self._cluster_props['initialized']:
+            name = self.get_this_cluster_name()
+            result = f"Cluster {name}, {self.get_this_cluster_type()}"
+        else:
+            result\
+                = f"Already removed cluster {self._cluster_definition['name']}"
+        return result
     # }}}
