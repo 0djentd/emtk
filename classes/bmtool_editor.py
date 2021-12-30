@@ -26,6 +26,7 @@ import bpy
 from .bmtool_input import BMToolModalInput
 
 
+# TODO: rename to ClustersEditor
 class ModifierEditor(BMToolModalInput):
     """Editor base class"""
 
@@ -132,8 +133,8 @@ class ModifierEditorTemplate(ModifierEditor):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.mode = self.__DEFAULT_MODE
-        # self._mappings = None
-        # self._attributes = None
+        self._mappings = None
+        self._attributes = None
 
     # Editor methods {{{
     def editor_switched_to(self, context, clusters):
@@ -161,6 +162,9 @@ class ModifierEditorTemplate(ModifierEditor):
     # }}}
 
     def __modal_attrs(self, context, event, clusters):  # {{{
+        if not isinstance(clusters, list):
+            clusters = [clusters]
+
         if self.mode == self.__DEFAULT_MODE:
             for x in self._attributes:
                 if event.type == x['kb']\
@@ -188,6 +192,9 @@ class ModifierEditorTemplate(ModifierEditor):
         for c in clusters:
             mods = self._get_mods_for_attr(x, c)
             val = self.delta_d(event) * x['sens']
+            if not isinstance(val, int):
+                raise TypeError
+
             if x['min'] == 0 and val < 0:
                 val = val * -1
 
@@ -205,16 +212,20 @@ class ModifierEditorTemplate(ModifierEditor):
 
     # Utils {{{
     def _get_mod_mapping(self, mapping_name):
+        """Returns modifiers mapping by its name."""
         for x in self._mappings:
             if x['name'] == mapping_name:
                 return x
 
-    # TODO: what is dat
     def _get_mods_for_attr(self, x, cluster):
+        """Returns modifiers that can be edited at the same time."""
         mapping = self._get_mod_mapping(x['map'])
         mods = []
         for m in mapping['mods']:
-            result = getattr(cluster, m['attr'])(m['args'])
+            if m['attr'] == '':
+                result = getattr(cluster, m['attr'])()
+            else:
+                result = getattr(cluster, m['attr'])(*m['args'])
             if not isinstance(result, list):
                 result = [result]
             for y in result:

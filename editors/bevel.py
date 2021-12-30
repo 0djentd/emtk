@@ -20,27 +20,6 @@ from ..classes.bmtool_editor import ModifierEditorTemplate
 
 
 class BMToolEditorBevel(ModifierEditorTemplate):
-    _mappings = [
-                 {
-                  'name': 'first_modifier',
-                  'cluster': 'BEVEL_CLUSTER',
-                  'modifiers': [{'attr': 'get_first', 'args': ''}]
-                  }
-                 ]
-
-    _attributes = [
-                   {'attr': 'segments',
-                    'map': 'first_modifier',
-                    'type': 'int',
-                    'min': 0,
-                    'kb': 'S',
-                    'sens': 0.00005},
-
-                   {'attr': 'harden_normals',
-                    'map': 'first_modifier',
-                    'type': 'bool',
-                    'kb': 'H'}
-                   ]
 
     def __init__(self, *args, **kwargs):
         super().__init__(
@@ -48,6 +27,30 @@ class BMToolEditorBevel(ModifierEditorTemplate):
                          name='BevelEditor',
                          cluster_types=['BEVEL_CLUSTER', 'BEVEL'],
                          **kwargs)
+        self._mappings = [
+                          {
+                           'name': 'first_modifier',
+                           'cluster': 'BEVEL_CLUSTER',
+
+                           # args can be tuple, or '',
+                           # then no args will be used.
+                           'mods': [{'attr': 'get_first', 'args': ''}]
+                           }
+                          ]
+
+        self._attributes = [
+                            {'attr': 'segments',
+                             'map': 'first_modifier',
+                             'type': 'int',
+                             'min': 0,
+                             'kb': 'S',
+                             'sens': 0.00005},
+
+                            {'attr': 'harden_normals',
+                             'map': 'first_modifier',
+                             'type': 'bool',
+                             'kb': 'H'}
+                            ]
 
 # Bevel modifier editor
 # class bmtooleditorbevel(modifiereditor):
