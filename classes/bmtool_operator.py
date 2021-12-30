@@ -109,17 +109,18 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
                 self.clear(context)
                 return {'FINISHED'}
 
+        # Cancell.
+        elif event.type in {'RIGHTMOUSE', 'ESC'}:
+            self.clear(context)
+            return {'CANCELLED'}
+
         # Switch between editor and actions.
         elif event.type == 'SPACE' and event.value == 'PRESS':
             if self.mode == 'ACTIONS':
                 self.mode = 'EDITOR'
             else:
                 self.mode = 'ACTIONS'
-
-        # Cancell.
-        elif event.type in {'RIGHTMOUSE', 'ESC'}:
-            self.clear(context)
-            return {'CANCELLED'}
+            logger.info(f'Switched mode to {self.mode}')
 
         # Modal method.
         if self.mode == 'EDITOR':
@@ -142,18 +143,11 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
                 return a
 
         # Modal method.
-        if self.mode == 'EDITOR' or a is False:
+        if self.mode == 'EDITOR':
             a = self.bmtool_modal(context, event)
             if a in self.__OPERATOR_REMOVE:
                 self.clear(context)
                 return a
-
-        # Finish or cancell operator from editor
-        if a is not True\
-                and a is not False\
-                and a is not None:
-            self.clear(context)
-            return a
 
         return {'RUNNING_MODAL'}  # }}}
 
