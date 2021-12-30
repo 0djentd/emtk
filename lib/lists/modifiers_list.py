@@ -62,12 +62,8 @@ doesnt have anything to do with modifiers and operate on list in general.
 
 
 class ModifiersList():
-    """
-    Base class for all modifiers and clusters lists.
+    """Base class for cluster_trait and first_layer_clusters_list."""
 
-    It only used as base class for cluster_trait
-    and first_layer_clusters_list.
-    """
     def __init__(self, obj=None, *args, no_obj=None,
                  no_default_actions=False,
                  **kwargs):
@@ -94,14 +90,12 @@ class ModifiersList():
     def _check_if_cluster_removed(self):
         pass
 
+    # This method is different in clusters.
     def has_clusters(self):
         return False
 
+    # Clusters actions {{{
     """
-    =====================================
-    Clusters actions
-    =====================================
-
     This methods create a new command and pass it to
     interpreter. This will automatically add
     necessary commands to it, creating a ClustersBatchCommand,
@@ -345,7 +339,9 @@ class ModifiersList():
 
         self._actions.update({action_answer.action_type: action_answer})
         return
+    # }}}
 
+    # Modifiers list utils. {{{
     # ==============================================
     # This methods work on _modifiers_list
     # This means that they dont differ simple or nested clusters and modifiers
@@ -471,10 +467,9 @@ class ModifiersList():
             if mod.name == m_name:
                 return True
         return False
+    # }}}
 
-    # =================
-    # Finding modifiers
-    # =================
+    # Finding modifiers {{{
     # ------------------------------------
     # 'find' methods that looking for modifiers relatively
     # to modifiers.
@@ -564,10 +559,9 @@ class ModifiersList():
             return self.get_by_index(x+1)
         else:
             return self.get_by_index(y-1)
+    # }}}
 
-    # ------------------------------------
-    # Methods that are looping around list
-    # ------------------------------------
+    # Methods that are looping around list {{{
     def find_previous_loop(self, mod, m_type):
         self._check_if_cluster_removed()
         return self.find_previous_modifier_loop(mod, m_type)
@@ -658,3 +652,4 @@ class ModifiersList():
             return self._modifiers_list[x + 1]
         else:
             return self._modifiers_list[0]
+    # }}}
