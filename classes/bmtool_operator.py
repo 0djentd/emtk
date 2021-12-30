@@ -31,31 +31,38 @@ logger.setLevel(logging.DEBUG)
 
 
 class BMToolMod(BMToolModalInput, ModifiersOperator):
-    """Base class for modal operators that use Blender modifier stack
+    """
+    Base class for modal operators that use Blender modifier stack
     through ModififersOperator and ExtendedModifiersList.
     """
 
     # Variables {{{
-    # Constants {{{
-    # Default bmtool modal editing mode.
-    _BMTOOL_DEFAULT_MODE = "Please select BMTool mode"
 
-    # Allows operator to be used in edit mode.
-    _BMTOOL_EDITMODE = False
+    # Operator mode, can be 'ACTIONS' or 'EDITOR'.
+    # self.mode
 
-    # Dont let to use operator if more than one object is selected.
-    _BMTOOL_SINGLE_OBJECT = False
+    # Clusters selection.
+    # self.__selecting_clusters
 
-    # TODO: Operator can be used without modifiers
-    _BMTOOL_NO_MODIFIERS = False
+    # Draw handler.
+    # self.bmtool_ui_draw_handler
+
+    # Active object ModifiersList instance.
+    # self.m_list()
+
+    # Selected objects ModifiersList instances.
+    # self.selected_objects[]
+
+    # Default modal editing mode.
+    __DEFAULT_MODE = "ACTIONS"
 
     # Create draw handler.
-    _BMTOOL_UI = False
+    __UI = False
 
     # Use statusbar to display modifier info.
-    _BMTOOL_UI_STATUSBAR = False  # }}}
+    __UI_STATUSBAR = False
 
-    bmtool_kbs = {  # {{{
+    bmtool_kbs = {
                   'visibility_1': 'V',
                   'visibility_2': 'B',
                   'sort': 'T',
@@ -67,29 +74,16 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
                   'down': 'F',
                   'collapse': 'R',
                   'exit': 'Q'
-                  }  # }}}
+                  }
 
-    # Some variables that are created when operator is initialized {{{
-    # by modifiers_operator
+    # }}}
 
-    # GUI draw handler
-    # self.bmtool_ui_draw_handler
-
-    # Active object ModifiersList instance
-    # self.m_list()
-
-    # Selected objects ModifiersList instances
-    # self.selected_objects[] }}} }}}
-
-    # Availability check {{{
     @classmethod
-    def poll(self, context):
+    def poll(self, context):  # {{{
         """Check if operator can be used."""
         if context.area.type != 'VIEW_3D':
             return False
-        elif context.mode != 'OBJECT' and self._BMTOOL_EDITMODE is False:
-            return False
-        elif len(context.selected_objects) > 1 and self._BMTOOL_SINGLE_OBJECT:
+        elif context.mode != 'OBJECT' and context.mode != 'EDIT':
             return False
         elif len(context.selected_objects) == 0:
             return False
@@ -110,46 +104,11 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
         cluster = self.m_list.get_cluster()
         layer = self.m_list.get_layer()
 
-        """
-        This is different modes of this operator.
-        {'ACTIONS', 'EDITOR', 'INT', 'STR'}
-
-        'ACTIONS' is modal loop for general actions on clusters list.
-        Example: applying, moving and switching visibility of modifiers.
-
-        'EDITOR' is bmtool_editor modal loop.
-        It is used for modal editing of modifiers and clusters properties
-        within editor.
-        Example: bevel angle editing.
-
-        'DIGITS' is digits input mode.
-        'STR' is string input mode.
-        This two methods always switch back to previous mode.
-        """
-        if self.mode = 'ACTIONS':
-            a = self.__modal_actions(context, event)
-        elif self.mode = 'EDITOR':
-            a = self.__modal_editor(context, event)
-        elif self.mode = 'INT':
-            a = self._BMToolModalInput__modal_digits(context, event)
-        elif self.mode = 'STR':
-            a = self._BMToolModalInput__modal_str(context, event)
-        if a is not True and a is not False:
-            return a
-
-        # Exit out of modifier editing mode or finish operator.
-        if (event.type == self.bmtool_kbs['exit'])\
-                & (event.value == 'PRESS'):
-            if self.bmtool_mode != self._BMTOOL_DEFAULT_MODE:
-                self.bmtool_mode = self._BMTOOL_DEFAULT_MODE
-            else:
-                self.clear(context)
-                return {'FINISHED'}
-
-        # Finish.
-        elif event.type == 'LEFTMOUSE':
-            if self.bmtool_mode != self._BMTOOL_DEFAULT_MODE:
-                self.bmtool_mode = self._BMTOOL_DEFAULT_MODE
+        # Exit out of editor mode or finish operator.
+        if event.type == self.bmtool_kbs['exit']\
+                and event.value == 'PRESS':
+            if self.mode != self._DEFAULT_MODE:
+                self.mode = self._DEFAULT_MODE
             else:
                 self.clear(context)
                 return {'FINISHED'}
@@ -159,16 +118,29 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
             self.clear(context)
             return {'CANCELLED'}
 
+        # Modal methods.
+        if self.mode = 'ACTIONS':
+            a = self.__modal_actions(context, event)
+        elif self.mode = 'EDITOR':
+            a = self.__modal_editor(context, event)
+        else:
+            raise ValueError
+
+        # Finish or cancell operator from editor
+        if a is not True and a is not False:
+            self.clear(context)
+            return a
+
         return {'RUNNING_MODAL'}  # }}}
 
     def __modal_actions(self, context, event):  # {{{
         """This method is used for general modifiers stack editing."""
 
-        # Modifier visibility
+        # Modifier visibility{{{
         if (event.type == self.bmtool_kbs['visibility_1'])\
                 & (event.value == 'PRESS'):
             if event.shift:
-                if self._selecting_clusters:
+                if self.__selecting_clusters:
                     for x in layer.get_cluster_selection():
                         x.toggle_this_cluster_visibility(
                                 [True, False, False, False])
@@ -176,7 +148,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
                     cluster.toggle_this_cluster_visibility(
                             [True, False, False, False])
             else:
-                if self._selecting_clusters:
+                if self.__selecting_clusters:
                     for x in layer.get_cluster_selection():
                         x.toggle_this_cluster_visibility(
                                 [False, True, False, False])
@@ -184,15 +156,14 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
                     cluster.toggle_this_cluster_visibility(
                             [False, True, False, False])
 
-            # Clear selection
-            self._selecting_clusters = False
-            layer.clear_cluster_selection()
+            self.__stop_selecting_clusters()
+            # }}}
 
-        # Modifier visibility 2
+        # Modifier visibility 2{{{
         elif (event.type == self.bmtool_kbs['visibility_2'])\
                 & (event.value == 'PRESS'):
             if event.shift:
-                if self._selecting_clusters:
+                if self.__selecting_clusters:
                     for x in layer.get_cluster_selection():
                         cluster.toggle_this_cluster_visibility(
                                 [False, False, False, True])
@@ -200,7 +171,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
                     cluster.toggle_this_cluster_visibility(
                             [False, False, False, True])
             else:
-                if self._selecting_clusters:
+                if self.__selecting_clusters:
                     for x in layer.get_cluster_selection():
                         cluster.toggle_this_cluster_visibility(
                                 [False, False, True, False])
@@ -208,16 +179,15 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
                     cluster.toggle_this_cluster_visibility(
                             [False, False, False, True])
 
-            # Clear selection
-            self._selecting_clusters = False
-            layer.clear_cluster_selection()
+            self.__stop_selecting_clusters()
+            # }}}
 
-        # Sort modifiers
+        # Sort modifiers{{{
         elif (event.type == self.bmtool_kbs['sort'])\
                 & (event.value == 'PRESS'):
-            layer.apply_sorting_rules()
+            layer.apply_sorting_rules()  # }}}
 
-        # Add new modifier of the same type and switch to it
+        # Add new modifier of the same type and switch to it{{{
         elif (event.type == self.bmtool_kbs['add_new'])\
                 & (event.value == 'PRESS'):
 
@@ -233,25 +203,21 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
                 self.bmtool_modifier_add(context)
                 self.bmtool_modifier_defaults(context)
 
-            # Reset mode
-            self.bmtool_mode = self._BMTOOL_DEFAULT_MODE
-
             # Trigger active modifier change
-            self.bmtool_modifier_update(context)
+            self.bmtool_modifier_update(context)  # }}}
 
-        # Apply active cluster
+        # Apply active cluster{{{
         elif (event.type == self.bmtool_kbs['apply_remove'])\
                 & event.shift & (event.value == 'PRESS'):
 
             # Remove cluster.
-            if self._selecting_clusters:
+            if self.__selecting_clusters:
                 layer.apply_clusters_selection()
             else:
                 layer.apply(cluster)
 
-            # Clear selection
-            self._selecting_clusters = False
-            layer.clear_cluster_selection()
+            self.__stop_selecting_clusters()
+            # }}}
 
             # Check if it was last actual modifier.
             # If so, finish operator.
@@ -259,59 +225,43 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
                 self.clear(context)
                 return {'FINISHED'}
 
-            # Reset mode.
-            self.bmtool_mode = self._BMTOOL_DEFAULT_MODE
-
             # Trigger active modifier change.
-            self.bmtool_modifier_update(context)
+            self.bmtool_modifier_update(context)  # }}}
 
-        # Deconstruct active cluster.
+        # Deconstruct active cluster.{{{
         elif (event.type == self.bmtool_kbs['construct_deconstruct'])\
                 & event.shift & (event.value == 'PRESS'):
 
             if layer.deconstruct(cluster):
                 self.report({'INFO'}, "Deconstructed cluster")
             else:
-                self.report({'ERROR'}, "Cant deconstruct cluster")
+                self.report({'ERROR'}, "Cant deconstruct cluster")  # }}}
 
-        # Construct cluster from selection
+        # Construct cluster from selection.{{{
         elif (event.type == self.bmtool_kbs['construct_deconstruct'])\
                 & (event.value == 'PRESS'):
 
-            if self._selecting_clusters:
+            if self.__selecting_clusters:
                 if layer.construct_cluster_from_selection():
                     self.report({'INFO'}, "Constructed cluster")
                 else:
                     self.report({'ERROR'}, "Cant create cluster")
-                layer.clear_cluster_selection()
-                self._selecting_clusters = False
-            else:
-                # TODO: what is dat
-                layer.clear_cluster_selection()
-                layer.add_cluster_to_selection(cluster)
-                if layer.construct_cluster_from_selection():
-                    self.report({'INFO'}, "Constructed cluster")
-                else:
-                    self.report({'ERROR'}, "Cant create cluster")
-                layer.clear_cluster_selection()
+                self.__stop_selecting_clusters()
 
-            # Select currently active cluster.
-            cluster = self.m_list.get_cluster()
-            layer = self.m_list.get_active_cluster_layer()
+            # }}}
 
-        # Toggle selection.
+        # Toggle selection.{{{
         elif (event.type == self.bmtool_kbs['toogle_selection'])\
                 & (event.value == 'PRESS'):
 
             # Toggle selecting clusters.
-            if self._selecting_clusters:
-                self._selecting_clusters = False
-                layer.clear_cluster_selection()
+            if self.__selecting_clusters:
+                self.__stop_selecting_clusters()
             else:
                 layer.start_selecting_clusters()
-                self._selecting_clusters = True
+                self.__selecting_clusters = True  # }}}
 
-        # Remove active cluster.
+        # Remove active cluster.{{{
         elif (event.type == self.bmtool_kbs['apply_remove'])\
                 & (event.value == 'PRESS'):
 
@@ -326,27 +276,22 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
             #             x.object.unlink(self.m_list._object)
 
             # Remove cluster.
-            if self._selecting_clusters is True:
+            if self.__selecting_clusters is True:
                 layer.remove_clusters_selection()
             else:
                 layer.remove(cluster)
 
-            # Clear selection
-            self._selecting_clusters = False
-            layer.clear_cluster_selection()
-
-            # Reset mode.
-            self.bmtool_mode = self._BMTOOL_DEFAULT_MODE
+            self.__stop_selecting_clusters()
 
             # Trigger active modifier change.
-            self.bmtool_modifier_update(context)
+            self.bmtool_modifier_update(context)  # }}}
 
-        # Move modifier up.
+        # Move modifier up.{{{
         elif (event.type == self.bmtool_kbs['up'])\
                 & event.shift & (event.value == 'PRESS'):
 
             # Move modifier.
-            if self._selecting_clusters:
+            if self.__selecting_clusters:
                 layer.move_up_selection()
             else:
                 layer.move_up(cluster)
@@ -355,14 +300,14 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
             self.bmtool_modifier_update(context)
 
             if self._BMTOOL_V:
-                self.report({'INFO'}, "Moved modifier up.")
+                self.report({'INFO'}, "Moved modifier up.")  # }}}
 
-        # Move modifier down.
+        # Move modifier down.{{{
         elif (event.type == self.bmtool_kbs['down'])\
                 & event.shift & (event.value == 'PRESS'):
 
             # Move modifier.
-            if self._selecting_clusters:
+            if self.__selecting_clusters:
                 layer.move_down_selection()
             else:
                 layer.move_down(cluster)
@@ -371,13 +316,12 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
             self.bmtool_modifier_update(context)
 
             if self._BMTOOL_V:
-                self.report({'INFO'}, "Moved modifier down.")
+                self.report({'INFO'}, "Moved modifier down.")  # }}}
 
-        # Collapse cluster.
+        # Collapse cluster.{{{
         elif (event.type == self.bmtool_kbs['collapse'])\
                 & (event.value == 'PRESS'):
-            self._selecting_clusters = False
-            layer.clear_cluster_selection()
+            self.__stop_selecting_clusters()
 
             # Collapse cluster.
             if event.shift:
@@ -398,11 +342,10 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
             # Trigger active modifier change.
             self.bmtool_modifier_update(context)
 
-            # Clear selection
-            self._selecting_clusters = False
-            layer.clear_cluster_selection()
+            self.__stop_selecting_clusters()
+            # }}}
 
-        # Scroll through modifiers up.
+        # Scroll through modifiers up.{{{
         elif (event.type == self.bmtool_kbs['up'])\
                 & (event.value == 'PRESS'):
 
@@ -428,13 +371,10 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
                         layer.active_modifier_set(
                             layer.find_previous_any_loop(cluster))
 
-            # Reset mode.
-            self.bmtool_mode = self._BMTOOL_DEFAULT_MODE
-
             # Trigger active modifier change.
-            self.bmtool_modifier_update(context)
+            self.bmtool_modifier_update(context)  # }}}
 
-        # Scroll through modifiers down.
+        # Scroll through modifiers down.{{{
         elif (event.type == self.bmtool_kbs['down'])\
                 & (event.value == 'PRESS'):
 
@@ -459,18 +399,16 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
                         layer.active_modifier_set(
                             layer.find_next_any_loop(cluster))
 
-                # Reset mode.
-                self.bmtool_mode = self._BMTOOL_DEFAULT_MODE
-
                 # Trigger active modifier change.
-                self.bmtool_modifier_update(context)
+                self.bmtool_modifier_update(context)  # }}}
         else:
             return False
         return True  # }}}
 
-    def __modal_editor(self, context, event):
+    def __modal_editor(self, context, event):  # {{{
         """This methods is reserved for clusters editors."""
         return self.bmtool_modal_2(context, event)
+    # }}}
 
     def clear(self, context):  # {{{
         """Removes operator.
@@ -497,12 +435,15 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
     def invoke(self, context, event):  # {{{
         """Method that is invoked once per operator usage."""
 
+        self.mode = self.__DEFAULT_MODE
+        self.__selecting_clusters = False
+
         # ------------------------------
-        # Operator-specific
+        # Operator-specific invoke
         # ------------------------------
         self.bmtool_modifier_inv(context, event)
 
-        # Add UI
+        # Add UI.
         if self._BMTOOL_UI:
             logger.info("BMTool UI is created")
             sv = bpy.types.SpaceView3D
@@ -512,19 +453,15 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
             context.area.tag_redraw()
             self.bmtool_modal_numbers_str = ''
 
-        # Default modal editing mode
-        # TODO: implement through enum or whatever
-        # TODO: does this thing actually used?
-        # Can it be replaced by editor mode?
-        self.bmtool_mode = self._BMTOOL_DEFAULT_MODE
-
-        # Backup collection.
+        # TODO: this should be in lib
+        # Create backup collection.
         addon_prefs = bpy.context.preferences.addons['bmtools'].preferences
         b = addon_prefs.backup_mesh_on_modifier_apply_remove
         self.backup_mesh_on_modifier_apply_remove = b
         if b:
             c = addon_prefs.backup_collection_name
             self.backup_collection_name = c
+
             # TODO: different collections for different objects in
             # that backup collection.
             if c not in bpy.data.collections:
@@ -534,20 +471,12 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
                 backups = bpy.data.collections[c]
             self.backup_collection = backups
 
-        # ================================
-        # Create instances of ModifierList
-        # ================================
-        # creates self.selected_objects[]
-        # and self.m_list, as a reference to active object
-        # in it
+        # Create instances of ModifierList.
         result = self.create_objects_modifiers_lists(context)
         if result is False or result is None:
             self.report({'ERROR'}, "Error while parsing clusters")
             self.clear(context)
             return {'FINISHED'}
-
-        # For cluster selection
-        self._selecting_clusters = False
 
         # Trigger active modifier change
         self.bmtool_modifier_update(context)
@@ -599,6 +528,10 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
         BMToolMod modal methods.
         """
         return  # }}}
+
+    def __stop_selecting_clusters(self):  # {{{
+         self.__selecting_clusters = False
+         layer.clear_cluster_selection()  # }}}
 
     def _display_additional_info_about_bmtool(self, context):  # {{{
         logger.debug("BMTool is created")
