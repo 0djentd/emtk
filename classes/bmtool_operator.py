@@ -155,8 +155,6 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
                 else:
                     cluster.toggle_this_cluster_visibility(
                             [False, True, False, False])
-
-            self.__stop_selecting_clusters()
             # }}}
 
         # Modifier visibility 2{{{
@@ -178,8 +176,6 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
                 else:
                     cluster.toggle_this_cluster_visibility(
                             [False, False, False, True])
-
-            self.__stop_selecting_clusters()
             # }}}
 
         # Sort modifiers{{{
@@ -217,8 +213,6 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
                 layer.apply(cluster)
 
             self.__stop_selecting_clusters()
-            # }}}
-
             # Check if it was last actual modifier.
             # If so, finish operator.
             if len(self.m_list.get_full_actual_modifiers_list()) == 0:
@@ -228,14 +222,17 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
             # Trigger active modifier change.
             self.bmtool_modifier_update(context)  # }}}
 
-        # Deconstruct active cluster.{{{
+        # Deconstruct cluster.{{{
         elif (event.type == self.bmtool_kbs['construct_deconstruct'])\
                 & event.shift & (event.value == 'PRESS'):
 
-            if layer.deconstruct(cluster):
-                self.report({'INFO'}, "Deconstructed cluster")
-            else:
-                self.report({'ERROR'}, "Cant deconstruct cluster")  # }}}
+            # TODO: this probably wouldnt work
+            for x in self.__get_clusters():
+                if layer.deconstruct(x):
+                    self.report({'INFO'}, "Deconstructed cluster")
+                else:
+                    self.report({'ERROR'}, "Cant deconstruct cluster")
+            # }}}
 
         # Construct cluster from selection.{{{
         elif (event.type == self.bmtool_kbs['construct_deconstruct'])\
@@ -243,11 +240,12 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
 
             if self.__selecting_clusters:
                 if layer.construct_cluster_from_selection():
-                    self.report({'INFO'}, "Constructed cluster")
+                    self.report({'INFO'}, "Constructed cluster.")
                 else:
-                    self.report({'ERROR'}, "Cant create cluster")
+                    self.report({'ERROR'}, "Cant create cluster.")
                 self.__stop_selecting_clusters()
-
+            else:
+                self.report({'ERROR'}, "No clustes selected.")
             # }}}
 
         # Toggle selection.{{{
@@ -256,10 +254,12 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
 
             # Toggle selecting clusters.
             if self.__selecting_clusters:
+                layer.stop_selecting_clusters()
                 self.__stop_selecting_clusters()
             else:
                 layer.start_selecting_clusters()
-                self.__selecting_clusters = True  # }}}
+                self.__start_selecting_clusters()
+            # }}}
 
         # Remove active cluster.{{{
         elif (event.type == self.bmtool_kbs['apply_remove'])\
@@ -529,9 +529,26 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
         """
         return  # }}}
 
-    def __stop_selecting_clusters(self):  # {{{
+    # Clusters selection utils  {{{
+    def __stop_selecting_clusters(self):
          self.__selecting_clusters = False
-         layer.clear_cluster_selection()  # }}}
+         layer.clear_cluster_selection()
+
+    def __start_selecting_clusters(self):
+         self.__selecting_clusters = True
+
+    def __get_clusters():
+        """
+        Returns selected clusters, or active cluster, if
+        not selecting clusters.
+        """
+        cluster = self.m_list.get_cluster()
+        layer = self.m_list.get_layer()
+        if self.__selecting_clusters:
+            return layer.get_cluster_selection()
+        else:
+            return [cluster]
+    # }}}
 
     def _display_additional_info_about_bmtool(self, context):  # {{{
         logger.debug("BMTool is created")

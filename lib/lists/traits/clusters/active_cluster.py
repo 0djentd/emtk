@@ -17,7 +17,6 @@
 # ##### END GPL LICENSE BLOCK #####
 
 import copy
-import json
 import logging
 
 logger = logging.getLogger(__name__)
@@ -43,9 +42,7 @@ class ActiveClusterTrait():
         # Active modifier
         self._mod = None
 
-    # ===============
-    # Active modifier
-    # ===============
+    # Shortcuts {{{
     def get_cluster(self):
         """
         Returns active cluster on deepest non-collapsed layer.
@@ -53,7 +50,14 @@ class ActiveClusterTrait():
         This method should only be used if creating some kind of user
         interface that uses ExtendedModifiersList.
         """
-        return self.active_cluster_get_deep()
+        cluster = self.active_modifier_get()
+        if cluster.has_clusters():
+            if cluster.modcluster_collapsed is True:
+                return cluster
+            else:
+                return cluster.active_cluster_get_deep()
+        else:
+            return cluster
 
     def get_layer(self):
         """
@@ -63,8 +67,11 @@ class ActiveClusterTrait():
         This method should only be used if creating some kind of user
         interface that uses ExtendedModifiersList.
         """
-        return self.get_active_cluster_layer()
+        return self.get_cluster_or_layer(
+                self.active_cluster_get_deep())
+    # }}}
 
+    # Active modifier {{{
     # TODO: rename all this methods to active.
     @property
     def active_modifier(self):
@@ -100,71 +107,41 @@ class ActiveClusterTrait():
             self._mod = modifier
             return True
         return False
+    # }}}
 
-    # ===========================
-    # Multilayer active modifier
-    # ===========================
-    def active_cluster_get_deep(self):
-        """
-        Recursive method.
-
-        Returns active cluster, or its own active cluster.
-
-        Stops on collapsed cluster or cluster without
-        clusters in it.
-        """
-
-        cluster = self.active_modifier_get()
-
-        if cluster.has_clusters():
-            if cluster.modcluster_collapsed is True:
-                return cluster
-            else:
-                return cluster.active_cluster_get_deep()
-        else:
-            return cluster
-
-    def get_active_cluster_layer(self):
-        """
-        Returns list active cluster belongs to.
-        """
-
-        return self.get_cluster_or_layer(
-                self.active_cluster_get_deep())
-
-    # ===========================================
-    # SELECTION
-    # ===========================================
-    def add_cluster_to_selection(self, cluster):
-        """
-        Adds cluster to selection on this layer.
-        """
+    # SELECTION {{{
+    def add_to_selection(self, cluster):
+        """Adds cluster to selection on this layer."""
         if self.has_cluster(cluster):
             if self._selected_clusters is None:
                 self._selected_clusters = []
                 self._selected_clusters.append(cluster)
             elif cluster not in self._selected_clusters:
                 self._selected_clusters.append(cluster)
+        else:
+            raise ValueError
 
-    def start_selecting_clusters(self, cluster=False):
+    def start_selecting(self, cluster=None):
         """
         Sets cluster that selection should start from on this layer.
         """
-        if cluster is False:
+        if cluster is None:
             cluster = self.active_modifier_get()
-        if self.has_cluster(cluster):
+        elif self.has_cluster(cluster):
             self._cluster_to_select_from = self.active_modifier_get()
+        else:
+            raise ValueError
 
-    def clear_cluster_selection(self):
-        """
-        Clears modifier selection on this layer.
-        """
+    def stop_selecting(self):
+        """Clear all selected clusters."""
         self._cluster_to_select_from = None
         self._selected_clusters = None
 
-    def get_cluster_selection(self):
+    def get_selection(self, add_active=True):
         """
         Returns list of clusters that were selected on this layer.
+        If add_active, will append active cluster to result, even
+        if no clusters were selected.
         """
 
         # Get usual selection.
@@ -181,14 +158,17 @@ class ActiveClusterTrait():
             else:
                 result = self._selected_clusters
 
-        # If no selection, return empty list.
-        if result is None:
-            result = []
+        # Add active cluster
+        if add_active:
+            if self.active_modifier not in result:
+                result.append(self.active_modifier)
+        else:
+            if result is None:
+                result = []
         return result
+    # }}}
 
-    # ===============
-    # Operations on selection
-    # ===============
+    # Operations on selection {{{
     def remove_selection(self):
         """
         Removes selected clusters on this layer.
@@ -312,15 +292,4 @@ class ActiveClusterTrait():
 
         return True
 
-    def create_modifier_after_active_modifier(self, m_name, m_type):
-        """
-        Creates modifier after active modifier.
-        """
-        i = self.get_index(self.active_modifier)
-        mod = self.create_modifier(m_name, m_type)
-        if mod is False:
-            return False
-        result = self.move_to_index(mod, i+1)
-        if result is False:
-            return False
-        return True
+    # }}}
