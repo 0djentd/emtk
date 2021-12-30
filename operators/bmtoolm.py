@@ -54,6 +54,7 @@ class BMTOOL_OT_bmtoolm(BMToolUi, BMToolMod, Operator):
         editor = BMToolEditorBevel()
         self.__editors.append(editor)
 
+    # BMToolMod methods {{{
     def bmtool_modal_pre(self, context, event):
         """Modal method 1, before bmtoolmod"""
         editor = self.get_editor()
@@ -76,6 +77,90 @@ class BMTOOL_OT_bmtoolm(BMToolUi, BMToolMod, Operator):
         if editor is not None:
             return editor.editor_modal(
                     context, event, self.m_list.get_cluster())
+
+    def bmtool_modifier_update(self, context):
+        """
+        This method is called by bmtoolmod every time active
+        cluster or modifier is changed.
+        """
+
+        # Call remove method of editor
+        if self.__active_editor is not None:
+            self.__active_editor.bmtool_editor_remove(
+                    context, self.get_cluster())
+
+        # Get list of possible ediors
+        self.__possible_editors = self.__get_editors(self.m_list.get_cluster())
+
+        # Set first editor, if any
+        if len(self.__possible_editors) > 0:
+            self.__active_editor = self.__possible_editors[0]
+        else:
+            self.__active_editor = None
+
+        # Call invoke method of editor
+        if self.__active_editor is not None:
+            self.__active_editor.bmtool_editor_inv(
+                    context, self.get_cluster())
+
+    def bmtool_operator_inv(self, context, event):
+        """
+        Method that is used by BMToolMod
+        Additional invoke method
+        """
+        for editor in self._editors:
+            self.__initialize_bmtoolm_editor(editor)
+
+    def bmtool_operator_rm(self, context):
+        """
+        Method that is used by BMToolMod
+        Additional remove method
+        """
+        del(self.__editors)
+        del(self.__possible_editors)
+        del(self.__active_editor)
+    # }}}
+
+    # UI {{{
+    def bmtool_ui(self, context):
+        """
+        Method that is used by BMToolUI
+        Returns list of strings
+        """
+
+        ui_t = []
+        if self.__active_editor is not None:
+            ui_t.append(
+                    f"Editor - {self.__active_editor.props['name']}")
+            ui_t.append("Possible editors:")
+            for x in self.__possible_editors:
+                ui_t.append(x.props['name'])
+        else:
+            ui_t.append("No active editor")
+
+        ui_t.append(" ")
+        ui_t_2 = self.bmtool_ui_list(context)
+        for x in ui_t_2:
+            ui_t.append(x)
+        return ui_t
+
+    # def bmtool_ui_modifier_stats(self, context):
+    #     """
+    #     Method that is used by BMToolUI
+    #     Returns modifier-specific ui text with
+    #     info about its settings in a list of strings
+    #     """
+
+    #     editor = self.get_editor()
+
+    #     if editor is not None:
+    #         return editor.bmtool_editor_modifier_stats(
+    #                 context, self.get_cluster())
+    #     else:
+    #         ui_t = []
+    #         ui_t.append("No editors for selected cluster.")
+    #         return ui_t
+    # }}}
 
     # Editor selection {{{
     def get_editor(self):
@@ -136,84 +221,3 @@ class BMTOOL_OT_bmtoolm(BMToolUi, BMToolMod, Operator):
         editor.first_x = self.first_x
         editor.first_y = self.first_y
     # }}}
-
-    def bmtool_modifier_update(self, context):
-        """
-        This method is called by bmtoolmod every time active
-        cluster or modifier is changed.
-        """
-
-        # Call remove method of editor
-        if self.__active_editor is not None:
-            self.__active_editor.bmtool_editor_remove(
-                    context, self.get_cluster())
-
-        # Get list of possible ediors
-        self.__possible_editors = self.__get_editors(self.m_list.get_cluster())
-
-        # Set first editor, if any
-        if len(self.__possible_editors) > 0:
-            self.__active_editor = self.__possible_editors[0]
-        else:
-            self.__active_editor = None
-
-        # Call invoke method of editor
-        if self.__active_editor is not None:
-            self.__active_editor.bmtool_editor_inv(
-                    context, self.get_cluster())
-
-    def bmtool_ui(self, context):
-        """
-        Method that is used by BMToolUI
-        Returns list of strings
-        """
-
-        ui_t = []
-        if self.__active_editor is not None:
-            ui_t.append(
-                    f"Editor - {self.__active_editor.props['name']}")
-            ui_t.append("Possible editors:")
-            for x in self.__possible_editors:
-                ui_t.append(x.props['name'])
-        else:
-            ui_t.append("No active editor")
-
-        ui_t.append(" ")
-        ui_t_2 = self.bmtool_ui_list(context)
-        for x in ui_t_2:
-            ui_t.append(x)
-        return ui_t
-
-    # def bmtool_ui_modifier_stats(self, context):
-    #     """
-    #     Method that is used by BMToolUI
-    #     Returns modifier-specific ui text with
-    #     info about its settings in a list of strings
-    #     """
-
-    #     editor = self.get_editor()
-
-    #     if editor is not None:
-    #         return editor.bmtool_editor_modifier_stats(
-    #                 context, self.get_cluster())
-    #     else:
-    #         ui_t = []
-    #         ui_t.append("No editors for selected cluster.")
-    #         return ui_t
-
-    def bmtool_operator_inv(self, context, event):
-        """
-        Method that is used by BMToolMod
-        Additional invoke method
-        """
-        for editor in self._editors:
-            self.__initialize_bmtoolm_editor(editor)
-
-    def bmtool_operator_rm(self):
-        """
-        Method that is used by BMToolMod
-        Additional remove method
-        """
-        del(self.__editors)
-        del(self.__possible_editors)
-        del(self.__active_editor)

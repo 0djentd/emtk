@@ -481,7 +481,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
     # }}}
 
     # Methods reserved for operators. {{{
-    def bmtool_modal_1(self, context, event):
+    def bmtool_modal_pre(self, context, event):
         """Operator-specific modal method 1
 
         Used before any other modal editing
@@ -489,7 +489,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
         """
         return
 
-    def bmtool_modal_2(self, context, event):
+    def bmtool_modal(self, context, event):
         """Operator-specific modal method 2.
 
         All modal editing should be here.
@@ -512,7 +512,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
         """
         return
 
-    def bmtool_operator_remove(self, context):
+    def bmtool_operator_rm(self, context):
         """Operator-specific remove method
 
         This method is called when encountered FINISHED or CANCELLED in
