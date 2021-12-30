@@ -54,7 +54,7 @@ class ActiveClusterTrait():
             if cluster.modcluster_collapsed is True:
                 return cluster
             else:
-                return cluster.active_cluster_get_deep()
+                return cluster.get_cluster()
         else:
             return cluster
 
@@ -67,7 +67,7 @@ class ActiveClusterTrait():
         interface that uses ExtendedModifiersList.
         """
         return self.get_cluster_or_layer(
-                self.active_cluster_get_deep())
+                self.get_cluster())
     # }}}
 
     # Active modifier {{{
