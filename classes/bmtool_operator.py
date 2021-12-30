@@ -80,7 +80,6 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
                   'collapse': 'R',
                   'exit': 'Q'
                   }
-
     # }}}
 
     @classmethod
@@ -149,7 +148,8 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
                 self.clear(context)
                 return a
 
-        return {'RUNNING_MODAL'}  # }}}
+        return {'RUNNING_MODAL'}
+    # }}}
 
     def invoke(self, context, event):  # {{{
         """Method that is invoked once per operator usage."""
@@ -159,9 +159,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
         self.first_x = event.mouse_x
         self.first_y = event.mouse_y
 
-        # ------------------------------
         # Operator-specific invoke
-        # ------------------------------
         self.bmtool_operator_inv(context, event)
 
         # Add UI.
@@ -204,7 +202,8 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
         logger.info("Finished initializing operator")
 
         context.window_manager.modal_handler_add(self)
-        return {'RUNNING_MODAL'}  # }}}
+        return {'RUNNING_MODAL'}
+    # }}}
 
     # Modal actions. {{{
     def __modal_actions(self, context, event):
@@ -479,7 +478,8 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
                 self.bmtool_modifier_update(context)  # }}}
         else:
             return False
-        return True  # }}}
+        return True
+    # }}}
 
     # Methods reserved for operators. {{{
     def bmtool_modal_pre(self, context, event):
@@ -519,7 +519,8 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
         This method is called when encountered FINISHED or CANCELLED in
         BMToolMod modal methods.
         """
-        return  # }}}
+        return
+    # }}}
 
     def clear(self, context):  # {{{
         """Removes operator.
@@ -563,7 +564,8 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
         if already_removed:
             logger.info("Clusters were already removed.")
 
-        logger.info("Modal operator finished.")  # }}}
+        logger.info("Modal operator finished.")
+    # }}}
 
     # Clusters selection utils  {{{
     def __stop_selecting_clusters(self):
