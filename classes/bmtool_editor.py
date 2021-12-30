@@ -17,6 +17,11 @@
 # ##### END GPL LICENSE BLOCK #####
 
 import math
+import logging
+import copy
+import json
+
+import bpy
 
 
 class ModifierEditor():
@@ -100,10 +105,12 @@ class ModifierEditor():
             mods = self._get_mods_for_attr(x, c)
             if x['type'] == 'int':
                 for x in mods:
-                    setattr(x, x['attr'], self.delta_d * x['sent'])
+                    setattr(x, x['attr'], int(
+                        self.delta_d(event) * x['sens']))
             if x['type'] == 'float':
                 for x in mods:
-                    setattr(x, x['attr'], self.delta_d * x['sens'])
+                    setattr(x, x['attr'], float(
+                        self.delta_d(event) * x['sens']))
         return
 
     _DEFAULT_MODE = 'SELECT_MODE'
@@ -217,7 +224,7 @@ class ModifierEditor():
     # TODO: should take into consideration distance to object center.
     # TODO: should use object center as center.
     # TODO: should not change settings when changing mode
-    def delta_d(self, context, event):
+    def delta_d(self, event):
         x = self.vec_len(self.first_x, event.mouse_x,
                          self.first_y, event.mouse_y
                          )
@@ -229,20 +236,3 @@ class ModifierEditor():
         delta_x = x1 - x2
         delta_y = y1 - y2
         return math.sqrt(pow(delta_x, 2) + pow(delta_y, 2))
-
-    # ==========================================
-    # Compat. method placeholders for bmtool operators
-    # ==========================================
-    def bmtool_modal_2(self, context, event):
-        self.report({'INFO'}, "No editor-specific operator modal 2 method")
-        return
-
-    def bmtool_modifier_defaults(self, context):
-        self.report({'INFO'}, "No editor-specific operator mod defaults")
-        return
-
-    def bmtool_modifier_stats(self, context):
-        ui_t = []
-        ui_t.append(
-                "No editor-specific modifier stats. No operator-editor stats.")
-        return ui_t
