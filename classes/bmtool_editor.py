@@ -66,35 +66,44 @@ class ModifierEditor():
             mods.extend(result)
         return mods
 
-    def modal_attrs(self, context, event, cluster):
-        for x in self._attributes:
-            # Switch to mode
-            if self.mode == self._DEFAULT_MODE\
-                    and event.type == x['kb']\
-                    and event.value == 'PRESS':
-                self.mode = x['attr']
-                return
-
-            # Get modifiers for this attr
-            mods = self._get_mods_for_attr(x, cluster)
-
-            # Toggle attrs
-            if x['type'] == 'bool':
-                if event.type = x['kb']\
+    def modal_attrs(self, context, event, clusters):
+        # Switchers
+        if self.mode == self._DEFAULT_MODE:
+            for x in self._attributes:
+                if event.type == x['kb']\
                         and event.value == 'PRESS':
-                    setattr(mod, x['attr'], not getattr(mod, x['attr']))
-                    return
 
+                    # Toggle attrs
+                    if x['type'] == 'bool':
+                        for c in clusters:
+                            mods = self._get_mods_for_attr(x, c)
+                            for mod in mods:
+                                setattr(mod, x['attr'], not getattr(
+                                    mod, x['attr']))
+
+                    # Modes switcher
+                    else:
+                        self.mode = x['attr']
+            return
+
+        # Get active attr by mode
+        x = None
+        for a in self._attributes:
+            if a['attr'] == self.mode:
+                x = a
+        if x is None:
+            raise ValueError
+
+        # Modal attr editing
+        for c in clusters:
             # Modal editing
-            if self.mode == x['attr']:
-                if x['type'] == 'int':
-                    for x in mods:
-                        setattr(x, x['attr'], self.delta_d())
-                        return
-                if x['type'] == 'float':
-                    for x in mods:
-                        setattr(x, x['attr'], self.delta_d())
-                        return
+            mods = self._get_mods_for_attr(x, c)
+            if x['type'] == 'int':
+                for x in mods:
+                    setattr(x, x['attr'], self.delta_d * x['sent'])
+            if x['type'] == 'float':
+                for x in mods:
+                    setattr(x, x['attr'], self.delta_d * x['sens'])
         return
 
     _DEFAULT_MODE = 'SELECT_MODE'
@@ -175,10 +184,9 @@ class ModifierEditor():
         """
         Modal method 2
         """
-        if self._BMTOOL_EDITOR_OPERATOR:
-            self.delta_d = delta_d
-            self.m_list = m_list
-            self.bmtool_modal_2(context, event)
+        self.delta_d = delta_d
+        self.m_list = m_list
+        self.bmtool_modal_2(context, event)
         return
 
     def bmtool_editor_modifier_defaults(
