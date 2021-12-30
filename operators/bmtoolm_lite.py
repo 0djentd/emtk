@@ -28,8 +28,6 @@ class BMTOOL_OT_bmtoolm_2(BMToolUi, BMToolMod, Operator):
     bl_label = "View objects modifiers"
     bl_description = "View modifiers on selected object"
 
-    _BMTOOLM = True
-
     def bmtool_ui_modifier_stats(self, context):
         ui_t = []
         ui_t.append(" BMToolM lite ")

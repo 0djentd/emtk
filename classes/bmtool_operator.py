@@ -99,7 +99,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
 
         # Modal method.
         if self.mode = 'EDITOR':
-            a = self.modal_editor_pre(context, event)
+            a = self.bmtool_modal_pre(context, event)
 
         # Redraw UI
         if self._BMTOOL_UI:
@@ -129,7 +129,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
         if self.mode = 'ACTIONS':
             a = self.__modal_actions(context, event)
         elif self.mode = 'EDITOR':
-            a = self.modal_editor(context, event)
+            a = self.bmtool_modal(context, event)
         else:
             raise ValueError
 
@@ -470,16 +470,6 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
             return False
         return True  # }}}
 
-    # Modal editor. {{{
-    def modal_editor_pre(self, context, event):
-        """This methods is reserved for clusters editors."""
-        return self.bmtool_modal_1(context, event)
-
-    def modal_editor(self, context, event):
-        """This methods is reserved for clusters editors."""
-        return self.bmtool_modal_2(context, event)
-    # }}}
-
     # Methods reserved for operators. {{{
     def bmtool_modal_pre(self, context, event):
         """Operator-specific modal method 1
@@ -505,14 +495,14 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
         """
         return
 
-    def bmtool_operator_inv(self, context, event):
-        """Operator-specific inv. method.
+    def bmtool_operator_invoke(self, context, event):
+        """Operator-specific invoke method.
 
         This method is called before BMToolMod invoke.
         """
         return
 
-    def bmtool_operator_rm(self, context):
+    def bmtool_operator_remove(self, context):
         """Operator-specific remove method
 
         This method is called when encountered FINISHED or CANCELLED in
@@ -536,7 +526,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
             logger.info("BMTool UI is removed")
 
         # Operator-specific remove
-        self.bmtool_modifier_remove()
+        self.bmtool_operator_remove()
 
         # TODO: should not be here.
         if bpy.context.preferences.addons['bmtools'].preferences.save_clusters:
