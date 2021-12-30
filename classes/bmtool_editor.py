@@ -23,27 +23,33 @@ import json
 
 import bpy
 
+from .bmtool_input import BMToolModalInput
 
-class ModifierEditor():
+
+class ModifierEditor(BMToolModalInput):
     """
     Modifier editor base class
     Designed to be used with BMToolM
     """
 
+    # Editor definition {{{
     props = {
              'name': None,              # Editor name
              'cluster_types': [None],   # Clusters types
                                         # this editor can be used with
              }
 
-    _mappings = [{'mapping_name': '1',
-                 'cluster': 'BEVEL_CLUSTER',
-                 'mods': ['get_first', '']}]
+    _mappings = [
+                 {'mapping_name': '1',
+                  'cluster': 'BEVEL_CLUSTER',
+                  'mods': [{'attr': 'get_first', 'args': ''}]}
+                 ]
 
     _attributes = [
                    {'attr': 'segments',
                     'map': '1',
                     'type': 'int',
+                    'min': 0,
                     'kb': 'S',
                     'sens': 0.00005},
                    {'attr': 'harden_normals',
@@ -52,27 +58,12 @@ class ModifierEditor():
                     'kb': 'S',
                     'sens': 0.00005},
                    ]
+    # }}}
 
-    def _get_mod_mapping(self, mapping_name):
-        for x in self._mappings:
-            if x['name'] == mapping_name:
-                return x
+    _DEFAULT_MODE = 'SELECT_MODE'
 
-    def _get_mods_for_attr(self, x, cluster):
-        mapping = self._get_mod_mapping(x['map'])
-        mods = []
-        for m in mapping['mods']:
-            result = getattr(cluster, m['attr'])(m['args'])
-            if not isinstance(result, list):
-                result = [result]
-            for y in result:
-                if not isinstance(y, bpy.types.Modifier):
-                    raise TypeError
-            mods.extend(result)
-        return mods
+    def modal_attrs(self, context, event, clusters):  # {{{
 
-    def modal_attrs(self, context, event, clusters):
-        # Switchers
         if self.mode == self._DEFAULT_MODE:
             for x in self._attributes:
                 if event.type == x['kb']\
@@ -101,19 +92,21 @@ class ModifierEditor():
 
         # Modal attr editing
         for c in clusters:
-            # Modal editing
             mods = self._get_mods_for_attr(x, c)
-            if x['type'] == 'int':
-                for x in mods:
-                    setattr(x, x['attr'], int(
-                        self.delta_d(event) * x['sens']))
-            if x['type'] == 'float':
-                for x in mods:
-                    setattr(x, x['attr'], float(
-                        self.delta_d(event) * x['sens']))
-        return
+            val = self.delta_d(event) * x['sens']
+            if x['min'] == 0 and val < 0:
+                val = val * -1
 
-    _DEFAULT_MODE = 'SELECT_MODE'
+            if x['type'] == 'int':
+                val = int(val)
+                for x in mods:
+                    setattr(x, x['attr'], val)
+
+            if x['type'] == 'float':
+                val = float(val)
+                for x in mods:
+                    setattr(x, x['attr'], val)
+        return  # }}}
 
     # {{{
     """
@@ -159,9 +152,7 @@ class ModifierEditor():
         super().__init__(*args, **kwargs)
         self.mode = self._DEFAULT_MODE
 
-    # ==========================================
-    # Editor method placeholders
-    # ==========================================
+    # Editor method placeholders {{{
     def bmtool_editor_inv(
             self, context, m_list, selected_objects):
         """
@@ -195,27 +186,7 @@ class ModifierEditor():
         self.m_list = m_list
         self.bmtool_modal_2(context, event)
         return
-
-    def bmtool_editor_modifier_defaults(
-            self, context, m_list, selected_objects):
-        """
-        Modifier defaults
-        """
-        if self._BMTOOL_EDITOR_OPERATOR:
-            return self.bmtool_modifier_defaults(context)
-        return
-
-    def bmtool_editor_modifier_stats(
-            self, context, m_list, selected_objects):
-        """
-        UI info about modifier
-        """
-        ui_t = []
-        ui_t.append("No editor-specific modifier stats")
-        if self._BMTOOL_EDITOR_OPERATOR:
-            self.m_list = m_list
-            return self.bmtool_modifier_stats(context)
-        return ui_t
+    # }}}
 
     # TODO: should be in utils
     # Returns VL
@@ -236,3 +207,23 @@ class ModifierEditor():
         delta_x = x1 - x2
         delta_y = y1 - y2
         return math.sqrt(pow(delta_x, 2) + pow(delta_y, 2))
+
+    # Utils {{{
+    def _get_mod_mapping(self, mapping_name):
+        for x in self._mappings:
+            if x['name'] == mapping_name:
+                return x
+
+    def _get_mods_for_attr(self, x, cluster):
+        mapping = self._get_mod_mapping(x['map'])
+        mods = []
+        for m in mapping['mods']:
+            result = getattr(cluster, m['attr'])(m['args'])
+            if not isinstance(result, list):
+                result = [result]
+            for y in result:
+                if not isinstance(y, bpy.types.Modifier):
+                    raise TypeError
+            mods.extend(result)
+        return mods
+    # }}}

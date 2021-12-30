@@ -24,16 +24,19 @@ import bpy
 
 from ..lib.modifiers_operator import ModifiersOperator
 from ..ui.bmtool_ui import bmtool_modifier_ui_draw
+from .bmtool_input import BMToolModalInput
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-class BMToolMod(ModifiersOperator):
+class BMToolMod(BMToolModalInput, ModifiersOperator):
     """Base class for modal operators that use Blender modifier stack
     through ModififersOperator and ExtendedModifiersList.
     """
 
+    # Variables {{{
+    # Constants {{{
     # Default bmtool modal editing mode.
     _BMTOOL_DEFAULT_MODE = "Please select BMTool mode"
 
@@ -50,7 +53,7 @@ class BMToolMod(ModifiersOperator):
     _BMTOOL_UI = False
 
     # Use statusbar to display modifier info.
-    _BMTOOL_UI_STATUSBAR = False
+    _BMTOOL_UI_STATUSBAR = False  # }}}
 
     bmtool_kbs = {  # {{{
                   'visibility_1': 'V',
@@ -64,56 +67,21 @@ class BMToolMod(ModifiersOperator):
                   'down': 'F',
                   'collapse': 'R',
                   'exit': 'Q'
-                  }
+                  }  # }}}
 
-    # This three variables used in modal input mode.
-    _MODAL_LETTERS = string.ascii_uppercase
-
-    _MODAL_DIGITS = {
-                     'ZERO': '0',
-                     'ONE': '1',
-                     'TWO': '2',
-                     'THREE': '3',
-                     'FOUR': '4',
-                     'FIVE': '5',
-                     'SIX': '6',
-                     'SEVEN': '7',
-                     'EIGHT': '8',
-                     'NINE': '9',
-                     }
-
-    _MODAL_DIGITS_NUMPAD = {
-                            'NUMPAD_0': '0',
-                            'NUMPAD_1': '1',
-                            'NUMPAD_2': '2',
-                            'NUMPAD_3': '3',
-                            'NUMPAD_4': '4',
-                            'NUMPAD_5': '5',
-                            'NUMPAD_6': '6',
-                            'NUMPAD_7': '7',
-                            'NUMPAD_8': '8',
-                            'NUMPAD_9': '9',
-                            }  # }}}
-
-    # ------------------------------------------------------------
-    # Some variables that are created when operator is initialized
+    # Some variables that are created when operator is initialized {{{
     # by modifiers_operator
-    # ------------------------------------------------------------
+
     # GUI draw handler
-    # bmtool_ui_draw_handler
+    # self.bmtool_ui_draw_handler
 
     # Active object ModifiersList instance
-    # m_list()
+    # self.m_list()
 
     # Selected objects ModifiersList instances
-    # selected_objects[]
+    # self.selected_objects[] }}} }}}
 
-    # TODO: rename Modifier-specific to modifier-specific operator, as
-    # it better represents functionality
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
+    # Availability check {{{
     @classmethod
     def poll(self, context):
         """Check if operator can be used."""
@@ -127,7 +95,7 @@ class BMToolMod(ModifiersOperator):
             return False
         elif context.object.type != 'MESH':
             return False
-        return True
+        return True  # }}}
 
     def modal(self, context, event): # {{{
         """Method that is initiated every frame or whatever."""
@@ -158,14 +126,14 @@ class BMToolMod(ModifiersOperator):
         'STR' is string input mode.
         This two methods always switch back to previous mode.
         """
-        if self._mode = 'ACTIONS':
-            a = self._modal_actions(context, event)
-        elif self._mode = 'EDITOR':
-            a = self._modal_editor(context, event)
-        elif self._mode = 'INT':
-            a = self._modal_numbers_set(context, event)
-        elif self._mode = 'STR':
-            a = self._modal_str_set(context, event)
+        if self.mode = 'ACTIONS':
+            a = self.__modal_actions(context, event)
+        elif self.mode = 'EDITOR':
+            a = self.__modal_editor(context, event)
+        elif self.mode = 'INT':
+            a = self._BMToolModalInput__modal_digits(context, event)
+        elif self.mode = 'STR':
+            a = self._BMToolModalInput__modal_str(context, event)
         if a is not True and a is not False:
             return a
 
@@ -191,9 +159,11 @@ class BMToolMod(ModifiersOperator):
             self.clear(context)
             return {'CANCELLED'}
 
-        return {'RUNNING_MODAL'}
+        return {'RUNNING_MODAL'}  # }}}
 
-    def _modal_actions(self, context, event):
+    def __modal_actions(self, context, event):  # {{{
+        """This method is used for general modifiers stack editing."""
+
         # Modifier visibility
         if (event.type == self.bmtool_kbs['visibility_1'])\
                 & (event.value == 'PRESS'):
@@ -496,116 +466,11 @@ class BMToolMod(ModifiersOperator):
                 self.bmtool_modifier_update(context)
         else:
             return False
-        return True# }}}
-
-    def _modal_editor(self, context, event):
-        """This methods is reserved for clusters editors."""
-        return self.bmtool_modal_2(context, event)
-
-    # Difits and letters methods  {{{
-    def _modal_digits_set(self, event):
-        """This thing writes a string that can be used in modal operator
-        to get integer, float, or string.
-        """
-        for x in self._MODAL_DIGITS:
-            if event.type == x and event.value == 'PRESS':
-                self.bmtool_modal_numbers_str\
-                    = self.bmtool_modal_numbers_str + self._MODAL_DIGITS[x]
-                return True
-        if event.type == 'PERIOD' and event.value == 'PRESS':
-            self.bmtool_modal_numbers_str = self.bmtool_modal_numbers_str + '.'
-        elif event.type == 'BACK-SPACE' and event.value == 'PRESS':
-            self.bmtool_modal_numbers_str = self.bmtool_modal_numbers_str[0:-1]
-        elif event.type == 'RETURN' and event.value == 'PRESS':
-            self._mode = self._previous_mode
-        else:
-            return False
-        return True
-
-    def _modal_str_set(self, event):
-        """This thing writes a string that can be used in modal operator."""
-        for x in self._MODAL_LETTERS:
-            if event.type == x and event.value == 'PRESS':
-                if event.shift:
-                    self.bmtool_modal_str\
-                            = self.bmtool_modal_str + x
-                else:
-                    self.bmtool_modal_str\
-                            = self.bmtool_modal_str + x.lower()
-                return True
-        for x in self._MODAL_DIGITS:
-            if event.type == x and event.value == 'PRESS':
-                self.bmtool_modal_str = self.bmtool_modal_str + x
-                return True
-        if event.type == 'PERIOD' and event.value == 'PRESS':
-            self.bmtool_modal_numbers_str = self.bmtool_modal_numbers_str + '.'
-        elif event.type == 'MINUS' and event.value == 'PRESS':
-            if event.shift:
-                self.bmtool_modal_numbers_str\
-                        = self.bmtool_modal_numbers_str + '_'
-            else:
-                self.bmtool_modal_numbers_str\
-                        = self.bmtool_modal_numbers_str + '-'
-        elif event.type == 'BACK-SPACE' and event.value == 'PRESS':
-            self.bmtool_modal_numbers_str = self.bmtool_modal_numbers_str[0:-1]
-        elif event.type == 'RETURN' and event.value == 'PRESS':
-            self._mode = self._previous_mode
-        else:
-            return False
         return True  # }}}
 
-    """
-    This two methods are used to get variable value from modal input mode.
-    """
-    def modal_digits_pop(self, number_type='ANY'):
-        """Returns number that were typed in 'DIGITS' mode.
-        number_type can be either 'ANY', 'INT' or 'FLOAT'.
-        """
-        result = self._modal_numbers_get_val(t)
-        self._modal_numbers_clear()
-        return result
-
-    def modal_str_pop(self):
-        """Returns string that were typed in 'STRING' mode."""
-        result = self.bmtool_modal_str
-        self._modal_str_clear()
-        return result
-
-    # Digits and letters input mode utils.{{{
-    def _modal_numbers_get_val(self, t='ANY'):
-        if len(self.bmtool_modal_numbers_str) == 0:
-            return None
-
-        if t == 'ANY':
-            if '.' in self.bmtool_modal_numbers_str:
-                return float(self.bmtool_modal_numbers_str)
-            else:
-                return int(self.bmtool_modal_numbers_str)
-        elif t == 'INT':
-            i = None
-            for z, x in enumerate(self.bmtool_modal_numbers_str):
-                if x == '.':
-                    i = z
-            return int(self.bmtool_modal_numbers_str[0:i])
-        elif t == 'FLOAT':
-            result = copy.copy(self.bmtool_modal_numbers_str)
-            f = False
-            for x in self.bmtool_modal_numbers_str:
-                if x == '.':
-                    f = True
-            if f is False:
-                result = result + '.0'
-            return float(result)
-
-    def _modal_numbers_clear(self):
-        self.bmtool_modal_numbers_str = ''
-
-    def _modal_str_get(self):
-        return self.bmtool_modal_str
-
-    def _modal_str_clear(self):
-        self.bmtool_modal_str = ''
-    # }}}
+    def __modal_editor(self, context, event):
+        """This methods is reserved for clusters editors."""
+        return self.bmtool_modal_2(context, event)
 
     def clear(self, context):  # {{{
         """Removes operator.
@@ -733,10 +598,9 @@ class BMToolMod(ModifiersOperator):
         This method is called when encountered FINISHED or CANCELLED in
         BMToolMod modal methods.
         """
-        return
-    # }}}
+        return  # }}}
 
-    def _display_additional_info_about_bmtool(self, context):
+    def _display_additional_info_about_bmtool(self, context):  # {{{
         logger.debug("BMTool is created")
         logger.debug(f"_BMTOOLM {self._BMTOOLM}")
         logger.debug(f"_DEFAULT_M_NAME {self._DEFAULT_M_NAME}")
@@ -748,3 +612,4 @@ class BMToolMod(ModifiersOperator):
         logger.debug(f"_BMTOOL_UI {self._BMTOOL_UI}")
         logger.debug(f"_BMTOOL_UI_STATUSBAR {self._BMTOOL_UI_STATUSBAR}")
         logger.debug(f"_BMTOOL_V {self._BMTOOL_V}")
+    # }}}
