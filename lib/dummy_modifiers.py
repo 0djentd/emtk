@@ -55,10 +55,8 @@ class DummyBlenderModifier():
 
 
 class DummyBlenderObj():
-    """
-    Object that can be used to replace Blender obj in ModifiersList for
-    unittests, debug, dry modifiers stack editing, storing changes to
-    modifiers list and other purposes.
+    """Object that can be used to replace Blender obj in ModifiersList for
+    unittests, debug, dry modifiers stack editing and other purposes.
     """
 
     def __init__(self, modifiers=None, *args,
@@ -86,29 +84,24 @@ class DummyBlenderObj():
         super().__init__(*args, **kwargs)
 
     def modifier_add(self, m_name, m_type):
-        """
-        Creates new modifier.
-        """
-        i = 0
-
+        """Creates new modifier."""
         if not isinstance(m_name, str):
             raise TypeError
-
         if not isinstance(m_type, str):
             raise TypeError
 
+        i = 0
         for x in self.modifiers:
             if m_name in x.name:
                 i += 1
-
         m_name_2 = m_name + f'{i}'
-
         mod = DummyBlenderModifier(m_name_2, m_type)
         self.modifiers.append(mod)
         self._check_modifiers_names()
         return mod
 
     def _check_modifiers_names(self):
+        """Throws error if there is duplicate names in modifiers"""
         y = []
         for x in self.modifiers:
             for name in y:
@@ -117,9 +110,8 @@ class DummyBlenderObj():
             y.append(x.name)
 
     def modifier_remove(self, modifier=None):
-        """
-        Removes modifier.
-        """
+        """Removes modifier."""
+
         if not isinstance(modifier, str):
             raise TypeError
 
@@ -134,16 +126,16 @@ class DummyBlenderObj():
         raise ValueError
 
     def modifier_apply(self, modifier=None):
+        """Applies modifier."""
         return self.modifier_remove(modifier)
 
     def modifier_move_down(self, modifier=None):
-        """
-        Moves modifier up.
+        """Moves modifier up.
+
         Returns True or False.
         """
         if not isinstance(modifier, str):
             raise TypeError
-
         if len(self.modifiers) < 2:
             return False
 
@@ -163,13 +155,12 @@ class DummyBlenderObj():
         return True
 
     def modifier_move_up(self, modifier=None):
-        """
-        Moves modifier down.
+        """Moves modifier down.
+
         Returns True or False.
         """
         if not isinstance(modifier, str):
             raise TypeError
-
         if len(self.modifiers) < 2:
             return False
 
@@ -187,3 +178,15 @@ class DummyBlenderObj():
             self.modifiers.insert(i-1, x)
         self._check_modifiers_names()
         return True
+
+
+# class DummyBlenderPrefsObj():
+#     """Dummy blender addon prefs object."""
+#     def __init__(self):
+#         self.cluster_types = '[]'
+
+
+# class DummyBlenderPrefs():
+#     """Dummy blender prefs object."""
+#     def __init__(self):
+#         self.addons = {'bmtools': {DummyBlenderPrefsObj()}}
