@@ -136,7 +136,7 @@ class ActiveClusterTrait():
         self._cluster_to_select_from = None
         self._selected_clusters = None
 
-    def get_selection(self, add_active=True):
+    def get_selection(self, *, add_active=True):
         """
         Returns list of clusters that were selected on this layer.
         If add_active, will append active cluster to result, even
@@ -148,7 +148,7 @@ class ActiveClusterTrait():
             result = self.get_list_in_range_inclusive(
                     self._cluster_to_select_from, self._mod)
         else:
-            result = None
+            result = []
 
         # Get per-cluster selection.
         if self._selected_clusters is not None:

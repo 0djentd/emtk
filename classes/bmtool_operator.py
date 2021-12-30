@@ -16,9 +16,7 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-import copy
 import logging
-import string
 
 import bpy
 
@@ -30,6 +28,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
+# TODO: rename to ModalClustersOperator
 class BMToolMod(BMToolModalInput, ModifiersOperator):
     """
     Base class for modal operators that use Blender modifier stack
@@ -54,19 +53,19 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
     # self.selected_objects[]
 
     # Default modal editing mode.
-    __DEFAULT_MODE = "ACTIONS"
+    __DEFAULT_MODE = 'ACTIONS'
 
     # Returned values that should trigger operator remove.
     __OPERATOR_REMOVE = [{'FINISHED'}, {'CANCELLED'}]
 
     # Create draw handler.
-    __UI = False
+    __UI = True
 
     # Use statusbar to display modifier info.
     __UI_STATUSBAR = False
 
     # Use modifiers of any type.
-    _BMTOOLM = True
+    __BMTOOLM = True
 
     __bmtool_kbs = {
                   'visibility_1': 'V',
@@ -97,56 +96,62 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
             return False
         return True  # }}}
 
-    def modal(self, context, event): # {{{
+    def modal(self, context, event):  # {{{
         """Method that is initiated every frame or whatever."""
 
-        # Modal method.
-        if self.mode = 'EDITOR':
-            a = self.bmtool_modal_pre(context, event)
-            if a in self.__OPERATOR_REMOVE:
-                self.clear(context)
-                return a
-
-        # Redraw UI
-        if self._BMTOOL_UI:
-            context.area.tag_redraw()
-        if self._BMTOOL_UI_STATUSBAR:
-            context.workspace.status_text_set()
-
-        # Active cluster and layer reference.
-        cluster = self.m_list.get_cluster()
-        layer = self.m_list.get_layer()
-
         # Exit out of editor mode or finish operator.
-        if event.type == self.__bmtool_kbs['exit']\
+        if (event.type == self.__bmtool_kbs['exit']
+                or event.type == 'LEFTMOUSE')\
                 and event.value == 'PRESS':
-            if self.mode != self._DEFAULT_MODE:
-                self.mode = self._DEFAULT_MODE
+            if self.mode != self.__DEFAULT_MODE:
+                self.mode = self.__DEFAULT_MODE
             else:
                 self.clear(context)
                 return {'FINISHED'}
+
+        # Switch between editor and actions.
+        elif event.type == 'SPACE' and event.value == 'PRESS':
+            if self.mode == 'ACTIONS':
+                self.mode = 'EDITOR'
+            else:
+                self.mode = 'ACTIONS'
 
         # Cancell.
         elif event.type in {'RIGHTMOUSE', 'ESC'}:
             self.clear(context)
             return {'CANCELLED'}
 
-        # Modal methods.
-        if self.mode = 'ACTIONS':
+        # Modal method.
+        if self.mode == 'EDITOR':
+            a = self.bmtool_modal_pre(context, event)
+            if a in self.__OPERATOR_REMOVE:
+                self.clear(context)
+                return a
+
+        # Redraw UI
+        if self.__UI:
+            context.area.tag_redraw()
+        if self.__UI_STATUSBAR:
+            context.workspace.status_text_set()
+
+        # Modal method.
+        if self.mode == 'ACTIONS':
             a = self.__modal_actions(context, event)
             if a in self.__OPERATOR_REMOVE:
                 self.clear(context)
                 return a
-        if self.mode = 'EDITOR' or a is False:
+
+        # Modal method.
+        if self.mode == 'EDITOR' or a is False:
             a = self.bmtool_modal(context, event)
             if a in self.__OPERATOR_REMOVE:
                 self.clear(context)
                 return a
-        else:
-            raise ValueError
 
         # Finish or cancell operator from editor
-        if a is not True and a is not False:
+        if a is not True\
+                and a is not False\
+                and a is not None:
             self.clear(context)
             return a
 
@@ -157,21 +162,22 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
 
         self.mode = self.__DEFAULT_MODE
         self.__selecting_clusters = False
+        self.first_x = event.mouse_x
+        self.first_y = event.mouse_y
 
         # ------------------------------
         # Operator-specific invoke
         # ------------------------------
-        self.bmtool_modifier_inv(context, event)
+        self.bmtool_operator_inv(context, event)
 
         # Add UI.
-        if self._BMTOOL_UI:
+        if self.__UI:
             logger.info("BMTool UI is created")
             sv = bpy.types.SpaceView3D
             self.bmtool_ui_draw_handler = sv.draw_handler_add(
                     bmtool_modifier_ui_draw, (self, context),
                     'WINDOW', 'POST_PIXEL')
             context.area.tag_redraw()
-            self.bmtool_modal_numbers_str = ''
 
         # TODO: this should be in lib
         # Create backup collection.
@@ -203,15 +209,15 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
 
         logger.info("Finished initializing operator")
 
-        self.first_x = event.mouse_x
-        self.first_y = event.mouse_y
-
         context.window_manager.modal_handler_add(self)
         return {'RUNNING_MODAL'}  # }}}
 
     # Modal actions. {{{
     def __modal_actions(self, context, event):
         """This method is used for general modifiers stack editing."""
+
+        layer = self.m_list.get_layer()
+        cluster = self.m_list.get_cluster()
 
         # Modifier visibility{{{
         if (event.type == self.__bmtool_kbs['visibility_1'])\
@@ -264,7 +270,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
         elif (event.type == self.__bmtool_kbs['add_new'])\
                 & (event.value == 'PRESS'):
 
-            if not self._BMTOOLM:
+            if not self.__BMTOOLM:
                 x = self.m_list.create_modifier(
                         self._DEFAULT_M_NAME, self._DEFAULT_M_TYPE)
                 self.m_list.active_modifier_set(x)
@@ -341,6 +347,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
         # Remove active cluster.{{{
         elif (event.type == self.__bmtool_kbs['apply_remove'])\
                 & (event.value == 'PRESS'):
+            logger.info('Removing cluster')
 
             # TODO: this only moves object to new collection, should create
             # a backup instead.
@@ -366,6 +373,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
         # Move modifier up.{{{
         elif (event.type == self.__bmtool_kbs['up'])\
                 & event.shift & (event.value == 'PRESS'):
+            logger.info('Moving cluster')
 
             # Move modifier.
             if self.__selecting_clusters:
@@ -375,13 +383,12 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
 
             # Trigger active modifier change.
             self.bmtool_modifier_update(context)
-
-            if self._BMTOOL_V:
-                self.report({'INFO'}, "Moved modifier up.")  # }}}
+            # }}}
 
         # Move modifier down.{{{
         elif (event.type == self.__bmtool_kbs['down'])\
                 & event.shift & (event.value == 'PRESS'):
+            logger.info('Moving cluster')
 
             # Move modifier.
             if self.__selecting_clusters:
@@ -391,13 +398,12 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
 
             # Trigger active modifier change.
             self.bmtool_modifier_update(context)
-
-            if self._BMTOOL_V:
-                self.report({'INFO'}, "Moved modifier down.")  # }}}
+            # }}}
 
         # Collapse cluster.{{{
         elif (event.type == self.__bmtool_kbs['collapse'])\
                 & (event.value == 'PRESS'):
+            logger.info('Collapse toggle cluster')
             self.__stop_selecting_clusters()
 
             # Collapse cluster.
@@ -431,7 +437,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
 
                 # First modifier.
                 if event.ctrl:
-                    if not self._BMTOOLM:
+                    if not self.__BMTOOLM:
                         x = layer.get_list_by_type(self._DEFAULT_M_TYPE)
                         layer.active_modifier_set(x[0])
                     else:
@@ -440,7 +446,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
 
                 # Previous modifier.
                 else:
-                    if not self._BMTOOLM:
+                    if not self.__BMTOOLM:
                         layer.active_modifier_set(
                             layer.find_previous_loop(
                                 cluster, self._DEFAULT_M_TYPE))
@@ -459,7 +465,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
             if layer.get_list_length() > 1:
                 # Last modifier.
                 if event.ctrl:
-                    if not self._BMTOOLM:
+                    if not self.__BMTOOLM:
                         x = layer.get_list_by_type(self._DEFAULT_M_TYPE)
                         layer.active_modifier_set(x[-1])
                     else:
@@ -468,7 +474,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
 
                 # Next modifier.
                 else:
-                    if not self._BMTOOLM:
+                    if not self.__BMTOOLM:
                         layer.active_modifier_set(
                             layer.find_next_loop(
                                 cluster, self._DEFAULT_M_TYPE))
@@ -531,34 +537,51 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
 
         # Remove ui
         context.workspace.status_text_set(None)
-        if self._BMTOOL_UI:
+        if self.__UI:
             bpy.types.SpaceView3D.draw_handler_remove(
                     self.bmtool_ui_draw_handler, 'WINDOW')
             context.area.tag_redraw()
             logger.info("BMTool UI is removed")
 
         # Operator-specific remove
-        self.bmtool_operator_remove()
+        self.bmtool_operator_remove(context)
+
+        already_removed = False
 
         # TODO: should not be here.
         if bpy.context.preferences.addons['bmtools'].preferences.save_clusters:
-            self.m_list.save_modifiers_state()
-            self.m_list.save_clusters_state()
-            logger.info("Saved modifiers and clusters.")
+            try:
+                self.m_list.save_modifiers_state()
+                self.m_list.save_clusters_state()
+                logger.info("Saved modifiers and clusters.")
+            except AttributeError:
+                already_removed = True
 
-        del(self.selected_objects)
-        del(self.m_list)
-        logger.info("Modal operator finished")  # }}}
+        try:
+            del(self.selected_objects)
+        except AttributeError:
+            already_removed = True
+
+        try:
+            del(self.m_list)
+        except AttributeError:
+            already_removed = True
+
+        if already_removed:
+            logger.info("Clusters were already removed.")
+
+        logger.info("Modal operator finished.")  # }}}
 
     # Clusters selection utils  {{{
     def __stop_selecting_clusters(self):
-         self.__selecting_clusters = False
-         layer.clear_cluster_selection()
+        self.__selecting_clusters = False
+        layer = self.m_list.get_layer()
+        layer.clear_cluster_selection()
 
     def __start_selecting_clusters(self):
-         self.__selecting_clusters = True
+        self.__selecting_clusters = True
 
-    def __get_clusters():
+    def __get_clusters(self):
         """
         Returns selected clusters, or active cluster, if
         not selecting clusters.
@@ -573,7 +596,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
 
     def _display_additional_info_about_bmtool(self, context):  # {{{
         logger.debug("BMTool is created")
-        logger.debug(f"_BMTOOLM {self._BMTOOLM}")
+        logger.debug(f"__BMTOOLM {self.__BMTOOLM}")
         logger.debug(f"__DEFAULT_MODE {self.__DEFAULT_MODE}")
         logger.debug(f"__UI {self.__UI}")
         logger.debug(f"__UI_STATUSBAR {self.__UI_STATUSBAR}")

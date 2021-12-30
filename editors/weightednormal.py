@@ -28,6 +28,15 @@ class BMToolEditorWeightedNormal(ModifierEditor):
     _DEFAULT_M_TYPE = 'WEIGHTED_NORMAL'
     _MODIFIER_CREATEABLE = True
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(
+                         *args,
+                         name='Weighted Normal',
+                         cluster_types=['WEIGHTED_NORMAL_CLUSTER',
+                                        'WEIGHTED_NORMAL'],
+                         **kwargs)
+
+
     # ------------------------------
     # Editor-specific modal method
     # ------------------------------

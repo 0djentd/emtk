@@ -27,15 +27,6 @@ class BMTOOL_OT_bmtoole2(ModifiersOperator, Operator):
     bl_label = "BMToolE2"
     bl_description = "Add modifiers on selected objects"
 
-    # Display additional info
-    _MODIFIERS_OPERATOR_V = True
-
-    # Can be used with modifiers clusters
-    _MODIFIERS_OPERATOR_MODIFIER_CLUSTERS = True
-
-    # Dont use extended modifiers list, use object modifiers list
-    _MODIFIERS_OPERATOR_DONT_USE_EXTENDED = False
-
     @classmethod
     def poll(self, context):
         if context.area.type != 'VIEW_3D':
@@ -51,10 +42,6 @@ class BMTOOL_OT_bmtoole2(ModifiersOperator, Operator):
         return True
 
     def execute(self, context):
-        # self.clustermodlist_checks(context)
-        # self.objmodlist_checks(context)
-        # self.extmodlist_checks(context)
-        # self.momodlist_checks(context)
 
         modifiers = []
         for x in context.object.modifiers:

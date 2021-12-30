@@ -86,8 +86,8 @@ class BMTOOL_OT_bmtoolm(BMToolUi, BMToolMod, Operator):
 
         # Call remove method of editor
         if self.__active_editor is not None:
-            self.__active_editor.bmtool_editor_remove(
-                    context, self.get_cluster())
+            self.__active_editor.editor_switched_from(
+                    context, self.m_list.get_cluster())
 
         # Get list of possible ediors
         self.__possible_editors = self.__get_editors(self.m_list.get_cluster())
@@ -100,15 +100,15 @@ class BMTOOL_OT_bmtoolm(BMToolUi, BMToolMod, Operator):
 
         # Call invoke method of editor
         if self.__active_editor is not None:
-            self.__active_editor.bmtool_editor_inv(
-                    context, self.get_cluster())
+            self.__active_editor.editor_switched_to(
+                    context, self.m_list.get_cluster())
 
     def bmtool_operator_inv(self, context, event):
         """
         Method that is used by BMToolMod
         Additional invoke method
         """
-        for editor in self._editors:
+        for editor in self.__editors:
             self.__initialize_bmtoolm_editor(editor)
 
     def bmtool_operator_rm(self, context):
@@ -139,28 +139,10 @@ class BMTOOL_OT_bmtoolm(BMToolUi, BMToolMod, Operator):
             ui_t.append("No active editor")
 
         ui_t.append(" ")
-        ui_t_2 = self.bmtool_ui_list(context)
+        ui_t_2 = self.bmtool_ui_list()
         for x in ui_t_2:
             ui_t.append(x)
         return ui_t
-
-    # def bmtool_ui_modifier_stats(self, context):
-    #     """
-    #     Method that is used by BMToolUI
-    #     Returns modifier-specific ui text with
-    #     info about its settings in a list of strings
-    #     """
-
-    #     editor = self.get_editor()
-
-    #     if editor is not None:
-    #         return editor.bmtool_editor_modifier_stats(
-    #                 context, self.get_cluster())
-    #     else:
-    #         ui_t = []
-    #         ui_t.append("No editors for selected cluster.")
-    #         return ui_t
-    # }}}
 
     # Editor selection {{{
     def get_editor(self):

@@ -42,65 +42,70 @@ class ModifierEditor(BMToolModalInput):
 
         self.props = {
                       # Editor name to be shown in ui
-                      'name' = name,
+                      'name': name,
 
                       # List of cluster types that this editor
                       # can be used with.
                       # Example:
                       # ['BEVEL_CLUSTER', 'BEVEL']
-                      'cluster_types' = []
+                      'cluster_types': cluster_types
                       }
     # }}}
 
     # Editor methods {{{
-    def editor_switched_to(self, context, clusters)
+    def editor_switched_to(self, context, clusters):
         """Called every time editor is switched to."""
-        return self.switched_to(self, context, clusters)
+        return self.switched_to(context, clusters)
 
-    def editor_switched_from(self, context, event, cluster):
+    def editor_switched_from(self, context, clusters):
         """Called every time editor is switched from."""
-        return self.switched_from(self, context, clusters)
+        return self.switched_from(context, clusters)
 
-    def editor_modal_pre(self, context, event, cluster):
+    def editor_modal_pre(self, context, event, clusters):
         """Modal method 1."""
-        return self.modal_pre(self, context, event, cluster)
+        return self.modal_pre(context, event, clusters)
 
-    def editor_modal(self, context, event, cluster):
+    def editor_modal(self, context, event, clusters):
         """Modal method 2"""
-        return self.modal(self, context, event, cluster)
+        return self.modal(context, event, clusters)
     # }}}
 
     # Editor-specific method placeholders {{{
-    def switched_to(self, context, clusters)
+    def switched_to(self, context, clusters):
         """Called every time editor is switched to."""
-        raise ValueError('No editor-specific method.')
+        self._no_editor_method()
 
-    def switched_from(self, context, cluster):
+    def switched_from(self, context, clusters):
         """Called every time editor is switched from."""
-        raise ValueError('No editor-specific method.')
+        self._no_editor_method()
 
-    def modal_pre(self, context, event, cluster):
+    def modal_pre(self, context, event, clusters):
         """Modal method 1."""
-        raise ValueError('No editor-specific method.')
+        self._no_editor_method()
 
-    def modal(self, context, event, cluster):
+    def modal(self, context, event, clusters):
         """Modal method 2"""
+        self._no_editor_method()
+
+    def _no_editor_method(self):
         raise ValueError('No editor-specific method.')
     # }}}
 
 
+# TODO: rename to ModalClustersEditor
 class ModifierEditorTemplate(ModifierEditor):
     """Base class for editors that only use modifiers attributes."""
 
     # Variables {{{
     # Modifiers mapping example:
     # MODIFIER_MAPPING = {'cluster': BEVEL_CLUSTER,
-    #                     'modifiers': ['get_first()', 'get_first().get_last()']
+    #                     'modifiers': ['get_first()',
+    #                                   'get_first().get_last()']
     #                     }
-    # 
+    #
     # List of modifiers mappings.
     # _mappings = []
-    # 
+    #
     # List of available to editor modifiers attributes
     # _attributes = [
     #                {'attr': 'segments',
@@ -120,40 +125,43 @@ class ModifierEditorTemplate(ModifierEditor):
     # (one of _attributes['attr'])
     # self.mode
 
-    _DEFAULT_MODE = 'SELECT_MODE'
+    __DEFAULT_MODE = 'SELECT_MODE'
 
     # }}}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.mode = self.__DEFAULT_MODE
-        self._mappings = None
-        self._attributes = None
+        # self._mappings = None
+        # self._attributes = None
 
     # Editor methods {{{
-    def editor_switched_to(self, context, clusters)
+    def editor_switched_to(self, context, clusters):
         """Called every time editor is switched to."""
         self.mode = self.__DEFAULT_MODE
-        return self.switched_to(self, context, clusters)
+        return self.switched_to(context, clusters)
 
     def editor_switched_from(self, context, clusters):
         """Called every time editor is switched from."""
         self.mode = self.__DEFAULT_MODE
-        return self.switched_from(self, context, clusters)
+        return self.switched_from(context, clusters)
 
     def editor_modal_pre(self, context, event, clusters):
         """Modal method 1."""
-        return self.modal_pre(self, context, event, clusters)
+        return self.modal_pre(context, event, clusters)
 
     def editor_modal(
             self, context, event, clusters):
         """Modal method 2"""
         self.__modal_attrs(context, event, clusters)
-        return self.modal(self, context, event, clusters)
+        return self.modal(context, event, clusters)
+
+    def _no_editor_method(self):
+        return
     # }}}
 
     def __modal_attrs(self, context, event, clusters):  # {{{
-        if self.mode == self._DEFAULT_MODE:
+        if self.mode == self.__DEFAULT_MODE:
             for x in self._attributes:
                 if event.type == x['kb']\
                         and event.value == 'PRESS':

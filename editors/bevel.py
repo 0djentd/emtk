@@ -16,104 +16,134 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-from ..classes.bmtool_editor import ModifierEditor
+from ..classes.bmtool_editor import ModifierEditor, ModifierEditorTemplate
 import bpy
 import math
 
 
+class BMToolEditorBevel(ModifierEditorTemplate):
+    _mappings = [
+                 {
+                  'name': 'first_modifier',
+                  'cluster': 'BEVEL_CLUSTER',
+                  'modifiers': [{'attr': 'get_first', 'args': ''}]
+                  }
+                 ]
+
+    _attributes = [
+                   {'attr': 'segments',
+                    'map': 'first_modifier',
+                    'type': 'int',
+                    'min': 0,
+                    'kb': 'S',
+                    'sens': 0.00005},
+
+                   {'attr': 'harden_normals',
+                    'map': 'first_modifier',
+                    'type': 'bool',
+                    'kb': 'H'}
+                   ]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(
+                         *args,
+                         name='BevelEditor',
+                         cluster_types=['BEVEL_CLUSTER', 'BEVEL'],
+                         **kwargs)
+
 # Bevel modifier editor
-class bmtooleditorbevel(modifiereditor):
-    _modifier_editor_name = 'bevel editor'
-    _default_m_name = 'bevel'
-    _default_m_type = 'bevel'
-    _modifier_createable = true
-
-    bmtool_mode = "select mode"
-
-    # todo: remove this
-    def bevel_segment_count(self, m_list):
-        y = 0
-        for x in m_list.get_list():
-            if x.type == 'bevel':
-                y += x.get_by_index(0).segments
-        return y
-
-    def bmtool_editor_modal_2(
-            self, context, event, m_list, selected_objects):
-        """editor-specific modal method"""
-        mod = m_list.active_modifier_get().get_by_index(0)
-        if event.type == 'mousemove':
-
-            # modal editing
-            if self.bmtool_mode == "width":
-                mod.width = self.delta_d(context, event) * 0.000008
-            elif self.bmtool_mode == "segments":
-                mod.segments = self.delta_d(context, event) * 0.00005
-            elif self.bmtool_mode == "profile":
-                mod.profile = self.delta_d(context, event) * 0.00001
-            elif self.bmtool_mode == "angle":
-                mod.angle_limit = math.radians(
-                        self.delta_d(context, event) * 0.0001)
-
-        # Modal editing modes switcher
-        elif event.type == 'W' & event.value == 'PRESS':
-            self.bmtool_mode = "width"
-        elif event.type == 'S' & event.value == 'PRESS':
-            self.bmtool_mode = "segments"
-        elif event.type == 'D' & event.value == 'PRESS':
-            self.bmtool_mode = "profile"
-        elif event.type == 'A' & event.value == 'PRESS':
-            self.bmtool_mode = "angle"
-
-        # Modifier-specific actions
-        elif event.type == 'H' & event.value == 'PRESS':
-            mod.harden_normals = not mod.harden_normals
-        elif event.type == 'C' & event.value == 'PRESS':
-            mod.use_clamp_overlap = not mod.use_clamp_overlap
-        elif event.type == 'G' & event.value == 'PRESS':
-            self.bmtool_modifier_defaults(context)
-        elif event.type == 'F' & event.value == 'PRESS':
-            bpy.ops.object.shade_smooth()
-            bpy.context.object.data.use_auto_smooth = True
-
-    # --------------------------------
-    # Editor default modifier settings
-    # --------------------------------
-    def bmtool_editor_modifier_defaults(
-            self, context, m_list, selected_objects):
-        mod = m_list.active_modifier_get().get_by_index(0)
-        mod.affect = 'EDGES'
-        # 'VERTICES', 'EDGES'
-
-        mod.miter_outer = 'MITER_ARC'
-        # 'MITER_SHARP', 'MITER_PATCH', 'MITER_ARC'
-
-        mod.miter_inner = 'MITER_SHARP'
-        # 'MITER_SHARP', 'MITER_ARC'
-
-        mod.limit_method = 'ANGLE'
-        # 'NONE', 'ANGLE', 'WEIGHT', 'VGROUP'
-
-        mod.width = 0.01
-        mod.segments = 3
-        mod.profile = 0.5
-        mod.use_clamp_overlap = 1
-
-        bpy.ops.object.shade_smooth()
-        context.object.data.use_auto_smooth = True
-
-    # ------------------------------
-    # Editor info about current modifier
-    # ------------------------------
-    def bmtool_editor_modifier_stats(self, context, m_list, selected_objects):
-        mod = m_list.active_modifier_get().get_by_index(0)
-        ui_t = []
-        ui_t.append("MBTool Bevel")
-        ui_t.append(f"Total seg. count {self.bevel_segment_count(m_list)}")
-        ui_t.append(f"Mode = {self.bmtool_mode}")
-        ui_t.append(" ")
-        ui_t.append(f"---{mod.type}---")
-        ui_t.append(f"(S)egments {mod.segments}")
-        ui_t.append(f"(W)idth {round(mod.width, 3)}")
-        ui_t.append(f"(A)ngle {round(mod.angle_limit, 1)}")
-        return ui_t
+# class bmtooleditorbevel(modifiereditor):
+#     _modifier_editor_name = 'bevel editor'
+#     _default_m_name = 'bevel'
+#     _default_m_type = 'bevel'
+#     _modifier_createable = true
+# 
+#     bmtool_mode = "select mode"
+# 
+#     # todo: remove this
+#     def bevel_segment_count(self, m_list):
+#         y = 0
+#         for x in m_list.get_list():
+#             if x.type == 'bevel':
+#                 y += x.get_by_index(0).segments
+#         return y
+# 
+#     def bmtool_editor_modal_2(
+#             self, context, event, m_list, selected_objects):
+#         """editor-specific modal method"""
+#         mod = m_list.active_modifier_get().get_by_index(0)
+#         if event.type == 'mousemove':
+# 
+#             # modal editing
+#             if self.bmtool_mode == "width":
+#                 mod.width = self.delta_d(context, event) * 0.000008
+#             elif self.bmtool_mode == "segments":
+#                 mod.segments = self.delta_d(context, event) * 0.00005
+#             elif self.bmtool_mode == "profile":
+#                 mod.profile = self.delta_d(context, event) * 0.00001
+#             elif self.bmtool_mode == "angle":
+#                 mod.angle_limit = math.radians(
+#                         self.delta_d(context, event) * 0.0001)
+# 
+#         # Modal editing modes switcher
+#         elif event.type == 'W' & event.value == 'PRESS':
+#             self.bmtool_mode = "width"
+#         elif event.type == 'S' & event.value == 'PRESS':
+#             self.bmtool_mode = "segments"
+#         elif event.type == 'D' & event.value == 'PRESS':
+#             self.bmtool_mode = "profile"
+#         elif event.type == 'A' & event.value == 'PRESS':
+#             self.bmtool_mode = "angle"
+# 
+#         # Modifier-specific actions
+#         elif event.type == 'H' & event.value == 'PRESS':
+#             mod.harden_normals = not mod.harden_normals
+#         elif event.type == 'C' & event.value == 'PRESS':
+#             mod.use_clamp_overlap = not mod.use_clamp_overlap
+#         elif event.type == 'G' & event.value == 'PRESS':
+#             self.bmtool_modifier_defaults(context)
+#         elif event.type == 'F' & event.value == 'PRESS':
+#             bpy.ops.object.shade_smooth()
+#             bpy.context.object.data.use_auto_smooth = True
+# 
+#     # --------------------------------
+#     # Editor default modifier settings
+#     # --------------------------------
+#     def bmtool_editor_modifier_defaults(
+#             self, context, m_list, selected_objects):
+#         mod = m_list.active_modifier_get().get_by_index(0)
+#         mod.affect = 'EDGES'
+#         # 'VERTICES', 'EDGES'
+# 
+#         mod.miter_outer = 'MITER_ARC'
+#         # 'MITER_SHARP', 'MITER_PATCH', 'MITER_ARC'
+# 
+#         mod.miter_inner = 'MITER_SHARP'
+#         # 'MITER_SHARP', 'MITER_ARC'
+# 
+#         mod.limit_method = 'ANGLE'
+#         # 'NONE', 'ANGLE', 'WEIGHT', 'VGROUP'
+# 
+#         mod.width = 0.01
+#         mod.segments = 3
+#         mod.profile = 0.5
+#         mod.use_clamp_overlap = 1
+# 
+#         bpy.ops.object.shade_smooth()
+#         context.object.data.use_auto_smooth = True
+# 
+#     # ------------------------------
+#     # Editor info about current modifier
+#     # ------------------------------
+#     def bmtool_editor_modifier_stats(self, context, m_list, selected_objects):
+#         mod = m_list.active_modifier_get().get_by_index(0)
+#         ui_t = []
+#         ui_t.append("MBTool Bevel")
+#         ui_t.append(f"Total seg. count {self.bevel_segment_count(m_list)}")
+#         ui_t.append(f"Mode = {self.bmtool_mode}")
+#         ui_t.append(" ")
+#         ui_t.append(f"---{mod.type}---")
+#         ui_t.append(f"(S)egments {mod.segments}")
+#         ui_t.append(f"(W)idth {round(mod.width, 3)}")
+#         ui_t.append(f"(A)ngle {round(mod.angle_limit, 1)}")
+#         return ui_t

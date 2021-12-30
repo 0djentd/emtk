@@ -119,7 +119,7 @@ class BMToolUi:
         ui_t.append("No bmtool_ui_modifier_stats method")
         return ui_t
 
-    def bmtool_ui_list(self, context):
+    def bmtool_ui_list(self):
         """
         Returns list of lines with info about modifiers
         """
@@ -152,7 +152,7 @@ class BMToolUi:
         m_type = m_list.get_cluster().type
 
         layer = m_list.get_layer()
-        cluster_selection = layer.get_cluster_selection()
+        cluster_selection = layer.get_selection()
 
         ui_t.append("=============================")
         ui_t.append("       CLUSTERS LIST")
@@ -241,28 +241,6 @@ class BMToolUi:
         """
         Returns list of strings with info about m_list's active modifier
         """
-        mod = m_list.active_modifier_get()
-
         ui_t = []
         ui_t.append("Not implemented for modifiers clusters")
         return ui_t
-
-    # TODO: should be in utils
-    # Returns VL
-    # VL = vector length
-    # VL from object center (currently from initialisation)
-    # TODO: should take into consideration distance to object center.
-    # TODO: should use object center as center.
-    # TODO: should not change settings when changing mode
-    def delta_d(self, context, event):
-        x = self.vec_len(self.first_x, event.mouse_x,
-                         self.first_y, event.mouse_y
-                         )
-        y = pow(x, 2)
-        return y
-
-    # Vector length
-    def vec_len(self, x1, x2, y1, y2):
-        delta_x = x1 - x2
-        delta_y = y1 - y2
-        return math.sqrt(pow(delta_x, 2) + pow(delta_y, 2))
