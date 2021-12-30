@@ -179,15 +179,10 @@ class ClusterTrait():
         for y in x['tags']:
             if not isinstance(y, str):
                 raise TypeError
-
-        # x = self._additional_check_cluster_definition(x)
         return x
 
-    # def _additional_check_cluster_definition(self, cluster_type_def):
-    #     return cluster_type_def
-
-    # def __repr__(self):
-    #     return self.__str__()
+    def __repr__(self):
+        return self.__str__()
 
     def __str__(self):
         if not self._cluster_removed and self._cluster_props['initialized']:

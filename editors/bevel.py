@@ -16,9 +16,7 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-from ..classes.bmtool_editor import ModifierEditor, ModifierEditorTemplate
-import bpy
-import math
+from ..classes.bmtool_editor import ModifierEditorTemplate
 
 
 class BMToolEditorBevel(ModifierEditorTemplate):

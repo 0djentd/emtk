@@ -17,8 +17,6 @@
 # ##### END GPL LICENSE BLOCK #####
 
 import logging
-import copy
-import json
 
 try:
     import bpy
@@ -29,6 +27,66 @@ except ModuleNotFoundError:
 
 logger = logging.getLogger(__package__)
 logger.setLevel(logging.INFO)
+
+_MODIFIER_TYPES = [
+                   "DATA_TRANSFER",
+                   "MESH_CACHE",
+                   "MESH_SEQUENCE_CACHE",
+                   "NORMAL_EDIT",
+                   "WEIGHTED_NORMAL",
+                   "UV_PROJECT",
+                   "UV_WARP",
+                   "VERTEX_WEIGHT_EDIT",
+                   "VERTEX_WEIGHT_MIX",
+                   "VERTEX_WEIGHT_PROXIMITY",
+                   "ARRAY",
+                   "BEVEL",
+                   "BOOLEAN",
+                   "BUILD",
+                   "DECIMATE",
+                   "EDGE_SPLIT",
+                   "NODES",
+                   "MASK",
+                   "MIRROR",
+                   "MESH_TO_VOLUME",
+                   "MULTIRES",
+                   "REMESH",
+                   "SCREW",
+                   "SKIN",
+                   "SOLIDIFY",
+                   "SUBSURF",
+                   "TRIANGULATE",
+                   "VOLUME_TO_MESH",
+                   "WELD",
+                   "WIREFRAME",
+                   "ARMATURE",
+                   "CAST",
+                   "CURVE",
+                   "DISPLACE",
+                   "HOOK",
+                   "LAPLACIANDEFORM",
+                   "LATTICE",
+                   "MESH_DEFORM",
+                   "SHRINKWRAP",
+                   "SIMPLE_DEFORM",
+                   "SMOOTH",
+                   "CORRECTIVE_SMOOTH",
+                   "LAPLACIANSMOOTH",
+                   "SURFACE_DEFORM",
+                   "WARP",
+                   "WAVE",
+                   "VOLUME_DISPLACE",
+                   "CLOTH",
+                   "COLLISION",
+                   "DYNAMIC_PAINT",
+                   "EXPLODE",
+                   "FLUID",
+                   "OCEAN",
+                   "PARTICLE_INSTANCE",
+                   "PARTICLE_SYSTEM",
+                   "SOFT_BODY",
+                   "SURFACE"
+                   ]
 
 
 def get_modifier_state(modifier):
