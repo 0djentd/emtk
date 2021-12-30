@@ -67,19 +67,7 @@ class FirstLayerClustersListTrait():
         if not no_parse:
             self.create_modifiers_list()
 
-    def __str__(self):
-        result = 'Extended Modifiers List, clusters: '
-        y = 0
-        for x in self.get_full_list():
-            if y < 6:
-                y += 1
-                result = result + x.name + ' '
-            else:
-                length = len(self.get_full_list())
-                result = result + f'... total clusters number is {length}'
-                break
-        return result
-
+    # Parsing {{{
     def create_modifiers_list(self, obj=None):
         """
         Creates modifiers list for object.
@@ -173,16 +161,20 @@ class FirstLayerClustersListTrait():
     def remove_cluster_type(self, cluster):
         """Remove cluster type"""
         return self._clusters_parser.remove_cluster_type(cluster)
+    # }}}
 
+    # Actions {{{
     def ask(self, question):
         """
         Returns actions required to allow action, if it is not
         allowed.
         Can return empty list.
         """
+        # For first layer, this not needed
         if question.subject is self:
             raise ValueError
 
+    # TODO: Remove this method
     def create_modifier(self, m_name, m_type, layer=None, cluster_index=None):
         """
         Creates modifier, adds parsed cluster
@@ -257,39 +249,9 @@ class FirstLayerClustersListTrait():
             restore_modifier_state(modifiers[-1], modifier_props)
         result = self._clusters_parser.parse_recursively(modifiers)
         self._modifiers_list.extend(result)
+    # }}}
 
-    # ===============
-    # Utility
-    # ===============
-    def get_full_list_of_cluster_names(self):
-        """Returns full list of custom cluster names."""
-        result = []
-        for x in self.get_full_list():
-            result.append(x.get_this_cluster_name())
-        return result
-
-    def _check_if_actual_modifiers_list_is_correct(self):
-        """
-        Checks if actual modifiers in clusters ordered correctly,
-        according to Blender modifiers stack.
-        """
-
-        x = self.get_full_actual_modifiers_list()
-        y = self._object.modifiers
-
-        if len(x) != len(y):
-            return False
-
-        for z, e in zip(x, y):
-            if z.name != e.name:
-                return False
-            if z.type != e.type:
-                return False
-        return True
-
-    # =================
-    # Storing modifiers state
-    # ================
+    # Storing clusters state {{{
     def get_clusters_state(self):
         """
         Returns list with info about current clusters state.
@@ -402,10 +364,9 @@ class FirstLayerClustersListTrait():
             return x
         else:
             return False
+    # }}}
 
-    # ==========================
-    # saving modifiers state for fast check.
-    # ==========================
+    # saving modifiers state for fast check. {{{
     def get_modifiers_state(self):
         """Returns current object actual modifiers info."""
         result = []
@@ -435,11 +396,11 @@ class FirstLayerClustersListTrait():
         elif not _WITH_BPY:
             self._object.props[name] = x
 
-    # TODO: what is dat
     def load_modifiers_state(self, prop_name=None):
         """
-        Returns previous object actual modifiers info
+        Returns saved actual modifiers info
         from object property with prop_name.
+
         If no saved modifiers, returns False.
         """
         if prop_name is None:
@@ -485,3 +446,50 @@ class FirstLayerClustersListTrait():
         if x == y:
             return False
         return True
+    # }}}
+
+    # Utility {{{
+    def get_full_list_of_cluster_names(self):
+        """Returns full list of custom cluster names."""
+        result = []
+        for x in self.get_full_list():
+            result.append(x.get_this_cluster_name())
+        return result
+
+    def _check_if_actual_modifiers_list_is_correct(self):
+        """
+        Checks if actual modifiers in clusters ordered
+        as in actual Blender modifiers stack.
+
+        Returns True or throws an error.
+        """
+
+        x = self.get_full_actual_modifiers_list()
+        y = self._object.modifiers
+
+        if len(x) != len(y):
+            raise ValueError
+
+        for z, e in zip(x, y):
+            if z.name != e.name:
+                raise ValueError
+            if z.type != e.type:
+                raise ValueError
+        return True
+
+    def __str__(self):
+        result = 'Extended Modifiers List, clusters: '
+        y = 0
+        for x in self.get_full_list():
+            if y < 6:
+                y += 1
+                result = result + x.name + ' '
+            else:
+                length = len(self.get_full_list())
+                result = result + f'... total clusters number is {length}'
+                break
+        return result
+
+    def __repr__(self):
+        return self.__str__()
+    # }}}

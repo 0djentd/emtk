@@ -34,10 +34,6 @@ class ClustersListTrait():
     """
     Class that should be inherited by any ModifiersList subclass that uses
     clusters.
-
-    Version 5, removed a lot of methods.
-
-    Version 6, uses ClustersActions.
     """
 
     def __init__(self, *args, no_default_actions=False, **kwargs):
@@ -60,31 +56,30 @@ class ClustersListTrait():
     # ====================
     # Actions
     # ====================
-    def deconstruct(self, cluster):
+    def deconstruct(self, clusters):
+        """Deconstructs clusters on this layer."""
         self._check_if_cluster_removed()
-        """
-        Deconstructs cluster on this layer.
-        """
-        logger.info(f'Deconstructing {cluster} on layer {self}')
-        x = ClustersAction('DECONSTRUCT', cluster)
-        x = ClustersCommand(x,
-                            affect_clusters=False,
-                            affect_modifiers=False,
-                            dry_clusters=False,
-                            dry_modifiers=False,
-                            )
+        logger.info(f'Deconstructing {clusters} on layer {self}')
 
-        if logger.isEnabledFor(logging.DEBUG):
-            logger.debug(f'Created {x}')
-        self._controller.do(x)
+        for cluster in clusters:
+            # TODO: use ClusterRequest instead.
+            x = ClustersAction('DECONSTRUCT', cluster)
+            x = ClustersCommand(x,
+                                affect_clusters=False,
+                                affect_modifiers=False,
+                                dry_clusters=False,
+                                dry_modifiers=False,
+                                )
+
+            if logger.isEnabledFor(logging.DEBUG):
+                logger.debug(f'Created {x}')
+            self._controller.do(x)
 
     def create(self, cluster_type_instance):
+        """Creates cluster or layer on this layer."""
         self._check_if_cluster_removed()
-        """
-        Creates cluster or layer on this layer.
-        """
         logger.info(f'Creating {cluster_type_instance} on layer {self}')
-        
+        raise ValueError
 
     # =============
     # Actual modifier getters
