@@ -62,6 +62,9 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
     # Use statusbar to display modifier info.
     __UI_STATUSBAR = False
 
+    # Use modifiers of any type.
+    _BMTOOLM = True
+
     __bmtool_kbs = {
                   'visibility_1': 'V',
                   'visibility_2': 'B',
@@ -249,7 +252,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
         elif (event.type == self.__bmtool_kbs['add_new'])\
                 & (event.value == 'PRESS'):
 
-            if self._BMTOOLM is False:
+            if not self._BMTOOLM:
                 x = self.m_list.create_modifier(
                         self._DEFAULT_M_NAME, self._DEFAULT_M_TYPE)
                 self.m_list.active_modifier_set(x)
@@ -257,7 +260,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
                 # TODO: why bmtool_modifier_defaults doesnt need modifier?
                 self.bmtool_modifier_defaults(context)
 
-            elif self._BMTOOLM is True:
+            else:
                 self.bmtool_modifier_add(context)
                 self.bmtool_modifier_defaults(context)
 
@@ -569,13 +572,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
     def _display_additional_info_about_bmtool(self, context):  # {{{
         logger.debug("BMTool is created")
         logger.debug(f"_BMTOOLM {self._BMTOOLM}")
-        logger.debug(f"_DEFAULT_M_NAME {self._DEFAULT_M_NAME}")
-        logger.debug(f"_DEFAULT_M_TYPE {self._DEFAULT_M_TYPE}")
-        logger.debug(f"_BMTOOL_DEFAULT_MODE {self._BMTOOL_DEFAULT_MODE}")
-        logger.debug(f"_BMTOOL_EDITMODE {self._BMTOOL_EDITMODE}")
-        logger.debug(f"_BMTOOL_MODIFIER_CREATE {self._BMTOOL_MODIFIER_CREATE}")
-        logger.debug(f"_BMTOOL_SINGLE_OBJECT {self._BMTOOL_SINGLE_OBJECT}")
-        logger.debug(f"_BMTOOL_UI {self._BMTOOL_UI}")
-        logger.debug(f"_BMTOOL_UI_STATUSBAR {self._BMTOOL_UI_STATUSBAR}")
-        logger.debug(f"_BMTOOL_V {self._BMTOOL_V}")
+        logger.debug(f"__DEFAULT_MODE {self.__DEFAULT_MODE}")
+        logger.debug(f"__UI {self.__UI}")
+        logger.debug(f"__UI_STATUSBAR {self.__UI_STATUSBAR}")
     # }}}
