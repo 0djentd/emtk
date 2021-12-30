@@ -21,7 +21,6 @@ import bpy
 import logging
 
 from . operators.bmtoolm import BMTOOL_OT_bmtoolm
-from . operators.bmtoole import BMTOOL_OT_bmtoole
 from . operators.add_cluster_type import BMTOOL_OT_add_cluster_type_object
 from . operators.bmtoole2 import BMTOOL_OT_bmtoole2
 from . operators.bmtoolm_lite import BMTOOL_OT_bmtoolm_2
@@ -44,7 +43,6 @@ bl_info = {
 classes = [
     BMToolPreferences,
     BMTOOL_OT_bmtoolm,
-    BMTOOL_OT_bmtoole,
     BMTOOL_OT_bmtoole2,
     BMTOOL_OT_bmtoolm_2,
     BMTOOL_OT_add_cluster_type_object,

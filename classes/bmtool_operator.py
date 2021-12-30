@@ -56,6 +56,9 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
     # Default modal editing mode.
     __DEFAULT_MODE = "ACTIONS"
 
+    # Returned values that should trigger operator remove.
+    __OPERATOR_REMOVE = [{'FINISHED'}, {'CANCELLED'}]
+
     # Create draw handler.
     __UI = False
 
@@ -100,6 +103,9 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
         # Modal method.
         if self.mode = 'EDITOR':
             a = self.bmtool_modal_pre(context, event)
+            if a in self.__OPERATOR_REMOVE:
+                self.clear(context)
+                return a
 
         # Redraw UI
         if self._BMTOOL_UI:
@@ -128,8 +134,14 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
         # Modal methods.
         if self.mode = 'ACTIONS':
             a = self.__modal_actions(context, event)
-        elif self.mode = 'EDITOR':
+            if a in self.__OPERATOR_REMOVE:
+                self.clear(context)
+                return a
+        if self.mode = 'EDITOR' or a is False:
             a = self.bmtool_modal(context, event)
+            if a in self.__OPERATOR_REMOVE:
+                self.clear(context)
+                return a
         else:
             raise ValueError
 
