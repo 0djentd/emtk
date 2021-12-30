@@ -25,32 +25,79 @@ class ModifierEditor():
     Designed to be used with BMToolM
     """
 
-    # Editor name for UI
-    _MODIFIER_EDITOR_NAME = "No editor-specific name"
+    props = {
+             'name': None,              # Editor name
+             'cluster_types': [None],   # Clusters types
+                                        # this editor can be used with
+             }
 
-    # Default modifier name for this editor
-    _DEFAULT_M_NAME = None
+    _mappings = [{'mapping_name': '1',
+                 'cluster': 'BEVEL_CLUSTER',
+                 'mods': ['get_first', '']}]
 
-    # Type of modifiers that this editor should be associated with
-    _DEFAULT_M_TYPE = None
+    _attributes = [
+                   {'attr': 'segments',
+                    'map': '1',
+                    'type': 'int',
+                    'kb': 'S',
+                    'sens': 0.00005},
+                   {'attr': 'harden_normals',
+                    'map': '1',
+                    'type': 'int',
+                    'kb': 'S',
+                    'sens': 0.00005},
+                   ]
 
-    # TODO: remove this
-    # Can modifier be created from within editor using _DEFAULT_M_TYPE?
-    _MODIFIER_CREATEABLE = False
+    def _get_mod_mapping(self, mapping_name):
+        for x in self._mappings:
+            if x['name'] == mapping_name:
+                return x
 
-    # Can be used with modifier clusters
-    _MODIFIERS_CLUSTER_EDITOR = False
+    def _get_mods_for_attr(self, x, cluster):
+        mapping = self._get_mod_mapping(x['map'])
+        mods = []
+        for m in mapping['mods']:
+            result = getattr(cluster, m['attr'])(m['args'])
+            if not isinstance(result, list):
+                result = [result]
+            for y in result:
+                if not isinstance(y, bpy.types.Modifier):
+                    raise TypeError
+            mods.extend(result)
+        return mods
 
-    # TODO: Allow using editor with any modifier
-    _MODIFIER_ANY = False
+    def modal_attrs(self, context, event, cluster):
+        for x in self._attributes:
+            # Switch to mode
+            if self.mode == self._DEFAULT_MODE\
+                    and event.type == x['kb']\
+                    and event.value == 'PRESS':
+                self.mode = x['attr']
+                return
 
-    # Default mode
-    _DEFAULT_EDITOR_MODE = "Select mode"
+            # Get modifiers for this attr
+            mods = self._get_mods_for_attr(x, cluster)
 
-    # Try to use bmtool operator as editor
-    _BMTOOL_EDITOR_OPERATOR = True
+            # Toggle attrs
+            if x['type'] == 'bool':
+                if event.type = x['kb']\
+                        and event.value == 'PRESS':
+                    setattr(mod, x['attr'], not getattr(mod, x['attr']))
+                    return
 
-    bmtool_mode = _DEFAULT_EDITOR_MODE
+            # Modal editing
+            if self.mode == x['attr']:
+                if x['type'] == 'int':
+                    for x in mods:
+                        setattr(x, x['attr'], self.delta_d())
+                        return
+                if x['type'] == 'float':
+                    for x in mods:
+                        setattr(x, x['attr'], self.delta_d())
+                        return
+        return
+
+    _DEFAULT_MODE = 'SELECT_MODE'
 
     # {{{
     """
@@ -90,10 +137,11 @@ class ModifierEditor():
       'kb': 'A',
       'sens': 0.0005}
       ]
-    """  # {{{
+    """  # }}}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.mode = self._DEFAULT_MODE
 
     # ==========================================
     # Editor method placeholders
@@ -103,7 +151,6 @@ class ModifierEditor():
         """
         Editor invoke method, called every time editor is switched to
         """
-        # Resets editor's mode, kinda should be in every editor
         self.bmtool_mode = self._DEFAULT_EDITOR_MODE
         return
 
