@@ -30,10 +30,13 @@ EDITABLE_TYPES = {'BOOL', 'INT', 'FLOAT', 'STRING', 'ENUM'}
 
 def get_all_editable_props(modifier):
     """
-    Returns all props that can be edited in modal operator.
+    Returns list of names of all modifier props that
+    can be edited in modal operator.
     """
+
     if not isinstance(modifier, bpy.types.Modifier):
         raise TypeError
+
     result = []
     props = modifier.rna_type.properties
     for x in props:
@@ -48,4 +51,9 @@ def get_all_editable_props(modifier):
                 continue
         if e:
             result.append(x)
+
+    # TODO: remove this type check
+    for x in result:
+        if not isinstance(x, str):
+            raise TypeError
     return result
