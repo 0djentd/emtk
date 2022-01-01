@@ -566,9 +566,15 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
                     self.modal_input_mode = 'LETTERS'
             else:
                 if self.modal_input_mode == 'LETTERS':
-                    self.modal_letters()
+                    if event.type == 'RETURN':
+                        for mod in mods:
+                            setattr(mod, self.mode, self.modal_letters_pop())
+                    self.modal_letters(event)
                 elif self.modal_input_mode == 'DIGITS':
-                    self.modal_digits()
+                    if event.type == 'RETURN':
+                        for mod in mods:
+                            setattr(mod, self.mode, self.modal_digits_pop())
+                    self.modal_digits(event)
 
         # Check that there are no unexpected for simple events modes.
         else:

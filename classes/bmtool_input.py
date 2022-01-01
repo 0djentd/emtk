@@ -78,22 +78,34 @@ class BMToolModalInput():
         """Returns number that were typed in 'DIGITS' mode.
         number_type can be either 'ANY', 'INT' or 'FLOAT'.
         """
-        result = self._modal_numbers_get_val(number_type)
+        result = self.modal_digits_get(number_type)
         self.bmtool_modal_numbers_str = ''
         self.modal_input_mode = self.__DEFAULT_MODE
         return result
 
-    def modal_str_pop(self):
+    def modal_letters_pop(self):
         """Returns string that were typed in 'STRING' mode."""
         result = self.bmtool_modal_str
         self.bmtool_modal_str = ''
         self.modal_input_mode = self.__DEFAULT_MODE
-        return result  # }}}
+        return result
+    # }}}
+
+    # Get val {{{
+    def modal_digits_get(self, number_type='ANY'):
+        return self.__digits_get_val(number_type)
+
+    def modal_letters_get(self, number_type='ANY'):
+        return self.bmtool_modal_str()
+    # }}}
 
     def modal_digits(self, event):  # {{{
         """This thing writes a string that can be used in modal operator
         to get integer, float, or string.
         """
+        if self.modal_input_mode != 'DIGITS':
+            raise ValueError
+
         for x in self.__MODAL_DIGITS:
             if event.type == x and event.value == 'PRESS':
                 self.bmtool_modal_numbers_str\
@@ -109,8 +121,11 @@ class BMToolModalInput():
             return False
         return True  # }}}
 
-    def modal_str(self, event):  # {{{
+    def modal_letters(self, event):  # {{{
         """This thing writes a string that can be used in modal operator."""
+        if self.modal_input_mode != 'LETTERS':
+            raise ValueError
+
         for x in self.__MODAL_LETTERS:
             if event.type == x and event.value == 'PRESS':
                 if event.shift:
@@ -135,8 +150,6 @@ class BMToolModalInput():
                         = self.bmtool_modal_numbers_str + '-'
         elif event.type == 'BACK-SPACE' and event.value == 'PRESS':
             self.bmtool_modal_numbers_str = self.bmtool_modal_numbers_str[0:-1]
-        elif event.type == 'RETURN' and event.value == 'PRESS':
-            self.modal_input_mode = self._previous_mode
         else:
             return False
         return True  # }}}
