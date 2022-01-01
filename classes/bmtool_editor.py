@@ -26,7 +26,11 @@ import bpy
 
 from .bmtool_input import BMToolModalInput
 from ..lib.utils.modifier_types_utils import get_editable_modifier_props
+from ..lib.utils.modifier_types_utils import get_props_filtered_by_types
 from ..lib.utils.modifier_types_utils import filter_props_by_type
+
+logger = logging.getLogger(__package__)
+logger.setLevel(logging.DEBUG)
 
 
 # TODO: rename to ClustersEditor
@@ -52,6 +56,7 @@ class ModifierEditor(BMToolModalInput):  # {{{
                       # can be used with.
                       # Example:
                       # ['BEVEL_CLUSTER', 'BEVEL']
+                      # Can be 'ANY' as well.
                       'cluster_types': cluster_types
                       }
     # }}}
@@ -252,9 +257,8 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
     __ALL_TYPES = {'BOOLEAN', 'INT', 'FLOAT', 'STRING',
                    'ENUM', 'POINTER', 'COLLECTION'}
 
-    # All editable in this editor prop types.
+    # All editable prop types for this editor
     __EDITABLE_TYPES = {'BOOLEAN', 'INT', 'FLOAT', 'STRING', 'ENUM'}
-
     __EDITABLE_SUBTYPES = {'NONE', 'PERCENTAGE',
                            'UNSIGNED', 'FACTOR',
                            'ANGLE', 'TIME', 'TIME_ABSOLUTE', 'DISTANCE',
@@ -264,13 +268,14 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
                            'XYZ', 'XYZ_LENGTH', 'COLOR_GAMMA',
                            'COORDS'}
 
-    # Types of units
+    # Types of units.
     __TYPES_UNITS = {'NONE', 'LENGTH', 'AREA', 'VOLUME', 'ROTATION',
                      'TIME', 'TIME_ABSOLUTE', 'VELOCITY', 'ACCELERATION',
                      'MASS', 'CAMERA', 'POWER', 'TEMPERATURE'}
 
     # Can be edited with single shortcut.
-    __TOGGLE_TYPES = {'BOOLEAN'}
+    # TODO: enum should not be in this set.
+    __TOGGLE_TYPES = {'BOOLEAN', 'ENUM'}
 
     # Can be edited using mouse input.
     __DELTA_D_TYPES = {'INT', 'FLOAT'}
@@ -282,15 +287,15 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
     __STRING_INPUT_TYPES = {'ENUM', 'STRING'}
 
     # All types that use some type of modal editing.
-    __MODAL_INPUT_TYPES\
+    __MODAL_INPUT_PROP_TYPES\
         = __STRING_INPUT_TYPES\
         + __DIGIT_INPUT_TYPES\
         + __DELTA_D_TYPES
 
     # All types that can be edited in default mode without switching.
-    __NOT_MODAL_INPUT_TYPES\
+    __NOT_MODAL_INPUT_PROP_TYPES\
         = __EDITABLE_TYPES.difference(
-                __MODAL_INPUT_TYPES)
+                __MODAL_INPUT_PROP_TYPES)
 
     # List of modifier props with mapping.
     # Elements:
@@ -310,9 +315,26 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
     def editor_inv(self, context, event, clusters):
         mods = self.get_modifiers(clusters)
         self.mode = self.__DEFAULT_MODE
-        self.__modifier_props = {}
-        for x in get_editable_modifier_props(mods[0]):
-            self.__modifier_props.update({x: self.get_kbs(x)})
+        props = get_props_filtered_by_types(mods[0])
+
+        # Example:
+        # {'segments': ('s', False, False, False)}
+
+        # Modal editing prop only.
+        self.__kbs_modal = {}
+        # Not modal prop editing.
+        self.__kbs_no_modal = {}
+        # Not a modifier prop.
+        self.__kbs_editing = {}
+        for x in props:
+            if x in self.__MODAL_INPUT_PROP_TYPES:
+                self.__kbs_modal.update({x, self.get_kbs(x)})
+            elif x in self.__NOT_MODAL_INPUT_PROP_TYPES:
+                self.__kbs_no_modal.update({x, self.get_kbs(x)})
+        logger.debug('Editor invoked.')
+        logger.debug(self.__kbs_modal)
+        logger.debug(self.__kbs_no_modal)
+        logger.debug(self.__kbs_editing)
 
     def editor_modal(self, context, event, clusters):
         # Get modifier
