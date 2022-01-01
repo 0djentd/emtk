@@ -25,9 +25,8 @@ import json
 import bpy
 
 from .bmtool_input import BMToolModalInput
-from ..lib.utils.modifier_types_utils import get_editable_modifier_props
-from ..lib.utils.modifier_types_utils import get_props_filtered_by_types
-from ..lib.utils.modifier_types_utils import filter_props_by_type
+from ..lib.utils.modifier_prop_types import get_props_filtered_by_types
+from ..lib.clusters.cluster_trait import ClusterTrait
 
 logger = logging.getLogger(__package__)
 logger.setLevel(logging.DEBUG)
@@ -103,146 +102,146 @@ class ModifierEditor(BMToolModalInput):  # {{{
 
 
 # TODO: rename to ModalClustersEditor
-class ModifierEditorTemplate(ModifierEditor):  # {{{
-    """Base class for editors that only use modifiers attributes."""
-
-    # Variables {{{
-    # Modifiers mapping example:
-    # MODIFIER_MAPPING = {'cluster': BEVEL_CLUSTER,
-    #                     'modifiers': ['get_first()',
-    #                                   'get_first().get_last()']
-    #                     }
-    #
-    # List of modifiers mappings.
-    # _mappings = []
-    #
-    # List of available to editor modifiers attributes
-    # _attributes = [
-    #                {'attr': 'segments',
-    #                 'map': '1',
-    #                 'type': 'int',
-    #                 'min': 0,
-    #                 'kb': 'S',
-    #                 'sens': 0.00005},
-    #                {'attr': 'harden_normals',
-    #                 'map': '1',
-    #                 'type': 'int',
-    #                 'kb': 'S',
-    #                 'sens': 0.00005},
-    #                ]
-    #
-    # Currently active editor mode.
-    # (one of _attributes['attr'])
-    # self.mode
-
-    __DEFAULT_MODE = 'SELECT_MODE'
-
-    # }}}
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.mode = self.__DEFAULT_MODE
-        self._mappings = None
-        self._attributes = None
-
-    # Editor methods {{{
-    def editor_switched_to(self, context, clusters):
-        """Called every time editor is switched to."""
-        self.mode = self.__DEFAULT_MODE
-        return self.switched_to(context, clusters)
-
-    def editor_switched_from(self, context, clusters):
-        """Called every time editor is switched from."""
-        self.mode = self.__DEFAULT_MODE
-        return self.switched_from(context, clusters)
-
-    def editor_modal_pre(self, context, event, clusters):
-        """Modal method 1."""
-        return self.modal_pre(context, event, clusters)
-
-    def editor_modal(
-            self, context, event, clusters):
-        """Modal method 2"""
-        self.__modal_attrs(context, event, clusters)
-        return self.modal(context, event, clusters)
-
-    def _no_editor_method(self):
-        return
-    # }}}
-
-    def __modal_attrs(self, context, event, clusters):  # {{{
-        if not isinstance(clusters, list):
-            clusters = [clusters]
-
-        if self.mode == self.__DEFAULT_MODE:
-            for x in self._attributes:
-                if event.type == x['kb']\
-                        and event.value == 'PRESS':
-
-                    # Toggle attrs
-                    if x['type'] == 'bool':
-                        for c in clusters:
-                            mods = self._get_mods_for_attr(x, c)
-                            for mod in mods:
-                                setattr(mod, x['attr'], not getattr(
-                                    mod, x['attr']))
-
-                    # Modes switcher
-                    else:
-                        self.mode = x
-            return
-
-        # Get active _attributes element
-        x = self.mode
-        if x is None or x == self.__DEFAULT_MODE:
-            raise ValueError
-
-        # Modal attr editing
-        for c in clusters:
-            mods = self._get_mods_for_attr(x, c)
-            val = self.delta_d(event) * x['sens']
-            if not isinstance(val, int):
-                raise TypeError
-
-            if x['min'] == 0 and val < 0:
-                val = val * -1
-
-            if x['type'] == 'int':
-                val = int(val)
-                for x in mods:
-                    setattr(x, x['attr'], val)
-
-            if x['type'] == 'float':
-                val = float(val)
-                for x in mods:
-                    setattr(x, x['attr'], val)
-        return
-    # }}}
-
-    # Utils {{{
-    def _get_mod_mapping(self, mapping_name):
-        """Returns modifiers mapping by its name."""
-        for x in self._mappings:
-            if x['name'] == mapping_name:
-                return x
-
-    def _get_mods_for_attr(self, x, cluster):
-        """Returns modifiers that can be edited at the same time."""
-        mapping = self._get_mod_mapping(x['map'])
-        mods = []
-        for m in mapping['mods']:
-            if m['attr'] == '':
-                result = getattr(cluster, m['attr'])()
-            else:
-                result = getattr(cluster, m['attr'])(*m['args'])
-            if not isinstance(result, list):
-                result = [result]
-            for y in result:
-                if not isinstance(y, bpy.types.Modifier):
-                    raise TypeError
-            mods.extend(result)
-        return mods
-    # }}}
+# class ModifierEditorTemplate(ModifierEditor):  # {{{
+#     """Base class for editors that only use modifiers attributes."""
+# 
+#     # Variables {{{
+#     # Modifiers mapping example:
+#     # MODIFIER_MAPPING = {'cluster': BEVEL_CLUSTER,
+#     #                     'modifiers': ['get_first()',
+#     #                                   'get_first().get_last()']
+#     #                     }
+#     #
+#     # List of modifiers mappings.
+#     # _mappings = []
+#     #
+#     # List of available to editor modifiers attributes
+#     # _attributes = [
+#     #                {'attr': 'segments',
+#     #                 'map': '1',
+#     #                 'type': 'int',
+#     #                 'min': 0,
+#     #                 'kb': 'S',
+#     #                 'sens': 0.00005},
+#     #                {'attr': 'harden_normals',
+#     #                 'map': '1',
+#     #                 'type': 'int',
+#     #                 'kb': 'S',
+#     #                 'sens': 0.00005},
+#     #                ]
+#     #
+#     # Currently active editor mode.
+#     # (one of _attributes['attr'])
+#     # self.mode
+# 
+#     __DEFAULT_MODE = 'SELECT_MODE'
+# 
+#     # }}}
+# 
+#     def __init__(self, *args, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         self.mode = self.__DEFAULT_MODE
+#         self._mappings = None
+#         self._attributes = None
+# 
+#     # Editor methods {{{
+#     def editor_switched_to(self, context, clusters):
+#         """Called every time editor is switched to."""
+#         self.mode = self.__DEFAULT_MODE
+#         return self.switched_to(context, clusters)
+# 
+#     def editor_switched_from(self, context, clusters):
+#         """Called every time editor is switched from."""
+#         self.mode = self.__DEFAULT_MODE
+#         return self.switched_from(context, clusters)
+# 
+#     def editor_modal_pre(self, context, event, clusters):
+#         """Modal method 1."""
+#         return self.modal_pre(context, event, clusters)
+# 
+#     def editor_modal(
+#             self, context, event, clusters):
+#         """Modal method 2"""
+#         self.__modal_attrs(context, event, clusters)
+#         return self.modal(context, event, clusters)
+# 
+#     def _no_editor_method(self):
+#         return
+#     # }}}
+# 
+#     def __modal_attrs(self, context, event, clusters):  # {{{
+#         if not isinstance(clusters, list):
+#             clusters = [clusters]
+# 
+#         if self.mode == self.__DEFAULT_MODE:
+#             for x in self._attributes:
+#                 if event.type == x['kb']\
+#                         and event.value == 'PRESS':
+# 
+#                     # Toggle attrs
+#                     if x['type'] == 'bool':
+#                         for c in clusters:
+#                             mods = self._get_mods_for_attr(x, c)
+#                             for mod in mods:
+#                                 setattr(mod, x['attr'], not getattr(
+#                                     mod, x['attr']))
+# 
+#                     # Modes switcher
+#                     else:
+#                         self.mode = x
+#             return
+# 
+#         # Get active _attributes element
+#         x = self.mode
+#         if x is None or x == self.__DEFAULT_MODE:
+#             raise ValueError
+# 
+#         # Modal attr editing
+#         for c in clusters:
+#             mods = self._get_mods_for_attr(x, c)
+#             val = self.delta_d(event) * x['sens']
+#             if not isinstance(val, int):
+#                 raise TypeError
+# 
+#             if x['min'] == 0 and val < 0:
+#                 val = val * -1
+# 
+#             if x['type'] == 'int':
+#                 val = int(val)
+#                 for x in mods:
+#                     setattr(x, x['attr'], val)
+# 
+#             if x['type'] == 'float':
+#                 val = float(val)
+#                 for x in mods:
+#                     setattr(x, x['attr'], val)
+#         return
+#     # }}}
+# 
+#     # Utils {{{
+#     def _get_mod_mapping(self, mapping_name):
+#         """Returns modifiers mapping by its name."""
+#         for x in self._mappings:
+#             if x['name'] == mapping_name:
+#                 return x
+# 
+#     def _get_mods_for_attr(self, x, cluster):
+#         """Returns modifiers that can be edited at the same time."""
+#         mapping = self._get_mod_mapping(x['map'])
+#         mods = []
+#         for m in mapping['mods']:
+#             if m['attr'] == '':
+#                 result = getattr(cluster, m['attr'])()
+#             else:
+#                 result = getattr(cluster, m['attr'])(*m['args'])
+#             if not isinstance(result, list):
+#                 result = [result]
+#             for y in result:
+#                 if not isinstance(y, bpy.types.Modifier):
+#                     raise TypeError
+#             mods.extend(result)
+#         return mods
+#     # }}}
 # }}}
 
 
@@ -250,6 +249,68 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
     """Modifier editor that can be used with any Blender modifier."""
 
     # Const {{{
+
+    # All supported modifier types. {{{
+    __MODIFIER_TYPES = [
+                        "DATA_TRANSFER",
+                        "MESH_CACHE",
+                        "MESH_SEQUENCE_CACHE",
+                        "NORMAL_EDIT",
+                        "WEIGHTED_NORMAL",
+                        "UV_PROJECT",
+                        "UV_WARP",
+                        "VERTEX_WEIGHT_EDIT",
+                        "VERTEX_WEIGHT_MIX",
+                        "VERTEX_WEIGHT_PROXIMITY",
+                        "ARRAY",
+                        "BEVEL",
+                        "BOOLEAN",
+                        "BUILD",
+                        "DECIMATE",
+                        "EDGE_SPLIT",
+                        "NODES",
+                        "MASK",
+                        "MIRROR",
+                        "MESH_TO_VOLUME",
+                        "MULTIRES",
+                        "REMESH",
+                        "SCREW",
+                        "SKIN",
+                        "SOLIDIFY",
+                        "SUBSURF",
+                        "TRIANGULATE",
+                        "VOLUME_TO_MESH",
+                        "WELD",
+                        "WIREFRAME",
+                        "ARMATURE",
+                        "CAST",
+                        "CURVE",
+                        "DISPLACE",
+                        "HOOK",
+                        "LAPLACIANDEFORM",
+                        "LATTICE",
+                        "MESH_DEFORM",
+                        "SHRINKWRAP",
+                        "SIMPLE_DEFORM",
+                        "SMOOTH",
+                        "CORRECTIVE_SMOOTH",
+                        "LAPLACIANSMOOTH",
+                        "SURFACE_DEFORM",
+                        "WARP",
+                        "WAVE",
+                        "VOLUME_DISPLACE",
+                        "CLOTH",
+                        "COLLISION",
+                        "DYNAMIC_PAINT",
+                        "EXPLODE",
+                        "FLUID",
+                        "OCEAN",
+                        "PARTICLE_INSTANCE",
+                        "PARTICLE_SYSTEM",
+                        "SOFT_BODY",
+                        "SURFACE"
+                        ]
+    # }}}
 
     # All prop types.
     __ALL_TYPES = {'BOOLEAN', 'INT', 'FLOAT', 'STRING',
@@ -279,21 +340,22 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
     __DELTA_D_TYPES = {'INT', 'FLOAT'}
 
     # Can be edited using digits input.
-    __DIGIT_INPUT_TYPES = {'INT', 'FLOAT'}
+    __DIGITS_INPUT_TYPES = {'INT', 'FLOAT'}
 
     # Can be edited using letters and digits input.
-    __LETTERS_INPUT_TYPES = {'ENUM', 'STRING'}
+    __LETTERS_INPUT_TYPES = {'STRING'}
 
     # All types that use some type of modal editing.
     __MODAL_INPUT_PROP_TYPES\
-        = __STRING_INPUT_TYPES\
-        + __DIGIT_INPUT_TYPES\
-        + __DELTA_D_TYPES
+        = __LETTERS_INPUT_TYPES.union(
+                __DIGITS_INPUT_TYPES.union(
+                    __DELTA_D_TYPES))
 
     # All types that can be edited in default mode without switching.
-    __NOT_MODAL_INPUT_PROP_TYPES\
-        = __EDITABLE_TYPES.difference(
-                __MODAL_INPUT_PROP_TYPES)
+    __NOT_MODAL_INPUT_PROP_TYPES = __TOGGLE_TYPES
+    # __NOT_MODAL_INPUT_PROP_TYPES\
+    #     = __EDITABLE_TYPES.difference(
+    #             __MODAL_INPUT_PROP_TYPES)
 
     # Default editor mode.
     __DEFAULT_MODE = 'NO_MODE'
@@ -304,6 +366,7 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
     # self.mode
 
     # Currently active modal input mode.
+    # This variable initialized in BMToolModalInput()
     # self.modal_input_mode
 
     # Mappings.
@@ -322,12 +385,31 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
     # __kbs_no_modal = {}
     # Not a modifier prop.
     # __kbs_editing = {}
-
     # }}}
 
-    def editor_inv(self, context, event, clusters):
-        self.mode = self.__DEFAULT_MODE
+    def __init__(self, *args, **kwargs):
+        # Allow using with '{mod_name}_CLUSTER' cluster types.
+        new_types = []
+        for x in self.__MODIFIER_TYPES:
+            new_types.append(f'{x}_CLUSTER')
+        t = self.__MODIFIER_TYPES + new_types
 
+        super().__init__(*args,
+                         name='Adaptive_Editor',
+                         cluster_types=t,
+                         **kwargs)
+
+    # ClustersEditor methods {{{
+    def editor_switched_to(self, context, clusters):
+        """Called every time editor is switched to."""
+        if not isinstance(clusters, list):
+            clusters = [clusters]
+        for x in clusters:
+            if not isinstance(x, ClusterTrait):
+                raise TypeError
+
+        self.mode = self.__DEFAULT_MODE
+        self.__additional_info_counter = 0
 
         # Modal editing prop only.
         self.__kbs_modal = {}
@@ -336,26 +418,59 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
         # Not a modifier prop.
         self.__kbs_editing = {}
 
-        mods = self.get_modifiers(clusters)
+        mods = self.__get_all_cluster_modifiers(clusters)
         props = get_props_filtered_by_types(mods[0])
+
         for x in props:
             if x in self.__MODAL_INPUT_PROP_TYPES:
-                self.__kbs_modal.update({x, self.get_kbs(x)})
+                for y in props[x]:
+                    self.__kbs_modal.update({y: self.__get_kbs(y)})
             elif x in self.__NOT_MODAL_INPUT_PROP_TYPES:
-                self.__kbs_no_modal.update({x, self.get_kbs(x)})
+                for y in props[x]:
+                    self.__kbs_no_modal.update({y: self.__get_kbs(y)})
 
-        logger.debug('Editor invoked.')
+        logger.debug('Editor switched to.')
+        logger.debug('Modal props mappings')
         logger.debug(self.__kbs_modal)
+        logger.debug('Not modal props mappings')
         logger.debug(self.__kbs_no_modal)
+        logger.debug('Editing mappings')
         logger.debug(self.__kbs_editing)
 
-    def editor_modal(self, context, event, clusters):
+    def editor_switched_from(self, context, clusters):
+        """Called every time editor is switched from."""
+        if not isinstance(clusters, list):
+            clusters = [clusters]
+        for x in clusters:
+            if not isinstance(x, ClusterTrait):
+                raise TypeError
+
+        self.mode = self.__DEFAULT_MODE
+        self.modal_input_mode = self._BMToolModalInput__DEFAULT_MODE
+        logger.debug('Editor switched from.')
+
+    def editor_modal_pre(self, context, event, clusters):
+        if not isinstance(clusters, list):
+            clusters = [clusters]
+        for x in clusters:
+            if not isinstance(x, ClusterTrait):
+                raise TypeError
+        return
+
+    def editor_modal(self, context, event, clusters):  # {{{
+        if not isinstance(clusters, list):
+            clusters = [clusters]
+        for x in clusters:
+            if not isinstance(x, ClusterTrait):
+                raise TypeError
 
         # Get prop name and prop def.
         # Most of iterations this will be None,
         # including modal prop editing.
         prop_name = self.__get_prop_name(event)
         if prop_name is not None:
+            logger.debug(f'Prop name is {prop_name}')
+
             # Get modifier
             mods = clusters[0].get_full_actual_modifiers_list()
             mod = mods[0]
@@ -365,8 +480,19 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
         else:
             prop = None
 
-        # Filter simple events.
+        # Info
+        if self.__additional_info_counter < 30:
+            self.__additional_info_counter += 1
+        else:
+            self.__additional_info_counter = 0
+            logger.debug('Adaptive modifiers editor modal.')
+            logger.debug(f'Mode {self.mode}')
+            logger.debug(f'Mode_2 {self.modal_input_mode}')
+            logger.debug(f'prop_name {prop_name}')
+
+        # Simple events. {{{
         if event.type in list(string.ascii_uppercase):
+            logger.debug('Checking simple events')
 
             if self.mode is self.__DEFAULT_MODE:
 
@@ -393,10 +519,10 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
                 # TODO: exit out of digits and str modes
                 elif self.modal_input_mode in {'NONE', 'DELTA_D'}:
                     if event.type in list(string.digits)\
-                            and prop.type in self.__DIGIT_INPUT_TYPES:
+                            and prop.type in self.__DIGITS_INPUT_TYPES:
                         self.modal_input_mode = 'DIGITS'
                     if event.type in list(string.ascii_uppercase)\
-                            and prop.type in self.__STRING_INPUT_TYPES:
+                            and prop.type in self.__LETTERS_INPUT_TYPES:
                         self.modal_input_mode = 'LETTERS'
                 else:
                     if self.modal_input_mode == 'LETTERS':
@@ -407,20 +533,25 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
             # Check that there are no unexpected modes.
             else:
                 raise ValueError
+        # }}}
 
+        # Modal {{{
         elif self.mode in self.__kbs_modal:
+            logger.debug('Checking modal events')
 
             # Try to edit props.
-            elif prop.type == 'INT':
+            if prop.type == 'INT':
                 self.__modal_int(event, prop_name, prop, mods)
             elif prop.type == 'FLOAT':
                 self.__modal_float(event, prop_name, prop, mods)
             elif prop.type == 'STRING':
                 self.__modal_str(event, prop_name, prop, mods)
             return
-
-        else:
-            raise ValueError
+        # else:
+        #     raise ValueError
+        # }}}
+    # }}}
+    # }}}
 
     def __toggle_bool(self, prop_name, prop, mods):
         t = True
@@ -454,41 +585,50 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
     def __modal_enum(self, event, prop_name, prop, mods):
         return
 
-    def __get_prop_name(self, event):
-        """
-        Returns modifier property name that were
-        mapped to this event type.
+    def __get_prop_name(self, event) -> str:
+        """Returns property name that were mapped to event type."""
+        if len(event.type) > 1:
+            return
 
-        Returns None, if not found any.
-        """
-        for x in self.__kbs:
-            e = self.__kbs[x]
+        d = [self.__kbs_modal, self.__kbs_no_modal, self.__kbs_editing]
+        for x in d:
+            a = self.__get_prop_from_dict(event, x)
+            if a is not None:
+                return a
+        raise ValueError
+
+    def __get_prop_from_dict(self, event, kbs: dict) -> str:
+        if not isinstance(kbs, dict):
+            raise TypeError
+        logger.debug(f'Trying to get prop for {event.type} in {kbs}')
+        for x in kbs:
+            e = kbs[x]
             if event.type == e[0]\
-                    and event.shift is e[1]\
-                    and event.ctrl is e[2]\
-                    and event.alt is e[3]:
+                    and event.shift == e[1]\
+                    and event.ctrl == e[2]\
+                    and event.alt == e[3]:
+                logger.debug(f'found {x} in {kbs}')
                 return x
 
-    def get_kbs(self, prop_name):
+    def __get_kbs(self, prop_name):
         if not isinstance(prop_name, str):
             raise TypeError
-        result = prop_name[0]
-        result.upper()
+        result = prop_name[0].upper()
         return (result, False, False, False)
 
-    def get_modifiers(self, clusters):
+    def __get_all_cluster_modifiers(self, clusters):
         if not isinstance(clusters, list):
             clusters = [clusters]
-        mods = clusters[0].get_full_actual_modifiers_list()
+        mods = []
+        for x in clusters:
+            mods.extend(x.get_full_actual_modifiers_list())
 
         # Check that modifiers are of same type.
         t = None
         for x in mods:
-            if not isinstance(x, bpy.types.Modifier):
-                raise TypeError
             if t is None:
                 t = x.type
-            if x.type != t:
+            elif x.type != t:
                 raise TypeError
         return mods
-    # }}}
+# }}}

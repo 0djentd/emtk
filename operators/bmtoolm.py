@@ -16,13 +16,17 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+import logging
+
 from bpy.types import Operator
 
 from ..classes.bmtool_operator import BMToolMod
 from ..ui.bmtool_ui import BMToolUi
 
-from ..editors.weightednormal import BMToolEditorWeightedNormal
-from ..editors.bevel import BMToolEditorBevel
+from ..classes.bmtool_editor import AdaptiveModifierEditor
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
 
 
 class BMTOOL_OT_bmtoolm(BMToolUi, BMToolMod, Operator):
@@ -48,11 +52,14 @@ class BMTOOL_OT_bmtoolm(BMToolUi, BMToolMod, Operator):
         self.__possible_editors = []
         self.__active_editor = None
 
-        editor = BMToolEditorWeightedNormal()
+        editor = AdaptiveModifierEditor()
         self.__editors.append(editor)
 
-        editor = BMToolEditorBevel()
-        self.__editors.append(editor)
+        # editor = BMToolEditorWeightedNormal()
+        # self.__editors.append(editor)
+
+        # editor = BMToolEditorBevel()
+        # self.__editors.append(editor)
 
     # BMToolMod methods {{{
     def bmtool_modal_pre(self, context, event):
@@ -61,6 +68,8 @@ class BMTOOL_OT_bmtoolm(BMToolUi, BMToolMod, Operator):
         if editor is not None:
             return editor.editor_modal_pre(
                 context, event, self.m_list.get_cluster())
+        else:
+            raise TypeError
 
     def bmtool_modal(self, context, event):
         """Modal method 2, after bmtoolmod"""
@@ -77,12 +86,16 @@ class BMTOOL_OT_bmtoolm(BMToolUi, BMToolMod, Operator):
         if editor is not None:
             return editor.editor_modal(
                     context, event, self.m_list.get_cluster())
+        else:
+            raise TypeError
 
     def bmtool_modifier_update(self, context):
         """
         This method is called by bmtoolmod every time active
         cluster or modifier is changed.
         """
+
+        logger.debug('BMToolM modifier changed.')
 
         # Call remove method of editor
         if self.__active_editor is not None:
@@ -149,8 +162,6 @@ class BMTOOL_OT_bmtoolm(BMToolUi, BMToolMod, Operator):
         """Returns currently active editor."""
         if self.__active_editor in self.__possible_editors:
             return self.__active_editor
-        elif self.__active_editor is None:
-            return
         else:
             raise TypeError
 

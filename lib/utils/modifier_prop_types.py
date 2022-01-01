@@ -16,7 +16,13 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+import logging
+
 import bpy
+
+logger = logging.getLogger(__package__)
+logger.setLevel(logging.DEBUG)
+
 
 # This props not intended to be edited.
 # TODO: there is more not editable props
@@ -41,7 +47,8 @@ def get_all_editable_props(modifier):
 
     result = []
     props = modifier.rna_type.properties
-    for x in props:
+    props_names = modifier.rna_type.properties.keys()
+    for x in props_names:
         e = True
         if x in NOT_EDITABLE_PROPS:
             continue
@@ -61,7 +68,7 @@ def get_all_editable_props(modifier):
     return result
 
 
-def get_props_filtered_by_types(modifier):
+def get_props_filtered_by_types(modifier: bpy.types.Modifier) -> dict:
     """Returns dict with modifier props."""
     if not isinstance(modifier, bpy.types.Modifier):
         raise TypeError
@@ -72,8 +79,18 @@ def get_props_filtered_by_types(modifier):
     for x in props:
         t = mod_props[x].type
         if t not in result:
-            result.update({t: []})
-        result[t].append(x)
+            result.update({t: set()})
+        result[t].add(x)
+
+    if not isinstance(result, dict):
+        raise TypeError
+    for x in result:
+        if not isinstance(result[x], set):
+            raise TypeError
+        for y in x:
+            if not isinstance(y, str):
+                raise TypeError
+    logger.debug(result)
     return result
 
 

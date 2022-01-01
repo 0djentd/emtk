@@ -35,7 +35,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
     through ModififersOperator and ExtendedModifiersList.
     """
 
-    # Variables {{{
+    # Var {{{
 
     # Operator mode, can be 'ACTIONS' or 'EDITOR'.
     # self.mode
@@ -52,21 +52,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
     # Selected objects ModifiersList instances.
     # self.selected_objects[]
 
-    # Default modal editing mode.
-    __DEFAULT_MODE = 'ACTIONS'
-
-    # Returned values that should trigger operator remove.
-    __OPERATOR_REMOVE = [{'FINISHED'}, {'CANCELLED'}]
-
-    # Create draw handler.
-    __UI = True
-
-    # Use statusbar to display modifier info.
-    __UI_STATUSBAR = False
-
-    # Use modifiers of any type.
-    __BMTOOLM = True
-
+    # Mappings
     __bmtool_kbs = {
                   'visibility_1': 'V',
                   'visibility_2': 'B',
@@ -82,6 +68,24 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
                   }
     # }}}
 
+    # Const {{{
+    # Default modal editing mode.
+    __DEFAULT_MODE = 'ACTIONS'
+
+    # Returned values that should trigger operator remove.
+    __OPERATOR_REMOVE = [{'FINISHED'}, {'CANCELLED'}]
+
+    # Create draw handler.
+    __UI = True
+
+    # Use statusbar to display modifier info.
+    __UI_STATUSBAR = False
+
+    # Use modifiers of any type.
+    __BMTOOLM = True
+
+    # }}}
+
     @classmethod
     def poll(self, context):  # {{{
         """Check if operator can be used."""
@@ -93,7 +97,8 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
             return False
         elif context.object.type != 'MESH':
             return False
-        return True  # }}}
+        return True
+    # }}}
 
     def modal(self, context, event):  # {{{
         """Method that is initiated every frame or whatever."""
@@ -142,11 +147,13 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
                 return a
 
         # Modal method.
-        if self.mode == 'EDITOR':
+        elif self.mode == 'EDITOR':
             a = self.bmtool_modal(context, event)
             if a in self.__OPERATOR_REMOVE:
                 self.clear(context)
                 return a
+        else:
+            raise ValueError
 
         return {'RUNNING_MODAL'}
     # }}}
