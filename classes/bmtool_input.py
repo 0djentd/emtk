@@ -28,9 +28,13 @@ logger.setLevel(logging.DEBUG)
 class BMToolModalInput():
 
     # Constants {{{
-    _MODAL_LETTERS = string.ascii_uppercase
+    __MODES = {'NONE', 'DELTA_D', 'DIGITS', 'LETTERS'}
 
-    _MODAL_DIGITS = {
+    __DEFAULT_MODE = 'NONE'
+
+    __MODAL_LETTERS = string.ascii_uppercase
+
+    __MODAL_DIGITS = {
                      'ZERO': '0',
                      'ONE': '1',
                      'TWO': '2',
@@ -43,7 +47,7 @@ class BMToolModalInput():
                      'NINE': '9',
                      }
 
-    _MODAL_DIGITS_NUMPAD = {
+    __MODAL_DIGITS_NUMPAD = {
                             'NUMPAD_0': '0',
                             'NUMPAD_1': '1',
                             'NUMPAD_2': '2',
@@ -55,7 +59,13 @@ class BMToolModalInput():
                             'NUMPAD_8': '8',
                             'NUMPAD_9': '9',
                             }
+
+    # Currently active mode.
+    # modal_input_mode
     # }}}
+
+    def __init__(self):
+        self.modal_input_mode = self.__DEFAULT_MODE
 
     # Pop val {{{
     # This two methods are used to get variable value from modal input mode.
@@ -64,37 +74,39 @@ class BMToolModalInput():
         number_type can be either 'ANY', 'INT' or 'FLOAT'.
         """
         result = self._modal_numbers_get_val(number_type)
-        self._modal_numbers_clear()
+        self.bmtool_modal_numbers_str = ''
+        self.modal_input_mode = self.__DEFAULT_MODE
         return result
 
     def modal_str_pop(self):
         """Returns string that were typed in 'STRING' mode."""
         result = self.bmtool_modal_str
-        self._modal_str_clear()
+        self.bmtool_modal_str = ''
+        self.modal_input_mode = self.__DEFAULT_MODE
         return result  # }}}
 
     def modal_digits(self, event):  # {{{
         """This thing writes a string that can be used in modal operator
         to get integer, float, or string.
         """
-        for x in self._MODAL_DIGITS:
+        for x in self.__MODAL_DIGITS:
             if event.type == x and event.value == 'PRESS':
                 self.bmtool_modal_numbers_str\
-                    = self.bmtool_modal_numbers_str + self._MODAL_DIGITS[x]
+                    = self.bmtool_modal_numbers_str + self.__MODAL_DIGITS[x]
                 return True
         if event.type == 'PERIOD' and event.value == 'PRESS':
             self.bmtool_modal_numbers_str = self.bmtool_modal_numbers_str + '.'
         elif event.type == 'BACK-SPACE' and event.value == 'PRESS':
             self.bmtool_modal_numbers_str = self.bmtool_modal_numbers_str[0:-1]
         elif event.type == 'RETURN' and event.value == 'PRESS':
-            self._mode = self._previous_mode
+            self.modal_input_mode = self._previous_mode
         else:
             return False
         return True  # }}}
 
     def modal_str(self, event):  # {{{
         """This thing writes a string that can be used in modal operator."""
-        for x in self._MODAL_LETTERS:
+        for x in self.__MODAL_LETTERS:
             if event.type == x and event.value == 'PRESS':
                 if event.shift:
                     self.bmtool_modal_str\
@@ -103,7 +115,7 @@ class BMToolModalInput():
                     self.bmtool_modal_str\
                             = self.bmtool_modal_str + x.lower()
                 return True
-        for x in self._MODAL_DIGITS:
+        for x in self.__MODAL_DIGITS:
             if event.type == x and event.value == 'PRESS':
                 self.bmtool_modal_str = self.bmtool_modal_str + x
                 return True
@@ -119,7 +131,7 @@ class BMToolModalInput():
         elif event.type == 'BACK-SPACE' and event.value == 'PRESS':
             self.bmtool_modal_numbers_str = self.bmtool_modal_numbers_str[0:-1]
         elif event.type == 'RETURN' and event.value == 'PRESS':
-            self._mode = self._previous_mode
+            self.modal_input_mode = self._previous_mode
         else:
             return False
         return True  # }}}
@@ -149,15 +161,7 @@ class BMToolModalInput():
             if f is False:
                 result = result + '.0'
             return float(result)
-
-    def __str_get(self):
-        return self.bmtool_modal_str
-
-    def __digits_clear(self):
-        self.bmtool_modal_numbers_str = ''
-
-    def __str_clear(self):
-        self.bmtool_modal_str = ''  # }}}
+    # }}}
 
     # delta_d {{{
     # TODO: should be in utils
