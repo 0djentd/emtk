@@ -25,9 +25,13 @@ import math
 def bmtool_modifier_ui_draw(self, context):
     ui_t = self.bmtool_ui(context)
     offset = 0
+    offset_2 = 0
     for x in ui_t:
         font_id = 0
-        blf.position(font_id, 30, 450 + offset, 0)
+        if isinstance(x, list) and x[1] == 20:
+            blf.position(font_id, 400, 600 + offset_2, 0)
+        else:
+            blf.position(font_id, 30, 450 + offset, 0)
 
         e = False
 
@@ -59,6 +63,13 @@ def bmtool_modifier_ui_draw(self, context):
                     blf.color(font_id, 0.8, 0.8, 0.5, 1)
                     blf.draw(font_id, x[0])
                     offset -= 18
+                elif x[1] == 20:
+                    blf.size(font_id, 32, 30)
+                    blf.color(font_id, 0.95, 0.95, 0.95, 1)
+                    blf.draw(font_id, x[0])
+                    offset_2 -= 18
+                else:
+                    e = True
             else:
                 e = True
         else:

@@ -32,7 +32,7 @@ class BMToolModalInput():
 
     __DEFAULT_MODE = 'NONE'
 
-    __MODAL_LETTERS = string.ascii_uppercase
+    __MODAL_LETTERS = list(string.ascii_uppercase)
 
     __MODAL_DIGITS = {
                      'ZERO': '0',
@@ -59,6 +59,11 @@ class BMToolModalInput():
                             'NUMPAD_8': '8',
                             'NUMPAD_9': '9',
                             }
+
+    __MODAL_LETTERS_AND_DIGITS_LIST\
+        = list(__MODAL_LETTERS)\
+        + list(__MODAL_DIGITS)\
+        + list(__MODAL_DIGITS_NUMPAD)
 
     # Currently active mode.
     # modal_input_mode

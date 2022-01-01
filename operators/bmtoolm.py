@@ -143,8 +143,11 @@ class BMTOOL_OT_bmtoolm(BMToolUi, BMToolMod, Operator):
 
         ui_t = []
         if self.__active_editor is not None:
-            ui_t.append(
-                    f"Editor - {self.__active_editor.props['name']}")
+            if self.mode == 'EDITOR':
+                e = self.__active_editor
+                ui_t.append(f"Selected editor: {e.props['name']}")
+                ui_t.append(f"Editor mode: {e.mode}")
+                ui_t.append(f"Editor input mode: {e.modal_input_mode}")
             ui_t.append("Possible editors:")
             for x in self.__possible_editors:
                 ui_t.append(x.props['name'])
@@ -155,7 +158,11 @@ class BMTOOL_OT_bmtoolm(BMToolUi, BMToolMod, Operator):
         ui_t_2 = self.bmtool_ui_list()
         for x in ui_t_2:
             ui_t.append(x)
+        ui_t_3 = self.__active_editor.get_mappings_for_ui()
+        for x in ui_t_3:
+            ui_t.append([x, 20])
         return ui_t
+    # }}}
 
     # Editor selection {{{
     def get_editor(self):

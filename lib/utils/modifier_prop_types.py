@@ -34,7 +34,7 @@ CHECK_PROP_IS_FALSE = {'is_hidden', 'is_readonly',
                        'is_runtime', 'is_output'}
 
 # This is types of props that can be edited in modal operator
-EDITABLE_TYPES = {'BOOL', 'INT', 'FLOAT', 'STRING', 'ENUM'}
+EDITABLE_TYPES = {'BOOLEAN', 'INT', 'FLOAT', 'STRING', 'ENUM'}
 
 
 def get_all_editable_props(modifier):
