@@ -19,10 +19,13 @@
 import bpy
 
 # This props not intended to be edited.
+# TODO: there is more not editable props
 NOT_EDITABLE_PROPS = {'rna_type', 'debug'}
 
-# This props should not be editable.
-CHECK_PROP_IS_FALSE = {'is_hidden', 'is_readonly', 'is_runtime'}
+# If one of this modifier prop properties is True,
+# prop should not be editable.
+CHECK_PROP_IS_FALSE = {'is_hidden', 'is_readonly',
+                       'is_runtime', 'is_output'}
 
 # This is types of props that can be edited in modal operator
 EDITABLE_TYPES = {'BOOL', 'INT', 'FLOAT', 'STRING', 'ENUM'}
@@ -33,7 +36,6 @@ def get_all_editable_props(modifier):
     Returns list of names of all modifier props that
     can be edited in modal operator.
     """
-
     if not isinstance(modifier, bpy.types.Modifier):
         raise TypeError
 
@@ -56,4 +58,44 @@ def get_all_editable_props(modifier):
     for x in result:
         if not isinstance(x, str):
             raise TypeError
+    return result
+
+
+def get_props_filtered_by_types(modifier):
+    """Returns dict with modifier props."""
+    if not isinstance(modifier, bpy.types.Modifier):
+        raise TypeError
+
+    result = {}
+    props = get_all_editable_props(modifier)
+    mod_props = modifier.rna_type.properties
+    for x in props:
+        t = mod_props[x].type
+        if t not in result:
+            result.update({t: []})
+        result[t].append(x)
+    return result
+
+
+def filter_props_by_type(modifier, props, props_type, props_subtype=None):
+    """Returns new list of modifier props filtered by props_type"""
+    if not isinstance(modifier, bpy.types.Modifier):
+        raise TypeError
+    if not isinstance(props_type, str):
+        raise TypeError
+    if not isinstance(props, list):
+        raise TypeError
+    for x in props:
+        if not isinstance(x, str):
+            raise TypeError
+
+    result = []
+    mod_props = modifier.rna_type.properties
+    for x in props:
+        if mod_props[x].type != props_type:
+            continue
+        if props_subtype is not None\
+                and mod_props[x].subtype == props_subtype:
+            continue
+        result.append(x)
     return result
