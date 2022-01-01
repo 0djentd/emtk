@@ -21,6 +21,7 @@ import string
 import logging
 import copy
 import json
+import time
 
 import bpy
 
@@ -485,7 +486,7 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
         # Simple events (event type is in digits and letters).
         if self.mode == self.__DEFAULT_MODE\
                 or event.type\
-                in self._BMToolModalInput__MODAL_LETTERS_AND_DIGITS_LIST:
+                in self._BMToolModalInput__MODAL_LETTERS_LIST:
 
             self.__modal_simple_events(context, event, clusters)
 
@@ -507,8 +508,8 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
         # else:
         #     self.__previous_event_type = event.type
 
-        # DEFAULT MODE
-        if self.mode is self.__DEFAULT_MODE:
+        if self.mode is self.__DEFAULT_MODE:  # {{{
+
             # Get prop name and prop def for event.
             # Most of iterations this will be None,
             # including modal prop editing.
@@ -541,15 +542,20 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
             # Other props
             elif prop_name in self.__kbs_editing:
                 pass
+        # }}}
 
-        # MODAL
-        elif self.mode in self.__kbs_modal:
+        elif self.mode in self.__kbs_modal:  # {{{
+
+            # Get modifier
+            mods = clusters[0].get_full_actual_modifiers_list()
+            mod = mods[0]
 
             # Switch from mode with same kbs.
             # Get prop name for event.
             prop_name = self.__get_prop_name(event)
-            if prop_name == self.mode:
-                logger.debug('Switching bask to default mode.')
+            if prop_name == self.mode\
+                    and event.type == 'PRESS':
+                logger.debug('Switching back to default mode.')
                 self.mode = self.__DEFAULT_MODE
 
             # Try to switch to different input mode.
@@ -558,12 +564,16 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
 
                 # Get prop def for mode
                 prop_def = mod.rna_type.properties[self.mode]
-                if event.type in list(string.digits)\
+                if event.type in self._BMToolModalInput__MODAL_DIGITS_LIST\
                         and prop_def.type in self.__DIGITS_INPUT_TYPES:
                     self.modal_input_mode = 'DIGITS'
-                elif event.type in list(string.ascii_uppercase)\
+
+                elif event.type\
+                        in self._BMToolModalInput__MODAL_LETTERS_LIST\
                         and prop_def.type in self.__LETTERS_INPUT_TYPES:
                     self.modal_input_mode = 'LETTERS'
+
+            # Letters or digits input mode.
             else:
                 if self.modal_input_mode == 'LETTERS':
                     if event.type == 'RETURN':
@@ -575,6 +585,7 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
                         for mod in mods:
                             setattr(mod, self.mode, self.modal_digits_pop())
                     self.modal_digits(event)
+        # }}}
 
         # Check that there are no unexpected for simple events modes.
         else:

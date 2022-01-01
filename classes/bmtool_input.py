@@ -60,10 +60,11 @@ class BMToolModalInput():
                             'NUMPAD_9': '9',
                             }
 
-    __MODAL_LETTERS_AND_DIGITS_LIST\
+    __MODAL_DIGITS_LIST = list(__MODAL_DIGITS) + list(__MODAL_DIGITS_NUMPAD)
+
+    __MODAL_LETTERS_LIST\
         = list(__MODAL_LETTERS)\
-        + list(__MODAL_DIGITS)\
-        + list(__MODAL_DIGITS_NUMPAD)
+        + __MODAL_DIGITS_LIST
 
     # Currently active mode.
     # modal_input_mode
@@ -71,6 +72,8 @@ class BMToolModalInput():
 
     def __init__(self):
         self.modal_input_mode = self.__DEFAULT_MODE
+        self.__modal_digits_str = ''
+        self.__modal_letters_str = ''
 
     # Pop val {{{
     # This two methods are used to get variable value from modal input mode.
@@ -78,15 +81,17 @@ class BMToolModalInput():
         """Returns number that were typed in 'DIGITS' mode.
         number_type can be either 'ANY', 'INT' or 'FLOAT'.
         """
+
         result = self.modal_digits_get(number_type)
-        self.bmtool_modal_numbers_str = ''
+        self.__modal_digits_str = ''
         self.modal_input_mode = self.__DEFAULT_MODE
         return result
 
     def modal_letters_pop(self):
         """Returns string that were typed in 'STRING' mode."""
-        result = self.bmtool_modal_str
-        self.bmtool_modal_str = ''
+
+        result = self.__modal_letters_str
+        self.__modal_letters_str = ''
         self.modal_input_mode = self.__DEFAULT_MODE
         return result
     # }}}
@@ -96,7 +101,7 @@ class BMToolModalInput():
         return self.__digits_get_val(number_type)
 
     def modal_letters_get(self, number_type='ANY'):
-        return self.bmtool_modal_str()
+        return copy.copy(self.__modal_letters_str)
     # }}}
 
     def modal_digits(self, event):  # {{{
@@ -106,53 +111,77 @@ class BMToolModalInput():
         if self.modal_input_mode != 'DIGITS':
             raise ValueError
 
+        # Digits
         for x in self.__MODAL_DIGITS:
             if event.type == x and event.value == 'PRESS':
-                self.bmtool_modal_numbers_str\
-                    = self.bmtool_modal_numbers_str + self.__MODAL_DIGITS[x]
+                self.__modal_digits_str\
+                    = self.__modal_digits_str + self.__MODAL_DIGITS[x]
                 return True
+
+        for x in self.__MODAL_DIGITS_NUMPAD:
+            if event.type == x and event.value == 'PRESS':
+                self.__modal_digits_str\
+                    = self.__modal_digits_str + self.__MODAL_DIGITS_NUMPAD[x]
+                return True
+
+        # Anything else
         if event.type == 'PERIOD' and event.value == 'PRESS':
-            self.bmtool_modal_numbers_str = self.bmtool_modal_numbers_str + '.'
+            self.__modal_digits_str = self.__modal_digits_str + '.'
         elif event.type == 'BACK-SPACE' and event.value == 'PRESS':
-            self.bmtool_modal_numbers_str = self.bmtool_modal_numbers_str[0:-1]
-        elif event.type == 'RETURN' and event.value == 'PRESS':
-            self.modal_input_mode = self._previous_mode
+            self.__modal_digits_str = self.__modal_digits_str[0:-1]
         else:
             return False
-        return True  # }}}
+        return True
+    # }}}
 
     def modal_letters(self, event):  # {{{
         """This thing writes a string that can be used in modal operator."""
         if self.modal_input_mode != 'LETTERS':
             raise ValueError
 
+        # Letters
         for x in self.__MODAL_LETTERS:
             if event.type == x and event.value == 'PRESS':
                 if event.shift:
-                    self.bmtool_modal_str\
-                            = self.bmtool_modal_str + x
+                    self.__modal_letters_str\
+                            = self.__modal_letters_str + x
                 else:
-                    self.bmtool_modal_str\
-                            = self.bmtool_modal_str + x.lower()
+                    self.__modal_letters_str\
+                            = self.__modal_letters_str + x.lower()
                 return True
+
+        # Digits
         for x in self.__MODAL_DIGITS:
             if event.type == x and event.value == 'PRESS':
-                self.bmtool_modal_str = self.bmtool_modal_str + x
+                self.__modal_letters_str\
+                        = self.__modal_letters_str\
+                        + self.__MODAL_DIGITS[x]
                 return True
+
+        for x in self.__MODAL_DIGITS_NUMPAD:
+            if event.type == x and event.value == 'PRESS':
+                self.__modal_letters_str\
+                        = self.__modal_letters_str\
+                        + self.__MODAL_DIGITS_NUMPAD[x]
+                return True
+
+        # Anything else
         if event.type == 'PERIOD' and event.value == 'PRESS':
-            self.bmtool_modal_numbers_str = self.bmtool_modal_numbers_str + '.'
+            self.__modal_letters_str = self.__modal_letters_str + '.'
         elif event.type == 'MINUS' and event.value == 'PRESS':
             if event.shift:
-                self.bmtool_modal_numbers_str\
-                        = self.bmtool_modal_numbers_str + '_'
+                self.__modal_letters_str\
+                        = self.__modal_letters_str + '_'
             else:
-                self.bmtool_modal_numbers_str\
-                        = self.bmtool_modal_numbers_str + '-'
+                self.__modal_letters_str\
+                        = self.__modal_letters_str + '-'
+        # Backspace
         elif event.type == 'BACK-SPACE' and event.value == 'PRESS':
-            self.bmtool_modal_numbers_str = self.bmtool_modal_numbers_str[0:-1]
+            self.__modal_letters_str = self.__modal_letters_str[0:-1]
         else:
             return False
-        return True  # }}}
+        return True
+    # }}}
 
     # Digits and letters input mode utils. {{{
     def __digits_get_val(self, t='ANY'):
