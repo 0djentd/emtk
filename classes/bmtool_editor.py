@@ -354,9 +354,6 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
 
     # All types that can be edited in default mode without switching.
     __NOT_MODAL_INPUT_PROP_TYPES = __TOGGLE_TYPES
-    # __NOT_MODAL_INPUT_PROP_TYPES\
-    #     = __EDITABLE_TYPES.difference(
-    #             __MODAL_INPUT_PROP_TYPES)
 
     # Default editor mode.
     __DEFAULT_MODE = 'NO_MODE'
@@ -379,16 +376,12 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
     #                'angle_limit': ('A', False, False, False),
     #                'segments': ('S', False, False, False),
     #                }
-
     # Modal editing prop only.
     # __kbs_modal = {}
     # Not modal prop editing.
     # __kbs_no_modal = {}
     # Not a modifier prop.
     # __kbs_editing = {}
-
-    # Number of iterations to skip on simple events.
-    __TOGGLE_SKIP_FRAMES = 30
     # }}}
 
     def __init__(self, *args, **kwargs):
@@ -510,13 +503,15 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
             logger.debug(f'Mode {self.mode}')
             logger.debug(f'Mode_2 {self.modal_input_mode}')
 
+        logger.debug(f'Event {event.type}, {event.value}')
+
         # Simple events (event type is in digits and letters).
         if ((self.mode == self.__DEFAULT_MODE)
                 or (event.type in self._BMToolModalInput__MODAL_LETTERS_LIST)
-                or (event.type == 'RETURN')
-                or (event.type == 'PRIOD')
+                or (event.type == 'PERIOD')
                 or (event.type == 'BACK-SPACE')
-                or (event.type == 'SPACE-SPACE'))\
+                or (event.type == 'RET')
+                or (event.type == 'SPACE'))\
                 and event.value == 'PRESS':
             self.__modal_simple_events(context, event, clusters)
 
@@ -582,6 +577,7 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
                     and self.modal_input_mode in {'NONE', 'DELTA_D'}:
                 logger.info('Switching back to default mode.')
                 self.mode = self.__DEFAULT_MODE
+                return
 
             # Try to switch to different input mode.
             # TODO: exit out of digits and str modes
@@ -594,12 +590,14 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
                         and prop_def.type in self.__DIGITS_INPUT_TYPES:
                     logger.info(f'Switching to modal digits {prop_name}')
                     self.modal_input_mode = 'DIGITS'
+                    return
 
                 elif event.type\
                         in self._BMToolModalInput__MODAL_LETTERS_LIST\
                         and prop_def.type in self.__LETTERS_INPUT_TYPES:
                     logger.info(f'Switching to modal letters {prop_name}')
                     self.modal_input_mode = 'LETTERS'
+                    return
 
             # Letters or digits input mode.
             elif self.modal_input_mode in {'LETTERS', 'DIGITS'}:
@@ -609,20 +607,27 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
                 prop_def = mod.rna_type.properties[self.mode]
 
                 if self.modal_input_mode == 'DIGITS':
-                    if event.type == 'RETURN':
+                    if event.type == 'RET':
                         logger.info(f'Modal digits apply {prop_name}')
-                        for mod in mods:
-                            setattr(mod, self.mode, self.modal_digits_pop())
+                        val = self.modal_digits_pop()
+                        for mod in self.__mods:
+                            setattr(mod, self.mode, val)
+                            return
+
                     logger.debug(f'Modal digits {prop_name}')
                     self.modal_digits(event)
+                    return
 
                 elif self.modal_input_mode == 'LETTERS':
-                    if event.type == 'RETURN':
+                    if event.type == 'RET':
                         logger.info(f'Modal letters apply {prop_name}')
-                        for mod in mods:
-                            setattr(mod, self.mode, self.modal_letters_pop())
+                        val = self.modal_letters_pop()
+                        for mod in self.__mods:
+                            setattr(mod, self.mode, val)
+                            return
                     logger.debug(f'Modal letters {prop_name}')
                     self.modal_letters(event)
+                    return
         # }}}
 
         # Check that there are no unexpected for simple events modes.

@@ -60,6 +60,9 @@ class BMToolModalInput():
                             'NUMPAD_9': '9',
                             }
 
+    __MODAL_DIGITS_EDITING = ['PERIOD', 'BACK-SPACE']
+    __MODAL_LETTERS_EDITING = ['SPACE', 'BACK-SPACE']
+
     __MODAL_DIGITS_LIST = list(__MODAL_DIGITS) + list(__MODAL_DIGITS_NUMPAD)
 
     __MODAL_LETTERS_LIST\
@@ -79,6 +82,7 @@ class BMToolModalInput():
     # This two methods are used to get variable value from modal input mode.
     def modal_digits_pop(self, number_type='ANY'):
         """Returns number that were typed in 'DIGITS' mode.
+
         number_type can be either 'ANY', 'INT' or 'FLOAT'.
         """
 
@@ -98,7 +102,29 @@ class BMToolModalInput():
 
     # Get val {{{
     def modal_digits_get(self, number_type='ANY'):
-        return self.__digits_get_val(number_type)
+        if len(self.__modal_digits_str) == 0:
+            return None
+
+        if number_type == 'ANY':
+            if '.' in self.__modal_digits_str:
+                return float(self.__modal_digits_str)
+            else:
+                return int(self.__modal_digits_str)
+        elif number_type == 'INT':
+            i = None
+            for z, x in enumerate(self.__modal_digits_str):
+                if x == '.':
+                    i = z
+            return int(self.__modal_digits_str[0:i])
+        elif number_type == 'FLOAT':
+            result = copy.copy(self.__modal_digits_str)
+            f = False
+            for x in self.__modal_digits_str:
+                if x == '.':
+                    f = True
+            if f is False:
+                result = result + '.0'
+            return float(result)
 
     def modal_letters_get(self, number_type='ANY'):
         return copy.copy(self.__modal_letters_str)
@@ -181,33 +207,6 @@ class BMToolModalInput():
         else:
             return False
         return True
-    # }}}
-
-    # Digits and letters input mode utils. {{{
-    def __digits_get_val(self, t='ANY'):
-        if len(self.__modal_digits_str) == 0:
-            return None
-
-        if t == 'ANY':
-            if '.' in self.__modal_digits_str:
-                return float(self.__modal_digits_str)
-            else:
-                return int(self.__modal_digits_str)
-        elif t == 'INT':
-            i = None
-            for z, x in enumerate(self.__modal_digits_str):
-                if x == '.':
-                    i = z
-            return int(self.__modal_digits_str[0:i])
-        elif t == 'FLOAT':
-            result = copy.copy(self.__modal_digits_str)
-            f = False
-            for x in self.__modal_digits_str:
-                if x == '.':
-                    f = True
-            if f is False:
-                result = result + '.0'
-            return float(result)
     # }}}
 
     # delta_d {{{
