@@ -185,24 +185,24 @@ class BMToolModalInput():
 
     # Digits and letters input mode utils. {{{
     def __digits_get_val(self, t='ANY'):
-        if len(self.bmtool_modal_numbers_str) == 0:
+        if len(self.__modal_digits_str) == 0:
             return None
 
         if t == 'ANY':
-            if '.' in self.bmtool_modal_numbers_str:
-                return float(self.bmtool_modal_numbers_str)
+            if '.' in self.__modal_digits_str:
+                return float(self.__modal_digits_str)
             else:
-                return int(self.bmtool_modal_numbers_str)
+                return int(self.__modal_digits_str)
         elif t == 'INT':
             i = None
-            for z, x in enumerate(self.bmtool_modal_numbers_str):
+            for z, x in enumerate(self.__modal_digits_str):
                 if x == '.':
                     i = z
-            return int(self.bmtool_modal_numbers_str[0:i])
+            return int(self.__modal_digits_str[0:i])
         elif t == 'FLOAT':
-            result = copy.copy(self.bmtool_modal_numbers_str)
+            result = copy.copy(self.__modal_digits_str)
             f = False
-            for x in self.bmtool_modal_numbers_str:
+            for x in self.__modal_digits_str:
                 if x == '.':
                     f = True
             if f is False:

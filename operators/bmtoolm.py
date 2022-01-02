@@ -148,6 +148,9 @@ class BMTOOL_OT_bmtoolm(BMToolUi, BMToolMod, Operator):
                 ui_t.append(f"Selected editor: {e.props['name']}")
                 ui_t.append(f"Editor mode: {e.mode}")
                 ui_t.append(f"Editor input mode: {e.modal_input_mode}")
+                ui_t.append(f"Digits: {e.modal_digits_get()}")
+                ui_t.append(f"Letters: {e.modal_letters_get()}")
+
             ui_t.append("Possible editors:")
             for x in self.__possible_editors:
                 ui_t.append(x.props['name'])

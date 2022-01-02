@@ -403,6 +403,14 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
                          cluster_types=t,
                          **kwargs)
 
+        self.mode = self.__DEFAULT_MODE
+        self.__additional_info_counter = 0
+        self.__toggle_skip_frames_counter = 0
+        self.__kbs_modal = {}
+        self.__kbs_no_modal = {}
+        self.__kbs_editing = {}
+        self.__mods = []
+
     # ClustersEditor methods {{{
     def editor_switched_to(self, context, clusters):  # {{{
         """Called every time editor is switched to."""
@@ -431,10 +439,19 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
         for x in props:
             if x in self.__MODAL_INPUT_PROP_TYPES:
                 for y in props[x]:
-                    self.__kbs_modal.update({y: self.__get_kbs(y)})
+                    names = [self.__kbs_modal,
+                             self.__kbs_no_modal,
+                             self.__kbs_editing]
+                    self.__kbs_modal.update(
+                            {y: self.__get_kbs(y, names)})
+
             elif x in self.__NOT_MODAL_INPUT_PROP_TYPES:
                 for y in props[x]:
-                    self.__kbs_no_modal.update({y: self.__get_kbs(y)})
+                    names = [self.__kbs_modal,
+                             self.__kbs_no_modal,
+                             self.__kbs_editing]
+                    self.__kbs_no_modal.update(
+                            {y: self.__get_kbs(y, names)})
 
         logger.debug('Editor switched to.')
         logger.debug('Modal props mappings')
@@ -514,13 +531,6 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
     def __modal_simple_events(self, context, event, clusters):  # {{{
         logger.debug('Checking simple events')
 
-        # Skip frames.
-        # if event.type == self.__previous_event_type:
-        #     logger.debug('Skipped frame')
-        #     return
-        # else:
-        #     self.__previous_event_type = event.type
-
         if self.mode is self.__DEFAULT_MODE:  # {{{
 
             # Get prop name and prop def for event.
@@ -563,8 +573,7 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
         elif self.mode in self.__kbs_modal:  # {{{
 
             # Get modifier
-            mods = clusters[0].get_full_actual_modifiers_list()
-            mod = mods[0]
+            mod = self.__mods[0]
 
             # Switch from mode with same kbs.
             # Get prop name for event.
@@ -598,6 +607,7 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
                 # Get prop name and def for mode
                 prop_name = self.mode
                 prop_def = mod.rna_type.properties[self.mode]
+
                 if self.modal_input_mode == 'DIGITS':
                     if event.type == 'RETURN':
                         logger.info(f'Modal digits apply {prop_name}')
@@ -650,8 +660,7 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
             if attr is True:
                 t = False
         for x in mods:
-            attr = getattr(x, prop_name)
-            attr = t
+            setattr(x, prop_name, t)
 
     def __scroll_enum(self, prop_name, prop, mods):
         logger.info(f'Scroll {prop_name}')
@@ -660,9 +669,9 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
             enum = prop.enum_items.keys()
             i = enum.index(attr)
             if i == len(enum) - 1:
-                attr = enum[0]
+                setattr(x, prop_name, enum[0])
             else:
-                attr = enum[i + 1]
+                setattr(x, prop_name, enum[i + 1])
 
     def __modal_int(self, event, prop_name, prop, mods):
         logger.debug(f'Modal int {prop_name}')
@@ -700,11 +709,24 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
                 logger.debug(f'found {x} in {kbs}')
                 return x
 
-    def __get_kbs(self, prop_name):
+    def __get_kbs(self, prop_name, props_dicts):
         if not isinstance(prop_name, str):
             raise TypeError
         result = prop_name[0].upper()
-        return (result, False, False, False)
+        result = [result, False, False, False]
+        for z in range(4):
+            if z == 0:
+                continue
+            for props in props_dicts:
+                for x in props:
+                    if props[x][0] == result[0]\
+                            and props[x][1] == result[1]\
+                            and props[x][2] == result[2]\
+                            and props[x][3] == result[3]:
+                        result[z] = True
+        if len(result) > 4:
+            raise TypeError
+        return result
 
     def __get_all_cluster_modifiers(self, clusters):
         if not isinstance(clusters, list):
@@ -722,7 +744,6 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
                 raise TypeError
         return mods
 
-    # TODO: buffer modifiers
     def get_mappings_for_ui(self):
         result = []
         b = 30
@@ -745,6 +766,9 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
                 for y in range(m):
                     line = line + '  '
                 line = line + '| '
+                if len(self.__mods) != 0:
+                    val = getattr(self.__mods[0], x)
+                    line = line + f'{val}'
                 result.append(line)
 
         for x in result:
