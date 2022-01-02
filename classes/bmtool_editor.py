@@ -590,6 +590,7 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
                         and prop_def.type in self.__DIGITS_INPUT_TYPES:
                     logger.info(f'Switching to modal digits {prop_name}')
                     self.modal_input_mode = 'DIGITS'
+                    self.modal_digits(event)
                     return
 
                 elif event.type\
@@ -597,6 +598,7 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
                         and prop_def.type in self.__LETTERS_INPUT_TYPES:
                     logger.info(f'Switching to modal letters {prop_name}')
                     self.modal_input_mode = 'LETTERS'
+                    self.modal_letters(event)
                     return
 
             # Letters or digits input mode.

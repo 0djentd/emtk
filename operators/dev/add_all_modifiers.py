@@ -207,28 +207,43 @@ class BMTOOL_OT_add_all_modifiers_and_dump_props(bpy.types.Operator):
                 modifiers.append(mod)
 
         # Get all editable prop names filtered by types and modifiers.
-        all_props = {}
+        # all_props = {}
+        # for x in modifiers:
+        #     props = get_props_filtered_by_types(x)
+        #     for p in props:
+        #         props[p] = list(props[p])
+        #     all_props.update({x.type: props})
+
+        # # Get prop names filtered by types.
+        # # get all types
+        # all_types = {}
+        # for x in all_props:
+        #     for y in all_props[x]:
+        #         props_names = all_props[x][y]
+        #         if y not in all_types:
+        #             all_types.update({y: props_names})
+        #         else:
+        #             for z in props_names:
+        #                 if z not in all_types[y]:
+        #                     all_types[y].append(z)
+
+        # result = [all_types, all_props]
+
+        result = {}
         for x in modifiers:
-            props = get_props_filtered_by_types(x)
-            for p in props:
-                props[p] = list(props[p])
-            all_props.update({x.type: props})
+            props = get_all_editable_props(x)
+            result.update({str(x.type): list(props)})
 
-        # Get prop names filtered by types.
-        # get all types
-        all_types = {}
-        for x in all_props:
-            for y in all_props[x]:
-                props_names = all_props[x][y]
-                if y not in all_types:
-                    all_types.update({y: props_names})
-                else:
-                    for z in props_names:
-                        if z not in all_types[y]:
-                            all_types[y].append(z)
-
-        result = [all_types, all_props]
-        with open('/home/djentled/Documents/Projects/bmtools_utils/props_dump', 'w') as f:
+        with open('/home/djentled/Documents/Projects/bmtools_utils/props_dump_e', 'w') as f:
             json.dump(result, f, indent=4)
+
+        result = {}
+        for x in modifiers:
+            props = get_all_editable_props(x, no_ignore=True)
+            result.update({str(x.type): list(props)})
+
+        with open('/home/djentled/Documents/Projects/bmtools_utils/props_dump_a', 'w') as f_2:
+            json.dump(result, f_2, indent=4)
         print(f.closed)
+
         return {'FINISHED'}
