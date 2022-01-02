@@ -52,7 +52,7 @@ class ModifiersCluster(
         modifiers = []
         for x, y in zip(self._cluster_definition['by_name'],
                         self._cluster_definition['by_type']):
-            if x == 'ANY' or y == 'ANY':
+            if x != 'ANY' or y == 'ANY':
                 return None
             modifiers.append(x, y)
         return modifiers
