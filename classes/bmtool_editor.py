@@ -398,8 +398,6 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
             new_types.append(f'{x}_CLUSTER')
         t = self.__MODIFIER_TYPES + new_types
 
-        self.__previous_event_type = None
-
         super().__init__(*args,
                          name='Adaptive_Editor',
                          cluster_types=t,
@@ -428,6 +426,8 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
         mods = self.__get_all_cluster_modifiers(clusters)
         props = get_props_filtered_by_types(mods[0])
 
+        self.__mods = mods
+
         for x in props:
             if x in self.__MODAL_INPUT_PROP_TYPES:
                 for y in props[x]:
@@ -453,8 +453,18 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
             if not isinstance(x, ClusterTrait):
                 raise TypeError
 
+        self.__additional_info_counter = 0
+        self.__toggle_skip_frames_counter = 0
+
+        self.__mods = []
+
+        self.__kbs_modal = {}
+        self.__kbs_no_modal = {}
+        self.__kbs_editing = {}
+
         self.mode = self.__DEFAULT_MODE
         self.modal_input_mode = self._BMToolModalInput__DEFAULT_MODE
+
         logger.debug('Editor switched from.')
     # }}}
 
@@ -484,10 +494,13 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
             logger.debug(f'Mode_2 {self.modal_input_mode}')
 
         # Simple events (event type is in digits and letters).
-        if self.mode == self.__DEFAULT_MODE\
-                or event.type\
-                in self._BMToolModalInput__MODAL_LETTERS_LIST:
-
+        if ((self.mode == self.__DEFAULT_MODE)
+                or (event.type in self._BMToolModalInput__MODAL_LETTERS_LIST)
+                or (event.type == 'RETURN')
+                or (event.type == 'PRIOD')
+                or (event.type == 'BACK-SPACE')
+                or (event.type == 'SPACE-SPACE'))\
+                and event.value == 'PRESS':
             self.__modal_simple_events(context, event, clusters)
 
         # Complex events (anything else).
@@ -515,7 +528,6 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
             # including modal prop editing.
             prop_name = self.__get_prop_name(event)
             if prop_name is not None:
-                logger.debug(f'Prop name is {prop_name}')
 
                 # Get modifier
                 mods = clusters[0].get_full_actual_modifiers_list()
@@ -525,6 +537,9 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
                 prop_def = mod.rna_type.properties[prop_name]
             else:
                 prop_def = None
+
+            logger.debug(f'Prop name is {prop_name}')
+            logger.debug(f'Prop def is {prop_def}')
 
             # Try to edit not modal props.
             if prop_name in self.__kbs_no_modal:
@@ -537,6 +552,7 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
 
             # Try to switch to modal prop mode.
             elif prop_name in self.__kbs_modal:
+                logger.info(f'Switching to modal {prop_name}')
                 self.mode = prop_name
 
             # Other props
@@ -554,37 +570,49 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
             # Get prop name for event.
             prop_name = self.__get_prop_name(event)
             if prop_name == self.mode\
-                    and event.type == 'PRESS':
-                logger.debug('Switching back to default mode.')
+                    and self.modal_input_mode in {'NONE', 'DELTA_D'}:
+                logger.info('Switching back to default mode.')
                 self.mode = self.__DEFAULT_MODE
 
             # Try to switch to different input mode.
             # TODO: exit out of digits and str modes
             elif self.modal_input_mode in {'NONE', 'DELTA_D'}:
 
-                # Get prop def for mode
+                # Get prop name and def for mode
+                prop_name = self.mode
                 prop_def = mod.rna_type.properties[self.mode]
                 if event.type in self._BMToolModalInput__MODAL_DIGITS_LIST\
                         and prop_def.type in self.__DIGITS_INPUT_TYPES:
+                    logger.info(f'Switching to modal digits {prop_name}')
                     self.modal_input_mode = 'DIGITS'
 
                 elif event.type\
                         in self._BMToolModalInput__MODAL_LETTERS_LIST\
                         and prop_def.type in self.__LETTERS_INPUT_TYPES:
+                    logger.info(f'Switching to modal letters {prop_name}')
                     self.modal_input_mode = 'LETTERS'
 
             # Letters or digits input mode.
-            else:
-                if self.modal_input_mode == 'LETTERS':
+            elif self.modal_input_mode in {'LETTERS', 'DIGITS'}:
+
+                # Get prop name and def for mode
+                prop_name = self.mode
+                prop_def = mod.rna_type.properties[self.mode]
+                if self.modal_input_mode == 'DIGITS':
                     if event.type == 'RETURN':
-                        for mod in mods:
-                            setattr(mod, self.mode, self.modal_letters_pop())
-                    self.modal_letters(event)
-                elif self.modal_input_mode == 'DIGITS':
-                    if event.type == 'RETURN':
+                        logger.info(f'Modal digits apply {prop_name}')
                         for mod in mods:
                             setattr(mod, self.mode, self.modal_digits_pop())
+                    logger.debug(f'Modal digits {prop_name}')
                     self.modal_digits(event)
+
+                elif self.modal_input_mode == 'LETTERS':
+                    if event.type == 'RETURN':
+                        logger.info(f'Modal letters apply {prop_name}')
+                        for mod in mods:
+                            setattr(mod, self.mode, self.modal_letters_pop())
+                    logger.debug(f'Modal letters {prop_name}')
+                    self.modal_letters(event)
         # }}}
 
         # Check that there are no unexpected for simple events modes.
@@ -615,6 +643,7 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
     # }}}
 
     def __toggle_bool(self, prop_name, prop, mods):
+        logger.info(f'Toggle {prop_name}')
         t = True
         for x in mods:
             attr = getattr(x, prop_name)
@@ -625,6 +654,7 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
             attr = t
 
     def __scroll_enum(self, prop_name, prop, mods):
+        logger.info(f'Scroll {prop_name}')
         for x in mods:
             attr = getattr(x, prop_name)
             enum = prop.enum_items.keys()
@@ -635,15 +665,15 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
                 attr = enum[i + 1]
 
     def __modal_int(self, event, prop_name, prop, mods):
+        logger.debug(f'Modal int {prop_name}')
         return
 
     def __modal_float(self, event, prop_name, prop, mods):
+        logger.debug(f'Modal float {prop_name}')
         return
 
     def __modal_str(self, event, prop_name, prop, mods):
-        return
-
-    def __modal_enum(self, event, prop_name, prop, mods):
+        logger.debug(f'Modal str {prop_name}')
         return
 
     def __get_prop_name(self, event) -> str:
