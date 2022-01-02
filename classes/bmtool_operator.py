@@ -108,6 +108,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
                 or event.type == 'LEFTMOUSE')\
                 and event.value == 'PRESS':
             if self.mode != self.__DEFAULT_MODE:
+                self.bmtool_modifier_update(context)
                 self.mode = self.__DEFAULT_MODE
             else:
                 self.clear(context)
@@ -122,8 +123,10 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
         elif event.type == 'SPACE' and event.value == 'PRESS':
             if self.mode == 'ACTIONS':
                 self.mode = 'EDITOR'
+                self.bmtool_modifier_update(context)
             else:
                 self.mode = 'ACTIONS'
+                self.bmtool_modifier_update(context)
             logger.info(f'Switched mode to {self.mode}')
 
         # Modal method.

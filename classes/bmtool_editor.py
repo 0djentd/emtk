@@ -16,12 +16,13 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-import math
-import string
+# import math
+# import string
 import logging
-import copy
-import json
-import time
+# import copy
+# import json
+# import time
+# import re
 
 import bpy
 
@@ -682,16 +683,36 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
 
     def __modal_int(self, event, prop_name, prop, mods):
         logger.debug(f'Modal int {prop_name}')
+        if prop.subtype == 'UNSIGNED':
+            raise ValueError('Not implemented')
+
+        for x in mods:
+            attr_val = getattr(x, prop_name)
+            new_val = self.modal_input_mouse(
+                    attr_val, t='INT', s='NONE', event=event)
+            sens = 0.00005
+            setattr(x, prop_name, new_val * sens)
         return
 
     def __modal_float(self, event, prop_name, prop, mods):
         logger.debug(f'Modal float {prop_name}')
+        if prop.subtype == 'UNSIGNED':
+            raise ValueError('Not implemented')
+
+        for x in mods:
+            attr_val = getattr(x, prop_name)
+            new_val = self.modal_input_mouse(
+                    attr_val, t='FLOAT', s='NONE', event=event)
+            sens = 0.00005
+            setattr(x, prop_name, new_val * sens)
         return
 
+    # TODO: what is that
     def __modal_str(self, event, prop_name, prop, mods):
         logger.debug(f'Modal str {prop_name}')
         return
 
+    # Props {{{
     def __get_prop_name(self, event) -> str:
         """Returns property name that were mapped to event type."""
         if len(event.type) > 1:
@@ -734,6 +755,7 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
         if len(result) > 4:
             raise TypeError
         return result
+    # }}}
 
     def __get_all_cluster_modifiers(self, clusters):
         if not isinstance(clusters, list):
@@ -787,6 +809,7 @@ class AdaptiveModifierEditor(ModifierEditor):  # {{{
 # }}}
 
 
+# KBS {{{
 def get_custom_modal_kbs(addon='bmtools'):
     if not isinstance(addon, str):
         raise TypeError
@@ -842,3 +865,4 @@ def compare_kbs(kbs_1, kbs_2):
             or kbs_1[3] != kbs_2[3]:
         return False
     return True
+# }}}
