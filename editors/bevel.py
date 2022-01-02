@@ -19,6 +19,7 @@
 from ..classes.bmtool_editor import ModifierEditorTemplate
 
 
+# Example of custom editor using ModifierEditorTemplate
 class BMToolEditorBevel(ModifierEditorTemplate):
 
     def __init__(self, *args, **kwargs):

@@ -598,11 +598,3 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
         else:
             return [cluster]
     # }}}
-
-    def _display_additional_info_about_bmtool(self, context):  # {{{
-        logger.debug("BMTool is created")
-        logger.debug(f"__BMTOOLM {self.__BMTOOLM}")
-        logger.debug(f"__DEFAULT_MODE {self.__DEFAULT_MODE}")
-        logger.debug(f"__UI {self.__UI}")
-        logger.debug(f"__UI_STATUSBAR {self.__UI_STATUSBAR}")
-    # }}}

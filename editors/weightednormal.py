@@ -21,7 +21,7 @@ import bpy
 from ..classes.bmtool_editor import ModifierEditor
 
 
-# Weighted Normal modifier editor
+# Example of custom editor using ModifierEditor base class.
 class BMToolEditorWeightedNormal(ModifierEditor):
     _MODIFIER_EDITOR_NAME = 'Weighted Normal Editor'
     _DEFAULT_M_NAME = 'Weighted Normal'

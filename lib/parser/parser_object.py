@@ -36,9 +36,7 @@ logger.setLevel(logging.DEBUG)
 
 
 class ClustersParser():
-    """
-    Base class for objects that should be able to parse clusters.
-    """
+    """Base class for objects that should be able to parse clusters."""
 
     def __init__(self, *args,
                  skip_parser=None,
