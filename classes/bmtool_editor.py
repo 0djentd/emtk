@@ -805,10 +805,10 @@ def get_kbs(addon, kbs_name):
     addon_prefs\
         = bpy.context.preferences.addons[addon].preferences
     kbs = (
-           getattr(addon_prefs, f'{kbs_name}')
-           getattr(addon_prefs, f'{kbs_name}_shift')
-           getattr(addon_prefs, f'{kbs_name}_ctl')
-           getattr(addon_prefs, f'{kbs_name}_alt')
+           getattr(addon_prefs, f'{kbs_name}'),
+           getattr(addon_prefs, f'{kbs_name}_shift'),
+           getattr(addon_prefs, f'{kbs_name}_ctl'),
+           getattr(addon_prefs, f'{kbs_name}_alt'),
            )
     return kbs
 
@@ -817,10 +817,10 @@ def get_default_kbs(addon, kbs_name):
     addon_prefs\
         = bpy.context.preferences.addons[addon].preferences
     kbs = (
-           getattr(addon_prefs, f'{kbs_name}.default')
-           getattr(addon_prefs, f'{kbs_name}_shift.default')
-           getattr(addon_prefs, f'{kbs_name}_ctl.default')
-           getattr(addon_prefs, f'{kbs_name}_alt.default')
+           getattr(addon_prefs, f'{kbs_name}.default'),
+           getattr(addon_prefs, f'{kbs_name}_shift.default'),
+           getattr(addon_prefs, f'{kbs_name}_ctl.default'),
+           getattr(addon_prefs, f'{kbs_name}_alt.default'),
            )
     return kbs
 
