@@ -27,6 +27,6 @@ class VIEW_3D_MT_PIE_bmtools_pie_1(Menu):
     def draw(self, context):
         layout = self.layout
         pie = layout.menu_pie()
-        pie.operator("object.bmtoolm_2", text="BMToolM lite", icon="CUBE")
+        # pie.operator("object.bmtoolm_2", text="BMToolM lite", icon="CUBE")
         pie.operator("object.bmtoolm", text="BMToolM", icon="CUBE")
         pie.operator("object.bmtoole2", text="BMToolE2", icon="CUBE")

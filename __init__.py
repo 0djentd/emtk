@@ -21,6 +21,9 @@ import bpy
 import logging
 
 from . operators.bmtoolm import BMTOOL_OT_bmtoolm
+from . operators.dev.add_all_modifiers import BMTOOL_OT_add_all_modifiers
+from . operators.dev.add_all_modifiers import\
+        BMTOOL_OT_add_all_modifiers_and_dump_props
 from . operators.add_cluster_type import BMTOOL_OT_add_cluster_type_object
 from . operators.bmtoole2 import BMTOOL_OT_bmtoole2
 from . operators.bmtoolm_lite import BMTOOL_OT_bmtoolm_2
@@ -46,6 +49,8 @@ classes = [
     BMTOOL_OT_bmtoole2,
     BMTOOL_OT_bmtoolm_2,
     BMTOOL_OT_add_cluster_type_object,
+    BMTOOL_OT_add_all_modifiers,
+    BMTOOL_OT_add_all_modifiers_and_dump_props,
     VIEW_3D_MT_PIE_bmtools_pie_1,
 ]
 
