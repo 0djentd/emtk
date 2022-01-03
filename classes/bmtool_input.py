@@ -28,6 +28,7 @@ logger.setLevel(logging.DEBUG)
 
 
 class BMToolModalInput():
+    """Base class for modal operators and editors."""
 
     # Constants {{{
     __MODES = {'NONE', 'DELTA_D', 'DIGITS', 'LETTERS'}
@@ -92,10 +93,48 @@ class BMToolModalInput():
             }
     # }}}
 
-    def __init__(self):
-        self.modal_input_mode = self.__DEFAULT_MODE
+    # Properties {{{
+    @property
+    def modal_input_mode(self):
+        if self.__editor_removed:
+            raise ValueError
+
+        return self.__modal_input_mode
+
+    @modal_input_mode.setter
+    def modal_input_mode(self, mode):
+        if mode not in self.__MODES:
+            raise TypeError
+
+        self.__prop = None
         self.__modal_digits_str = ''
         self.__modal_letters_str = ''
+        self.__modal_input_mode = mode
+    # }}}
+
+    def switch_mode(self, mode: str, prop_def=None):
+        """
+        This method should be used instead of modal_input_mode property
+        when possbile.
+        """
+        self.modal_input_mode = mode
+        if prop_def is not None and mode != self.__DEFAULT_MODE:
+            self.__prop = prop_def
+        else:
+            self.__prop = None
+
+    def __init__(self):
+        # Mode
+        self.__modal_input_mode = self.__DEFAULT_MODE
+
+        # Property rna_type struct
+        self.__prop = None
+
+        # Str
+        self.__modal_digits_str = ''
+        self.__modal_letters_str = ''
+
+        self.__editor_removed = False
 
     # Pop val {{{
     # This two methods are used to get variable value from modal input mode.
@@ -121,6 +160,7 @@ class BMToolModalInput():
 
     # Get val {{{
     def modal_digits_get(self, number_type='ANY'):
+        """Returns number or str."""
         if len(self.__modal_digits_str) == 0:
             return None
 
@@ -145,14 +185,14 @@ class BMToolModalInput():
                 result = result + '.0'
             return float(result)
 
-    def modal_letters_get(self, number_type='ANY'):
+    def modal_letters_get(self) -> str:
+        """Returns str."""
         return copy.copy(self.__modal_letters_str)
     # }}}
 
     def modal_digits(self, event):  # {{{
-        """This thing writes a string that can be used in modal operator
-        to get integer, float, or string.
-        """
+        """Writes a string that can be used to get integer or float."""
+
         if self.modal_input_mode != 'DIGITS':
             raise ValueError
 
@@ -181,6 +221,7 @@ class BMToolModalInput():
 
     def modal_letters(self, event):  # {{{
         """This thing writes a string that can be used in modal operator."""
+
         if self.modal_input_mode != 'LETTERS':
             raise ValueError
 
@@ -203,6 +244,7 @@ class BMToolModalInput():
                         + self.__MODAL_DIGITS[x]
                 return True
 
+        # Digits 2
         for x in self.__MODAL_DIGITS_NUMPAD:
             if event.type == x and event.value == 'PRESS':
                 self.__modal_letters_str\
@@ -220,7 +262,6 @@ class BMToolModalInput():
             else:
                 self.__modal_letters_str\
                         = self.__modal_letters_str + '-'
-        # Backspace
         elif event.type == 'BACK-SPACE' and event.value == 'PRESS':
             self.__modal_letters_str = self.__modal_letters_str[0:-1]
         else:
@@ -279,7 +320,7 @@ class BMToolModalInput():
     # }}}
 
 
-# KBS {{{
+# Shortcuts utils {{{
 def get_custom_modal_kbs(addon='bmtools'):
     if not isinstance(addon, str):
         raise TypeError
