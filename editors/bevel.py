@@ -16,11 +16,16 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-from ..classes.bmtool_editor import ModifierEditorTemplate
+# import math
+
+# import bpy
+
+from ..classes.bmtool_editor import ClustersEditorTemplate
+# from ..classes.bmtool_editor import ClustersEditor
 
 
 # Example of custom editor using ModifierEditorTemplate
-class BMToolEditorBevel(ModifierEditorTemplate):
+class BMToolEditorBevel(ClustersEditorTemplate):
 
     def __init__(self, *args, **kwargs):
         super().__init__(
@@ -53,15 +58,16 @@ class BMToolEditorBevel(ModifierEditorTemplate):
                              'kb': 'H'}
                             ]
 
+
 # Bevel modifier editor
-# class bmtooleditorbevel(modifiereditor):
+# class BMToolEditorBevel(ClustersEditor):
 #     _modifier_editor_name = 'bevel editor'
 #     _default_m_name = 'bevel'
 #     _default_m_type = 'bevel'
-#     _modifier_createable = true
-# 
+#     _modifier_createable = True
+#
 #     bmtool_mode = "select mode"
-# 
+#
 #     # todo: remove this
 #     def bevel_segment_count(self, m_list):
 #         y = 0
@@ -69,13 +75,13 @@ class BMToolEditorBevel(ModifierEditorTemplate):
 #             if x.type == 'bevel':
 #                 y += x.get_by_index(0).segments
 #         return y
-# 
+#
 #     def bmtool_editor_modal_2(
 #             self, context, event, m_list, selected_objects):
-#         """editor-specific modal method"""
+#         """Editor-specific modal method"""
 #         mod = m_list.active_modifier_get().get_by_index(0)
 #         if event.type == 'mousemove':
-# 
+#
 #             # modal editing
 #             if self.bmtool_mode == "width":
 #                 mod.width = self.delta_d(context, event) * 0.000008
@@ -86,7 +92,7 @@ class BMToolEditorBevel(ModifierEditorTemplate):
 #             elif self.bmtool_mode == "angle":
 #                 mod.angle_limit = math.radians(
 #                         self.delta_d(context, event) * 0.0001)
-# 
+#
 #         # Modal editing modes switcher
 #         elif event.type == 'W' & event.value == 'PRESS':
 #             self.bmtool_mode = "width"
@@ -96,7 +102,7 @@ class BMToolEditorBevel(ModifierEditorTemplate):
 #             self.bmtool_mode = "profile"
 #         elif event.type == 'A' & event.value == 'PRESS':
 #             self.bmtool_mode = "angle"
-# 
+#
 #         # Modifier-specific actions
 #         elif event.type == 'H' & event.value == 'PRESS':
 #             mod.harden_normals = not mod.harden_normals
@@ -107,38 +113,36 @@ class BMToolEditorBevel(ModifierEditorTemplate):
 #         elif event.type == 'F' & event.value == 'PRESS':
 #             bpy.ops.object.shade_smooth()
 #             bpy.context.object.data.use_auto_smooth = True
-# 
-#     # --------------------------------
-#     # Editor default modifier settings
-#     # --------------------------------
+#
 #     def bmtool_editor_modifier_defaults(
 #             self, context, m_list, selected_objects):
+#         """Editor default modifier settings"""
+#
 #         mod = m_list.active_modifier_get().get_by_index(0)
 #         mod.affect = 'EDGES'
 #         # 'VERTICES', 'EDGES'
-# 
+#
 #         mod.miter_outer = 'MITER_ARC'
 #         # 'MITER_SHARP', 'MITER_PATCH', 'MITER_ARC'
-# 
+#
 #         mod.miter_inner = 'MITER_SHARP'
 #         # 'MITER_SHARP', 'MITER_ARC'
-# 
+#
 #         mod.limit_method = 'ANGLE'
 #         # 'NONE', 'ANGLE', 'WEIGHT', 'VGROUP'
-# 
+#
 #         mod.width = 0.01
 #         mod.segments = 3
 #         mod.profile = 0.5
 #         mod.use_clamp_overlap = 1
-# 
+#
 #         bpy.ops.object.shade_smooth()
 #         context.object.data.use_auto_smooth = True
-# 
-#     # ------------------------------
-#     # Editor info about current modifier
-#     # ------------------------------
-#     def bmtool_editor_modifier_stats(self, context, m_list, selected_objects):
+#
+#     def bmtool_editor_modifier_stats(
+#               self, context, m_list, selected_objects):
 #         mod = m_list.active_modifier_get().get_by_index(0)
+#         """Editor info about current modifier"""
 #         ui_t = []
 #         ui_t.append("MBTool Bevel")
 #         ui_t.append(f"Total seg. count {self.bevel_segment_count(m_list)}")

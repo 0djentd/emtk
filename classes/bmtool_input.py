@@ -21,6 +21,8 @@ import copy
 import logging
 import string
 
+import bpy
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -71,6 +73,23 @@ class BMToolModalInput():
 
     # Currently active mode.
     # modal_input_mode
+    # }}}
+
+    # Variables {{{
+    sens = {
+            'INT': {
+                    'UNSIGNED': 1,
+                    'NONE': 0.5,
+                    },
+
+            'FLOAT': {
+                      'UNSIGNED': 0.0005,
+                      'ANGLE': 0.01,
+                      'DEGREES': 0.01,
+                      'DISTANCE': 0.005,
+                      'NONE': 0.005,
+                      },
+            }
     # }}}
 
     def __init__(self):
@@ -209,13 +228,46 @@ class BMToolModalInput():
         return True
     # }}}
 
-    # {{{
-    def modal_input_mouse(self, attr=None, t=None, s=None, event=None):
+    def modal_input_mouse(self, attr_val, prop, event):  # {{{
+        if not isinstance(attr_val, bool)\
+                and not isinstance(attr_val, int)\
+                and not isinstance(attr_val, float):
+            raise TypeError
         if event is None:
             raise TypeError
+        if prop is None:
+            raise TypeError
+
         x = self.__vec_len(self.first_x, event.mouse_x,
                            self.first_y, event.mouse_y
                            )
+
+        if prop.subtype == 'UNSIGNED':
+            raise ValueError('Not implemented')
+
+        try:
+            z = self.sens[prop.type][prop.subtype]
+        except KeyError:
+            print(f'No sens for {prop.name}, {prop.type}, {prop.subtype}')
+            z = 1
+
+        x = x * prop.step * z
+
+        if prop.type == 'INT':
+            x = int(x)
+
+        elif prop.type == 'FLOAT':
+            if prop.subtype in {'ANGLE', 'DEGREES'}:
+                x = x / math.degrees(1)
+
+            # # TODO: calculate distance to obj
+            # elif prop.subtype in {'LENGTH', 'DISTANCE'}:
+            #     x = x * distance_to_object
+            else:
+                x = float(x)
+        else:
+            raise TypeError
+
         y = pow(x, 2)
         return y
 
@@ -225,3 +277,62 @@ class BMToolModalInput():
         delta_y = y1 - y2
         return math.sqrt(pow(delta_x, 2) + pow(delta_y, 2))
     # }}}
+
+
+# KBS {{{
+def get_custom_modal_kbs(addon='bmtools'):
+    if not isinstance(addon, str):
+        raise TypeError
+
+    addon_prefs\
+        = bpy.context.preferences.addons[addon].preferences
+
+    result = []
+    for x in addon_prefs.props_names:
+        kbs_1 = get_kbs(addon, x)
+        kbs_2 = get_default_kbs(addon, x)
+        if not compare_kbs(kbs_1, kbs_2):
+            result.append(kbs_1)
+    return result
+
+
+def get_kbs(addon, kbs_name):
+    addon_prefs\
+        = bpy.context.preferences.addons[addon].preferences
+    kbs = (
+           getattr(addon_prefs, f'{kbs_name}'),
+           getattr(addon_prefs, f'{kbs_name}_shift'),
+           getattr(addon_prefs, f'{kbs_name}_ctl'),
+           getattr(addon_prefs, f'{kbs_name}_alt'),
+           )
+    return kbs
+
+
+def get_default_kbs(addon, kbs_name):
+    addon_prefs\
+        = bpy.context.preferences.addons[addon].preferences
+    kbs = (
+           getattr(addon_prefs, f'{kbs_name}.default'),
+           getattr(addon_prefs, f'{kbs_name}_shift.default'),
+           getattr(addon_prefs, f'{kbs_name}_ctl.default'),
+           getattr(addon_prefs, f'{kbs_name}_alt.default'),
+           )
+    return kbs
+
+
+def compare_kbs(kbs_1, kbs_2):
+    if not isinstance(kbs_1, tuple):
+        raise TypeError
+    if not isinstance(kbs_2, tuple):
+        raise TypeError
+    if len(kbs_1) != 4:
+        raise ValueError
+    if len(kbs_2) != 4:
+        raise ValueError
+    if kbs_1[0] != kbs_2[0]\
+            or kbs_1[1] != kbs_2[1]\
+            or kbs_1[2] != kbs_2[2]\
+            or kbs_1[3] != kbs_2[3]:
+        return False
+    return True
+# }}}

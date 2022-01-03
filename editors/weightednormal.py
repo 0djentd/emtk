@@ -16,13 +16,11 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-import bpy
-
-from ..classes.bmtool_editor import ModifierEditor
+from ..classes.bmtool_editor import ClustersEditor
 
 
 # Example of custom editor using ModifierEditor base class.
-class BMToolEditorWeightedNormal(ModifierEditor):
+class BMToolEditorWeightedNormal(ClustersEditor):
     _MODIFIER_EDITOR_NAME = 'Weighted Normal Editor'
     _DEFAULT_M_NAME = 'Weighted Normal'
     _DEFAULT_M_TYPE = 'WEIGHTED_NORMAL'
@@ -36,12 +34,9 @@ class BMToolEditorWeightedNormal(ModifierEditor):
                                         'WEIGHTED_NORMAL'],
                          **kwargs)
 
-
-    # ------------------------------
-    # Editor-specific modal method
-    # ------------------------------
     def bmtool_editor_modal_2(
             self, context, event, m_list, selected_objects):
+        """Editor-specific modal method"""
 
         mod = m_list.active_modifier_get()
 
@@ -65,19 +60,9 @@ class BMToolEditorWeightedNormal(ModifierEditor):
         elif (event.type == 'F') & (event.value == 'PRESS'):
             mod.use_face_influence = not mod.use_face_influence
 
-    # --------------------------------
-    # Editor default modifier settings
-    # --------------------------------
-    def bmtool_editor_modifier_defaults(
-            self, context, m_list, selected_objects):
-        bpy.data.object.shade_smooth()
-        context.object.data.use_auto_smooth = True
-
-    # ------------------------------
-    # Editor info about current modifier
-    # ------------------------------
     def bmtool_editor_modifier_stats(
             self, context, m_list, selected_objects):
+        """Editor info about current modifier"""
         mod = m_list.active_modifier_get()
         ui_t = []
         ui_t.append(f"---{self.bmtool_mode}---")
