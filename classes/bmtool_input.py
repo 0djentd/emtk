@@ -209,24 +209,10 @@ class BMToolModalInput():
         return True
     # }}}
 
+    # {{{
     def modal_input_mouse(self, attr=None, t=None, s=None, event=None):
         if event is None:
             raise TypeError
-        x = self.__vec_len(self.first_x, event.mouse_x,
-                           self.first_y, event.mouse_y
-                           )
-        y = pow(x, 2)
-        return y
-
-    # delta_d {{{
-    # TODO: should be in utils
-    # Returns VL
-    # VL = vector length
-    # VL from object center (currently from initialisation)
-    # TODO: should take into consideration distance to object center.
-    # TODO: should use object center as center.
-    # TODO: should not change settings when changing mode
-    def delta_d(self, event):
         x = self.__vec_len(self.first_x, event.mouse_x,
                            self.first_y, event.mouse_y
                            )
