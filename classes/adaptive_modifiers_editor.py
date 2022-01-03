@@ -176,6 +176,7 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
     # __kbs_editing = {}
     # }}}
 
+    # Constructor {{{
     def __init__(self, *args, **kwargs):
         # Allow using with '{mod_name}_CLUSTER' cluster types.
         new_types = []
@@ -195,6 +196,7 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
         self.__kbs_no_modal = {}
         self.__kbs_editing = {}
         self.__mods = []
+    # }}}
 
     # ClustersEditor methods {{{
     def editor_switched_to(self, context, clusters):  # {{{
@@ -217,10 +219,9 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
         self.__kbs_editing = {}
 
         mods = self.__get_all_cluster_modifiers(clusters)
-        props = get_props_filtered_by_types(mods[0])
-
         self.__mods = mods
 
+        props = get_props_filtered_by_types(mods[0])
         for x in props:
             if x in self.__MODAL_INPUT_PROP_TYPES:
                 for y in props[x]:
@@ -271,11 +272,6 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
     # }}}
 
     def editor_modal_pre(self, context, event, clusters):  # {{{
-        if not isinstance(clusters, list):
-            clusters = [clusters]
-        for x in clusters:
-            if not isinstance(x, ClusterTrait):
-                raise TypeError
         return
     # }}}
 
@@ -321,15 +317,14 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
         else:
             prop_def = None
 
-        logger.debug(f'Prop name is {prop_name}')
-        logger.debug(f'Prop def is {prop_def}')
-
         # Try to edit not modal props.
         if prop_name in self.__kbs_no_modal:
             if prop_def.type == 'BOOLEAN':
-                self.__toggle_bool(prop_name)
+                if self.__toggle_bool(prop_name):
+                    return
             elif prop_def.type == 'ENUM':
-                self.__scroll_enum(prop_name)
+                if self.__scroll_enum(prop_name):
+                    return
             else:
                 raise ValueError
 
@@ -337,6 +332,7 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
         elif prop_name in self.__kbs_modal:
             logger.info(f'Switching to modal {prop_name}')
             self.mode = prop_name
+            return
 
         # Other props
         elif prop_name in self.__kbs_editing:
