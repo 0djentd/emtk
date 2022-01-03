@@ -31,7 +31,7 @@ class BMToolModalInput():
     """Base class for modal operators and editors."""
 
     # Constants {{{
-    __MODES = {'NONE', 'DELTA_D', 'DIGITS', 'LETTERS'}
+    __MODES = {'NONE', 'DELTA', 'DIGITS', 'LETTERS'}
 
     __DEFAULT_MODE = 'NONE'
 

@@ -30,7 +30,7 @@ logger = logging.getLogger(__package__)
 logger.setLevel(logging.DEBUG)
 
 
-class ModalClustersEditor(BMToolModalInput):  # {{{
+class ModalClustersEditor(BMToolModalInput):
     """Editor base class"""
 
     # Constructor {{{
@@ -95,4 +95,3 @@ class ModalClustersEditor(BMToolModalInput):  # {{{
     def _no_editor_method(self):
         raise ValueError('No editor-specific method.')
     # }}}
-# }}}

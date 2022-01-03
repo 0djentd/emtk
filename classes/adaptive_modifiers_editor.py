@@ -130,7 +130,7 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
     __TOGGLE_TYPES = {'BOOLEAN', 'ENUM'}
 
     # Can be edited using mouse input.
-    __DELTA_D_TYPES = {'INT', 'FLOAT'}
+    __DELTA_INPUT_TYPES = {'INT', 'FLOAT'}
 
     # Can be edited using digits input.
     __DIGITS_INPUT_TYPES = {'INT', 'FLOAT'}
@@ -142,7 +142,7 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
     __MODAL_INPUT_PROP_TYPES\
         = __LETTERS_INPUT_TYPES.union(
                 __DIGITS_INPUT_TYPES.union(
-                    __DELTA_D_TYPES))
+                    __DELTA_INPUT_TYPES))
 
     # All types that can be edited in default mode without switching.
     __NOT_MODAL_INPUT_PROP_TYPES = __TOGGLE_TYPES
@@ -158,6 +158,12 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
     # Currently active modal input mode.
     # This variable initialized in BMToolModalInput()
     # self.modal_input_mode
+
+    # List of all modifiers
+    # self.__mods
+
+    # Property rna_type struct
+    # self.__prop_def
 
     # Mappings.
     # Lists of modifier props names with mapping.
@@ -193,12 +199,12 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
                          **kwargs)
 
         self.mode = self.__DEFAULT_MODE
-        self.__additional_info_counter = 0
-        self.__toggle_skip_frames_counter = 0
         self.__kbs_modal = {}
         self.__kbs_no_modal = {}
         self.__kbs_editing = {}
+
         self.__mods = []
+        self.prop_def = None
     # }}}
 
     # ClustersEditor methods {{{
@@ -210,18 +216,18 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
             if not isinstance(x, ClusterTrait):
                 raise TypeError
 
-        self.mode = self.__DEFAULT_MODE
-        self.__additional_info_counter = 0
-        self.__toggle_skip_frames_counter = 0
+        self.__switch_to_default()
 
         # Modal editing prop only.
         self.__kbs_modal = {}
+
         # Not modal prop editing.
         self.__kbs_no_modal = {}
+
         # Not a modifier prop.
         self.__kbs_editing = {}
 
-        mods = self.__get_all_cluster_modifiers(clusters)
+        mods = self.__get_all_clusters_modifiers(clusters)
         self.__mods = mods
 
         props = get_props_filtered_by_types(mods[0])
@@ -259,8 +265,7 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
             if not isinstance(x, ClusterTrait):
                 raise TypeError
 
-        self.__additional_info_counter = 0
-        self.__toggle_skip_frames_counter = 0
+        self.__switch_to_default()
 
         self.__mods = []
 
@@ -268,38 +273,23 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
         self.__kbs_no_modal = {}
         self.__kbs_editing = {}
 
-        self.mode = self.__DEFAULT_MODE
-        self.modal_input_mode = self._BMToolModalInput__DEFAULT_MODE
-
         logger.debug('Editor switched from.')
     # }}}
 
-    def editor_modal_pre(self, context, event, clusters):  # {{{
+    def editor_modal_pre(  # {{{
+            self, context, event, *args, **kwargs):
         return
     # }}}
 
-    def editor_modal(self, context, event, clusters):  # {{{
-        if not isinstance(clusters, list):
-            clusters = [clusters]
-        for x in clusters:
-            if not isinstance(x, ClusterTrait):
-                raise TypeError
-
-        # Info
-        if self.__additional_info_counter < 30:
-            self.__additional_info_counter += 1
-        else:
-            self.__additional_info_counter = 0
-            logger.debug('Adaptive modifiers editor modal.')
-            logger.debug(f'Mode {self.mode}')
-            logger.debug(f'Mode_2 {self.modal_input_mode}')
+    def editor_modal(  # {{{
+            self, context, event, *args, **kwargs):
 
         logger.debug(f'Event {event.type}, {event.value}')
 
         if self.mode == self.__DEFAULT_MODE:
-            self.__default_mode(event, clusters)
+            self.__default_mode(event)
         elif self.mode in self.__kbs_modal:
-            self.__modal_mode(event, clusters)
+            self.__modal_mode(event)
         elif self.mode in self.__kbs_editing:
             raise ValueError
         elif self.mode in self.__kbs_no_modal:
@@ -316,6 +306,7 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
 
         Returns True if event was interpreted.
         """
+        logger.debug('Default')
 
         if self.modal_input_mode != 'NONE':
             raise ValueError
@@ -324,36 +315,48 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
 
         # Get prop name for this event.
         prop_name = self.__get_prop_name(event)
+
         if prop_name is not None:
 
             # Modifier prop def
             prop_def = self.__mods[0].rna_type.properties[prop_name]
+
+            # Try to edit not modal props.
+            if prop_name in self.__kbs_no_modal:
+                if prop_def.type == 'BOOLEAN':
+                    if self.__toggle_bool(prop_name):
+                        return True
+                elif prop_def.type == 'ENUM':
+                    if self.__scroll_enum(prop_name):
+                        return True
+                else:
+                    raise TypeError
+
+            # Try to switch to modal prop mode.
+            elif prop_name in self.__kbs_modal:
+                logger.info(f'Switching to modal {prop_name}')
+                self.__switch_to_mode(prop_name)
+
+                # Switch to modal input mode
+                t = prop_def.type
+                if t in self.__DELTA_INPUT_TYPES:
+                    self.modal_input_mode = 'DELTA'
+                elif t in self.__DIGITS_INPUT_TYPES:
+                    self.modal_input_mode = 'DIGITS'
+                elif t in self.__LETTERS_INPUT_TYPES:
+                    self.modal_input_mode = 'LETTERS'
+                else:
+                    raise TypeError
+                return True
+
+            # Other props
+            elif prop_name in self.__kbs_editing:
+                pass
         else:
-            prop_def = None
-
-        # Try to edit not modal props.
-        if prop_name in self.__kbs_no_modal:
-            if prop_def.type == 'BOOLEAN':
-                if self.__toggle_bool(prop_name):
-                    return True
-            elif prop_def.type == 'ENUM':
-                if self.__scroll_enum(prop_name):
-                    return True
-            else:
-                raise ValueError
-
-        # Try to switch to modal prop mode.
-        elif prop_name in self.__kbs_modal:
-            logger.info(f'Switching to modal {prop_name}')
-            self.mode = prop_name
-            return True
-
-        # Other props
-        elif prop_name in self.__kbs_editing:
             pass
     # }}}
 
-    def __modal_mode(self, event, clusters):  # {{{
+    def __modal_mode(self, event):  # {{{
         """
         Mode used to edit properties within multiple iterations.
 
@@ -367,39 +370,44 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
 
         Returns True if event was interpreted.
         """
-
         if self.modal_input_mode == 'NONE':
             raise TypeError
 
-        if self.modal_input_mode == {'DELTA'}:
-            if self.__check_event_is_simple:
+        if self.modal_input_mode == 'DELTA':
+            logger.debug('Modal delta')
+
+            if self.__check_event_is_simple(event):
                 if self.__check_if_should_switch_mode(event):
                     return True
                 elif self.__check_if_should_switch_input_mode(event):
                     return True
-                elif self.__check_if_should_apply_input(event, clusters):
-                    return True
             else:
-                if self.__check_if_delta_prop_changed(event, clusters):
+                if self.__check_if_delta_prop_changed(event):
                     return True
 
-        elif self.modal_input_mode == {'DIGITS'}:
-            if self.__check_event_is_simple:
-                if self.__check_if_stop_modal_digits(event, clusters):
+        elif self.modal_input_mode == 'DIGITS':
+            logger.debug('Modal digits')
+
+            if self.__check_event_is_simple(event):
+                if self.__check_if_stop_modal_digits(event):
                     return True
                 elif self.__check_if_modal_digits(event):
                     return True
             else:
                 return
 
-        elif self.modal_input_mode == {'LETTERS'}:
-            if self.__check_event_is_simple:
-                if self.__check_if_stop_modal_letters(event, clusters):
+        elif self.modal_input_mode == 'LETTERS':
+            logger.debug('Modal letters')
+
+            if self.__check_event_is_simple(event):
+                if self.__check_if_stop_modal_letters(event):
                     return True
                 elif self.__check_if_modal_letters(event):
                     return True
             else:
                 return
+        else:
+            raise TypeError
     # }}}
 
     # Simple events {{{
@@ -408,11 +416,12 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
         prop_name = self.__get_prop_name(event)
         if prop_name == self.mode:
             logger.info('Switching back to default mode.')
-            self.mode = self.__DEFAULT_MODE
+            self.__switch_to_default()
             return True
 
     def __check_if_should_switch_input_mode(self, event):
 
+        # TODO: move to attrs
         # Get prop name and def for mode
         prop_name = self.mode
         prop_def = self.__mods[0].rna_type.properties[self.mode]
@@ -451,7 +460,7 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
             val = self.modal_digits_pop()
             for mod in self.__mods:
                 setattr(mod, self.mode, val)
-            self.mode = self.__DEFAULT_MODE
+            self.__switch_to_default()
             return True
 
     def __check_if_modal_digits(self, event):
@@ -472,25 +481,27 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
             val = self.modal_letters_pop()
             for mod in self.__mods:
                 setattr(mod, self.mode, val)
-            self.mode = self.__DEFAULT_MODE
+            self.__switch_to_default()
             return True
     # }}}
     # }}}
 
     # Complex events {{{
-    def __check_if_delta_prop_changed(self, event, clusters):
+    def __check_if_delta_prop_changed(self, event):
 
         # Use active mode prop name.
         prop_name = self.mode
         prop_def = self.__mods[0].rna_type.properties[prop_name]
 
+        logger.debug(f'Modal check if delta changed {prop_name}')
+
         # Try to edit props.
         if prop_def.type == 'INT':
-            self.__modal_int(event, prop_name, prop_def, self.__mods)
+            self.__modal_int(event, prop_name)
         elif prop_def.type == 'FLOAT':
-            self.__modal_float(event, prop_name, prop_def, self.__mods)
+            self.__modal_float(event, prop_name)
         elif prop_def.type == 'STRING':
-            self.__modal_str(event, prop_name, prop_def, self.__mods)
+            self.__modal_str(event, prop_name)
         return
     # }}}
 
@@ -541,7 +552,7 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
             setattr(x, prop_name, new_val)
         return
 
-    def __modal_str(self, event, prop_name, prop, mods):
+    def __modal_str(self, event, prop_name):
         logger.debug(f'Modal str {prop_name}')
         return
     # }}}
@@ -594,16 +605,12 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
     # Utils {{{
     def __check_event_is_simple(self, event):
         """Checks if event should not be passed to modal input base class."""
-        if ((event.type in self._BMToolModalInput__MODAL_LETTERS_LIST)
-                or (event.type == 'PERIOD')
-                or (event.type == 'BACK-SPACE')
-                or (event.type == 'RET')
-                or (event.type == 'SPACE'))\
+        if (event.type in self._BMToolModalInput__MODAL_LETTERS_LIST
+                or event.type in {'PERIOD', 'BACK-SPACE', 'RET', 'SPACE'})\
                 and event.value == 'PRESS':
             return True
-        return False
 
-    def __get_all_cluster_modifiers(self, clusters):
+    def __get_all_clusters_modifiers(self, clusters):
         """Returns list of modifiers to edit."""
         if not isinstance(clusters, list):
             clusters = [clusters]
@@ -619,6 +626,20 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
             elif x.type != t:
                 raise TypeError
         return mods
+
+    def __switch_to_mode(self, mode_name):
+        if not isinstance(mode_name, str):
+            raise TypeError
+        if mode_name == self.__DEFAULT_MODE:
+            return self.__switch_to_default()
+
+        self.mode = mode_name
+        self.__prop_def = self.__mods[0].rna_type.properties[mode_name]
+
+    def __switch_to_default(self):
+        self.mode = self.__DEFAULT_MODE
+        self.modal_input_mode = self._BMToolModalInput__DEFAULT_MODE
+        self.__prop_def = None
     # }}}
 
     # UI {{{
