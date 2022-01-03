@@ -283,9 +283,6 @@ class BMToolModalInput():
                            self.first_y, event.mouse_y
                            )
 
-        if prop.subtype == 'UNSIGNED':
-            raise ValueError('Not implemented')
-
         try:
             z = self.sens[prop.type][prop.subtype]
         except KeyError:

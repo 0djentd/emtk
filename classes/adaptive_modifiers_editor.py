@@ -16,13 +16,13 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-# import math
+import math
 # import string
 import logging
 # import copy
 # import json
 # import time
-# import re
+import re
 
 # import bpy
 
@@ -650,36 +650,91 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
         ['Angle Limit: shift + A | 0.00123']
         """
         result = []
-        b = 30
-
         d = [self.__kbs_modal, self.__kbs_no_modal, self.__kbs_editing]
-        for a in d:
-            for x in a:
-                if not isinstance(x, str):
-                    raise TypeError
-                t = a[x]
-                line = ''
-                line = line + f'{x}: '
-                if t[1]:
-                    line = line + 'shift + '
-                if t[2]:
-                    line = line + 'ctl + '
-                if t[3]:
-                    line = line + 'alt + '
-                line = line + f'{t[0]} '
-                m = b - len(line)
-                for y in range(m):
-                    line = line + '  '
-                line = line + '| '
-                if len(self.__mods) != 0:
-                    val = getattr(self.__mods[0], x)
-                    line = line + f'{val}'
-                result.append(line)
+        a = self.__get_props_names_format(d)
+        b = self.__get_props_kbs_format(d)
+        c = self.__get_props_val_format(d)
+
+        result = []
+        for x, y, z in zip(a, b, c):
+            e = [x['name'],
+                 y['shortcut'],
+                 z['value']]
+
+            line = ''
+            for f in e:
+                a = f
+                length = len(a)
+                if length < 20:
+                    for h in range(20 - length):
+                        a = a + " "
+                line = line + a
+
+            result.append(line)
 
         for x in result:
             if not isinstance(x, str):
                 raise TypeError
             if len(x) == 0:
                 raise ValueError
+        return result
+
+    def __get_props_names_format(self, d):
+        """
+        [['angle_limit', 'Angle Limit']...]
+        """
+
+        result = []
+
+        # All props mappings
+        d = [self.__kbs_modal, self.__kbs_no_modal, self.__kbs_editing]
+        for a in d:
+            for x in a:
+                name = re.sub('_', ' ', x).title()
+                result.append({'name': name})
+        return result
+
+    def __get_props_kbs_format(self, d):
+        """
+        [['A + shift + ctrl']...]
+        """
+
+        result = []
+        for a in d:
+            for x in a:
+                t = a[x]
+
+                line = ''
+                if t[1]:
+                    line = line + 'shift + '
+                if t[2]:
+                    line = line + 'ctl + '
+                if t[3]:
+                    line = line + 'alt + '
+                line = line + f'{t[0]}'
+
+                if len(line) == 0:
+                    line = 'No kb shortcut.'
+                result.append({'shortcut': line})
+        return result
+
+    def __get_props_val_format(self, d, round_val=2):
+        """
+        [['123.456']...]
+        """
+
+        result = []
+        for a in d:
+            for x in a:
+                prop_def = self.__mods[0].rna_type.properties[x]
+                val = getattr(self.__mods[0], x)
+                if prop_def.type == 'FLOAT':
+                    if prop_def.subtype in {'ANGLE', 'DEGREES'}:
+                        val = val * math.degrees(1)
+                    val = round(val, round_val)
+                line = str(val)
+                if len(line) == 0:
+                    line = 'No kb shortcut.'
+                result.append({'value': line})
         return result
     # }}}
