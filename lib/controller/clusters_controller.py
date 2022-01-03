@@ -40,13 +40,13 @@ logger.setLevel(logging.INFO)
 
 
 class ClustersController():
-    """
-    This is object responsible for clusters actions solver.
-    """
+    """This is object responsible for clusters actions solver."""
 
     def __init__(self, extended_modifiers_list_obj, *args, **kwargs):
         self.e = extended_modifiers_list_obj
 
+    # TODO: not add additional command to batch if its initial action anywhere
+    # in batch already.
     def do(self, command):
         """
         Finds actions required for action, command or a batch, creates
@@ -74,9 +74,7 @@ class ClustersController():
 
             self._apply_batch(batch)
 
-    # ==============
-    # Solver
-    # ==============
+    # Solver  {{{
     def _solve_batch(self, batch):
         """
         Solves batch command.
@@ -235,10 +233,9 @@ class ClustersController():
                         result.append([command, y])
                     return result
         return []
+    # }}}
 
-    # =========
-    # Applying
-    # =========
+    # Applying  {{{
     # TODO: to be removed
     def _apply_batch(self, batch):
         logger.debug(f'Applying {batch}')
@@ -259,10 +256,9 @@ class ClustersController():
         layer = self.e.get_cluster_or_layer(action.subject)
         logger.debug(f'Applying {action} on layer {layer}')
         layer.do(action)
+    # }}}
 
-    # ==========
-    # Utils
-    # ==========
+    # Utils  {{{
     def _sort_commands_by_layer_depth(self, commands):
         result = []
         d = []
@@ -289,10 +285,9 @@ class ClustersController():
             result.append(x[1])
         result.reverse()
         return result
+    # }}}
 
-    # =========
-    # Serialize
-    # =========
+    # Serialize {{{
     def _serialize_batch_command(self, batch):
         result = []
         for x in batch.commands:
@@ -319,10 +314,9 @@ class ClustersController():
         else:
             result.append('CLUSTER')
         return result
+    # }}}
 
-    # =========
-    # Deserialize
-    # =========
+    # Deserialize {{{
     def deserialize_batch_command(self, batch):
         result = []
         for x in batch.commands:
@@ -360,3 +354,4 @@ class ClustersController():
             if x.type == obj_type:
                 if x.name == obj_name:
                     return x
+    # }}}
