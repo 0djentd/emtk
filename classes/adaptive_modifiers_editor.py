@@ -668,6 +668,9 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
                 if length < 20:
                     for h in range(20 - length):
                         a = a + " "
+                if length > 20:
+                    a = a[0:17] + '...'
+
                 line = line + a
 
             result.append(line)
