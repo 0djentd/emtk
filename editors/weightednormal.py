@@ -16,11 +16,11 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-from ..classes.bmtool_editor import ClustersEditor
+from ..classes.bmtool_editor import ModalClustersEditor
 
 
-# Example of custom editor using ModifierEditor base class.
-class BMToolEditorWeightedNormal(ClustersEditor):
+# Example of custom editor using ModalClustersEditor base class.
+class BMToolEditorWeightedNormal(ModalClustersEditor):
     _MODIFIER_EDITOR_NAME = 'Weighted Normal Editor'
     _DEFAULT_M_NAME = 'Weighted Normal'
     _DEFAULT_M_TYPE = 'WEIGHTED_NORMAL'

@@ -20,12 +20,12 @@
 
 # import bpy
 
-from ..classes.bmtool_editor import ClustersEditorTemplate
-# from ..classes.bmtool_editor import ClustersEditor
+from ..classes.bmtool_editor import ModalClustersEditorTemplate
+# from ..classes.bmtool_editor import ModalClustersEditor
 
 
-# Example of custom editor using ModifierEditorTemplate
-class BMToolEditorBevel(ClustersEditorTemplate):
+# Example of custom editor using ModalClustersEditorTemplate
+class BMToolEditorBevel(ModalClustersEditorTemplate):
 
     def __init__(self, *args, **kwargs):
         super().__init__(

@@ -29,7 +29,7 @@ import logging
 # from .bmtool_input import BMToolModalInput
 from ..lib.utils.modifier_prop_types import get_props_filtered_by_types
 from ..lib.clusters.cluster_trait import ClusterTrait
-from ..bmtool_editor import ModalClustersEditor
+from .bmtool_editor import ModalClustersEditor
 
 logger = logging.getLogger(__package__)
 logger.setLevel(logging.DEBUG)

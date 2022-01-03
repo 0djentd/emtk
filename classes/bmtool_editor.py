@@ -100,7 +100,6 @@ class ModalClustersEditor(BMToolModalInput):  # {{{
 # }}}
 
 
-# TODO: rename to ModalClustersEditor
 class ModalClustersEditorTemplate(ModalClustersEditor):  # {{{
     """Base class for editors that only use modifiers attributes."""
 
