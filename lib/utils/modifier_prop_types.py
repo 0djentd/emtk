@@ -156,3 +156,29 @@ def filter_props_by_type(modifier, props,  # {{{
         result.append(x)
     return result
 # }}}
+
+    def filter_props_by_types_subtypes(  # {{{
+            obj, props_names, t=None, s=None):
+        """Returns filtered list of props names"""
+        if not isinstance(t, list) and t is not None:
+            raise TypeError
+        if not isinstance(s, list) and s is not None:
+            raise TypeError
+        if not isinstance(props_names, list):
+            raise TypeError
+        for x in props_names:
+            if not isinstance(x, str):
+                raise TypeError
+
+        result = []
+        for x in props_names:
+            prop = obj.rna_type.properties[x]
+            if t is not None:
+                if prop.type not in t:
+                    continue
+            if s is not None:
+                if prop.subtype not in s:
+                    continue
+            result.append(x)
+        return result
+    # }}}
