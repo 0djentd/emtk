@@ -190,7 +190,7 @@ class BMToolModalInput():
         return copy.copy(self.__modal_letters_str)
     # }}}
 
-    def modal_digits(self, event):  # {{{
+    def modal_digits(self, event, prop_def):  # {{{
         """Writes a string that can be used to get integer or float."""
 
         if self.modal_input_mode != 'DIGITS':
@@ -219,7 +219,7 @@ class BMToolModalInput():
         return True
     # }}}
 
-    def modal_letters(self, event):  # {{{
+    def modal_letters(self, event, prop_def):  # {{{
         """This thing writes a string that can be used in modal operator."""
 
         if self.modal_input_mode != 'LETTERS':
