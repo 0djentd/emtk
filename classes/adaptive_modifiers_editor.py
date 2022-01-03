@@ -304,8 +304,10 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
             raise ValueError
         elif self.mode in self.__kbs_no_modal:
             raise ValueError
+    # }}}
+    # }}}
 
-    def __default_mode(self, event):
+    def __default_mode(self, event):  # {{{
         """
         No props besides bools and enums can be edited in default mode.
         No modal input mode can be used in default mode.
@@ -349,12 +351,17 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
         # Other props
         elif prop_name in self.__kbs_editing:
             pass
+    # }}}
 
-    def __modal_mode(self, event, clusters):
+    def __modal_mode(self, event, clusters):  # {{{
         """
         Mode used to edit properties within multiple iterations.
 
         When in modal mode, modal_input_mode shoul never be NONE.
+
+        modal_input_mode always correct for active mode.
+        This means there is no reason to check it twice.
+
         When in modal_input_mode, all complex events
         should go to ModalInput.
 
@@ -373,21 +380,26 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
                 elif self.__check_if_should_apply_input(event, clusters):
                     return True
             else:
-                if self.__check_if_prop_changed(event, clusters):
+                if self.__check_if_delta_prop_changed(event, clusters):
                     return True
+
         elif self.modal_input_mode == {'DIGITS'}:
             if self.__check_event_is_simple:
-                if self.__check_if_should_apply_input(event, clusters):
+                if self.__check_if_stop_modal_digits(event, clusters):
+                    return True
+                elif self.__check_if_modal_digits(event):
                     return True
             else:
                 return
+
         elif self.modal_input_mode == {'LETTERS'}:
             if self.__check_event_is_simple:
-                if self.__check_if_should_apply_input(event, clusters):
+                if self.__check_if_stop_modal_letters(event, clusters):
+                    return True
+                elif self.__check_if_modal_letters(event):
                     return True
             else:
                 return
-    # }}}
     # }}}
 
     # Simple events {{{
@@ -409,7 +421,7 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
                 and prop_def.type in self.__DIGITS_INPUT_TYPES:
             logger.info(f'Switching to modal digits {prop_name}')
             self.modal_input_mode = 'DIGITS'
-            self.modal_digits(event)
+            self.modal_digits(event, prop_def)
             return True
 
         elif event.type\
@@ -417,44 +429,56 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
                 and prop_def.type in self.__LETTERS_INPUT_TYPES:
             logger.info(f'Switching to modal letters {prop_name}')
             self.modal_input_mode = 'LETTERS'
-            self.modal_letters(event)
+            self.modal_letters(event, prop_def)
             return True
 
-    def __check_if_should_apply_input(self, event, clusters):
-
+    # Digits and letters {{{
+    def __check_if_modal_letters(self, event):
         # Get prop name and def for mode
         prop_name = self.mode
         prop_def = self.__mods[0].rna_type.properties[self.mode]
 
-        if self.modal_input_mode == 'DIGITS':
-            if event.type == 'RET':
-                logger.info(f'Modal digits apply {prop_name}')
-                val = self.modal_digits_pop()
-                for mod in self.__mods:
-                    setattr(mod, self.mode, val)
-                self.mode = self.__DEFAULT_MODE
-                return True
-
-            logger.debug(f'Modal digits {prop_name}')
-            self.modal_digits(event, prop_def)
+        logger.debug(f'Modal letters {prop_name}')
+        if self.modal_letters(event, prop_def):
             return True
 
-        elif self.modal_input_mode == 'LETTERS':
-            if event.type == 'RET':
-                logger.info(f'Modal letters apply {prop_name}')
-                val = self.modal_letters_pop()
-                for mod in self.__mods:
-                    setattr(mod, self.mode, val)
-                self.mode = self.__DEFAULT_MODE
-                return True
-            logger.debug(f'Modal letters {prop_name}')
-            self.modal_letters(event, prop_def)
+    def __check_if_stop_modal_letters(self, event):
+        # Get prop name and def for mode
+        prop_name = self.mode
+
+        if event.type == 'RET':
+            logger.info(f'Modal digits apply {prop_name}')
+            val = self.modal_digits_pop()
+            for mod in self.__mods:
+                setattr(mod, self.mode, val)
+            self.mode = self.__DEFAULT_MODE
             return True
-        return False
+
+    def __check_if_modal_digits(self, event):
+        # Get prop name and def for mode
+        prop_name = self.mode
+        prop_def = self.__mods[0].rna_type.properties[self.mode]
+
+        logger.debug(f'Modal digits {prop_name}')
+        if self.modal_digits(event, prop_def):
+            return True
+
+    def __check_if_stop_modal_digits(self, event):
+        # Get prop name and def for mode
+        prop_name = self.mode
+
+        if event.type == 'RET':
+            logger.info(f'Modal letters apply {prop_name}')
+            val = self.modal_letters_pop()
+            for mod in self.__mods:
+                setattr(mod, self.mode, val)
+            self.mode = self.__DEFAULT_MODE
+            return True
+    # }}}
     # }}}
 
     # Complex events {{{
-    def __check_if_prop_changed(self, event, clusters):
+    def __check_if_delta_prop_changed(self, event, clusters):
 
         # Use active mode prop name.
         prop_name = self.mode
