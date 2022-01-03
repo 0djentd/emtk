@@ -63,16 +63,20 @@ class BMToolModalInput():
                             'NUMPAD_9': '9',
                             }
 
+    __MODAL_DIGITS_LIST = list(__MODAL_DIGITS) + list(__MODAL_DIGITS_NUMPAD)
+
     __MODAL_DIGITS_EDITING = ['PERIOD', 'BACK-SPACE']
     __MODAL_LETTERS_EDITING = ['SPACE', 'BACK-SPACE']
-
-    __MODAL_DIGITS_LIST = list(__MODAL_DIGITS) + list(__MODAL_DIGITS_NUMPAD)
 
     __MODAL_LETTERS_LIST\
         = list(__MODAL_LETTERS)\
         + __MODAL_DIGITS_LIST
 
+    __DIGITS_TYPES = {'INT', 'FLOAT'}
+    __LETTERS_TYPES = {'STR', 'ENUM'}
+
     # Currently active mode.
+    # TODO: should this really be here
     # modal_input_mode
     # }}}
 
@@ -112,6 +116,7 @@ class BMToolModalInput():
         self.__modal_input_mode = mode
     # }}}
 
+    # TODO: this method duplicated in adaptive modifiers editor.
     def switch_mode(self, mode: str, prop_def=None):
         """
         This method should be used instead of modal_input_mode property
