@@ -176,22 +176,40 @@ class BMToolPreferences(AddonPreferences):
         # element example: ['a', 'a_shift', 'a_ctl', 'a_alt']
         props_to_display = []
 
-        # TODO: not implemented.
         if len(self.bmtool_prop_search_str) > 1:
-            props_groups_filtered = search_modal_operators_shortcuts(
-                    self.__modal_operator_shortcuts_cache, self.bmtool_prop_search_str)
-            for x in props_groups_filtered:
-                for y in props_groups_filtered[x]:
-                    p = props_groups_filtered[x][y]
+            # Example: 
+            # [('bevel', 
+            #   'angle_limit', 
+            #   'bevel: angle_limit: [letter=A, shift=True, sens=0.0005]')]
+            result = []
+
+            # Get filtered version of shortcuts.
+            if self.__last_bmtools_str_search != bmtool_prop_search_str:
+                props_groups_filtered = search_modal_operators_shortcuts(
+                        self.__modal_operator_shortcuts_cache, self.bmtool_prop_search_str)
+                self.__props_groups_filtered_cache = props_groups_filtered
+            else:
+                props_groups_filtered = self.__props_groups_filtered_cache
+
+            # Shortcuts groups.
+            for x, h in zip(
+                    props_groups_filtered.keys(),
+                    props_groups_filtered.values()):
+
+                # Shortcuts.
+                for y, g in zip(
+                        h.keys(),
+                        h.values()):
+
+                    # Example: 'bevel: angle_limit: [letter=A, shift=True, sens=0.0005]'
                     t = f"{x}: {y}: ["
-                    for i, z in enumerate(p):
-                        # z is name of element
-                        # val is its value
-                        val = p[z]
-                        t = t + f"{z}={val}"
-                        if i < (len(p) - 1):
+                    # Shortcut's elements.
+                    for i, z, v in enumerate(zip(g.keys(), g.values())):
+                        t = t + f"{z}={v}"
+                        if i < (len(g) - 1):
                             t = t + ', '
                     t = t + "]"
+                    result.append((x, y, t))
                     layout.label(text=t)
         else:
             layout.label(
