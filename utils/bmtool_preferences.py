@@ -35,6 +35,10 @@ class BMToolPreferences(AddonPreferences):
     __strict_checks = True
     __last_bmtools_str_search = None
 
+    # Shortcut and group that is being edited
+    bmtool_editing_modal_shortcut_name = None
+    bmtool_editing_modal_shortcut_group = None
+
     # Settings {{{
     save_clusters: BoolProperty(
             name="Save clusters on operator finish",

@@ -1,3 +1,5 @@
+# Copyright 2022, Sergey Shapochkin
+
 # ##### BEGIN GPL LICENSE BLOCK #####
 #
 #  This program is free software; you can redistribute it and/or
@@ -34,28 +36,34 @@ from . ui.bmtools_pie import VIEW_3D_MT_PIE_bmtools_pie_1
 
 bl_info = {
     "name": "BMTools",
-    "author": "djentled",
-    "version": (0, 3, 0),
+    "author": "djentled, also known as Sergey Shapochkin",
+    "version": (0, 4, 0),
     "blender": (3, 1, 0),
     "description": "Tools for adding, sorting and editing exsting modifiers.",
     "category": "Interface"
 }
 
-# logging.basicConfig(
-#         format='%(module)s %(levelname)s:%(message)s',
-#         level=logging.DEBUG)
-
 classes = [
-    BMToolPreferences,
-    BMTOOLS_OT_start_editing_modal_shortcut,
-    BMTOOLS_OT_add_or_update_modal_shortcut,
+
+    # modal operators
     BMTOOL_OT_bmtoolm,
     BMTOOL_OT_bmtoole2,
     BMTOOL_OT_bmtoolm_2,
+
+    # lib ops
     BMTOOL_OT_add_cluster_type_object,
+
+    # prefs
+    BMToolPreferences,
+    BMTOOLS_OT_start_editing_modal_shortcut,
+    BMTOOLS_OT_add_or_update_modal_shortcut,
+
+    # ui
+    VIEW_3D_MT_PIE_bmtools_pie_1,
+
+    # dev
     BMTOOL_OT_add_all_modifiers,
     BMTOOL_OT_add_all_modifiers_and_dump_props,
-    VIEW_3D_MT_PIE_bmtools_pie_1,
 ]
 
 addon_keymaps = []
