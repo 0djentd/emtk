@@ -20,26 +20,31 @@
 
 import bpy
 
-import logging
-
+# Modal operators
 from . operators.bmtoolm import BMTOOL_OT_bmtoolm
+from . operators.bmtoolm_lite import BMTOOL_OT_bmtoolm_2
+from . operators.bmtoole2 import BMTOOL_OT_bmtoole2
+
+# Preferences
+from . utils.bmtool_preferences import BMToolPreferences
+from . utils.bmtool_preferences import BMTOOLS_OT_start_editing_modal_shortcut
+from . utils.bmtool_preferences import BMTOOLS_OT_add_or_update_modal_shortcut
+
+# UI
+from . ui.bmtools_pie import VIEW_3D_MT_PIE_bmtools_pie_1
+
+# Dev
 from . operators.dev.add_all_modifiers import BMTOOL_OT_add_all_modifiers
 from . operators.dev.add_all_modifiers import\
         BMTOOL_OT_add_all_modifiers_and_dump_props
 from . operators.dev.add_cluster_type import BMTOOL_OT_add_cluster_type_object
-from . operators.bmtoole2 import BMTOOL_OT_bmtoole2
-from . operators.bmtoolm_lite import BMTOOL_OT_bmtoolm_2
-from . utils.bmtool_preferences import BMToolPreferences
-from . utils.bmtool_preferences import BMTOOLS_OT_start_editing_modal_shortcut
-from . utils.bmtool_preferences import BMTOOLS_OT_add_or_update_modal_shortcut
-from . ui.bmtools_pie import VIEW_3D_MT_PIE_bmtools_pie_1
 
 bl_info = {
     "name": "BMTools",
-    "author": "djentled, also known as Sergey Shapochkin",
+    "author": "Sergey Shapochkin, also known as djentled",
     "version": (0, 4, 0),
     "blender": (3, 1, 0),
-    "description": "Tools for adding, sorting and editing exsting modifiers.",
+    "description": "Tools for editing modifiers and clusters.",
     "category": "Interface"
 }
 
