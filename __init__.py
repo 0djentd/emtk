@@ -28,6 +28,8 @@ from . operators.dev.add_cluster_type import BMTOOL_OT_add_cluster_type_object
 from . operators.bmtoole2 import BMTOOL_OT_bmtoole2
 from . operators.bmtoolm_lite import BMTOOL_OT_bmtoolm_2
 from . utils.bmtool_preferences import BMToolPreferences
+from . utils.bmtool_preferences import BMTOOLS_OT_start_editing_modal_shortcut
+from . utils.bmtool_preferences import BMTOOLS_OT_add_or_update_modal_shortcut
 from . ui.bmtools_pie import VIEW_3D_MT_PIE_bmtools_pie_1
 
 bl_info = {
@@ -45,6 +47,8 @@ bl_info = {
 
 classes = [
     BMToolPreferences,
+    BMTOOLS_OT_start_editing_modal_shortcut,
+    BMTOOLS_OT_add_or_update_modal_shortcut,
     BMTOOL_OT_bmtoolm,
     BMTOOL_OT_bmtoole2,
     BMTOOL_OT_bmtoolm_2,

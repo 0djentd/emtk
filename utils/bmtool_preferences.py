@@ -421,6 +421,7 @@ def search_modal_operators_shortcuts(
 
 # Operators {{{
 class BMTOOLS_OT_start_editing_modal_shortcut(bpy.types.Operator):
+    bl_label = "Start editing bmtool modal operator kbs."
     bl_idname = "bmtools.start_editing_modal_shortcut"
     bl_description = "Start editing modal shortcut"
 
@@ -451,7 +452,9 @@ class BMTOOLS_OT_start_editing_modal_shortcut(bpy.types.Operator):
         self.bmtool_operator_shortcut_group = ""
         return {'FINISHED'}
 
+
 class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):
+    bl_label = "Add or change bmtool modal operator kbs."
     bl_idname = "bmtools.add_or_update_modal_shortcut"
     bl_description = "Add or update modal shortcut"
     bmtool_operator_shortcut_name: StringProperty(
@@ -459,7 +462,6 @@ class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):
             default="",
             )
 
-   
     bmtool_operator_shortcut_group: StringProperty(
             name="Shortcut group",
             default="",
