@@ -18,6 +18,7 @@
 
 import re
 import json
+import string
 
 import bpy
 
@@ -89,10 +90,11 @@ class BMToolPreferences(AddonPreferences):
                                      }
                      }
            }
+    {{{
     """
     bmtool_modal_operators_serialized_shortcuts: StringProperty(
             name='Modal operators serialized shortcuts.',
-            default=""
+            default='{"BEVEL": {"angle_limit": {"letter": "A", "shift": false, "ctrl": false, "alt": false, "sens": 0.0005}}}'
             )
 
     # Currently edited shortcut props {{{
@@ -136,7 +138,7 @@ class BMToolPreferences(AddonPreferences):
     # This is search field
     bmtool_prop_search_str: StringProperty(
             name="Search through bmtool modal props",
-            default=""
+            default=''
             )
     # }}}
 
@@ -153,10 +155,71 @@ class BMToolPreferences(AddonPreferences):
         if self.custom_cluster_types:
             layout.prop(self, "always_add_custom_cluster_types")
             layout.prop(self, "cluster_types")
+        layout.prop(self, "bmtool_modal_operators_serialized_shortcuts")
 
         self.__draw_shortcuts_search()
 
-    def __draw_shortcuts_search(self)
+    # Draw shortcut {{{
+    def __draw_shortcuts_groups_dict(
+            self, shortcut_groups_dict: dict):
+        if not isinstance(shortcut_groups_dict, dict):
+            raise TypeError
+
+        for x, y in zip(
+                shortcut_groups_dict.keys(),
+                shortcut_groups_dict.values()):
+            self.__draw_shortcuts_group(x, y)
+        return
+
+    def __draw_shortcuts_group(
+            self, shortcuts_group_name: str, shortcut_group: dict):
+        if not isinstance(shortcuts_group_name, str):
+            raise TypeError
+        if not isinstance(shortcut_group, dict):
+            raise TypeError
+
+        self.layout.label(text=shortcuts_group_name)
+        for x, y in zip(shortcut_group.keys(), shortcut_group.values()):
+            self.__draw_shortcut(shortcuts_group_name, x, y)
+        return
+
+    def __draw_shortcut(self,
+                        shortcuts_group_name: str,
+                        shortcut_name: str,
+                        shortcut: dict):
+
+        if not isinstance(shortcut_name, str):
+            raise TypeError
+        if not isinstance(shortcut, dict):
+            raise TypeError
+
+        if not check_shortcut_formatting(shortcut):
+            self.layout.label(text='Shortcut is broken.')
+            return
+        # Example:
+        # 'bevel: angle_limit: [letter=A, shift=True, sens=0.0005]'
+        t = f"{shortcut_name}: ["
+        # Shortcut's elements.
+        i = 0
+        for z, v in zip(shortcut.keys(), shortcut.values()):
+            t = t + f"{z}={v}"
+            if i < (len(shortcut) - 1):
+                t = t + ', '
+            i += 1
+        t = t + "]"
+
+        self.layout.label(text=t)
+        b = self.layout.operator("bmtools.start_editing_modal_shortcut")
+        b.bmtool_operator_shortcut_group = shortcuts_group_name
+        b.bmtool_operator_shortcut_name = shortcut_name
+        return
+
+    def __draw_shortcut_editor(self):
+        return
+    # }}}
+
+    def __draw_shortcuts_search(self):
+        layout = self.layout
         if self.__selected_shortcut:
             layout.prop(self, "bmtool_shortcut_letter")
             layout.prop(self, "bmtool_shortcut_shift")
@@ -168,59 +231,23 @@ class BMToolPreferences(AddonPreferences):
 
         layout.prop(self, "bmtool_prop_search_str")
 
-        s = []
-        s.append(str(self.bmtool_prop_search_str))
-        s.append(re.sub('_', ' ', s[0]))
-        s.append(s[0].upper())
-        s.append(s[0].lower())
-        s.append(s[1].upper())
-        s.append(s[1].lower())
-        s.append(s[1].title())
-
         # keyboard shortcuts viewer {{{
         if len(self.bmtool_prop_search_str) > 1:
 
-            # Example:
-            # [('bevel',
-            #   'angle_limit',
-            #   'bevel: angle_limit: [letter=A, shift=True, sens=0.0005]')]
-            result = []
+            self.__refresh_modal_opertors_shortcuts_cache()
 
             # Get filtered version of shortcuts.
             if self.__last_bmtools_str_search != self.bmtool_prop_search_str:
-
                 props_groups_filtered = search_modal_operators_shortcuts(
                         self.__modal_operator_shortcuts_cache,
                         self.bmtool_prop_search_str)
-
                 self.__props_groups_filtered_cache = props_groups_filtered
             else:
                 props_groups_filtered = self.__props_groups_filtered_cache
 
-            # Shortcuts groups.
-            for x, h in zip(
-                    props_groups_filtered.keys(),
-                    props_groups_filtered.values()):
-
-                # Shortcuts.
-                for y, g in zip(
-                        h.keys(),
-                        h.values()):
-
-                    # Example:
-                    # 'bevel: angle_limit: [letter=A, shift=True, sens=0.0005]'
-                    t = f"{x}: {y}: ["
-                    # Shortcut's elements.
-                    for i, z, v in enumerate(zip(g.keys(), g.values())):
-                        t = t + f"{z}={v}"
-                        if i < (len(g) - 1):
-                            t = t + ', '
-                    t = t + "]"
-                    result.append((x, y, t))
             # Draw
-            for x in result:
-                shortcut_group, shortcut_name, shortcut_repr = x
-                layout.label
+            self.__draw_shortcuts_groups_dict(props_groups_filtered)
+
         else:
             layout.label(
                     text="Type shortcut name above to see modal shortcuts.")
@@ -268,7 +295,7 @@ class BMToolPreferences(AddonPreferences):
             self, group_name: str, shortcut: dict) -> bool:
         """Add new modal operators shortcut."""
 
-        self.check_shortcut_element_formatting(shortcut)
+        self.check_shortcut_formatting(shortcut)
         self.add_modal_operators_shortcuts_group(group_name)
         self.__modal_operator_shortcuts_cache[group_name].update(shortcut)
 
@@ -323,40 +350,74 @@ def check_shortcuts_formatting(shortcuts: dict) -> bool:  # {{{
 def check_shortcuts_group_formatting(shortcuts_group: dict) -> bool:
     if not isinstance(shortcuts_group, dict):
         raise TypeError
-    for y in shortcuts_group:
-        check_shortcut_element_formatting(shortcuts_group[y])
+    for y in shortcuts_group.values():
+        check_shortcut_formatting(y)
 
 
 def check_shortcut_formatting(shortcut):
     if not isinstance(shortcut, dict):
-        raise TypeError
+        raise TypeError(f'Expected dict, got {type(shortcut)}')
     g = {'letter', 'shift', 'ctrl', 'alt'}
     for x in g:
-        if x not in shortcut:
+        if x not in shortcut.keys():
             raise ValueError
-    for y in shortcut:
-        if not isinstance(shortcut[y], str)\
-                and not isinstance(shortcut[y], bool)\
-                and not isinstance(shortcut[y], int)\
-                and not isinstance(shortcut[y], float):
+    for x, y in zip(shortcut.keys(), shortcut.values()):
+        check_shortcut_element_formatting(x, y)
+    return True
+
+
+def check_shortcut_element_formatting(element_name, element):
+    if element_name == 'letter':
+        if not isinstance(element, str):
             raise TypeError
+        if len(element) != 1:
+            raise ValueError
+        if element not in string.ascii_uppercase:
+            raise ValueError
+
+    if not isinstance(element, str)\
+            and not isinstance(element, bool)\
+            and not isinstance(element, int)\
+            and not isinstance(element, float):
+        raise TypeError
+
 # }}}
 
 
-def filter_kbs_by_str(shortcuts: dict, s: str) -> dict:
+def filter_shortcuts_group_by_str(
+        shortcuts: dict, s: str) -> dict:
+    """Filters shortcuts in a shortcuts group by name.
+
+    Returns new shortcuts group.
+    """
     result = {}
-    for x in shortcuts:
+    for x, z in zip(
+            shortcuts.keys(),
+            shortcuts.values()):
         if s in x:
-            result.update({x: shortcuts[x]})
+            result.update({x: z})
     return result
 
 
-def search_modal_operators_shortcuts(shortcuts: dict, shortcut_name: str) -> dict:
+def search_modal_operators_shortcuts(
+        shortcuts: dict, shortcut_name: str) -> dict:
+    """Filters shortcuts groups dict by shortcut name.
+
+    Returns new shortcuts groups dict.
+    """
+    if not isinstance(shortcut_name, str):
+        raise TypeError
+
     result = {}
+    for x, y in zip(shortcuts.keys(), shortcuts.values()):
+        f = filter_shortcuts_group_by_str(y, shortcut_name)
+        if len(f) > 0:
+            result.update({x: f})
     check_shortcuts_formatting(result)
     return result
 
 # }}}
+
 
 # Operators {{{
 class BMTOOLS_OT_start_editing_modal_shortcut(bpy.types.Operator):
@@ -442,7 +503,7 @@ class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):
                     'sens': self.bmtool_operator_shortcut_sens,
                     }
 
-        if not check_shortcut_elements(shortcut):
+        if not check_shortcut_formatting(shortcut):
             return {'CANCELLED'}
         kbs = deserialize_kbs(prefs.bmtool_modal_operators_serialized_shortcuts)
         prefs.bmtool_editing_shortcut = True
