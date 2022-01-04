@@ -199,10 +199,13 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
                          **kwargs)
 
         self.mode = self.__DEFAULT_MODE
+        # Mappings
         self.__kbs_modal = {}
         self.__kbs_no_modal = {}
         self.__kbs_editing = {}
 
+        # This variable is changed every time
+        # modifiers type or editor is switched.
         self.__mods = []
         self.prop_def = None
     # }}}
