@@ -82,8 +82,8 @@ class BMToolPreferences(AddonPreferences):
                      }
            }
     """
-    bmtool_modal_operator_shortcuts: StringProperty(
-            name='BMTool modal operators shortcuts.'
+    bmtool_modal_operators_serialized_shortcuts: StringProperty(
+            name='Modal operators serialized shortcuts.'
             default=""
             )
 
@@ -132,6 +132,12 @@ class BMToolPreferences(AddonPreferences):
             )
     # }}}
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.__need_modal_operators_shortcuts_cache_refresh = True
+        self.__modal_operator_shortcuts_cache = None
+        self.__strict_checks = True
+
     def draw(self, context):
         layout = self.layout
         layout.label(text="BMTool options")
@@ -172,62 +178,85 @@ class BMToolPreferences(AddonPreferences):
 
         # TODO: not implemented.
         if len(self.bmtool_prop_search_str) > 1:
-            # all props
-            for x in self.props_names:
-                # props names from bmtool_prop_search_str
-                for z in s:
-                    if z in x:
-
-                        # mapping element
-                        names = [
-                                 x,
-                                 f'{x}_shift',
-                                 f'{x}_alt',
-                                 f'{x}_ctl'
-                                 ]
-
-                        # check duplicates in props
-                        dont_add = False
-                        for p in props_to_display:
-                            if p == names:
-                                dont_add = True
-
-                        if not dont_add:
-                            props_to_display.append(names)
-
-            print(len(props_to_display))
-            for x in props_to_display:
-                kbs_name = re.sub('_', ' ', x[0])
-                kbs_name = kbs_name.title()
-                layout.label(text=kbs_name)
-                for y in x:
-                    layout.prop(self, y)
-
+            props_groups_filtered = search_modal_operators_shortcuts(
+                    self.__modal_operator_shortcuts_cache, self.bmtool_prop_search_str)
+            for x in props_groups_filtered:
+                for y in props_groups_filtered[x]:
+                    p = props_groups_filtered[x][y]
+                    t = f"{x}: {y}: ["
+                    for i, z in enumerate(p):
+                        # z is name of element
+                        # val is its value
+                        val = p[z]
+                        t = t + f"{z}={val}"
+                        if i < (len(p) - 1):
+                            t = t + ', '
+                    t = t + "]"
+                    layout.label(text=t)
         else:
             layout.label(
                     text="Type modifier property name above to view modal shortcuts.")
             layout.label(text="Example: bevel angle")
         # }}}
 
+    # Modal operators shortcuts cache {{{
+    def __refresh_modal_opertors_shortcuts_cache(self):
+        if not self.__need_modal_operators_shortcuts_cache_refresh:
+            return
+        self.__modal_operator_shortcuts_cache\
+                = deserialize_kbs(self.bmtool_modal_operators_serialized_shortcuts)
 
+    def get_modal_operators_shortcuts_group(self, group_name: str) -> dict:
+        """This method should be used to get shortcuts in operator."""
+        if not isinstance(group_name, str):
+            raise TypeError
+
+        self.__refresh_modal_opertors_shortcuts_cache()
+        if group_name in self.__modal_operator_shortcuts_cache:
+            g = self.__modal_operator_shortcuts_cache[group_name]
+            check_shortcuts_group_formatting(g)
+            return g
+        else:
+            print(f'No modal operators shortcuts group named {group_name}')
+            if self.__strict_checks:
+                raise ValueError
+            else:
+                return {}
+
+    def add_modal_operators_shortcuts_group(self, group_name: str) -> bool:
+        """Add new modal operators shortcuts group."""
+        if not isinstance(group_name, str):
+            raise TypeError
+
+        self.__refresh_modal_opertors_shortcuts_cache()
+        if group_name not in self.__modal_operator_shortcuts_cache:
+            g = {group_name: {}}
+            self.__modal_operator_shortcuts_cache.update(g)
+            return True
+        return False
+
+    def add_modal_operators_shortcut(self, group_name: str, shortcut: dict) -> bool:
+        """Add new modal operators shortcut."""
+
+        self.check_shortcut_element_formatting(shortcut)
+        self.add_modal_operators_shortcuts_group(group_name)
+        self.__modal_operator_shortcuts_cache[group_name].update(shortcut)
+
+    def save_modal_operators_shortcuts_cache(self):
+        """Saves modal operators shortcuts cache to prop."""
+
+        s = serialize_kbs(self.__modal_operator_shortcuts_cache)
+        self.bmtool_modal_operators_serialized_shortcuts = s
+    # }}}
+
+
+# Functions {{{
 def deserialize_kbs(kbs: str) -> dict:  # {{{
     """Deserialize string with shortcuts."""
     if not isinstance(kbs, str):
         raise TypeError
-
     shortcuts = json.loads(kbs)
-
-    if not isinstance(shortcuts, dict):
-        raise TypeError
-    for x in shortcuts:
-        if not isinstance(shortcuts[x], dict):
-            raise TypeError
-        for y in shortcuts[x]:
-            if not isinstance(shortcuts[x][y], str)\
-                    and not isinstance(shortcuts[x][y], bool)\
-                    and not isinstance(shortcuts[x][y], int)\
-                    and not isinstance(shortcuts[x][y], float):
-                raise TypeError
+    check_shortcuts_formatting(shortcuts)
     return shortcuts
 # }}}
 
@@ -254,13 +283,45 @@ def serialize_kbs(shortcuts: dict) -> str:  # {{{
 # }}}
 
 
+def check_shortcuts_formatting(shortcuts: dict) -> bool:  # {{{
+    if not isinstance(shortcuts, dict):
+        raise TypeError
+    for x in shortcuts:
+        check_shortcuts_group_formatting(shortcuts[x])
+
+
+def check_shortcuts_group_formatting(shortcuts_group: dict) -> bool:
+    if not isinstance(shortcuts_group, dict):
+        raise TypeError
+    for y in shortcuts_group:
+        check_shortcut_element_formatting(shortcuts_group[y])
+
+
+def check_shortcut_formatting(shortcut):
+    if not isinstance(shortcut, dict):
+        raise TypeError
+    g = {'letter', 'shift', 'ctrl', 'alt'}
+    for x in g:
+        if x not in shortcut:
+            raise ValueError
+    for y in shortcut:
+        if not isinstance(shortcut[y], str)\
+                and not isinstance(shortcut[y], bool)\
+                and not isinstance(shortcut[y], int)\
+                and not isinstance(shortcut[y], float):
+            raise TypeError
+# }}}
+
+
 def filter_kbs_by_str(shortcuts: dict, s: str) -> dict:
     result = {}
     for x in shortcuts:
         if s in x:
             result.update({x: shortcuts[x]})
     return result
+# }}}
 
+# Operators {{{
 class BMTOOLS_OT_start_editing_modal_shortcut(bpy.types.Operator):
     bl_idname = "bmtools.start_editing_modal_shortcut"
     bl_description = "Start editing modal shortcut"
@@ -346,6 +407,7 @@ class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):
 
         if not check_shortcut_elements(shortcut):
             return {'CANCELLED'}
-        kbs = deserialize_kbs(prefs.bmtool_modal_operator_shortcuts)
+        kbs = deserialize_kbs(prefs.bmtool_modal_operators_serialized_shortcuts)
         prefs.bmtool_editing_shortcut = True
         return {'FINISHED'}
+# }}}
