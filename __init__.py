@@ -32,6 +32,7 @@ from . utils.bmtool_preferences import BMTOOLS_OT_add_or_update_modal_shortcut
 
 # UI
 from . ui.bmtools_pie import VIEW_3D_MT_PIE_bmtools_pie_1
+from . ui.bmtool_panel import VIEW_3D_PT_bmtool_panel
 
 # Dev
 from . operators.dev.add_all_modifiers import BMTOOL_OT_add_all_modifiers
@@ -65,6 +66,7 @@ classes = [
 
     # ui
     VIEW_3D_MT_PIE_bmtools_pie_1,
+    VIEW_3D_PT_bmtool_panel,
 
     # dev
     BMTOOL_OT_add_all_modifiers,

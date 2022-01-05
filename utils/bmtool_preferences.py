@@ -19,6 +19,7 @@
 # import re
 import json
 import string
+import math
 
 import bpy
 
@@ -34,7 +35,6 @@ class BMToolPreferences(AddonPreferences):  # {{{
     __modal_operator_shortcuts_cache = None
     __strict_checks = True
     __last_bmtools_str_search = None
-
 
     # Settings {{{
     save_clusters: BoolProperty(
@@ -107,23 +107,23 @@ class BMToolPreferences(AddonPreferences):  # {{{
     bmtool_editing_modal_shortcut_group: StringProperty("")
 
     bmtool_shortcut_letter: StringProperty(
-            name="Shortcut mapping",
+            name="Letter",
             maxlen=1,
             default="",
             )
 
     bmtool_shortcut_shift: BoolProperty(
-            name="Shortcut require shift to be pressed",
+            name="Shift",
             default=False
             )
 
     bmtool_shortcut_ctrl: BoolProperty(
-            name="Shortcut require ctrl to be pressed",
+            name="Ctrl",
             default=False
             )
 
     bmtool_shortcut_alt: BoolProperty(
-            name="Shortcut require alt to be pressed",
+            name="Alt",
             default=False
             )
 
@@ -160,29 +160,38 @@ class BMToolPreferences(AddonPreferences):  # {{{
 
     # Draw shortcut {{{
     def __draw_shortcuts_groups_dict(
-            self, shortcut_groups_dict: dict):
+            self, layout, shortcut_groups_dict: dict):
         if not isinstance(shortcut_groups_dict, dict):
             raise TypeError
 
+        layout = layout.box()
+        layout.label(text="Shortcuts")
         for x, y in zip(
                 shortcut_groups_dict.keys(),
                 shortcut_groups_dict.values()):
-            self.__draw_shortcuts_group(x, y)
+            layout = layout.box()
+            self.__draw_shortcuts_group(layout, x, y)
         return
 
     def __draw_shortcuts_group(
-            self, shortcuts_group_name: str, shortcut_group: dict):
+            self, layout, shortcuts_group_name: str, shortcut_group: dict):
         if not isinstance(shortcuts_group_name, str):
             raise TypeError
         if not isinstance(shortcut_group, dict):
             raise TypeError
 
-        self.layout.label(text=shortcuts_group_name)
+        layout.label(text=shortcuts_group_name)
+        i = 0
+        box = None
         for x, y in zip(shortcut_group.keys(), shortcut_group.values()):
-            self.__draw_shortcut(shortcuts_group_name, x, y)
+            if math.remainder(i, 3) == 0:
+                box = layout.box()
+            self.__draw_shortcut(box, shortcuts_group_name, x, y)
+            i += 1
         return
 
     def __draw_shortcut(self,
+                        layout,
                         shortcuts_group_name: str,
                         shortcut_name: str,
                         shortcut: dict):
@@ -193,7 +202,7 @@ class BMToolPreferences(AddonPreferences):  # {{{
             raise TypeError
 
         if not check_shortcut_formatting(shortcut):
-            self.layout.label(text='Shortcut is broken.')
+            layout.label(text='Shortcut is broken.')
             return
         # Example:
         # 'bevel: angle_limit: [letter=A, shift=True, sens=0.0005]'
@@ -201,14 +210,18 @@ class BMToolPreferences(AddonPreferences):  # {{{
         # Shortcut's elements.
         i = 0
         for z, v in zip(shortcut.keys(), shortcut.values()):
-            t = t + f"{z}={v}"
+            if type(v) == float:
+                t = t + f"{z}={round(v, 2)}"
+            else:
+                t = t + f"{z}={v}"
+
             if i < (len(shortcut) - 1):
                 t = t + ', '
             i += 1
         t = t + "]"
 
-        b = self.layout.operator("bmtools.start_editing_modal_shortcut",
-                                 text=t)
+        b = layout.operator("bmtools.start_editing_modal_shortcut",
+                            text=t)
 
         b.bmtool_operator_shortcut_name = shortcut_name
         b.bmtool_operator_shortcut_group = shortcuts_group_name
@@ -216,17 +229,23 @@ class BMToolPreferences(AddonPreferences):  # {{{
         if self.bmtool_editing_modal_shortcut_name == shortcut_name\
                 and self.bmtool_editing_modal_shortcut_group\
                 == shortcuts_group_name:
-            self.__draw_shortcut_editor(shortcut_name, shortcuts_group_name)
+            self.__draw_shortcut_editor(
+                    layout, shortcut_name, shortcuts_group_name)
         return
 
-    def __draw_shortcut_editor(self, shortcut_name, shortcuts_group_name):
-        layout = self.layout
-
-        layout.prop(self, "bmtool_shortcut_letter")
-        layout.prop(self, "bmtool_shortcut_shift")
-        layout.prop(self, "bmtool_shortcut_ctrl")
-        layout.prop(self, "bmtool_shortcut_alt")
-        layout.prop(self, "bmtool_shortcut_sens")
+    def __draw_shortcut_editor(
+            self, layout, shortcut_name, shortcuts_group_name):
+        row = layout.row()
+        col = row.column()
+        col.prop(self, "bmtool_shortcut_letter")
+        col = row.column()
+        col.prop(self, "bmtool_shortcut_shift")
+        col = row.column()
+        col.prop(self, "bmtool_shortcut_ctrl")
+        col = row.column()
+        col.prop(self, "bmtool_shortcut_alt")
+        col = row.column()
+        col.prop(self, "bmtool_shortcut_sens")
 
         a = layout.operator("bmtools.add_or_update_modal_shortcut")
 
@@ -261,7 +280,7 @@ class BMToolPreferences(AddonPreferences):  # {{{
                 props_groups_filtered = self.__props_groups_filtered_cache
 
             # Draw
-            self.__draw_shortcuts_groups_dict(props_groups_filtered)
+            self.__draw_shortcuts_groups_dict(layout, props_groups_filtered)
 
         else:
             layout.label(
