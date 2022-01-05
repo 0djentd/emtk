@@ -19,77 +19,79 @@
 import json
 
 import bpy
+from bpy.props import BoolProperty
 
 from ...lib.utils.modifier_prop_types import get_all_editable_props
 from ...lib.utils.modifier_prop_types import get_props_filtered_by_types
+from ...utils.bmtool_preferences import generate_new_shortcut, serialize_kbs
+
+# All supported modifier types. {{{
+_MODIFIER_TYPES = [
+                    "DATA_TRANSFER",
+                    "MESH_CACHE",
+                    "MESH_SEQUENCE_CACHE",
+                    "NORMAL_EDIT",
+                    "WEIGHTED_NORMAL",
+                    "UV_PROJECT",
+                    "UV_WARP",
+                    "VERTEX_WEIGHT_EDIT",
+                    "VERTEX_WEIGHT_MIX",
+                    "VERTEX_WEIGHT_PROXIMITY",
+                    "ARRAY",
+                    "BEVEL",
+                    "BOOLEAN",
+                    "BUILD",
+                    "DECIMATE",
+                    "EDGE_SPLIT",
+                    "NODES",
+                    "MASK",
+                    "MIRROR",
+                    # "MESH_TO_VOLUME",
+                    "MULTIRES",
+                    "REMESH",
+                    "SCREW",
+                    "SKIN",
+                    "SOLIDIFY",
+                    "SUBSURF",
+                    "TRIANGULATE",
+                    "VOLUME_TO_MESH",
+                    "WELD",
+                    "WIREFRAME",
+                    "ARMATURE",
+                    "CAST",
+                    "CURVE",
+                    "DISPLACE",
+                    "HOOK",
+                    "LAPLACIANDEFORM",
+                    "LATTICE",
+                    "MESH_DEFORM",
+                    "SHRINKWRAP",
+                    "SIMPLE_DEFORM",
+                    "SMOOTH",
+                    "CORRECTIVE_SMOOTH",
+                    "LAPLACIANSMOOTH",
+                    "SURFACE_DEFORM",
+                    "WARP",
+                    "WAVE",
+                    # "VOLUME_DISPLACE",
+                    "CLOTH",
+                    "COLLISION",
+                    "DYNAMIC_PAINT",
+                    "EXPLODE",
+                    "FLUID",
+                    "OCEAN",
+                    "PARTICLE_INSTANCE",
+                    "PARTICLE_SYSTEM",
+                    "SOFT_BODY",
+                    "SURFACE"
+                    ]
+# }}}
 
 
 class BMTOOL_OT_add_all_modifiers(bpy.types.Operator):
     bl_idname = "object.add_all_modifiers"
     bl_label = "BMTool add all modifiers"
     bl_description = "Add all modifiers on selected objects"
-
-    # All supported modifier types. {{{
-    __MODIFIER_TYPES = [
-                        "DATA_TRANSFER",
-                        "MESH_CACHE",
-                        "MESH_SEQUENCE_CACHE",
-                        "NORMAL_EDIT",
-                        "WEIGHTED_NORMAL",
-                        "UV_PROJECT",
-                        "UV_WARP",
-                        "VERTEX_WEIGHT_EDIT",
-                        "VERTEX_WEIGHT_MIX",
-                        "VERTEX_WEIGHT_PROXIMITY",
-                        "ARRAY",
-                        "BEVEL",
-                        "BOOLEAN",
-                        "BUILD",
-                        "DECIMATE",
-                        "EDGE_SPLIT",
-                        "NODES",
-                        "MASK",
-                        "MIRROR",
-                        # "MESH_TO_VOLUME",
-                        "MULTIRES",
-                        "REMESH",
-                        "SCREW",
-                        "SKIN",
-                        "SOLIDIFY",
-                        "SUBSURF",
-                        "TRIANGULATE",
-                        "VOLUME_TO_MESH",
-                        "WELD",
-                        "WIREFRAME",
-                        "ARMATURE",
-                        "CAST",
-                        "CURVE",
-                        "DISPLACE",
-                        "HOOK",
-                        "LAPLACIANDEFORM",
-                        "LATTICE",
-                        "MESH_DEFORM",
-                        "SHRINKWRAP",
-                        "SIMPLE_DEFORM",
-                        "SMOOTH",
-                        "CORRECTIVE_SMOOTH",
-                        "LAPLACIANSMOOTH",
-                        "SURFACE_DEFORM",
-                        "WARP",
-                        "WAVE",
-                        # "VOLUME_DISPLACE",
-                        "CLOTH",
-                        "COLLISION",
-                        "DYNAMIC_PAINT",
-                        "EXPLODE",
-                        "FLUID",
-                        "OCEAN",
-                        "PARTICLE_INSTANCE",
-                        "PARTICLE_SYSTEM",
-                        "SOFT_BODY",
-                        "SURFACE"
-                        ]
-    # }}}
 
     @classmethod
     def poll(self, context):
@@ -106,7 +108,7 @@ class BMTOOL_OT_add_all_modifiers(bpy.types.Operator):
     def execute(self, context):
 
         modifiers = []
-        for x in self.__MODIFIER_TYPES:
+        for x in _MODIFIER_TYPES:
             mod = bpy.context.object.modifiers.new(x.lower(), x)
             if mod is not None:
                 mod.show_viewport = False
@@ -118,9 +120,11 @@ class BMTOOL_OT_add_all_modifiers(bpy.types.Operator):
         return {'FINISHED'}
 
 
-class BMTOOL_OT_add_default_modifiers_props_to_kbs(bpy.types.Operator):
-    bl_idname = "object.add_default_modifiers_props_to_kbs"
+class BMTOOL_OT_reparse_default_modifiers_props_kbs(bpy.types.Operator):
+    bl_idname = "object.reparse_default_modifiers_props_kbs"
     bl_label = "BMTool add all modifiers props to kbs"
+
+    replace_kbs: BoolProperty(False)
 
     @classmethod
     def poll(self, context):
@@ -135,29 +139,42 @@ class BMTOOL_OT_add_default_modifiers_props_to_kbs(bpy.types.Operator):
         return True
 
     def execute(self, context):
-
         modifiers = []
-        for x in self.__MODIFIER_TYPES:
+        for x in _MODIFIER_TYPES:
             mod = bpy.context.object.modifiers.new(x.lower(), x)
             if mod is not None:
                 mod.show_viewport = False
-                modifiers.append([mod.type, mod])
+                modifiers.append(mod)
+
+        prefs = bpy.context.preferences.addons['bmtools'].preferences
+
+        s = {}
         for x in modifiers:
             props = get_all_editable_props(x, no_ignore=True)
-            prefs = bpy.context.preferences.addons['bmtools'].preferences
-            already_created = prefs.get_modal_operators_shortcuts_group(x[0]).values():
-            for y in props:
-                shortcut = get_kbs(y, already_created)
-                bpy.ops.bmtools.add_or_update_modal_shortcut(
-                        bmtool_operator_shortcut_name=name,
-                        bmtool_operator_shortcut_group=x[0]
-                        bmtool_operator_shortcut_letter=letter,
-                        bmtool_operator_shortcut_shift=shift,
-                        bmtool_operator_shortcut_ctrl=ctrl,
-                        bmtool_operator_shortcut_alt=alt
-                        bmtool_operator_shortcut_sens=0.005,
-                        )
 
+            if self.replace_kbs:
+                d = {x.type: {}}
+            else:
+                d = prefs.get_modal_operators_shortcuts_group(x.type)
+                d = {x.type: d}
+
+            for y in props:
+                shortcut = generate_new_shortcut(y, d)
+                d[x.type].update(shortcut)
+
+            s.update(d)
+
+        if self.replace_kbs:
+            prefs.bmtool_modal_operators_serialized_shortcuts\
+                    = serialize_kbs(s)
+        else:
+            i = 0
+            for x, y in zip(s.keys(), s.values()):
+                for z, e in zip(y.keys(), y.values()):
+                    shortcut = {z: e}
+                    prefs.add_modal_operators_shortcut(x, shortcut)
+                    i += 1
+            prefs.save_modal_operators_shortcuts_cache()
         return {'FINISHED'}
 
 
@@ -165,68 +182,6 @@ class BMTOOL_OT_add_all_modifiers_and_dump_props(bpy.types.Operator):
     bl_idname = "object.add_all_modifiers_and_dump_props"
     bl_label = "BMTool add all modifiers and dump props"
     bl_description = "Add all modifiers on selected objects and dump props"
-
-    # All supported modifier types. {{{
-    __MODIFIER_TYPES = [
-                        "DATA_TRANSFER",
-                        "MESH_CACHE",
-                        "MESH_SEQUENCE_CACHE",
-                        "NORMAL_EDIT",
-                        "WEIGHTED_NORMAL",
-                        "UV_PROJECT",
-                        "UV_WARP",
-                        "VERTEX_WEIGHT_EDIT",
-                        "VERTEX_WEIGHT_MIX",
-                        "VERTEX_WEIGHT_PROXIMITY",
-                        "ARRAY",
-                        "BEVEL",
-                        "BOOLEAN",
-                        "BUILD",
-                        "DECIMATE",
-                        "EDGE_SPLIT",
-                        "NODES",
-                        "MASK",
-                        "MIRROR",
-                        # "MESH_TO_VOLUME",
-                        "MULTIRES",
-                        "REMESH",
-                        "SCREW",
-                        "SKIN",
-                        "SOLIDIFY",
-                        "SUBSURF",
-                        "TRIANGULATE",
-                        "VOLUME_TO_MESH",
-                        "WELD",
-                        "WIREFRAME",
-                        "ARMATURE",
-                        "CAST",
-                        "CURVE",
-                        "DISPLACE",
-                        "HOOK",
-                        "LAPLACIANDEFORM",
-                        "LATTICE",
-                        "MESH_DEFORM",
-                        "SHRINKWRAP",
-                        "SIMPLE_DEFORM",
-                        "SMOOTH",
-                        "CORRECTIVE_SMOOTH",
-                        "LAPLACIANSMOOTH",
-                        "SURFACE_DEFORM",
-                        "WARP",
-                        "WAVE",
-                        # "VOLUME_DISPLACE",
-                        "CLOTH",
-                        "COLLISION",
-                        "DYNAMIC_PAINT",
-                        "EXPLODE",
-                        "FLUID",
-                        "OCEAN",
-                        "PARTICLE_INSTANCE",
-                        "PARTICLE_SYSTEM",
-                        "SOFT_BODY",
-                        "SURFACE"
-                        ]
-    # }}}
 
     @classmethod
     def poll(self, context):
@@ -243,7 +198,7 @@ class BMTOOL_OT_add_all_modifiers_and_dump_props(bpy.types.Operator):
     def execute(self, context):
 
         modifiers = []
-        for x in self.__MODIFIER_TYPES:
+        for x in _MODIFIER_TYPES:
             mod = bpy.context.object.modifiers.new(x.lower(), x)
             if mod is not None:
                 mod.show_viewport = False

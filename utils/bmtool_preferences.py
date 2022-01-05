@@ -299,7 +299,8 @@ class BMToolPreferences(AddonPreferences):  # {{{
     def refresh_modal_opertors_shortcuts_cache(self):
         self.__refresh_modal_opertors_shortcuts_cache()
 
-    def get_modal_operators_shortcuts_group(self, group_name: str) -> dict:
+    def get_modal_operators_shortcuts_group(
+            self, group_name: str, strict_checks=False) -> dict:
         """This method should be used to get shortcuts in operator."""
         if not isinstance(group_name, str):
             raise TypeError
@@ -311,7 +312,7 @@ class BMToolPreferences(AddonPreferences):  # {{{
             return g
         else:
             print(f'No modal operators shortcuts group named {group_name}')
-            if self.__strict_checks:
+            if strict_checks:
                 raise ValueError
             else:
                 return {}
@@ -331,8 +332,22 @@ class BMToolPreferences(AddonPreferences):  # {{{
     def add_modal_operators_shortcut(
             self, group_name: str, shortcut: dict) -> bool:
         """Add new modal operators shortcut."""
+        print(f'Adding {shortcut}')
+        if not isinstance(group_name, str):
+            raise TypeError
+        if not isinstance(shortcut, dict):
+            raise TypeError
+        for x in shortcut:
+            if not isinstance(shortcut[x], dict):
+                raise TypeError
+            if len(shortcut[x]) < 4:
+                raise ValueError(shortcut)
+        if len(shortcut) > 1:
+            raise ValueError
 
-        self.check_shortcut_formatting(shortcut)
+        for x, y in zip(shortcut.keys(), shortcut.values()):
+            check_shortcut_formatting(shortcut[x])
+
         self.add_modal_operators_shortcuts_group(group_name)
         self.__modal_operator_shortcuts_cache[group_name].update(shortcut)
 
@@ -388,10 +403,18 @@ def check_shortcuts_group_formatting(shortcuts_group: dict) -> bool:
 def check_shortcut_formatting(shortcut):
     if not isinstance(shortcut, dict):
         raise TypeError(f'Expected dict, got {type(shortcut)}')
+    e = False
+    for x in shortcut:
+        if isinstance(shortcut[x], dict):
+            e = x
+    if e is not False:
+        shortcut = shortcut[e]
+    if len(shortcut) < 4:
+        raise ValueError
     g = {'letter', 'shift', 'ctrl', 'alt'}
     for x in g:
-        if x not in shortcut.keys():
-            raise ValueError
+        if x not in shortcut:
+            raise ValueError(f'Expected {x}, got {shortcut}')
     for x, y in zip(shortcut.keys(), shortcut.values()):
         check_shortcut_element_formatting(x, y)
     return True
@@ -419,7 +442,7 @@ def check_shortcut_element_formatting(element_name, element):
             and not isinstance(element, bool)\
             and not isinstance(element, int)\
             and not isinstance(element, float):
-        raise TypeError
+        raise TypeError(f'Expected str, bool, int or float, got {element}')
 # }}}
 
 
@@ -464,13 +487,13 @@ def generate_new_shortcut(
                           already_existing_shortcuts: dict,
                           max_iterations=500):
 
-    shortcut = {shortcut_name: {}}
+    shortcut = {}
     k = ['shift', 'ctrl', 'alt']
     for x in k:
         shortcut.update({x: False})
     letter_index = 0
     letter_index, shortcut['letter']\
-            = _get_next_letter_in_shortcut_name(
+        = _get_next_letter_in_shortcut_name(
                     shortcut_name, letter_index)
 
     checking = True
@@ -522,6 +545,16 @@ def generate_new_shortcut(
             iteration += 1
 
     shortcut['sens'] = 0.005
+    shortcut = {shortcut_name: shortcut}
+    for x in shortcut:
+        for y in shortcut[x]:
+            if not isinstance(y, str):
+                raise TypeError
+            if not isinstance(shortcut[x][y], str)\
+                    and not isinstance(shortcut[x][y], bool)\
+                    and not isinstance(shortcut[x][y], int)\
+                    and not isinstance(shortcut[x][y], float):
+                raise TypeError
     return shortcut
 
 
@@ -534,7 +567,7 @@ def _get_next_letter_in_shortcut_name(shortcut_name, index):
     if (index + 1) > len(shortcut_name):
         raise ValueError
     for i, x in enumerate(shortcut_name[index:-1]):
-        if x in string.letters:
+        if x in string.ascii_letters:
             new_index = i
             letter = x.upper()
             break

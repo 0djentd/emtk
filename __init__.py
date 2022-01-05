@@ -37,6 +37,7 @@ from . ui.bmtool_panel import BMTOOLS_OT_update_panel_dict
 
 # Dev
 from . operators.dev.add_all_modifiers import BMTOOL_OT_add_all_modifiers
+from . operators.dev.add_all_modifiers import BMTOOL_OT_reparse_default_modifiers_props_kbs
 from . operators.dev.add_all_modifiers import\
         BMTOOL_OT_add_all_modifiers_and_dump_props
 from . operators.dev.add_cluster_type import BMTOOL_OT_add_cluster_type_object
@@ -73,6 +74,7 @@ classes = [
     # dev
     BMTOOL_OT_add_all_modifiers,
     BMTOOL_OT_add_all_modifiers_and_dump_props,
+    BMTOOL_OT_reparse_default_modifiers_props_kbs,
 ]
 
 addon_keymaps = []
