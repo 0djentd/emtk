@@ -78,8 +78,6 @@ def register():
     wm = bpy.context.window_manager
     kc = wm.keyconfigs.addon
 
-    logging.info("BMTool v1.0")
-
     if kc:
         km = kc.keymaps.new(name="Object Mode")
 
@@ -94,8 +92,6 @@ def register():
 def unregister():
     wm = bpy.context.window_manager
     kc = wm.keyconfigs.addon
-
-    logging.info("BMTool v1.0 removed.")
 
     if kc is not None:
         for km, kmi in addon_keymaps:
