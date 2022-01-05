@@ -503,6 +503,14 @@ class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):  # {{{
     bl_idname = "bmtools.add_or_update_modal_shortcut"
     bl_description = "Add or update modal shortcut"
 
+    # bmtool_operator_shortcut_name
+    # bmtool_operator_shortcut_group
+    # bmtool_operator_shortcut_letter
+    # bmtool_operator_shortcut_shift
+    # bmtool_operator_shortcut_ctrl
+    # bmtool_operator_shortcut_alt
+    # bmtool_operator_shortcut_sens
+
     # Shortcut name and group {{{
     bmtool_operator_shortcut_name: StringProperty(
             name="Shortcut to be edited",
