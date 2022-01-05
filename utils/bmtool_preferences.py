@@ -169,8 +169,8 @@ class BMToolPreferences(AddonPreferences):  # {{{
         for x, y in zip(
                 shortcut_groups_dict.keys(),
                 shortcut_groups_dict.values()):
-            layout = layout.box()
-            self.__draw_shortcuts_group(layout, x, y)
+            box = layout.box()
+            self.__draw_shortcuts_group(box, x, y)
         return
 
     def __draw_shortcuts_group(
@@ -182,12 +182,17 @@ class BMToolPreferences(AddonPreferences):  # {{{
 
         layout.label(text=shortcuts_group_name)
         i = 0
-        box = None
+        row = None
         for x, y in zip(shortcut_group.keys(), shortcut_group.values()):
-            if math.remainder(i, 3) == 0:
-                box = layout.box()
-            self.__draw_shortcut(box, shortcuts_group_name, x, y)
+            if math.remainder(i, 5) == 0:
+                row = layout.row()
+            col = row.column()
+            self.__draw_shortcut(col, shortcuts_group_name, x, y)
             i += 1
+            if i == len(shortcut_group.values()):
+                for x in range(int(math.remainder(i, 5))):
+                    col = row.column()
+                    col.label(text="")
         return
 
     def __draw_shortcut(self,
@@ -261,12 +266,12 @@ class BMToolPreferences(AddonPreferences):  # {{{
         a.bmtool_operator_shortcut_sens = self.bmtool_shortcut_sens
     # }}}
 
+    # keyboard shortcuts viewer {{{
     def __draw_shortcuts_search(self):
         layout = self.layout
         layout.prop(self, "bmtool_prop_search_str")
 
-        # keyboard shortcuts viewer {{{
-        if len(self.bmtool_prop_search_str) > 1:
+        if len(self.bmtool_prop_search_str) != 'NO_SHORTCUTS':
 
             self.__refresh_modal_opertors_shortcuts_cache()
 
@@ -286,7 +291,7 @@ class BMToolPreferences(AddonPreferences):  # {{{
             layout.label(
                     text="Type shortcut name above to see modal shortcuts.")
             layout.label(text="Example: bevel angle")
-        # }}}
+    # }}}
 
     # Modal operators shortcuts cache {{{
     def __refresh_modal_opertors_shortcuts_cache(self):
