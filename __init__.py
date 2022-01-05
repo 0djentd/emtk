@@ -31,8 +31,9 @@ from . utils.bmtool_preferences import BMTOOLS_OT_start_editing_modal_shortcut
 from . utils.bmtool_preferences import BMTOOLS_OT_add_or_update_modal_shortcut
 
 # UI
-from . ui.bmtools_pie import VIEW_3D_MT_PIE_bmtools_pie_1
-from . ui.bmtool_panel import VIEW_3D_PT_bmtool_panel
+from . ui.bmtools_pie import VIEW3D_MT_PIE_bmtools_pie_1
+from . ui.bmtool_panel import VIEW3D_PT_bmtool_panel
+from . ui.bmtool_panel import BMTOOLS_OT_update_panel_dict
 
 # Dev
 from . operators.dev.add_all_modifiers import BMTOOL_OT_add_all_modifiers
@@ -65,8 +66,9 @@ classes = [
     BMTOOLS_OT_add_or_update_modal_shortcut,
 
     # ui
-    VIEW_3D_MT_PIE_bmtools_pie_1,
-    VIEW_3D_PT_bmtool_panel,
+    VIEW3D_MT_PIE_bmtools_pie_1,
+    VIEW3D_PT_bmtool_panel,
+    BMTOOLS_OT_update_panel_dict,
 
     # dev
     BMTOOL_OT_add_all_modifiers,

@@ -118,6 +118,49 @@ class BMTOOL_OT_add_all_modifiers(bpy.types.Operator):
         return {'FINISHED'}
 
 
+class BMTOOL_OT_add_default_modifiers_props_to_kbs(bpy.types.Operator):
+    bl_idname = "object.add_default_modifiers_props_to_kbs"
+    bl_label = "BMTool add all modifiers props to kbs"
+
+    @classmethod
+    def poll(self, context):
+        if context.area.type != 'VIEW_3D':
+            return False
+        elif context.mode != 'OBJECT':
+            return False
+        elif len(context.selected_objects) != 1:
+            return False
+        elif context.object.type != 'MESH':
+            return False
+        return True
+
+    def execute(self, context):
+
+        modifiers = []
+        for x in self.__MODIFIER_TYPES:
+            mod = bpy.context.object.modifiers.new(x.lower(), x)
+            if mod is not None:
+                mod.show_viewport = False
+                modifiers.append([mod.type, mod])
+        for x in modifiers:
+            props = get_all_editable_props(x, no_ignore=True)
+            prefs = bpy.context.preferences.addons['bmtools'].preferences
+            already_created = prefs.get_modal_operators_shortcuts_group(x[0]).values():
+            for y in props:
+                shortcut = get_kbs(y, already_created)
+                bpy.ops.bmtools.add_or_update_modal_shortcut(
+                        bmtool_operator_shortcut_name=name,
+                        bmtool_operator_shortcut_group=x[0]
+                        bmtool_operator_shortcut_letter=letter,
+                        bmtool_operator_shortcut_shift=shift,
+                        bmtool_operator_shortcut_ctrl=ctrl,
+                        bmtool_operator_shortcut_alt=alt
+                        bmtool_operator_shortcut_sens=0.005,
+                        )
+
+        return {'FINISHED'}
+
+
 class BMTOOL_OT_add_all_modifiers_and_dump_props(bpy.types.Operator):
     bl_idname = "object.add_all_modifiers_and_dump_props"
     bl_label = "BMTool add all modifiers and dump props"
