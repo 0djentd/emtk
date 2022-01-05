@@ -26,16 +26,16 @@ _EMTKL_ is designed to be used with _BMTools_.
 
 Most classes and methods have docstrings.
 
-There are some unittests for basic operations.
+There are some simple unittests for basic operations.
 
 # Main concepts #
 _Actual_ _modifier_ is an actual Blender modifier.
 
-_Modifier_ is a cluster or actual modifier.
+_Modifier_ is a cluster or actual Blender modifier.
 
 _Cluster_ is an object that consists of any number
 of modifiers or clusters.
-Cluster is any subclass of ClusterTrait.
+Any subclass of _ClusterTrait_ is a _Cluster_. 
 
 _ModifiersCluster_ is a cluster that only has
 actual Blender modifiers in it.
@@ -46,11 +46,11 @@ that it cant contain ModifiersClusters
 with actual modifiers.
 
 _ExtendedModifiersList_ is an object representing
-first layer of clusters. It is similar to ClustersLayer,
+clusters stack. It is similar to ClustersLayer,
 but doesnt have ClusterTrait attributes.
-It require all modifiers in it to be on same Blender object.
+It require all modifiers in it to be on the same Blender object.
 
-_Sorting_ _Rule_ is an object that represents set of
+_SortingRule_ is an object that represents set of
 rules that can be used to sort clusters in ExtendedModifiersList.
 
 _ModifiersOperator_ is a mix-in class for Operator class.
@@ -62,6 +62,8 @@ All basic editing, like moving, applying, removing,
 duplication and switching visibility of clusters.
 
 Serialization and deserialization of clusters state.
+Full or partial resoring of clusters state.
+Serialization and deserialization of clusters types definitions.
 
 Clusters Commands and Actions.
 

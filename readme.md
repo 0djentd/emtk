@@ -17,5 +17,14 @@ Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 BMTools
 =======
 
-BMTools is a Blender addon that uses EMTKL to simplify editing
+_BMTools_ is a _Blender_ addon that uses _EMTKL_ to simplify editing
 modifiers stack through modal operators and abstraction layers.
+
+_BMToolM_ is a modal operator that can be used to edit clusters
+and modifiers of an object. It has editing modes for
+all editable properties of all Blender modifiers.
+It can be extended using _ClustersEditor_ class.
+
+_BMToolM_ _lite_ is a modal operator for viewing and basic editing
+of clusters and modifiers.
+It cant be used to edit modifiers properties.
