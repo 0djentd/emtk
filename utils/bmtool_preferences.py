@@ -346,17 +346,17 @@ class BMToolPreferences(AddonPreferences):  # {{{
 
 
 # Functions {{{
-def deserialize_kbs(kbs: str) -> dict:  # {{{
+# Serialization {{{
+def deserialize_kbs(kbs: str) -> dict:
     """Deserialize string with shortcuts."""
     if not isinstance(kbs, str):
         raise TypeError
     shortcuts = json.loads(kbs)
     check_shortcuts_formatting(shortcuts)
     return shortcuts
-# }}}
 
 
-def serialize_kbs(shortcuts: dict) -> str:  # {{{
+def serialize_kbs(shortcuts: dict) -> str:
     """Serialize dict with shortcuts."""
     check_shortcuts_formatting(shortcuts)
 
@@ -370,7 +370,8 @@ def serialize_kbs(shortcuts: dict) -> str:  # {{{
 # }}}
 
 
-def check_shortcuts_formatting(shortcuts: dict) -> bool:  # {{{
+# Checks {{{
+def check_shortcuts_formatting(shortcuts: dict) -> bool:
     if not isinstance(shortcuts, dict):
         raise TypeError(f'Expected dict, got {type(shortcuts)}')
     for x in shortcuts:
@@ -419,11 +420,11 @@ def check_shortcut_element_formatting(element_name, element):
             and not isinstance(element, int)\
             and not isinstance(element, float):
         raise TypeError
-
 # }}}
 
 
-def filter_shortcuts_group_by_str(  # {{{
+# Filtering {{{
+def filter_shortcuts_group_by_str(
         shortcuts: dict, s: str) -> dict:
     """Filters shortcuts in a shortcuts group by name.
 
@@ -454,7 +455,91 @@ def search_modal_operators_shortcuts(
             result.update({x: f})
     check_shortcuts_formatting(result)
     return result
+# }}}
 
+
+# Utils {{{
+def generate_new_shortcut(
+                          shortcut_name: str,
+                          already_existing_shortcuts: dict,
+                          max_iterations=500):
+
+    shortcut = {shortcut_name: {}}
+    k = ['shift', 'ctrl', 'alt']
+    for x in k:
+        shortcut.update({x: False})
+    letter_index = 0
+    letter_index, shortcut['letter']\
+            = _get_next_letter_in_shortcut_name(
+                    shortcut_name, letter_index)
+
+    checking = True
+    iteration = 0
+    while checking:
+        if iteration > max_iterations:
+            raise ValueError
+
+        # If this loop breaks, iteration failed.
+        for x, y in zip(already_existing_shortcuts.keys(),
+                        already_existing_shortcuts.values()):
+
+            # Check if shortcut already exists.
+            if x == shortcut_name:
+                raise ValueError
+
+            # Props that are same.
+            same = []
+            for z, c in zip(shortcut.keys(),
+                            shortcut.values()):
+                if z in y.keys()\
+                        and y[z] == shortcut[z]:
+                    same.append(z)
+
+            # If at least one element is different, return shortcut.
+            if len(same) <= 4:
+                return {shortcut_name: shortcut}
+
+            # Filter elements
+            e = []
+            for x in same:
+                if isinstance(shortcut[x], bool)\
+                        and shortcut[x] is False:
+                    e.append(x)
+
+            # If all boolean elements already True, change letter.
+            if len(e) == 0:
+                letter_index, shortcut['letter']\
+                        = _get_next_letter_in_shortcut_name(
+                                shortcut['letter'], letter_index)
+                for z in k:
+                    shortcut.update({x: False})
+                break
+
+            # Change first changeable element
+            shortcut[e[0]] = True
+
+            # Start new iteratiion
+            iteration += 1
+
+    shortcut['sens'] = 0.005
+    return shortcut
+
+
+def _get_next_letter_in_shortcut_name(shortcut_name, index):
+    """
+    Example:
+    >>> get_next_letter_in_shortcut_name('angle_limit', 4)
+    <<< L
+    """
+    if (index + 1) > len(shortcut_name):
+        raise ValueError
+    for i, x in enumerate(shortcut_name[index:-1]):
+        if x in string.letters:
+            new_index = i
+            letter = x.upper()
+            break
+    new_index = index + new_index
+    return new_index, letter
 # }}}
 # }}}
 
