@@ -26,9 +26,11 @@ from . operators.bmtoolm_lite import BMTOOL_OT_bmtoolm_2
 from . operators.bmtoole2 import BMTOOL_OT_bmtoole2
 
 # Preferences
-from . utils.bmtool_preferences import BMToolPreferences
-from . utils.bmtool_preferences import BMTOOLS_OT_start_editing_modal_shortcut
-from . utils.bmtool_preferences import BMTOOLS_OT_add_or_update_modal_shortcut
+from . preferences.panel import BMToolPreferences
+from . preferences.operators import BMTOOLS_OT_start_editing_modal_shortcut
+from . preferences.operators import BMTOOLS_OT_add_or_update_modal_shortcut
+from . preferences.operators import\
+        BMTOOL_OT_reparse_default_modifiers_props_kbs
 
 # UI
 from . ui.bmtools_pie import VIEW3D_MT_PIE_bmtools_pie_1
@@ -37,7 +39,6 @@ from . ui.bmtool_panel import BMTOOLS_OT_update_panel_dict
 
 # Dev
 from . operators.dev.add_all_modifiers import BMTOOL_OT_add_all_modifiers
-from . operators.dev.add_all_modifiers import BMTOOL_OT_reparse_default_modifiers_props_kbs
 from . operators.dev.add_all_modifiers import\
         BMTOOL_OT_add_all_modifiers_and_dump_props
 from . operators.dev.add_cluster_type import BMTOOL_OT_add_cluster_type_object
