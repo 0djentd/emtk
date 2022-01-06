@@ -44,10 +44,9 @@ from .shortcuts import (
 class BMToolPreferences(AddonPreferences):
     bl_idname = "bmtools"
 
+    needs_restart = False
     __need_modal_operators_shortcuts_cache_refresh = True
-    __selected_shortcut = None
     __modal_operator_shortcuts_cache = None
-    __strict_checks = True
     __last_bmtools_str_search = None
 
 
@@ -55,6 +54,7 @@ class BMToolPreferences(AddonPreferences):
             name="Settings category",
             items=[('GENERAL', 'General settings', 'CUBE', 0),
                    ('SHORTCUTS', 'Shortcuts settings', 'CUBE', 1),
+                   ('ADDITIONAL', 'Additional settings', 'CUBE', 2),
                    ],
             default='GENERAL'
             )
@@ -142,6 +142,11 @@ class BMToolPreferences(AddonPreferences):
     # }}}
 
     # This is search field
+    shortcuts_groups_search_str: StringProperty(
+            name="Search through bmtool modal props groups",
+            default=''
+            )
+
     shortcuts_search_str: StringProperty(
             name="Search through bmtool modal props",
             default=''
@@ -150,6 +155,8 @@ class BMToolPreferences(AddonPreferences):
 
     def draw(self, context):
         layout = self.layout
+        if self.needs_restart:
+            layout.label(text='Please restart Blender.')
         layout.prop(self, "settings_category", expand=True)
         if self.settings_category == 'GENERAL':
             self.__draw_general_settings(context)
@@ -172,6 +179,45 @@ class BMToolPreferences(AddonPreferences):
             layout.prop(self, "always_add_custom_cluster_types")
             layout.prop(self, "cluster_types")
         layout.prop(self, "bmtool_modal_operators_serialized_shortcuts")
+
+    # keyboard shortcuts viewer {{{
+    def __draw_shortcuts_search(self, context):
+        layout = self.layout
+        layout.prop(self, "shortcuts_groups_search_str")
+        layout.prop(self, "shortcuts_search_str")
+
+        if len(self.shortcuts_search_str) != 'NO_SHORTCUTS':
+
+            self.__refresh_modal_opertors_shortcuts_cache()
+
+            # Get filtered version of shortcuts.
+            if self.__last_bmtools_str_search != self.shortcuts_search_str:
+                props_groups_filtered = search_modal_operators_shortcuts(
+                        self.__modal_operator_shortcuts_cache,
+                        self.shortcuts_search_str)
+                self.__props_groups_filtered_cache = props_groups_filtered
+            else:
+                self.__last_bmtools_str_search = self.shortcuts_search_str
+                props_groups_filtered = self.__props_groups_filtered_cache
+
+            # Filter by group
+            if self.shortcuts_groups_search_str != "":
+                props_groups_to_display = {}
+                for x in props_groups_filtered:
+                    if self.shortcuts_groups_search_str.upper() in x:
+                        props_groups_to_display.update(
+                                {x: props_groups_filtered[x]})
+            else:
+                props_groups_to_display = props_groups_filtered
+
+            # Draw
+            self.__draw_shortcuts_groups_dict(layout, props_groups_to_display)
+
+        else:
+            layout.label(
+                    text="Type shortcut name above to see modal shortcuts.")
+            layout.label(text="Example: bevel angle")
+    # }}}
 
     # Draw shortcut {{{
     def __draw_shortcuts_groups_dict(
@@ -279,33 +325,6 @@ class BMToolPreferences(AddonPreferences):
         a.shortcut_ctrl = self.edited_shortcut_ctrl
         a.shortcut_alt = self.edited_shortcut_alt
         a.shortcut_sens = self.edited_shortcut_sens
-    # }}}
-
-    # keyboard shortcuts viewer {{{
-    def __draw_shortcuts_search(self, context):
-        layout = self.layout
-        layout.prop(self, "shortcuts_search_str")
-
-        if len(self.shortcuts_search_str) != 'NO_SHORTCUTS':
-
-            self.__refresh_modal_opertors_shortcuts_cache()
-
-            # Get filtered version of shortcuts.
-            if self.__last_bmtools_str_search != self.shortcuts_search_str:
-                props_groups_filtered = search_modal_operators_shortcuts(
-                        self.__modal_operator_shortcuts_cache,
-                        self.shortcuts_search_str)
-                self.__props_groups_filtered_cache = props_groups_filtered
-            else:
-                props_groups_filtered = self.__props_groups_filtered_cache
-
-            # Draw
-            self.__draw_shortcuts_groups_dict(layout, props_groups_filtered)
-
-        else:
-            layout.label(
-                    text="Type shortcut name above to see modal shortcuts.")
-            layout.label(text="Example: bevel angle")
     # }}}
 
     # Modal operators shortcuts cache {{{

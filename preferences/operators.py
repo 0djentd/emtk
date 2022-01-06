@@ -72,6 +72,17 @@ class BMTOOLS_OT_start_editing_modal_shortcut(bpy.types.Operator):  # {{{
             prefs.bmtool_editing_modal_shortcut_group\
                 = self.shortcut_group
 
+            group = prefs.get_modal_operators_shortcuts_group(
+                    self.shortcut_group)
+            shortcut = group[self.shortcut_name]
+
+            if 'sens' in shortcut:
+                prefs.edited_shortcut_sens = shortcut['sens']
+            prefs.edited_shortcut_letter = shortcut['letter']
+            prefs.edited_shortcut_shift = shortcut['shift']
+            prefs.edited_shortcut_ctrl = shortcut['ctrl']
+            prefs.edited_shortcut_alt = shortcut['alt']
+
         return {'FINISHED'}
 # }}}
 
