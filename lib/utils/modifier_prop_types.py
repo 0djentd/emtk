@@ -159,7 +159,6 @@ def get_all_editable_props(modifier, no_ignore=False):  # {{{
         if e:
             result.append(x)
 
-    # TODO: remove this type check
     for x in result:
         if not isinstance(x, str):
             raise TypeError

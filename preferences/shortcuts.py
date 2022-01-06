@@ -147,7 +147,7 @@ def search_modal_operators_shortcuts(
 def generate_new_shortcut(
                           shortcut_name: str,
                           already_existing_shortcuts: dict,
-                          max_iterations=500):
+                          max_iterations=512):
 
     if not isinstance(shortcut_name, str):
         raise TypeError
@@ -159,8 +159,14 @@ def generate_new_shortcut(
             raise TypeError
         if not isinstance(y, dict):
             raise TypeError
-        if len(y) < 4:
-            raise ValueError
+        k = ['letter', 'shift', 'ctrl', 'alt']
+        for z in k:
+            if z not in y:
+                raise ValueError
+            if type(y[z]) is not str\
+                    and type(y[z]) is not bool\
+                    and type(y[z]) is not float:
+                raise TypeError
 
     shortcut = {}
     k = ['shift', 'ctrl', 'alt']
@@ -172,15 +178,19 @@ def generate_new_shortcut(
                     shortcut_name, letter_index)
 
     if len(already_existing_shortcuts) == 0:
+        print('No already existing elements.')
+        print(f'returning {shortcut}')
         return {shortcut_name: shortcut}
 
-    checking = True
     iteration = 0
+    checking = True
     while checking:
         if iteration > max_iterations:
             raise ValueError
 
-        # If this loop breaks, iteration failed.
+        # If this loop breaks, loop iteration failed.
+        reparse = False
+
         for x, y in zip(already_existing_shortcuts.keys(),
                         already_existing_shortcuts.values()):
 
@@ -190,19 +200,16 @@ def generate_new_shortcut(
 
             # Props that are same.
             same = []
-            for z, c in zip(shortcut.keys(),
-                            shortcut.values()):
+            for z in shortcut:
                 if z in y.keys()\
                         and y[z] == shortcut[z]:
                     same.append(z)
 
-            # If at least one element is different, return shortcut.
-            # If not returned here, need to change elements.
+            # If at least one element is different, check next.
             if len(same) < 4:
-                check_shortcut_formatting(shortcut)
-                return {shortcut_name: shortcut}
+                break
 
-            # Filter elements
+            # Filter elements.
             e = []
             for z in same:
                 if isinstance(shortcut[z], bool)\
@@ -216,14 +223,20 @@ def generate_new_shortcut(
                                 shortcut['letter'], letter_index)
                 for z in k:
                     shortcut.update({z: False})
+                reparse = True
+                break
             else:
                 # Change first changeable element
                 shortcut[e[0]] = True
+                reparse = True
+                break
 
-        # Start new iteratiion
-        iteration += 1
+        if reparse:
+            # Start new iteratiion
+            iteration += 1
+        else:
+            checking = False
 
-    shortcut['sens'] = 0.005
     shortcut = {shortcut_name: shortcut}
     check_shortcut_formatting(shortcut)
     for x, y in zip(already_existing_shortcuts.keys(),
@@ -244,6 +257,7 @@ def _get_next_letter_in_shortcut_name(shortcut_name, index):
     >>> get_next_letter_in_shortcut_name('angle_limit', None)
     <<< 0, A
     """
+
     if not isinstance(shortcut_name, str):
         raise TypeError
 

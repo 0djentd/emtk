@@ -210,10 +210,23 @@ class BMTOOL_OT_reparse_default_modifiers_props_kbs(  # {{{
                 d = prefs.get_modal_operators_shortcuts_group(x.type)
 
             for y in props:
+                print(len(d))
+                for z in d:
+                    if not isinstance(d[z], dict):
+                        raise TypeError
+                    for h in d[z]:
+                        if not isinstance(d[z][h], str)\
+                                and not isinstance(d[z][h], bool):
+                            raise TypeError(d[z])
+
                 shortcut = generate_new_shortcut(y, d)
+                print(shortcut)
                 d.update(shortcut)
+                if len(d) < 1:
+                    raise ValueError
 
             s_e = {x.type: d}
+            print(s_e)
             s.update(s_e)
             break
 
