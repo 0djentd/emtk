@@ -213,6 +213,7 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
     # ClustersEditor methods {{{
     def editor_switched_to(self, context, clusters):  # {{{
         """Called every time editor is switched to."""
+
         if not isinstance(clusters, list):
             clusters = [clusters]
         for x in clusters:

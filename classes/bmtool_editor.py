@@ -16,13 +16,7 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-# import math
-# import string
 import logging
-# import copy
-# import json
-# import time
-# import re
 
 from .bmtool_input import BMToolModalInput
 
@@ -75,7 +69,7 @@ class ModalClustersEditor(BMToolModalInput):
         return self.modal(context, event, clusters)
     # }}}
 
-    # Editor-specific method placeholders {{{
+    # Editor-specific method placeholders for subclasses {{{
     def switched_to(self, context, clusters):
         """Called every time editor is switched to."""
         self._no_editor_method()

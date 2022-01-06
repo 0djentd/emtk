@@ -19,9 +19,13 @@
 import math
 # import re
 
-import bpy
-
-from bpy.props import BoolProperty, IntProperty, FloatProperty, StringProperty, EnumProperty
+from bpy.props import (
+                       BoolProperty,
+                       IntProperty,
+                       FloatProperty,
+                       StringProperty,
+                       EnumProperty,
+                       )
 from bpy.types import AddonPreferences
 
 from .shortcuts import (
@@ -45,6 +49,15 @@ class BMToolPreferences(AddonPreferences):
     __modal_operator_shortcuts_cache = None
     __strict_checks = True
     __last_bmtools_str_search = None
+
+
+    settings_category: EnumProperty(
+            name="Settings category",
+            items=[('GENERAL', 'General settings', 'CUBE', 0),
+                   ('SHORTCUTS', 'Shortcuts settings', 'CUBE', 1),
+                   ],
+            default='GENERAL'
+            )
 
     # Settings {{{
     save_clusters: BoolProperty(
@@ -109,35 +122,19 @@ class BMToolPreferences(AddonPreferences):
             )
 
     # Currently edited shortcut props {{{
-    """
-    This props used to create fields in ui.
-    """
     # Shortcut and group that is being edited
     bmtool_editing_modal_shortcut_name: StringProperty("")
     bmtool_editing_modal_shortcut_group: StringProperty("")
 
-    bmtool_shortcut_letter: StringProperty(
-            name="Letter",
-            maxlen=1,
-            default="",
-            )
+    edited_shortcut_letter: StringProperty(name="Letter", maxlen=1, default="")
 
-    bmtool_shortcut_shift: BoolProperty(
-            name="Shift",
-            default=False
-            )
+    edited_shortcut_shift: BoolProperty(name="Shift", default=False)
 
-    bmtool_shortcut_ctrl: BoolProperty(
-            name="Ctrl",
-            default=False
-            )
+    edited_shortcut_ctrl: BoolProperty(name="Ctrl", default=False)
 
-    bmtool_shortcut_alt: BoolProperty(
-            name="Alt",
-            default=False
-            )
+    edited_shortcut_alt: BoolProperty(name="Alt", default=False)
 
-    bmtool_shortcut_sens: FloatProperty(
+    edited_shortcut_sens: FloatProperty(
             name="Sens",
             min=0.0,
             default=0.0
@@ -145,13 +142,23 @@ class BMToolPreferences(AddonPreferences):
     # }}}
 
     # This is search field
-    bmtool_prop_search_str: StringProperty(
+    shortcuts_search_str: StringProperty(
             name="Search through bmtool modal props",
             default=''
             )
     # }}}
 
     def draw(self, context):
+        layout = self.layout
+        layout.prop(self, "settings_category", expand=True)
+        if self.settings_category == 'GENERAL':
+            self.__draw_general_settings(context)
+        elif self.settings_category == 'SHORTCUTS':
+            self.__draw_shortcuts_search(context)
+        else:
+            raise ValueError
+
+    def __draw_general_settings(self, context):
         layout = self.layout
         layout.label(text="BMTool settings")
         layout.prop(self, "save_clusters")
@@ -165,8 +172,6 @@ class BMToolPreferences(AddonPreferences):
             layout.prop(self, "always_add_custom_cluster_types")
             layout.prop(self, "cluster_types")
         layout.prop(self, "bmtool_modal_operators_serialized_shortcuts")
-
-        self.__draw_shortcuts_search()
 
     # Draw shortcut {{{
     def __draw_shortcuts_groups_dict(
@@ -252,15 +257,15 @@ class BMToolPreferences(AddonPreferences):
             self, layout, shortcut_name, shortcuts_group_name):
         row = layout.row()
         col = row.column()
-        col.prop(self, "bmtool_shortcut_letter")
+        col.prop(self, "edited_shortcut_letter")
         col = row.column()
-        col.prop(self, "bmtool_shortcut_shift")
+        col.prop(self, "edited_shortcut_shift")
         col = row.column()
-        col.prop(self, "bmtool_shortcut_ctrl")
+        col.prop(self, "edited_shortcut_ctrl")
         col = row.column()
-        col.prop(self, "bmtool_shortcut_alt")
+        col.prop(self, "edited_shortcut_alt")
         col = row.column()
-        col.prop(self, "bmtool_shortcut_sens")
+        col.prop(self, "edited_shortcut_sens")
 
         a = layout.operator("bmtools.add_or_update_modal_shortcut")
 
@@ -269,27 +274,27 @@ class BMToolPreferences(AddonPreferences):
         a.shortcut_group\
             = self.bmtool_editing_modal_shortcut_group
 
-        a.shortcut_letter = self.bmtool_shortcut_letter
-        a.shortcut_shift = self.bmtool_shortcut_shift
-        a.shortcut_ctrl = self.bmtool_shortcut_ctrl
-        a.shortcut_alt = self.bmtool_shortcut_alt
-        a.shortcut_sens = self.bmtool_shortcut_sens
+        a.shortcut_letter = self.edited_shortcut_letter
+        a.shortcut_shift = self.edited_shortcut_shift
+        a.shortcut_ctrl = self.edited_shortcut_ctrl
+        a.shortcut_alt = self.edited_shortcut_alt
+        a.shortcut_sens = self.edited_shortcut_sens
     # }}}
 
     # keyboard shortcuts viewer {{{
-    def __draw_shortcuts_search(self):
+    def __draw_shortcuts_search(self, context):
         layout = self.layout
-        layout.prop(self, "bmtool_prop_search_str")
+        layout.prop(self, "shortcuts_search_str")
 
-        if len(self.bmtool_prop_search_str) != 'NO_SHORTCUTS':
+        if len(self.shortcuts_search_str) != 'NO_SHORTCUTS':
 
             self.__refresh_modal_opertors_shortcuts_cache()
 
             # Get filtered version of shortcuts.
-            if self.__last_bmtools_str_search != self.bmtool_prop_search_str:
+            if self.__last_bmtools_str_search != self.shortcuts_search_str:
                 props_groups_filtered = search_modal_operators_shortcuts(
                         self.__modal_operator_shortcuts_cache,
-                        self.bmtool_prop_search_str)
+                        self.shortcuts_search_str)
                 self.__props_groups_filtered_cache = props_groups_filtered
             else:
                 props_groups_filtered = self.__props_groups_filtered_cache
@@ -304,16 +309,6 @@ class BMToolPreferences(AddonPreferences):
     # }}}
 
     # Modal operators shortcuts cache {{{
-    def __refresh_modal_opertors_shortcuts_cache(self):
-        if not self.__need_modal_operators_shortcuts_cache_refresh:
-            return
-        self.__modal_operator_shortcuts_cache = deserialize_kbs(
-                    self.bmtool_modal_operators_serialized_shortcuts)
-        self.__need_modal_operators_shortcuts_cache_refresh = False
-
-    def refresh_modal_opertors_shortcuts_cache(self):
-        self.__refresh_modal_opertors_shortcuts_cache()
-
     def get_modal_operators_shortcuts_group(
             self, group_name: str, strict_checks=False) -> dict:
         """This method should be used to get shortcuts in operator."""
@@ -332,6 +327,17 @@ class BMToolPreferences(AddonPreferences):
             else:
                 return {}
 
+    def refresh_modal_opertors_shortcuts_cache(self):
+        self.__refresh_modal_opertors_shortcuts_cache()
+
+    def __refresh_modal_opertors_shortcuts_cache(self):
+        """Load serialized shortcuts from json str."""
+        if not self.__need_modal_operators_shortcuts_cache_refresh:
+            return
+        self.__modal_operator_shortcuts_cache = deserialize_kbs(
+                    self.bmtool_modal_operators_serialized_shortcuts)
+        self.__need_modal_operators_shortcuts_cache_refresh = False
+
     def add_modal_operators_shortcuts_group(self, group_name: str) -> bool:
         """Add new modal operators shortcuts group."""
         if not isinstance(group_name, str):
@@ -346,7 +352,19 @@ class BMToolPreferences(AddonPreferences):
 
     def add_modal_operators_shortcut(
             self, group_name: str, shortcut: dict) -> bool:
-        """Add new modal operators shortcut."""
+        """Add new modal operators shortcut.
+
+        This method only edits cache, not serialized str.
+        save_modal_operators_shortcuts_cache should be used after editing.
+
+        Expecting dict with dicts as its values.
+        Example:
+        {"angle_limit": {"letter": "A",
+                         "shift": false,
+                         "ctrl": false,
+                         "alt": false,
+                         "sens": 0.0005}}
+        """
 
         print(f'Adding {shortcut}')
         if not isinstance(group_name, str):
