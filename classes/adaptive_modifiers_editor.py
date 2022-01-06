@@ -232,25 +232,29 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
         self.__kbs_editing = {}
 
         mods = self.__get_all_clusters_modifiers(clusters)
+        mod = mods[0]
         self.__mods = mods
+        prefs = bpy.context.preferences.addons['bmtools'].preferences
+        kbs = prefs.get_modal_operators_shortcuts_group(mod.type)
 
         props = get_props_filtered_by_types(mods[0])
         for x in props:
             if x in self.__MODAL_INPUT_PROP_TYPES:
                 for y in props[x]:
-                    names = [self.__kbs_modal,
-                             self.__kbs_no_modal,
-                             self.__kbs_editing]
-                    self.__kbs_modal.update(
-                            {y: self.__get_kbs(y, names)})
-
+                    try:
+                        self.__kbs_modal.update({y: kbs[y]})
+                    except KeyError:
+                        s = prefs.generate_new_shortcut(x, y)
+                        self.__kbs_modal.update(s)
             elif x in self.__NOT_MODAL_INPUT_PROP_TYPES:
                 for y in props[x]:
-                    names = [self.__kbs_modal,
-                             self.__kbs_no_modal,
-                             self.__kbs_editing]
-                    self.__kbs_no_modal.update(
-                            {y: self.__get_kbs(y, names)})
+                    try:
+                        self.__kbs_no_modal.update({y: kbs[y]})
+                    except KeyError:
+                        s = prefs.generate_new_shortcut(x, y)
+                        self.__kbs_no_modal.update(s)
+            else:
+                raise TypeError
 
         logger.debug('Editor switched to.')
         logger.debug('Modal props mappings')
@@ -318,7 +322,7 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
             return
 
         # Get prop name for this event.
-        prop_name = self.__get_prop_name(event)
+        prop_name = self.__get_shortcut_name(event)
 
         if prop_name is not None:
 
@@ -417,7 +421,7 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
     # Simple events {{{
     def __check_if_should_switch_mode(self, event):
 
-        prop_name = self.__get_prop_name(event)
+        prop_name = self.__get_shortcut_name(event)
         if prop_name == self.mode:
             logger.info('Switching back to default mode.')
             self.__switch_to_default()
@@ -562,27 +566,31 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
     # }}}
 
     # Props utils {{{
-    def __get_prop_name(self, event) -> str:
+    def __get_shortcut_name(self, event) -> str:
         """Returns property name that were mapped to event type."""
         if len(event.type) > 1:
             return
 
         d = [self.__kbs_modal, self.__kbs_no_modal, self.__kbs_editing]
         for x in d:
-            a = self.__get_prop_from_dict(event, x)
+            a = self.__get_shortcut_from_dict(event, x)
             if a is not None:
                 return a
 
-    def __get_prop_from_dict(self, event, kbs: dict) -> str:
+    def __get_shortcut_from_dict(self, event, kbs: dict) -> str:
         if not isinstance(kbs, dict):
             raise TypeError
+        for x in kbs:
+            if not isinstance(kbs[x], dict):
+                raise TypeError
+
         logger.debug(f'Trying to get prop for {event.type} in {kbs}')
         for x in kbs:
             e = kbs[x]
-            if event.type == e[0]\
-                    and event.shift == e[1]\
-                    and event.ctrl == e[2]\
-                    and event.alt == e[3]:
+            if event.type == e['letter']\
+                    and event.shift == e['shift']\
+                    and event.ctrl == e['ctrl']\
+                    and event.alt == e['alt']:
                 logger.debug(f'found {x} in {kbs}')
                 return x
 

@@ -35,6 +35,9 @@ class VIEW3D_PT_bmtool_panel(Panel):
     # Example:
     # {'Bevel': True, 'Array': False}
     modifiers_expanded = {}
+    previous_objects = []
+    tag_panel_invoke = False
+    # tag_objects_changed = False
 
     @classmethod
     def poll(cls, context):
@@ -45,13 +48,44 @@ class VIEW3D_PT_bmtool_panel(Panel):
             result = False
         else:
             result = True
+
+        if not result:
+            cls.tag_panel_invoke = True
         return result
 
     def draw(self, context):
+        if self.tag_panel_invoke:
+            self.panel_invoke(context)
+            self.tag_panel_invoke = False
+        if self.tag_objects_changed:
+            self.panel_objects_changed(context)
+            # self.tag_objects_changed = False
+        self.panel_draw(context)
+        self.
+
+    def panel_draw(self, context):
         layout = self.layout
         layout.label(text="BMTools modifiers panel")
         for x in context.object.modifiers:
             self.__draw_modifier_props(x)
+
+    def panel_invoke(self, context):
+        return
+
+    def panel_objects_changed(self, context):
+        return
+
+    def check_if_objects_changed(self, context):
+        """Returns True, if objects changed after previous iteration."""
+        result = None
+        if self.previous_objects != context.selected_objects:
+            result = True
+        if self.previous_active != context.object:
+            result = True
+        return result
+            
+            
+        
 
     def __draw_modifier_props(self, modifier):
         if modifier.name not in self.modifiers_expanded:

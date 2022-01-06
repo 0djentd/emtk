@@ -180,8 +180,7 @@ class BMToolPreferences(AddonPreferences):
             layout.prop(self, "cluster_types")
         layout.prop(self, "bmtool_modal_operators_serialized_shortcuts")
 
-    # keyboard shortcuts viewer {{{
-    def __draw_shortcuts_search(self, context):
+    def __draw_shortcuts_search(self, context):  # {{{
         layout = self.layout
         layout.prop(self, "shortcuts_groups_search_str")
         layout.prop(self, "shortcuts_search_str")

@@ -153,16 +153,19 @@ def generate_new_shortcut(
     k = ['shift', 'ctrl', 'alt']
     for x in k:
         shortcut.update({x: False})
-    letter_index = 0
+    letter_index = None
     letter_index, shortcut['letter']\
         = _get_next_letter_in_shortcut_name(
                     shortcut_name, letter_index)
+
+    if len(already_existing_shortcuts) == 0:
+        return {shortcut_name: shortcut}
 
     checking = True
     iteration = 0
     while checking:
         if iteration > max_iterations:
-            raise ValueError
+            raise ValueError(shortcut)
 
         # If this loop breaks, iteration failed.
         for x, y in zip(already_existing_shortcuts.keys(),
@@ -170,7 +173,7 @@ def generate_new_shortcut(
 
             # Check if shortcut already exists.
             if x == shortcut_name:
-                raise ValueError
+                raise ValueError(f'{shortcut_name} already exists.')
 
             # Props that are same.
             same = []
@@ -181,7 +184,7 @@ def generate_new_shortcut(
                     same.append(z)
 
             # If at least one element is different, return shortcut.
-            if len(same) <= 4:
+            if len(same) < 4:
                 return {shortcut_name: shortcut}
 
             # Filter elements
@@ -203,36 +206,44 @@ def generate_new_shortcut(
             # Change first changeable element
             shortcut[e[0]] = True
 
-            # Start new iteratiion
-            iteration += 1
+        # Start new iteratiion
+        iteration += 1
 
     shortcut['sens'] = 0.005
     shortcut = {shortcut_name: shortcut}
-    for x in shortcut:
-        for y in shortcut[x]:
-            if not isinstance(y, str):
-                raise TypeError
-            if not isinstance(shortcut[x][y], str)\
-                    and not isinstance(shortcut[x][y], bool)\
-                    and not isinstance(shortcut[x][y], int)\
-                    and not isinstance(shortcut[x][y], float):
-                raise TypeError
+    check_shortcut_formatting(shortcut)
     return shortcut
 
 
 def _get_next_letter_in_shortcut_name(shortcut_name, index):
     """
-    Example:
+    Example 1:
     >>> get_next_letter_in_shortcut_name('angle_limit', 4)
-    <<< L
+    <<< 6, L
+
+    Example 2:
+    >>> get_next_letter_in_shortcut_name('angle_limit', None)
+    <<< 0, A
     """
-    if (index + 1) > len(shortcut_name):
-        raise ValueError
-    for i, x in enumerate(shortcut_name[index:-1]):
-        if x in string.ascii_letters:
-            new_index = i
-            letter = x.upper()
-            break
-    new_index = index + new_index
+    if not isinstance(shortcut_name, str):
+        raise TypeError
+
+    if index is None:
+        for i, x in enumerate(shortcut_name):
+            if x in string.ascii_letters:
+                new_index = i
+                letter = x.upper()
+                break
+    else:
+        if (index + 1) >= len(shortcut_name):
+            raise ValueError
+        for i, x in enumerate(shortcut_name[index:-1]):
+            if i == 0:
+                continue
+            if x in string.ascii_letters:
+                new_index = i
+                letter = x.upper()
+                break
+        new_index = index + new_index
     return new_index, letter
 # }}}
