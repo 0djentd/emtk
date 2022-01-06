@@ -149,6 +149,19 @@ def generate_new_shortcut(
                           already_existing_shortcuts: dict,
                           max_iterations=500):
 
+    if not isinstance(shortcut_name, str):
+        raise TypeError
+    if not isinstance(already_existing_shortcuts, dict):
+        raise TypeError
+    for x, y in zip(already_existing_shortcuts.keys(),
+                    already_existing_shortcuts.values()):
+        if not isinstance(x, str):
+            raise TypeError
+        if not isinstance(y, dict):
+            raise TypeError
+        if len(y) < 4:
+            raise ValueError
+
     shortcut = {}
     k = ['shift', 'ctrl', 'alt']
     for x in k:
@@ -165,7 +178,7 @@ def generate_new_shortcut(
     iteration = 0
     while checking:
         if iteration > max_iterations:
-            raise ValueError(shortcut)
+            raise ValueError
 
         # If this loop breaks, iteration failed.
         for x, y in zip(already_existing_shortcuts.keys(),
@@ -184,15 +197,17 @@ def generate_new_shortcut(
                     same.append(z)
 
             # If at least one element is different, return shortcut.
+            # If not returned here, need to change elements.
             if len(same) < 4:
+                check_shortcut_formatting(shortcut)
                 return {shortcut_name: shortcut}
 
             # Filter elements
             e = []
-            for x in same:
-                if isinstance(shortcut[x], bool)\
-                        and shortcut[x] is False:
-                    e.append(x)
+            for z in same:
+                if isinstance(shortcut[z], bool)\
+                        and shortcut[z] is False:
+                    e.append(z)
 
             # If all boolean elements already True, change letter.
             if len(e) == 0:
@@ -200,11 +215,10 @@ def generate_new_shortcut(
                         = _get_next_letter_in_shortcut_name(
                                 shortcut['letter'], letter_index)
                 for z in k:
-                    shortcut.update({x: False})
-                break
-
-            # Change first changeable element
-            shortcut[e[0]] = True
+                    shortcut.update({z: False})
+            else:
+                # Change first changeable element
+                shortcut[e[0]] = True
 
         # Start new iteratiion
         iteration += 1
@@ -212,6 +226,11 @@ def generate_new_shortcut(
     shortcut['sens'] = 0.005
     shortcut = {shortcut_name: shortcut}
     check_shortcut_formatting(shortcut)
+    for x, y in zip(already_existing_shortcuts.keys(),
+                    already_existing_shortcuts.values()):
+        if shortcut_name == x:
+            if shortcut[shortcut_name] == y:
+                raise ValueError(shortcut, x, y)
     return shortcut
 
 

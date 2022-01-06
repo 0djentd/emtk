@@ -37,6 +37,7 @@ class VIEW3D_PT_bmtool_panel(Panel):
     modifiers_expanded = {}
     previous_objects = []
     tag_panel_invoke = False
+    panel_was_drawn = False
     # tag_objects_changed = False
 
     @classmethod
@@ -51,17 +52,19 @@ class VIEW3D_PT_bmtool_panel(Panel):
 
         if not result:
             cls.tag_panel_invoke = True
+        if result and cls.panel_was_drawn:
+            cls.panel_was_drawn = False
+            cls.panel_remove(context)
         return result
 
     def draw(self, context):
+        self.panel_was_drawn = True
         if self.tag_panel_invoke:
             self.panel_invoke(context)
             self.tag_panel_invoke = False
         if self.tag_objects_changed:
             self.panel_objects_changed(context)
-            # self.tag_objects_changed = False
         self.panel_draw(context)
-        self.
 
     def panel_draw(self, context):
         layout = self.layout
@@ -70,6 +73,9 @@ class VIEW3D_PT_bmtool_panel(Panel):
             self.__draw_modifier_props(x)
 
     def panel_invoke(self, context):
+        return
+
+    def panel_remove(self, context):
         return
 
     def panel_objects_changed(self, context):
