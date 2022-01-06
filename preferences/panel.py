@@ -37,7 +37,7 @@ from .shortcuts import (
                         )
 
 
-class BMToolPreferences(AddonPreferences):  # {{{
+class BMToolPreferences(AddonPreferences):
     bl_idname = "bmtools"
 
     __need_modal_operators_shortcuts_cache_refresh = True
@@ -238,8 +238,8 @@ class BMToolPreferences(AddonPreferences):  # {{{
         b = layout.operator("bmtools.start_editing_modal_shortcut",
                             text=t)
 
-        b.bmtool_operator_shortcut_name = shortcut_name
-        b.bmtool_operator_shortcut_group = shortcuts_group_name
+        b.shortcut_name = shortcut_name
+        b.shortcut_group = shortcuts_group_name
 
         if self.bmtool_editing_modal_shortcut_name == shortcut_name\
                 and self.bmtool_editing_modal_shortcut_group\
@@ -264,16 +264,16 @@ class BMToolPreferences(AddonPreferences):  # {{{
 
         a = layout.operator("bmtools.add_or_update_modal_shortcut")
 
-        a.bmtool_operator_shortcut_name\
+        a.shortcut_name\
             = self.bmtool_editing_modal_shortcut_name
-        a.bmtool_operator_shortcut_group\
+        a.shortcut_group\
             = self.bmtool_editing_modal_shortcut_group
 
-        a.bmtool_operator_shortcut_letter = self.bmtool_shortcut_letter
-        a.bmtool_operator_shortcut_shift = self.bmtool_shortcut_shift
-        a.bmtool_operator_shortcut_ctrl = self.bmtool_shortcut_ctrl
-        a.bmtool_operator_shortcut_alt = self.bmtool_shortcut_alt
-        a.bmtool_operator_shortcut_sens = self.bmtool_shortcut_sens
+        a.shortcut_letter = self.bmtool_shortcut_letter
+        a.shortcut_shift = self.bmtool_shortcut_shift
+        a.shortcut_ctrl = self.bmtool_shortcut_ctrl
+        a.shortcut_alt = self.bmtool_shortcut_alt
+        a.shortcut_sens = self.bmtool_shortcut_sens
     # }}}
 
     # keyboard shortcuts viewer {{{
@@ -347,6 +347,7 @@ class BMToolPreferences(AddonPreferences):  # {{{
     def add_modal_operators_shortcut(
             self, group_name: str, shortcut: dict) -> bool:
         """Add new modal operators shortcut."""
+
         print(f'Adding {shortcut}')
         if not isinstance(group_name, str):
             raise TypeError
@@ -372,4 +373,3 @@ class BMToolPreferences(AddonPreferences):  # {{{
         s = serialize_kbs(self.__modal_operator_shortcuts_cache)
         self.bmtool_modal_operators_serialized_shortcuts = s
     # }}}
-# }}}
