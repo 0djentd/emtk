@@ -22,9 +22,6 @@ from bpy.props import StringProperty
 
 
 class BMTOOL_OT_add_cluster_type_object(Operator):
-    """
-    Adds serialized_cluster_type to an object props.
-    """
     bl_idname = "object.add_cluster_type"
     bl_label = "Add cluster type to an object"
     bl_description = "Add cluster type to an object"
@@ -78,14 +75,14 @@ class BMTOOL_OT_add_cluster_type_object(Operator):
                 a = clusters[cluster_type_to_add['name']]
             except KeyError:
                 already_existing_type = True
-            if already_existing_type:
-                self.report(
-                        {'INFO'},
-                        f'Cluster type {cluster_type_to_add["name"]} already exists, replacing.')
 
-            self.report(
-                    {'INFO'},
-                    f'Adding cluster type {cluster_type_to_add["name"]} to {obj}.')
+            cluster_name = cluster_type_to_add['name']
+            if already_existing_type:
+                self.report({'INFO'},
+                            f'Cluster type {cluster_name} already exists.')
+
+            self.report({'INFO'},
+                        f'Adding cluster type {cluster_name} to {obj}.')
 
             clusters.update(
                     {cluster_type_to_add['name']: cluster_type_to_add})
