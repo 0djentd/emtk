@@ -284,6 +284,8 @@ class BMToolModalInput():
         if prop is None:
             raise TypeError
 
+        possible_prop_types = {'BOOLEAN': bool, 'INT': int, 'FLOAT': float}
+
         # Delta percentage
         # 10
         delta_pct = self.__get_delta_pct(event)
@@ -302,10 +304,20 @@ class BMToolModalInput():
         v = self.__get_view3d_window()
         distance = v.data.view_distance
 
-        # Max value
+        # Max and min value
         max_val = prop.soft_max
+        min_val = prop.soft_min
+
+        # Step
+        step = prop.step
+
+        # Prop type, subtype, units
+        prop_type = prop.type
+        prop_subtype = prop.subtype
+        prop_unit = prop.unit
 
         # Info
+        logger.debug('----- Modal input module v1 ------')
         logger.debug(
                 f'delta: {delta_pct}, {delta_pct_f}, {delta_pct_i}, {delta}')
         logger.debug(f'Distance: {distance}')
@@ -317,48 +329,68 @@ class BMToolModalInput():
         logger.debug(f'Step: {prop.step}')
         logger.debug(f'Max value: {max_val}')
 
-        if prop.type == 'INT':
-            # use max as max percentage
-            max_val = prop.soft_max
-            x = delta_pct_i*max_val
-            x = int(x)
+        if prop_type == 'BOOLEAN':
+            if delta_pct_i > 0.5:
+                return True
+            else:
+                return False
 
-        elif prop.type == 'FLOAT':
-            if prop.subtype == 'NONE':
+        elif prop_type == 'INT':
+            x = delta_pct_i*max_val
+            result = int(x)
+
+        elif prop_type == 'FLOAT':
+            if prop_subtype == 'NONE':
                 result = float(distance*delta)
 
-            elif prop.subtype in {'ANGLE', 'DEGREES'}:
-                x = delta*(max_val/100)
+            elif prop_subtype in {'ANGLE', 'DEGREES'}:
+                if max_val*math.degrees(1) <= 360:
+                    x = delta*(max_val/100)
+                else:
+                    x = delta*(distance/100)
+
                 x = x / math.degrees(1)
                 result = x
 
-            elif prop.subtype == 'PERCENTAGE':
-                result = delta
+            elif prop_subtype == 'PERCENTAGE':
+                if max_val <= 100:
+                    result = delta
+                else:
+                    result = distance * delta
 
-            elif prop.subtype in {'DISTANCE'}:
-                if prop.unit in {'LENGTH'}:
-                    x = distance*delta_pct_i
-
-                    # limit
-                    if x > max_val:
-                        x = max_val
-                    result = x
+            elif prop_subtype in {'DISTANCE'}:
+                if prop_unit in {'LENGTH'}:
+                    if max_val <= distance:
+                        result = max_val*delta
+                    else:
+                        result = distance*step*delta
 
                 else:
                     raise TypeError(
-                        f'Not implemented prop unit type "{prop.unit}"')
+                        f'Not implemented prop unit type "{prop_unit}"')
             else:
                 raise TypeError(
-                    f'Not implemented prop subtype "{prop.subtype}"')
+                    f'Not implemented prop subtype "{prop_subtype}"')
         else:
             raise TypeError(
-                    f'Not implemented prop type "{prop.subtype}"')
+                f'Not implemented prop type "{prop_type}"')
 
-        logger.debug(f'Returning {x}')
-
+        # Check types
         if result is None:
             raise TypeError
+        if type(result) is not possible_prop_types[prop_type]:
+            raise TypeError
 
+        # Limit
+        if result > max_val:
+            logger.debug(f'{result} is more than max_val.')
+            result = max_val
+        if result < min_val:
+            logger.debug(f'{result} is less than min_val.')
+            result = max_val
+
+        logger.debug(f'Returning {result}')
+        logger.debug(' ')
         return result
 
     # Vector length

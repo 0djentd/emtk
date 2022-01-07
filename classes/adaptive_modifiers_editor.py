@@ -32,7 +32,7 @@ from ..lib.clusters.cluster_trait import ClusterTrait
 from .bmtool_editor import ModalClustersEditor
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 
 class AdaptiveModalModifiersEditor(ModalClustersEditor):
