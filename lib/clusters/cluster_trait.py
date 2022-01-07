@@ -253,8 +253,7 @@ class ClusterTrait():
     # }}}
 
     # Methods reserved for subclasses {{{
-    # {{{
-    def modcluster_extra_availability_check(self, modifiers):
+    def modcluster_extra_availability_check(self, modifiers):  # {{{
         """
         Additional method reserved for custom types.
         Checks if modifiers can be considered as

@@ -24,7 +24,7 @@ import logging
 # import time
 import re
 
-# import bpy
+import bpy
 
 # from .bmtool_input import BMToolModalInput
 from ..lib.utils.modifier_prop_types import get_props_filtered_by_types
@@ -720,13 +720,13 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
                 t = a[x]
 
                 line = ''
-                if t[1]:
+                if t['shift']:
                     line = line + 'shift + '
-                if t[2]:
+                if t['ctrl']:
                     line = line + 'ctl + '
-                if t[3]:
+                if t['alt']:
                     line = line + 'alt + '
-                line = line + f'{t[0]}'
+                line = line + f'{t["letter"]}'
 
                 if len(line) == 0:
                     line = 'No kb shortcut.'

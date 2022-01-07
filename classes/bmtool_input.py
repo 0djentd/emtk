@@ -320,3 +320,34 @@ class BMToolModalInput():
         delta_y = y1 - y2
         return math.sqrt(pow(delta_x, 2) + pow(delta_y, 2))
     # }}}
+
+    # Utils {{{
+    def __get_view3d_instance(self):
+        a = None
+        for x in bpy.context.areas:
+            if x.type == 'VIEW_3D':
+                if a is None:
+                    a = x
+                else:
+                    raise ValueError
+        if a is None:
+            raise ValueError
+        return a
+
+    def __get_delta_pct(self, event):
+        """Returns float between 0 and 100 for event."""
+        if 'MOUSE' not in event.type:
+            raise TypeError
+
+        v = self.__get_view3d_instance()
+        d = (v.width, v.height)
+        c = (d[0]/2, d[1]/2)
+
+        if c[0] > c[1]:
+            m = c[1]
+        else:
+            m = c[0]
+
+        vec = self.__vec_len(event.x, c[0], event.y, c[1])
+        return vec*(m/100)
+    # }}}
