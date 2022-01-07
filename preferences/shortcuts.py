@@ -167,7 +167,6 @@ def generate_new_shortcut(
                     and type(y[z]) is not bool\
                     and type(y[z]) is not float:
                 raise TypeError
-
     shortcut = {}
     k = ['shift', 'ctrl', 'alt']
     for x in k:
@@ -178,8 +177,6 @@ def generate_new_shortcut(
                     shortcut_name, letter_index)
 
     if len(already_existing_shortcuts) == 0:
-        print('No already existing elements.')
-        print(f'returning {shortcut}')
         return {shortcut_name: shortcut}
 
     iteration = 0
@@ -207,7 +204,7 @@ def generate_new_shortcut(
 
             # If at least one element is different, check next.
             if len(same) < 4:
-                break
+                continue
 
             # Filter elements.
             e = []
@@ -220,7 +217,7 @@ def generate_new_shortcut(
             if len(e) == 0:
                 letter_index, shortcut['letter']\
                         = _get_next_letter_in_shortcut_name(
-                                shortcut['letter'], letter_index)
+                                shortcut_name, letter_index)
                 for z in k:
                     shortcut.update({z: False})
                 reparse = True
@@ -257,7 +254,6 @@ def _get_next_letter_in_shortcut_name(shortcut_name, index):
     >>> get_next_letter_in_shortcut_name('angle_limit', None)
     <<< 0, A
     """
-
     if not isinstance(shortcut_name, str):
         raise TypeError
 
@@ -267,7 +263,7 @@ def _get_next_letter_in_shortcut_name(shortcut_name, index):
                 new_index = i
                 letter = x.upper()
                 break
-    else:
+    elif isinstance(index, int):
         if (index + 1) >= len(shortcut_name):
             raise ValueError
         for i, x in enumerate(shortcut_name[index:-1]):
@@ -278,5 +274,7 @@ def _get_next_letter_in_shortcut_name(shortcut_name, index):
                 letter = x.upper()
                 break
         new_index = index + new_index
+    else:
+        raise TypeError
     return new_index, letter
 # }}}

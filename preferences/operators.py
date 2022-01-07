@@ -174,7 +174,10 @@ class BMTOOL_OT_reparse_default_modifiers_props_kbs(  # {{{
     bl_idname = "object.reparse_default_modifiers_props_kbs"
     bl_label = "BMTool add all modifiers props to kbs"
 
-    replace_kbs: BoolProperty(True)
+    replace_kbs: BoolProperty(
+            name='Replace existing.',
+            default=True
+            )
 
     @classmethod
     def poll(self, context):
@@ -198,7 +201,7 @@ class BMTOOL_OT_reparse_default_modifiers_props_kbs(  # {{{
 
         prefs = bpy.context.preferences.addons['bmtools'].preferences
 
-        replace = True
+        replace = self.replace_kbs
 
         s = {}
         for x in modifiers:
@@ -210,7 +213,6 @@ class BMTOOL_OT_reparse_default_modifiers_props_kbs(  # {{{
                 d = prefs.get_modal_operators_shortcuts_group(x.type)
 
             for y in props:
-                print(len(d))
                 for z in d:
                     if not isinstance(d[z], dict):
                         raise TypeError
@@ -220,15 +222,12 @@ class BMTOOL_OT_reparse_default_modifiers_props_kbs(  # {{{
                             raise TypeError(d[z])
 
                 shortcut = generate_new_shortcut(y, d)
-                print(shortcut)
                 d.update(shortcut)
                 if len(d) < 1:
                     raise ValueError
 
             s_e = {x.type: d}
-            print(s_e)
             s.update(s_e)
-            break
 
         if replace:
             prefs.bmtool_modal_operators_serialized_shortcuts\
