@@ -274,7 +274,7 @@ class BMToolModalInput():
         return True
     # }}}
 
-    def modal_input_mouse(self, attr_val, prop, event):  # {{{
+    def modal_input_mouse(self, attr_val, prop, event, sens=1):  # {{{
         if not isinstance(attr_val, bool)\
                 and not isinstance(attr_val, int)\
                 and not isinstance(attr_val, float):
@@ -284,35 +284,82 @@ class BMToolModalInput():
         if prop is None:
             raise TypeError
 
-        x = self.__vec_len(self.first_x, event.mouse_x,
-                           self.first_y, event.mouse_y
-                           )
+        # Delta percentage
+        # 10
+        delta_pct = self.__get_delta_pct(event)
+        # normalized 0.1
+        delta_pct_f = delta_pct/100
+        # pow 0.001
+        delta_pct_i = pow(delta_pct_f, 2)
 
-        try:
-            z = self.sens[prop.type][prop.subtype]
-        except KeyError:
-            print(f'No sens for {prop.name}, {prop.type}, {prop.subtype}')
-            z = 1
+        if delta_pct > 100:
+            delta = delta_pct
+        else:
+            # This variable should be used when possible
+            delta = delta_pct_i
 
-        x = x * prop.step * z
+        # Distance
+        v = self.__get_view3d_window()
+        distance = v.data.view_distance
+
+        # Max value
+        max_val = prop.soft_max
+
+        # Info
+        logger.debug(
+                f'delta: {delta_pct}, {delta_pct_f}, {delta_pct_i}, {delta}')
+        logger.debug(f'Distance: {distance}')
+        logger.debug(' ')
+        logger.debug(f'Prop: {prop.name}')
+        logger.debug(f'Type: {prop.type}')
+        logger.debug(f'Subtype: {prop.subtype}')
+        logger.debug(f'Units: {prop.unit}')
+        logger.debug(f'Step: {prop.step}')
+        logger.debug(f'Max value: {max_val}')
 
         if prop.type == 'INT':
+            # use max as max percentage
+            max_val = prop.soft_max
+            x = delta_pct_i*max_val
             x = int(x)
 
         elif prop.type == 'FLOAT':
-            if prop.subtype in {'ANGLE', 'DEGREES'}:
-                x = x / math.degrees(1)
+            if prop.subtype == 'NONE':
+                result = float(distance*delta)
 
-            # # TODO: calculate distance to obj
-            # elif prop.subtype in {'LENGTH', 'DISTANCE'}:
-            #     x = x * distance_to_object
+            elif prop.subtype in {'ANGLE', 'DEGREES'}:
+                x = delta*(max_val/100)
+                x = x / math.degrees(1)
+                result = x
+
+            elif prop.subtype == 'PERCENTAGE':
+                result = delta
+
+            elif prop.subtype in {'DISTANCE'}:
+                if prop.unit in {'LENGTH'}:
+                    x = distance*delta_pct_i
+
+                    # limit
+                    if x > max_val:
+                        x = max_val
+                    result = x
+
+                else:
+                    raise TypeError(
+                        f'Not implemented prop unit type "{prop.unit}"')
             else:
-                x = float(x)
+                raise TypeError(
+                    f'Not implemented prop subtype "{prop.subtype}"')
         else:
+            raise TypeError(
+                    f'Not implemented prop type "{prop.subtype}"')
+
+        logger.debug(f'Returning {x}')
+
+        if result is None:
             raise TypeError
 
-        y = pow(x, 2)
-        return y
+        return result
 
     # Vector length
     def __vec_len(self, x1, x2, y1, y2):
@@ -322,9 +369,9 @@ class BMToolModalInput():
     # }}}
 
     # Utils {{{
-    def __get_view3d_instance(self):
+    def __get_view3d(self):
         a = None
-        for x in bpy.context.areas:
+        for x in bpy.context.window.screen.areas:
             if x.type == 'VIEW_3D':
                 if a is None:
                     a = x
@@ -334,12 +381,25 @@ class BMToolModalInput():
             raise ValueError
         return a
 
-    def __get_delta_pct(self, event):
-        """Returns float between 0 and 100 for event."""
-        if 'MOUSE' not in event.type:
-            raise TypeError
+    def __get_view3d_window(self, v=None):
+        if v is None:
+            v = self.__get_view3d()
+        a = None
+        for x in v.regions:
+            if x.type == 'WINDOW':
+                if a is None:
+                    a = x
+                else:
+                    raise ValueError
+        if a is None:
+            raise ValueError
+        return a
 
-        v = self.__get_view3d_instance()
+    def __get_delta_pct(self, event, bounds=0, limit=100):
+        """
+        Returns float between 0 and 100 for event.
+        """
+        v = self.__get_view3d_window()
         d = (v.width, v.height)
         c = (d[0]/2, d[1]/2)
 
@@ -347,7 +407,14 @@ class BMToolModalInput():
             m = c[1]
         else:
             m = c[0]
+        m = m - bounds
 
-        vec = self.__vec_len(event.x, c[0], event.y, c[1])
-        return vec*(m/100)
+        # vec = self.__vec_len(event.mouse_x, c[0], event.mouse_y, c[1])
+        vec = self.__vec_len(c[0], event.mouse_x, c[1], event.mouse_y)
+        result = vec/(m/100)
+
+        # Limit
+        if result > limit:
+            result = limit
+        return result
     # }}}

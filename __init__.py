@@ -19,6 +19,7 @@
 # ##### END GPL LICENSE BLOCK #####
 
 import bpy
+import logging
 
 # Modal operators
 from . operators.bmtoolm import BMTOOL_OT_bmtoolm
@@ -51,6 +52,10 @@ bl_info = {
     "description": "Tools for editing modifiers and clusters.",
     "category": "Interface"
 }
+
+logger = logging.getLogger(__package__)
+logger.setLevel(logging.DEBUG)
+logging.basicConfig(level=logging.DEBUG)
 
 classes = [
 

@@ -28,7 +28,7 @@ import bpy
 
 from .bmtool_editor import ModalClustersEditor
 
-logger = logging.getLogger(__package__)
+logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 

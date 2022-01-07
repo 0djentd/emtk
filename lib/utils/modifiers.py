@@ -25,7 +25,7 @@ except ModuleNotFoundError:
     from ..dummy_modifiers import DummyBlenderModifier
     _WITH_BPY = False
 
-logger = logging.getLogger(__package__)
+logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 _MODIFIER_TYPES = [

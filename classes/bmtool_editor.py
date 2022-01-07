@@ -20,7 +20,7 @@ import logging
 
 from .bmtool_input import BMToolModalInput
 
-logger = logging.getLogger(__package__)
+logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 

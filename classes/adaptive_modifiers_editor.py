@@ -31,7 +31,7 @@ from ..lib.utils.modifier_prop_types import get_props_filtered_by_types
 from ..lib.clusters.cluster_trait import ClusterTrait
 from .bmtool_editor import ModalClustersEditor
 
-logger = logging.getLogger(__package__)
+logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
@@ -502,6 +502,9 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
         prop_def = self.__mods[0].rna_type.properties[prop_name]
 
         logger.debug(f'Modal check if delta changed {prop_name}')
+
+        if event.type not in {'MOUSEMOVE'}:
+            return
 
         # Try to edit props.
         if prop_def.type == 'INT':
