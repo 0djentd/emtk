@@ -329,37 +329,120 @@ class BMToolModalInput():
         logger.debug(f'Step: {prop.step}')
         logger.debug(f'Max value: {max_val}')
 
-        if prop_type == 'BOOLEAN':
-            if delta_pct_i > 0.5:
-                return True
+        if prop_type == 'BOOLEAN':  # {{{
+            if prop_subtype == 'NONE':
+                if delta_pct_i > 0.5:
+                    result = True
+                else:
+                    result = False
+
+            # elif prop_subtype == 'PIXEL':
+            #     raise TypeError
+
+            # elif prop_subtype == 'UNSIGNED':
+            #     raise TypeError
+
+            # elif prop_subtype == 'PERCENTAGE':
+            #     raise TypeError
+
+            # elif prop_subtype == 'FACTOR':
+            #     raise TypeError
+
+            # elif prop_subtype == 'ANGLE':
+            #     raise TypeError
+
+            # elif prop_subtype == 'TIME':
+            #     raise TypeError
+
+            # elif prop_subtype == 'DISTANCE':
+            #     raise TypeError
+
+            # elif prop_subtype == 'DISTANCE_CAMERA':
+            #     raise TypeError
+
+            # elif prop_subtype == 'POWER':
+            #     raise TypeError
+
+            # elif prop_subtype == 'TEMPERATURE':
+            #     raise TypeError
+
             else:
-                return False
+                raise TypeError(
+                    f'Not implemented prop subtype "{prop_subtype}"')
+            # }}}
 
-        elif prop_type == 'INT':
-            x = delta_pct_i*max_val
-            result = int(x)
+        elif prop_type == 'INT':  # {{{
+            if prop_subtype == 'NONE':
+                x = delta_pct_i*max_val
+                result = int(x)
 
-        elif prop_type == 'FLOAT':
+            # elif prop_subtype == 'PIXEL':
+            #     raise TypeError
+
+            # elif prop_subtype == 'UNSIGNED':
+            #     raise TypeError
+
+            # elif prop_subtype == 'PERCENTAGE':
+            #     raise TypeError
+
+            # elif prop_subtype == 'FACTOR':
+            #     raise TypeError
+
+            # elif prop_subtype == 'ANGLE':
+            #     raise TypeError
+
+            # elif prop_subtype == 'TIME':
+            #     raise TypeError
+
+            # elif prop_subtype == 'DISTANCE':
+            #     raise TypeError
+
+            # elif prop_subtype == 'DISTANCE_CAMERA':
+            #     raise TypeError
+
+            # elif prop_subtype == 'POWER':
+            #     raise TypeError
+
+            # elif prop_subtype == 'TEMPERATURE':
+            #     raise TypeError
+
+            else:
+                raise TypeError(
+                    f'Not implemented prop subtype "{prop_subtype}"')
+        # }}}
+
+        elif prop_type == 'FLOAT':  # {{{
             if prop_subtype == 'NONE':
                 result = float(distance*delta)
 
-            elif prop_subtype in {'ANGLE', 'DEGREES'}:
+            # elif prop_subtype == 'PIXEL':
+            #     raise TypeError
+
+            # elif prop_subtype == 'UNSIGNED':
+            #     raise TypeError
+
+            elif prop_subtype == 'PERCENTAGE':
+                if max_val <= 100:
+                    result = delta * 100
+                else:
+                    result = distance * delta
+
+            # elif prop_subtype == 'FACTOR':
+            #     raise TypeError
+
+            elif prop_subtype == 'ANGLE':
                 if max_val*math.degrees(1) <= 360:
                     x = delta*(max_val/100)
                 else:
                     x = delta*(distance/100)
-
                 x = x / math.degrees(1)
                 result = x
 
-            elif prop_subtype == 'PERCENTAGE':
-                if max_val <= 100:
-                    result = delta
-                else:
-                    result = distance * delta
+            # elif prop_subtype == 'TIME':
+            #     raise TypeError
 
-            elif prop_subtype in {'DISTANCE'}:
-                if prop_unit in {'LENGTH'}:
+            elif prop_subtype == 'DISTANCE':
+                if prop_unit == 'LENGTH':
                     if max_val <= distance:
                         result = max_val*delta
                     else:
@@ -368,12 +451,74 @@ class BMToolModalInput():
                 else:
                     raise TypeError(
                         f'Not implemented prop unit type "{prop_unit}"')
+
+            # elif prop_subtype == 'DISTANCE_CAMERA':
+            #     raise TypeError
+
+            # elif prop_subtype == 'POWER':
+            #     raise TypeError
+
+            # elif prop_subtype == 'TEMPERATURE':
+            #     raise TypeError
+
             else:
                 raise TypeError(
                     f'Not implemented prop subtype "{prop_subtype}"')
         else:
             raise TypeError(
                 f'Not implemented prop type "{prop_type}"')
+        # }}}
+
+        # Vector subtypes {{{
+        # if prop_subtype == 'NONE':
+        #     raise TypeError
+
+        # elif prop_subtype == 'COLOR':
+        #     raise TypeError
+
+        # elif prop_subtype == 'TRANSLATION':
+        #     raise TypeError
+
+        # elif prop_subtype == 'DIRECTION':
+        #     raise TypeError
+
+        # elif prop_subtype == 'VELOCITY':
+        #     raise TypeError
+
+        # elif prop_subtype == 'ACCELERATION':
+        #     raise TypeError
+
+        # elif prop_subtype == 'MATRIX':
+        #     raise TypeError
+
+        # elif prop_subtype == 'EULER':
+        #     raise TypeError
+
+        # elif prop_subtype == 'QUATERNION':
+        #     raise TypeError
+
+        # elif prop_subtype == 'AXISANGLE':
+        #     raise TypeError
+
+        # elif prop_subtype == 'XYZ':
+        #     raise TypeError
+
+        # elif prop_subtype == 'XYZ_LENGTH':
+        #     raise TypeError
+
+        # elif prop_subtype == 'COLOR_GAMMA':
+        #     raise TypeError
+
+        # elif prop_subtype == 'COORDINATES':
+        #     raise TypeError
+
+        # elif prop_subtype == 'LAYER':
+        #     raise TypeError
+
+        # elif prop_subtype == 'LAYER_MEMBER':
+        #     raise TypeError
+
+        # }}}
 
         # Check types
         if result is None:

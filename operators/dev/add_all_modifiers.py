@@ -85,55 +85,86 @@ class BMTOOL_OT_add_all_modifiers_and_dump_props(bpy.types.Operator):
 
         h = '/home/djentled/Documents/Projects/bmtools_utils/props_dump'
 
-        # Get all editable prop names filtered by types and modifiers.
-        all_props = {}
-        for x in modifiers:
-            props = get_props_filtered_by_types(x)
-            for p in props:
-                props[p] = list(props[p])
-            all_props.update({x.type: props})
+        # # Get all editable prop names filtered by types and modifiers.
+        # all_props = {}
+        # for x in modifiers:
+        #     props = get_props_filtered_by_types(x)
+        #     for p in props:
+        #         props[p] = list(props[p])
+        #     all_props.update({x.type: props})
 
-        result = all_props
+        # result = all_props
 
-        f = h + '_p'
-        with open(f, 'w') as f:
-            json.dump(result, f, indent=4)
+        # f = h + '_p'
+        # with open(f, 'w') as f:
+        #     json.dump(result, f, indent=4)
 
-        # # Get prop names filtered by types.
-        # # get all types
-        all_types = {}
-        for x in all_props:
-            for y in all_props[x]:
-                props_names = all_props[x][y]
-                if y not in all_types:
-                    all_types.update({y: props_names})
-                else:
-                    for z in props_names:
-                        if z not in all_types[y]:
-                            all_types[y].append(z)
-        result = all_types
+        # # # Get prop names filtered by types.
+        # # # get all types
+        # all_types = {}
+        # for x in all_props:
+        #     for y in all_props[x]:
+        #         props_names = all_props[x][y]
+        #         if y not in all_types:
+        #             all_types.update({y: props_names})
+        #         else:
+        #             for z in props_names:
+        #                 if z not in all_types[y]:
+        #                     all_types[y].append(z)
+        # result = all_types
 
-        f = h + '_t'
-        with open(f, 'w') as f:
-            json.dump(result, f, indent=4)
+        # f = h + '_t'
+        # with open(f, 'w') as f:
+        #     json.dump(result, f, indent=4)
 
-        result = {}
-        for x in modifiers:
-            props = get_all_editable_props(x)
-            result.update({str(x.type): list(props)})
+        # result = {}
+        # for x in modifiers:
+        #     props = get_all_editable_props(x)
+        #     result.update({str(x.type): list(props)})
 
-        f = h + '_e'
-        with open(f, 'w') as f:
-            json.dump(result, f, indent=4)
+        # f = h + '_e'
+        # with open(f, 'w') as f:
+        #     json.dump(result, f, indent=4)
+
+        # result = {}
+        # for x in modifiers:
+        #     props = get_all_editable_props(x, no_ignore=True)
+        #     result.update({str(x.type): list(props)})
+
+        # f = h + '_a'
+        # with open(f, 'w') as f_2:
+        #     json.dump(result, f_2, indent=4)
 
         result = {}
         for x in modifiers:
             props = get_all_editable_props(x, no_ignore=True)
-            result.update({str(x.type): list(props)})
+            result_element = {}
+            for y in list(props):
+                rna = x.rna_type.properties[y]
+                props_elements = {}
+                prop_props = ['type',
+                              'subtype',
+                              'unit',
+                              'step',
+                              'min',
+                              'max',
+                              'soft_min',
+                              'soft_max']
 
-        f = h + '_a'
+                for z in prop_props:
+                    try:
+                        a = getattr(rna, z)
+                    except AttributeError:
+                        a = 'no_attr'
+                    props_elements.update({z: a})
+
+                result_element.update({y: str(props_elements)})
+            result.update({str(x.type): result_element})
+
+        f = h + '_a_a'
         with open(f, 'w') as f_2:
             json.dump(result, f_2, indent=4)
-        print(f.closed)
+
+        print(f_2.closed)
 
         return {'FINISHED'}
