@@ -147,7 +147,15 @@ def search_modal_operators_shortcuts(
 def generate_new_shortcut(
                           shortcut_name: str,
                           already_existing_shortcuts: dict,
-                          max_iterations=512):
+                          max_iterations=512) -> dict:
+    """Generates new unique modal operator shortcut dict.
+
+    Example:
+    >>> d = {'array': {'letter': 'a', 'shift': True,\
+    ...                'ctrl': False, 'alt': False}}
+    >>> generate_new_shortcut('angle', d, max_iterations=10)
+    <<< {'angle': {'letter': 'a', 'shift': True, 'ctrl': True, 'alt': False}}
+    """
 
     if not isinstance(shortcut_name, str):
         raise TypeError

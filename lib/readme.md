@@ -63,6 +63,7 @@ duplication and switching visibility of clusters.
 
 Serialization and deserialization of clusters state.
 Full or partial resoring of clusters state.
+
 Serialization and deserialization of clusters types definitions.
 
 Clusters Commands and Actions.
