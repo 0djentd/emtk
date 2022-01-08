@@ -576,13 +576,13 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
         layer = self.m_list.get_layer()
         layer.start_selecting(self.m_list.get_cluster())
 
+    # TODO: move this to lib
     def __get_clusters(self):
-        """
-        Returns selected clusters, or active cluster, if
-        not selecting clusters.
-        """
+        """Returns selected clusters, or list with active cluster."""
+
         cluster = self.m_list.get_cluster()
         layer = self.m_list.get_layer()
+
         if self.__selecting_clusters:
             return layer.get_selection()
         else:
