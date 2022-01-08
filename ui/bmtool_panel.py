@@ -26,13 +26,154 @@ from bpy.types import Panel, Operator
 from ..lib.utils.modifier_prop_types import get_all_editable_props
 
 
-class BlenderUIWrapper():
-    """Base class for EMTK panels and menus.
-    Provides additional methods based on 'poll' and 'draw' methods.
-    """
+# TODO: No idea why this doesnt work properly with inheritance.
+# class BlenderUIWrapper():  # {{{
+#     """Base class for EMTK panels and menus.
+#     Provides additional methods based on 'poll' and 'draw' methods.
+#     """
+#     __tag_panel_init = True
+#     __tag_panel_invoke = True
+#     __panel_was_drawn = False
+# 
+#     __previous_active_object_id = None
+#     __previous_selected_objects_id = None
+#     __active_object_changed = True
+#     __selected_objects_changed = True
+# 
+#     __debug = True
+# 
+#     # Public properties.  # {{{
+#     @classmethod
+#     @property
+#     def active_object_changed(cls):
+#         return cls.__active_object_changed
+# 
+#     @classmethod
+#     @property
+#     def selected_objects_changed(cls):
+#         return cls.__selected_objects_changed
+#     # }}}
+# 
+#     # Public methods that should not be overloaded. {{{
+#     @classmethod
+#     def poll(cls, context):
+#         # INIT
+#         if cls.__tag_panel_init:
+#             cls.panel_init(context)
+#             if cls.__debug:
+#                 print('Panel was initiated')
+#             cls.__tag_panel_init = False
+# 
+#         # POLL
+#         allow_draw = cls.panel_poll(context)
+#         if cls.__debug:
+#             print('Panel was polled')
+# 
+#         # REMOVE
+#         if not allow_draw:
+#             cls.__tag_panel_invoke = True
+#             if cls.__panel_was_drawn:
+#                 cls.panel_remove(context)
+#                 if cls.__debug:
+#                     print('Panel was removed')
+#             cls.__panel_was_drawn = False
+#         if cls.__debug:
+#             print(allow_draw)
+#         return allow_draw
+# 
+#     def draw(self, context):
+#         # get state
+#         active_object = id(context.object)
+#         selected_objects = []
+#         for x in context.selected_objects:
+#             selected_objects.append(id(x))
+# 
+#         # public variables
+#         if active_object != self.__previous_active_object_id:
+#             self.active_object_changed = True
+#         if selected_objects != self.__previous_selected_objects_id:
+#             self.selected_objects_changed = True
+# 
+#         # store state
+#         self.__previous_active_object_id = active_object
+#         self.__previous_selected_objects_id = selected_objects
+# 
+#         # INVOKE
+#         a = self.__tag_panel_invoke
+#         if a:
+#             self.panel_invoke(context)
+#             if self.__debug:
+#                 print('Panel was invoked')
+#             self.__tag_panel_invoke = False
+#         self.__panel_was_drawn = True
+# 
+#         # DRAW
+#         self.panel_draw(context)
+#         if self.__debug:
+#             print('Panel was drawn')
+#     # }}}
+# 
+#     # Public methods {{{
+#     @classmethod
+#     def panel_init(cls, context):
+#         """This method called once per Blender launch or addon
+#         reload on first object poll.
+# 
+#         It should have classmethod decorator.
+#         It should return None.
+#         """
+#         return
+# 
+#     @classmethod
+#     def panel_poll(cls, context):
+#         """This method called every time object is polled.
+# 
+#         It should have classmethod decorator.
+#         It should return True or False.
+#         """
+#         raise RuntimeError('No panel-specific method.')
+# 
+#     def panel_invoke(self, context):
+#         """This method called every time object is drawn after failed poll.
+#         Also called on first draw after Blender launch or addon reload.
+# 
+#         It should return None.
+#         """
+#         return
+# 
+#     def panel_draw(self, context):
+#         """This method called every time object drawn.
+# 
+#         It should return None.
+#         """
+#         return
+# 
+#     @classmethod
+#     def panel_remove(cls, context):
+#         """This method called every time object poll failed
+#         after successfull draw.
+# 
+#         It should have classmethod decorator.
+#         It should return None.
+#         """
+#         return
+#     # }}}
+# # }}}
+
+
+class VIEW3D_PT_bmtool_panel(Panel):
+    bl_idname = "VIEW3D_PT_bmtool_panel"
+    bl_label = "Edit clusters"
+    bl_category = "BMTools"
+    bl_space_type = "VIEW_3D"
+    bl_region_type = "UI"
+    bl_context = "objectmode"
+
+    # TODO: move to base class.
+    # WRAPPER  {{{
     __tag_panel_init = True
-    __tag_panel_invoke = True
-    __panel_was_drawn = False
+    __tag_panel_invoke_value = True
+    __panel_was_drawn_value = False
 
     __previous_active_object_id = None
     __previous_selected_objects_id = None
@@ -41,37 +182,84 @@ class BlenderUIWrapper():
 
     __debug = True
 
-    # Public properties.
+    # Properties.  # {{{
     @classmethod
     @property
-    def active_object_changed(cls)
+    def active_object_changed(cls):
         return cls.__active_object_changed
 
     @classmethod
     @property
-    def selected_objects_changed(cls)
+    def selected_objects_changed(cls):
         return cls.__selected_objects_changed
+
+    # tag panel invoke  {{{
+    @property
+    def __tag_panel_invoke(self):
+        self._get_tag_panel_invoke()
+
+    @__tag_panel_invoke.setter
+    def __tag_panel_invoke(self, val):
+        self._set_tag_panel_invoke(val)
+
+    @classmethod
+    def _get_tag_panel_invoke(cls):
+        return cls.__tag_panel_invoke_value
+
+    @classmethod
+    def _set_tag_panel_invoke(cls, val):
+        cls.__tag_panel_invoke_value = val
+    # }}}
+
+    # panel was drawn  {{{
+    @property
+    def __panel_was_drawn(self):
+        self._get_panel_was_drawn()
+
+    @__panel_was_drawn.setter
+    def __panel_was_drawn(self, val):
+        self._set_panel_was_drawn(val)
+
+    @classmethod
+    def _get_panel_was_drawn(cls):
+        return cls.__panel_was_drawn_value
+
+    @classmethod
+    def _set_panel_was_drawn(cls, val):
+        cls.__panel_was_drawn_value = val
+    # }}}
+    # }}}
 
     # Public methods that should not be overloaded. {{{
     @classmethod
     def poll(cls, context):
         # INIT
         if cls.__tag_panel_init:
-            cls.panel_init(cls, context)
+            cls.panel_init(context)
+            if cls.__debug:
+                print('Panel was initiated')
             cls.__tag_panel_init = False
-        else:
-            # POLL
-            allow_draw = cls.panel_poll(cls, context)
+
+        # POLL
+        allow_draw = cls.panel_poll(context)
+        if cls.__debug:
+            print('Panel was polled')
 
         # REMOVE
         if not allow_draw:
             cls.__tag_panel_invoke = True
-            cls.__panel_was_drawn = False
             if cls.__panel_was_drawn:
                 cls.panel_remove(context)
+                if cls.__debug:
+                    print('Panel was removed')
+            cls.__panel_was_drawn = False
+        if cls.__debug:
+            print(allow_draw)
         return allow_draw
 
     def draw(self, context):
+        cls = type(self)
+
         # get state
         active_object = id(context.object)
         selected_objects = []
@@ -79,23 +267,28 @@ class BlenderUIWrapper():
             selected_objects.append(id(x))
 
         # public variables
-        if active_object != self.__previous_active_object:
+        if active_object != cls.__previous_active_object_id:
             self.active_object_changed = True
-        if selected_objects != self.__previous_selected_objects:
+        if selected_objects != cls.__previous_selected_objects_id:
             self.selected_objects_changed = True
 
         # store state
-        self.__previous_active_object = active_object
-        self.__previous_selected_objects = selected_objects
+        cls.__previous_active_object_id = active_object
+        cls.__previous_selected_objects_id = selected_objects
 
         # INVOKE
-        if self.__tag_panel_invoke:
+        a = cls.__tag_panel_invoke
+        if a:
             self.panel_invoke(context)
-            self.__tag_panel_invoke = False
-        self.__panel_was_drawn = True
+            if self.__debug:
+                print('Panel was invoked')
+            cls.__tag_panel_invoke = False
+        cls.__panel_was_drawn = True
 
         # DRAW
         self.panel_draw(context)
+        if cls.__debug:
+            print('Panel was drawn')
     # }}}
 
     # Public methods {{{
@@ -107,61 +300,10 @@ class BlenderUIWrapper():
         It should have classmethod decorator.
         It should return None.
         """
-        if cls.__debug:
-            print('Panel was initiated')
         return
 
-    @classmethod
-    def panel_poll(cls, context):
-        """This method called every time object is polled.
-
-        It should have classmethod decorator.
-        It should return True or False.
-        """
-        if cls.__debug:
-            print('Panel was polled')
-        return
-
-    def panel_invoke(self, context):
-        """This method called every time object is drawn after failed poll.
-        Also called on first draw after Blender launch or addon reload.
-
-        It should return None.
-        """
-        if self.__debug:
-            print('Panel was invoked')
-        return
-
-    def panel_draw(self, context):
-        """This method called every time object drawn.
-
-        It should return None.
-        """
-        if self.__debug:
-            print('Panel was drawn')
-        return
-
-    @classmethod
-    def panel_remove(cls, context):
-        """This method called every time object poll failed
-        after successfull draw.
-
-        It should have classmethod decorator.
-        It should return None.
-        """
-        if cls.__debug:
-            print('Panel was removed')
-        return
     # }}}
-
-
-class VIEW3D_PT_bmtool_panel(BlenderUIWrapper, Panel):
-    bl_idname = "VIEW3D_PT_bmtool_panel"
-    bl_label = "Edit clusters"
-    bl_category = "BMTools"
-    bl_space_type = "VIEW_3D"
-    bl_region_type = "UI"
-    bl_context = "objectmode"
+    # }}}
 
     # Example:
     # {'Bevel': True, 'Array': False}
@@ -186,6 +328,16 @@ class VIEW3D_PT_bmtool_panel(BlenderUIWrapper, Panel):
         layout.label(text="BMTools modifiers panel")
         for x in context.object.modifiers:
             self.__draw_modifier_props(x)
+
+    def panel_invoke(self, context):
+        self = type(self)
+        self.modifiers_expanded = {}
+        for x in context.object.modifiers:
+            cls.modifiers_expanded.update({x.name: x.show_expanded})
+
+    @classmethod
+    def panel_remove(cls, context):
+        self.modifiers_expanded = {}
     # }}}
 
     def __draw_modifier_props(self, modifier):
