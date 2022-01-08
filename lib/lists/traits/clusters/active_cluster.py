@@ -172,7 +172,7 @@ class ActiveClusterTrait():
         """
         Removes selected clusters on this layer.
         """
-        clusters = copy.copy(self.get_cluster_selection())
+        clusters = copy.copy(self.get_selection())
         for x in clusters:
             self.remove(x)
 
@@ -180,7 +180,7 @@ class ActiveClusterTrait():
         """
         Applies selected clusters on this layer.
         """
-        clusters = copy.copy(self.get_cluster_selection())
+        clusters = copy.copy(self.get_selection())
         for x in clusters:
             self.apply(x)
 
@@ -188,7 +188,7 @@ class ActiveClusterTrait():
         """
         Deconstructs selected clusters on this layer.
         """
-        clusters = copy.copy(self.get_cluster_selection())
+        clusters = copy.copy(self.get_selection())
         for x in clusters:
             self.deconstruct(x)
 
@@ -208,7 +208,7 @@ class ActiveClusterTrait():
         """
         Deconstructs selected clusters on this layer.
         """
-        clusters = copy.copy(self.get_cluster_selection())
+        clusters = copy.copy(self.get_selection())
         if direction == 'DOWN':
             clusters.reverse()
         for x in clusters:
@@ -220,7 +220,7 @@ class ActiveClusterTrait():
         """
 
         # Get selection on this layer
-        clusters = self.get_cluster_selection()
+        clusters = self.get_selection()
         if (clusters is None) or (clusters == []):
             return False
 

@@ -81,20 +81,20 @@ class BMToolModalInput():
     # }}}
 
     # Variables {{{
-    sens = {
-            'INT': {
-                    'UNSIGNED': 1,
-                    'NONE': 0.5,
-                    },
+    # sens = {
+    #         'INT': {
+    #                 'UNSIGNED': 1,
+    #                 'NONE': 0.5,
+    #                 },
 
-            'FLOAT': {
-                      'UNSIGNED': 0.0005,
-                      'ANGLE': 0.01,
-                      'DEGREES': 0.01,
-                      'DISTANCE': 0.005,
-                      'NONE': 0.005,
-                      },
-            }
+    #         'FLOAT': {
+    #                   'UNSIGNED': 0.0005,
+    #                   'ANGLE': 0.01,
+    #                   'DEGREES': 0.01,
+    #                   'DISTANCE': 0.005,
+    #                   'NONE': 0.005,
+    #                   },
+    #         }
     # }}}
 
     # Properties {{{
@@ -308,6 +308,9 @@ class BMToolModalInput():
         max_val = prop.soft_max
         min_val = prop.soft_min
 
+        if min_val < 0:
+            raise ValueError
+
         # Step
         step = prop.step
 
@@ -373,14 +376,21 @@ class BMToolModalInput():
 
         elif prop_type == 'INT':  # {{{
             if prop_subtype == 'NONE':
-                x = delta_pct_i*max_val
+                if max_val < step*10:
+                    x = delta_pct_i*max_val
+                else:
+                    x = delta_pct_i*distance
                 result = int(x)
 
             # elif prop_subtype == 'PIXEL':
             #     raise TypeError
 
-            # elif prop_subtype == 'UNSIGNED':
-            #     raise TypeError
+            elif prop_subtype == 'UNSIGNED':
+                if max_val < step*10:
+                    x = delta_pct_i*max_val
+                else:
+                    x = delta_pct_i*distance
+                result = int(x)
 
             # elif prop_subtype == 'PERCENTAGE':
             #     raise TypeError
@@ -418,8 +428,8 @@ class BMToolModalInput():
             # elif prop_subtype == 'PIXEL':
             #     raise TypeError
 
-            # elif prop_subtype == 'UNSIGNED':
-            #     raise TypeError
+            elif prop_subtype == 'UNSIGNED':
+                raise TypeError
 
             elif prop_subtype == 'PERCENTAGE':
                 if max_val <= 100:
@@ -427,16 +437,16 @@ class BMToolModalInput():
                 else:
                     result = distance * delta
 
-            # elif prop_subtype == 'FACTOR':
-            #     raise TypeError
+            elif prop_subtype == 'FACTOR':
+                if max_val != 1.0:
+                    raise ValueError
+                result = delta_pct_i
 
             elif prop_subtype == 'ANGLE':
                 if max_val*math.degrees(1) <= 360:
-                    x = delta*(max_val/100)
+                    result = delta * max_val
                 else:
-                    x = delta*(distance/100)
-                x = x / math.degrees(1)
-                result = x
+                    result = delta * math.degrees(1)
 
             # elif prop_subtype == 'TIME':
             #     raise TypeError
@@ -446,7 +456,7 @@ class BMToolModalInput():
                     if max_val <= distance:
                         result = max_val*delta
                     else:
-                        result = distance*step*delta
+                        result = distance*delta
 
                 else:
                     raise TypeError(

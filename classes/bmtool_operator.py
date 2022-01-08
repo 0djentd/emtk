@@ -227,7 +227,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
                 & (event.value == 'PRESS'):
             if event.shift:
                 if self.__selecting_clusters:
-                    for x in layer.get_cluster_selection():
+                    for x in layer.get_selection():
                         x.toggle_this_cluster_visibility(
                                 [True, False, False, False])
                 else:
@@ -235,7 +235,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
                             [True, False, False, False])
             else:
                 if self.__selecting_clusters:
-                    for x in layer.get_cluster_selection():
+                    for x in layer.get_selection():
                         x.toggle_this_cluster_visibility(
                                 [False, True, False, False])
                 else:
@@ -248,7 +248,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
                 & (event.value == 'PRESS'):
             if event.shift:
                 if self.__selecting_clusters:
-                    for x in layer.get_cluster_selection():
+                    for x in layer.get_selection():
                         cluster.toggle_this_cluster_visibility(
                                 [False, False, False, True])
                 else:
@@ -256,7 +256,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
                             [False, False, False, True])
             else:
                 if self.__selecting_clusters:
-                    for x in layer.get_cluster_selection():
+                    for x in layer.get_selection():
                         cluster.toggle_this_cluster_visibility(
                                 [False, False, True, False])
                 else:
@@ -339,10 +339,8 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
 
             # Toggle selecting clusters.
             if self.__selecting_clusters:
-                layer.stop_selecting_clusters()
                 self.__stop_selecting_clusters()
             else:
-                layer.start_selecting_clusters()
                 self.__start_selecting_clusters()
             # }}}
 
@@ -581,10 +579,12 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
     def __stop_selecting_clusters(self):
         self.__selecting_clusters = False
         layer = self.m_list.get_layer()
-        layer.clear_cluster_selection()
+        layer.stop_selecting()
 
     def __start_selecting_clusters(self):
         self.__selecting_clusters = True
+        layer = self.m_list.get_layer()
+        layer.start_selecting(self.m_list.get_cluster())
 
     def __get_clusters(self):
         """
@@ -594,7 +594,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
         cluster = self.m_list.get_cluster()
         layer = self.m_list.get_layer()
         if self.__selecting_clusters:
-            return layer.get_cluster_selection()
+            return layer.get_selection()
         else:
             return [cluster]
     # }}}
