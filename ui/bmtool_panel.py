@@ -31,15 +31,28 @@ class BlenderUIWrapper():
     Provides additional methods based on 'poll' and 'draw' methods.
     """
     __tag_panel_init = True
-    __previous_active_object_id = None
-    __previous_selected_objects_id = None
     __tag_panel_invoke = True
     __panel_was_drawn = False
+
+    __previous_active_object_id = None
+    __previous_selected_objects_id = None
+    __active_object_changed = True
+    __selected_objects_changed = True
+
     __debug = True
 
-    active_object_changed = True
-    selected_objects_changed = True
+    # Public properties.
+    @classmethod
+    @property
+    def active_object_changed(cls)
+        return cls.__active_object_changed
 
+    @classmethod
+    @property
+    def selected_objects_changed(cls)
+        return cls.__selected_objects_changed
+
+    # Public methods that should not be overloaded. {{{
     @classmethod
     def poll(cls, context):
         # INIT
@@ -83,38 +96,58 @@ class BlenderUIWrapper():
 
         # DRAW
         self.panel_draw(context)
+    # }}}
 
-    # Panel methods {{{
+    # Public methods {{{
     @classmethod
     def panel_init(cls, context):
-        """This method called once per Blender launch."""
+        """This method called once per Blender launch or addon
+        reload on first object poll.
+
+        It should have classmethod decorator.
+        It should return None.
+        """
         if cls.__debug:
             print('Panel was initiated')
         return
 
     @classmethod
     def panel_poll(cls, context):
-        """This method called every time object is polled."""
+        """This method called every time object is polled.
+
+        It should have classmethod decorator.
+        It should return True or False.
+        """
         if cls.__debug:
             print('Panel was polled')
         return
 
-    def panel_draw(self, context):
-        """This method called every time object drawn."""
-        if self.__debug:
-            print('Panel was drawn')
-        return
-
     def panel_invoke(self, context):
-        """This method called every time object is drawn after failed poll."""
+        """This method called every time object is drawn after failed poll.
+        Also called on first draw after Blender launch or addon reload.
+
+        It should return None.
+        """
         if self.__debug:
             print('Panel was invoked')
+        return
+
+    def panel_draw(self, context):
+        """This method called every time object drawn.
+
+        It should return None.
+        """
+        if self.__debug:
+            print('Panel was drawn')
         return
 
     @classmethod
     def panel_remove(cls, context):
         """This method called every time object poll failed
         after successfull draw.
+
+        It should have classmethod decorator.
+        It should return None.
         """
         if cls.__debug:
             print('Panel was removed')
@@ -137,7 +170,6 @@ class VIEW3D_PT_bmtool_panel(BlenderUIWrapper, Panel):
     # Panel methods {{{
     @classmethod
     def panel_poll(cls, context):
-        print('Panel was polled')
         if context.object is None:
             allow_draw = False
         elif len(context.selected_objects) < 1:
@@ -147,21 +179,14 @@ class VIEW3D_PT_bmtool_panel(BlenderUIWrapper, Panel):
         return allow_draw
 
     def panel_draw(self, context):
-        print('Panel was drawn')
+        if self.active_object_changed:
+            self.modifiers_expanded = {}
+
         layout = self.layout
         layout.label(text="BMTools modifiers panel")
         for x in context.object.modifiers:
             self.__draw_modifier_props(x)
     # }}}
-
-    def check_if_objects_changed(self, context):
-        """Returns True, if objects changed after previous iteration."""
-        result = None
-        if self.previous_objects != context.selected_objects:
-            result = True
-        if self.previous_active != context.object:
-            result = True
-        return result
 
     def __draw_modifier_props(self, modifier):
         if modifier.name not in self.modifiers_expanded:
