@@ -349,16 +349,6 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
                 & (event.value == 'PRESS'):
             logger.info('Removing cluster')
 
-            # TODO: this only moves object to new collection, should create
-            # a backup instead.
-            # if self.backup_mesh_on_modifier_apply_remove:
-            #     objCollections = self.m_list._object.users_collection
-
-            #     if self.backup_collection not in objCollections:
-            #         self.backup_collection.objects.link(self.m_list._object)
-            #         for x in objCollections:
-            #             x.object.unlink(self.m_list._object)
-
             # Remove cluster.
             if self.__selecting_clusters is True:
                 layer.remove_clusters_selection()
