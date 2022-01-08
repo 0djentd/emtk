@@ -288,7 +288,7 @@ class BMToolModalInput():
 
         # Delta percentage
         # 10
-        delta_pct = self.__get_delta_pct(event)
+        delta_pct = _get_delta_pct(event)
         # normalized 0.1
         delta_pct_f = delta_pct/100
         # pow 0.001
@@ -301,7 +301,7 @@ class BMToolModalInput():
             delta = delta_pct_i
 
         # Distance
-        v = self.__get_view3d_window()
+        v = _get_view3d_window()
         distance = v.data.view_distance
 
         # Max and min value
@@ -312,7 +312,7 @@ class BMToolModalInput():
             raise ValueError
 
         # Step
-        step = prop.step
+        step = prop.step/100
 
         # Prop type, subtype, units
         prop_type = prop.type
@@ -331,6 +331,23 @@ class BMToolModalInput():
         logger.debug(f'Units: {prop.unit}')
         logger.debug(f'Step: {prop.step}')
         logger.debug(f'Max value: {max_val}')
+
+        """
+        Currently implemented types and their subtypes:
+        BOOLEAN:
+            NONE,
+
+        INT:
+            NONE,
+            UNSIGNED,
+
+        FLOAT:
+            NONE,
+            UNSIGNED,
+            FACTOR,
+            ANGLE,
+            DISTANCE,
+        """
 
         if prop_type == 'BOOLEAN':  # {{{
             if prop_subtype == 'NONE':
@@ -376,7 +393,7 @@ class BMToolModalInput():
 
         elif prop_type == 'INT':  # {{{
             if prop_subtype == 'NONE':
-                if max_val < step*10:
+                if max_val < step*1000:
                     x = delta_pct_i*max_val
                 else:
                     x = delta_pct_i*distance
@@ -386,7 +403,7 @@ class BMToolModalInput():
             #     raise TypeError
 
             elif prop_subtype == 'UNSIGNED':
-                if max_val < step*10:
+                if max_val < step*1000:
                     x = delta_pct_i*max_val
                 else:
                     x = delta_pct_i*distance
@@ -474,60 +491,60 @@ class BMToolModalInput():
             else:
                 raise TypeError(
                     f'Not implemented prop subtype "{prop_subtype}"')
+
+        # elif prop_type == 'VECTOR_FLOAT':  # {{{
+            # if prop_subtype == 'NONE':
+            #     raise TypeError
+
+            # elif prop_subtype == 'COLOR':
+            #     raise TypeError
+
+            # elif prop_subtype == 'TRANSLATION':
+            #     raise TypeError
+
+            # elif prop_subtype == 'DIRECTION':
+            #     raise TypeError
+
+            # elif prop_subtype == 'VELOCITY':
+            #     raise TypeError
+
+            # elif prop_subtype == 'ACCELERATION':
+            #     raise TypeError
+
+            # elif prop_subtype == 'MATRIX':
+            #     raise TypeError
+
+            # elif prop_subtype == 'EULER':
+            #     raise TypeError
+
+            # elif prop_subtype == 'QUATERNION':
+            #     raise TypeError
+
+            # elif prop_subtype == 'AXISANGLE':
+            #     raise TypeError
+
+            # elif prop_subtype == 'XYZ':
+            #     raise TypeError
+
+            # elif prop_subtype == 'XYZ_LENGTH':
+            #     raise TypeError
+
+            # elif prop_subtype == 'COLOR_GAMMA':
+            #     raise TypeError
+
+            # elif prop_subtype == 'COORDINATES':
+            #     raise TypeError
+
+            # elif prop_subtype == 'LAYER':
+            #     raise TypeError
+
+            # elif prop_subtype == 'LAYER_MEMBER':
+            #     raise TypeError
+
+            # }}}
         else:
             raise TypeError(
                 f'Not implemented prop type "{prop_type}"')
-        # }}}
-
-        # Vector subtypes {{{
-        # if prop_subtype == 'NONE':
-        #     raise TypeError
-
-        # elif prop_subtype == 'COLOR':
-        #     raise TypeError
-
-        # elif prop_subtype == 'TRANSLATION':
-        #     raise TypeError
-
-        # elif prop_subtype == 'DIRECTION':
-        #     raise TypeError
-
-        # elif prop_subtype == 'VELOCITY':
-        #     raise TypeError
-
-        # elif prop_subtype == 'ACCELERATION':
-        #     raise TypeError
-
-        # elif prop_subtype == 'MATRIX':
-        #     raise TypeError
-
-        # elif prop_subtype == 'EULER':
-        #     raise TypeError
-
-        # elif prop_subtype == 'QUATERNION':
-        #     raise TypeError
-
-        # elif prop_subtype == 'AXISANGLE':
-        #     raise TypeError
-
-        # elif prop_subtype == 'XYZ':
-        #     raise TypeError
-
-        # elif prop_subtype == 'XYZ_LENGTH':
-        #     raise TypeError
-
-        # elif prop_subtype == 'COLOR_GAMMA':
-        #     raise TypeError
-
-        # elif prop_subtype == 'COORDINATES':
-        #     raise TypeError
-
-        # elif prop_subtype == 'LAYER':
-        #     raise TypeError
-
-        # elif prop_subtype == 'LAYER_MEMBER':
-        #     raise TypeError
-
         # }}}
 
         # Check types
@@ -547,61 +564,66 @@ class BMToolModalInput():
         logger.debug(f'Returning {result}')
         logger.debug(' ')
         return result
-
-    # Vector length
-    def __vec_len(self, x1, x2, y1, y2):
-        delta_x = x1 - x2
-        delta_y = y1 - y2
-        return math.sqrt(pow(delta_x, 2) + pow(delta_y, 2))
     # }}}
 
-    # Utils {{{
-    def __get_view3d(self):
-        a = None
-        for x in bpy.context.window.screen.areas:
-            if x.type == 'VIEW_3D':
-                if a is None:
-                    a = x
-                else:
-                    raise ValueError
-        if a is None:
-            raise ValueError
-        return a
 
-    def __get_view3d_window(self, v=None):
-        if v is None:
-            v = self.__get_view3d()
-        a = None
-        for x in v.regions:
-            if x.type == 'WINDOW':
-                if a is None:
-                    a = x
-                else:
-                    raise ValueError
-        if a is None:
-            raise ValueError
-        return a
+# Utils {{{
+def _vec_len(x1, x2, y1, y2):
+    x = x1 - x2
+    y = y1 - y2
+    return math.sqrt(pow(x, 2) + pow(y, 2))
 
-    def __get_delta_pct(self, event, bounds=0, limit=100):
-        """
-        Returns float between 0 and 100 for event.
-        """
-        v = self.__get_view3d_window()
-        d = (v.width, v.height)
-        c = (d[0]/2, d[1]/2)
 
-        if c[0] > c[1]:
-            m = c[1]
-        else:
-            m = c[0]
-        m = m - bounds
+def _get_view3d():
+    a = None
+    for x in bpy.context.window.screen.areas:
+        if x.type == 'VIEW_3D':
+            if a is None:
+                a = x
+            else:
+                raise ValueError
+    if a is None:
+        raise ValueError
+    return a
 
-        # vec = self.__vec_len(event.mouse_x, c[0], event.mouse_y, c[1])
-        vec = self.__vec_len(c[0], event.mouse_x, c[1], event.mouse_y)
-        result = vec/(m/100)
 
-        # Limit
+def _get_view3d_window(v=None):
+    if v is None:
+        v = _get_view3d()
+    a = None
+    for x in v.regions:
+        if x.type == 'WINDOW':
+            if a is None:
+                a = x
+            else:
+                raise ValueError
+    if a is None:
+        raise ValueError
+    return a
+
+
+def _get_delta_pct(event, bounds=-100, limit=None):
+    """Returns float between 0 and 100 for event."""
+
+    v = _get_view3d_window()
+    d = (v.width, v.height)
+    c = (d[0]/2, d[1]/2)
+
+    if c[0] > c[1]:
+        m = c[1]
+    else:
+        m = c[0]
+    m = m - bounds
+
+    # vec = self.__vec_len(event.mouse_x, c[0], event.mouse_y, c[1])
+    vec = _vec_len(c[0], event.mouse_x, c[1], event.mouse_y)
+    result = vec/(m/100)
+
+    # Limit
+    if limit is not None:
+        if type(limit) not in {int, float}:
+            raise TypeError
         if result > limit:
             result = limit
-        return result
-    # }}}
+    return result
+# }}}
