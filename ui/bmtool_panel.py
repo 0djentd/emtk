@@ -26,6 +26,27 @@ from bpy.types import Panel, Operator
 from ..lib.utils.modifier_prop_types import get_all_editable_props
 
 
+"""
+Panels instancing cache workarounds.
+
+So, basically, panels are being instantiated every 'draw' iteration.
+This explains why __init__ being called on draw.
+This is different from modal operators, that are instanced once.
+However, 'draw' method is creating new instance every iteration there
+too, as well as in usual operators.
+
+If there is need to store data between iterations, class variables
+should be used.
+
+Some features like 'init', 'invoke' and 'remove' method can be
+implemented through class variables.
+
+Panels can have multiple 'instances' in user interface though, not
+necessary with same context.
+
+I assume this is possible to have cache for multiple 'instances'
+in class variables by identyfing panels somehow.
+"""
 # TODO: No idea why this doesnt work properly with inheritance.
 # class BlenderUIWrapper():  # {{{
 #     """Base class for EMTK panels and menus.
@@ -169,6 +190,8 @@ class VIEW3D_PT_bmtool_panel(Panel):
     bl_region_type = "UI"
     bl_context = "objectmode"
 
+    instances = []
+
     # TODO: move to base class.
     # WRAPPER  {{{
     __tag_panel_init = True
@@ -181,6 +204,13 @@ class VIEW3D_PT_bmtool_panel(Panel):
     __selected_objects_changed = True
 
     __debug = True
+
+    def get_instance_variables(self):
+        """
+        Returns 'instance' variables from class variables.
+        This is workaround for panel instancing.
+        """
+        return type(self).instances[0]
 
     # Properties.  # {{{
     @classmethod
@@ -233,6 +263,14 @@ class VIEW3D_PT_bmtool_panel(Panel):
     # Public methods that should not be overloaded. {{{
     @classmethod
     def poll(cls, context):
+        if cls.__debug:
+            print(cls, type(cls))
+            print(cls.instances)
+            for x in cls.instances:
+                print(id(x))
+            print(id(cls))
+
+        # TODO: move to draw
         # INIT
         if cls.__tag_panel_init:
             cls.panel_init(context)
@@ -245,6 +283,7 @@ class VIEW3D_PT_bmtool_panel(Panel):
         if cls.__debug:
             print('Panel was polled')
 
+        # TODO: move to draw
         # REMOVE
         if not allow_draw:
             cls.__tag_panel_invoke = True
@@ -259,6 +298,16 @@ class VIEW3D_PT_bmtool_panel(Panel):
 
     def draw(self, context):
         cls = type(self)
+        if self.__debug:
+            print(self, cls, type(cls))
+            print(cls.instances)
+            print(self.instances)
+            for x in self.instances:
+                print(id(x))
+            print(id(self))
+
+        if self not in cls.instances:
+            cls.instances.append(self)
 
         # get state
         active_object = id(context.object)
@@ -330,6 +379,7 @@ class VIEW3D_PT_bmtool_panel(Panel):
             self.__draw_modifier_props(x)
 
     def panel_invoke(self, context):
+        cls = type(self)
         self = type(self)
         self.modifiers_expanded = {}
         for x in context.object.modifiers:
@@ -337,10 +387,11 @@ class VIEW3D_PT_bmtool_panel(Panel):
 
     @classmethod
     def panel_remove(cls, context):
-        self.modifiers_expanded = {}
+        cls.modifiers_expanded = {}
     # }}}
 
     def __draw_modifier_props(self, modifier):
+        cls = type(self)
         if modifier.name not in self.modifiers_expanded:
             self.modifiers_expanded.update({modifier.name: True})
 
@@ -360,7 +411,7 @@ class VIEW3D_PT_bmtool_panel(Panel):
         x.element_val_bool = not self.modifiers_expanded[modifier.name]
 
         # Props
-        if self.modifiers_expanded[modifier.name]:
+        if cls.modifiers_expanded[modifier.name]:
             p = get_all_editable_props(modifier)
             for y in p:
                 layout.prop(modifier, f'{y}')
