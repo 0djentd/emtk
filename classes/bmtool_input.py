@@ -321,17 +321,18 @@ class BMToolModalInput():
         prop_unit = prop.unit
 
         # Info
-        logger.debug('----- Modal input module v1 ------')
-        logger.debug(
-                f'delta: {delta_pct}, {delta_pct_f}, {delta_pct_i}, {delta}')
-        logger.debug(f'Distance: {distance}')
-        logger.debug(' ')
-        logger.debug(f'Prop: {prop.name}')
-        logger.debug(f'Type: {prop.type}')
-        logger.debug(f'Subtype: {prop.subtype}')
-        logger.debug(f'Units: {prop.unit}')
-        logger.debug(f'Step: {prop.step}')
-        logger.debug(f'Max value: {max_val}')
+        if logger.enabledFor(logging.DEBUG):
+            logger.debug('----- Modal input module v1 ------')
+            logger.debug(
+                    f'delta: {delta_pct}, {delta_pct_i}, {delta}')
+            logger.debug(f'Distance: {distance}')
+            logger.debug(' ')
+            logger.debug(f'Prop: {prop.name}')
+            logger.debug(f'Type: {prop.type}')
+            logger.debug(f'Subtype: {prop.subtype}')
+            logger.debug(f'Units: {prop.unit}')
+            logger.debug(f'Step: {prop.step}')
+            logger.debug(f'Max value: {max_val}')
 
         """
         Currently implemented types and their subtypes:
