@@ -29,6 +29,8 @@ class ModalClustersEditor(ModalInputOperator):
     """Editor base class"""
 
     # Constructor {{{
+    # TODO: editor base class can be used with modifiers as well,
+    # so there is no need to use 'clusters' prefix
     def __init__(self, *args, name, cluster_types, **kwargs):
         super().__init__(*args, **kwargs)
         if not isinstance(name, str):
