@@ -18,13 +18,13 @@
 # ##### END GPL LICENSE BLOCK #####
 
 from bpy.types import Operator
-from ..classes.bmtool_operator import BMToolMod
+from ..classes.modal_clusters_operator import ModalClustersOperator
 from ..ui.bmtool_ui import BMToolUi
 
 
 # Tool for viewing and general editing of
 # all modifiers of an object
-class BMTOOL_OT_bmtoolm_2(BMToolUi, BMToolMod, Operator):
+class BMTOOL_OT_bmtoolm_2(BMToolUi, ModalClustersOperator, Operator):
     bl_idname = "object.bmtoolm_2"
     bl_label = "View objects modifiers"
     bl_description = "View modifiers on selected object"

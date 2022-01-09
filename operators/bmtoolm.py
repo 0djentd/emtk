@@ -21,7 +21,7 @@ import logging
 
 from bpy.types import Operator
 
-from ..classes.bmtool_operator import ModalClustersOperator
+from ..classes.modal_clusters_operator import ModalClustersOperator
 from ..ui.bmtool_ui import BMToolUi
 
 from ..editors.adaptive import\
