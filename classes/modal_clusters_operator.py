@@ -23,14 +23,14 @@ import bpy
 
 from ..lib.modifiers_operator import ModifiersOperator
 from ..ui.bmtool_ui import bmtool_modifier_ui_draw
-from ..modal_input.object import BMToolModalInput
+from ..modal_input.object import ModalInputOperator
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
 # TODO: rename to ModalClustersOperator
-class BMToolMod(BMToolModalInput, ModifiersOperator):
+class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
     """
     Base class for modal operators that use Blender modifier stack
     through ModififersOperator and ExtendedModifiersList.
@@ -485,7 +485,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
         """Operator-specific modal method 1
 
         Used before any other modal editing
-        This method is called before BMToolMod modal method.
+        This method is called before ModalClustersOperator modal method.
         """
         return
 
@@ -493,7 +493,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
         """Operator-specific modal method 2.
 
         All modal editing should be here.
-        This method is called after BMToolMod modal method.
+        This method is called after ModalClustersOperator modal method.
         """
         return
 
@@ -501,14 +501,14 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
         """Operator-specific modifier update.
 
         This method is called every time active modifier changed
-        in BMToolMod.
+        in ModalClustersOperator.
         """
         return
 
     def bmtool_operator_invoke(self, context, event):
         """Operator-specific invoke method.
 
-        This method is called before BMToolMod invoke.
+        This method is called before ModalClustersOperator invoke.
         """
         return
 
@@ -516,7 +516,7 @@ class BMToolMod(BMToolModalInput, ModifiersOperator):
         """Operator-specific remove method
 
         This method is called when encountered FINISHED or CANCELLED in
-        BMToolMod modal methods.
+        ModalClustersOperator modal methods.
         """
         return
     # }}}

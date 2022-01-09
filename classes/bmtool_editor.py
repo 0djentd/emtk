@@ -19,13 +19,13 @@
 
 import logging
 
-from ..modal_input.object import BMToolModalInput
+from ..modal_input.object import ModalInputOperator
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-class ModalClustersEditor(BMToolModalInput):
+class ModalClustersEditor(ModalInputOperator):
     """Editor base class"""
 
     # Constructor {{{

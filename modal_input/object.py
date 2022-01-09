@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-class BMToolModalInput():
+class ModalInputOperator():
     """Base class for modal operators and editors."""
 
     # Constants {{{

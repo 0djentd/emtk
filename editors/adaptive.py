@@ -27,7 +27,7 @@ import re
 
 import bpy
 
-# from .bmtool_input import BMToolModalInput
+# from .bmtool_input import ModalInputOperator
 from ..lib.utils.modifier_prop_types import get_props_filtered_by_types
 from ..lib.clusters.cluster_trait import ClusterTrait
 from ..classes.bmtool_editor import ModalClustersEditor
@@ -36,7 +36,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
-class AdaptiveModalModifiersEditor(ModalClustersEditor):
+class AdaptiveModalEditor(ModalClustersEditor):
     """
     Editor that can be used with any Blender object
     implementing rna_type attribute, including modifier.
@@ -157,7 +157,7 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
     # self.mode
 
     # Currently active modal input mode.
-    # This variable initialized in BMToolModalInput()
+    # This variable initialized in ModalInputOperator()
     # self.modal_input_mode
 
     # List of all modifiers
@@ -435,7 +435,7 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
         prop_name = self.mode
         prop_def = self.__mods[0].rna_type.properties[self.mode]
 
-        if event.type in self._BMToolModalInput__MODAL_DIGITS_LIST\
+        if event.type in self._ModalInputOperator__MODAL_DIGITS_LIST\
                 and prop_def.type in self.__DIGITS_INPUT_TYPES:
             logger.info(f'Switching to modal digits {prop_name}')
             self.modal_input_mode = 'DIGITS'
@@ -443,7 +443,7 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
             return True
 
         elif event.type\
-                in self._BMToolModalInput__MODAL_LETTERS_LIST\
+                in self._ModalInputOperatort__MODAL_LETTERS_LIST\
                 and prop_def.type in self.__LETTERS_INPUT_TYPES:
             logger.info(f'Switching to modal letters {prop_name}')
             self.modal_input_mode = 'LETTERS'
@@ -621,7 +621,7 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
     # Utils {{{
     def __check_event_is_simple(self, event):
         """Checks if event should not be passed to modal input base class."""
-        if (event.type in self._BMToolModalInput__MODAL_LETTERS_LIST
+        if (event.type in self._ModalInputOperator__MODAL_LETTERS_LIST
                 or event.type in {'PERIOD', 'BACK-SPACE', 'RET', 'SPACE'})\
                 and event.value == 'PRESS':
             return True
@@ -654,7 +654,7 @@ class AdaptiveModalModifiersEditor(ModalClustersEditor):
 
     def __switch_to_default(self):
         self.mode = self.__DEFAULT_MODE
-        self.modal_input_mode = self._BMToolModalInput__DEFAULT_MODE
+        self.modal_input_mode = self._ModalInputOperator__DEFAULT_MODE
         self.__prop_def = None
     # }}}
 

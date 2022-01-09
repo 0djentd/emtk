@@ -21,17 +21,17 @@ import logging
 
 from bpy.types import Operator
 
-from ..classes.bmtool_operator import BMToolMod
+from ..classes.bmtool_operator import ModalClustersOperator
 from ..ui.bmtool_ui import BMToolUi
 
 from ..editors.adaptive import\
-        AdaptiveModalModifiersEditor
+        AdaptiveModalEditor
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-class BMTOOL_OT_bmtoolm(BMToolUi, BMToolMod, Operator):
+class BMTOOL_OT_bmtoolm(BMToolUi, ModalClustersOperator, Operator):
     """Tool for editing all modifiers of an object."""
 
     bl_idname = "object.bmtoolm"
@@ -54,7 +54,7 @@ class BMTOOL_OT_bmtoolm(BMToolUi, BMToolMod, Operator):
         self.__possible_editors = []
         self.__active_editor = None
 
-        editor = AdaptiveModalModifiersEditor()
+        editor = AdaptiveModalEditor()
         self.__editors.append(editor)
 
         # editor = BMToolEditorWeightedNormal()
