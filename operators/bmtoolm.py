@@ -24,7 +24,7 @@ from bpy.types import Operator
 from ..classes.bmtool_operator import BMToolMod
 from ..ui.bmtool_ui import BMToolUi
 
-from ..classes.adaptive_modifiers_editor import\
+from ..editors.adaptive import\
         AdaptiveModalModifiersEditor
 
 logger = logging.getLogger(__name__)

@@ -19,7 +19,12 @@
 
 import bpy
 
-from bpy.props import BoolProperty, IntProperty, FloatProperty, StringProperty
+from bpy.props import (
+                       BoolProperty,
+                       IntProperty,
+                       FloatProperty,
+                       StringProperty
+                       )
 
 from ..lib.utils.modifier_prop_types import get_all_editable_props
 # from ..lib.utils.modifier_prop_types import get_props_filtered_by_types

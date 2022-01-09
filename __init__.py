@@ -27,9 +27,9 @@ from . operators.bmtoole2 import BMTOOL_OT_bmtoole2
 
 # Preferences
 from . preferences.panel import BMToolPreferences
-from . preferences.operators import BMTOOLS_OT_start_editing_modal_shortcut
-from . preferences.operators import BMTOOLS_OT_add_or_update_modal_shortcut
-from . preferences.operators import\
+from . modal_input.operators import BMTOOLS_OT_start_editing_modal_shortcut
+from . modal_input.operators import BMTOOLS_OT_add_or_update_modal_shortcut
+from . modal_input.operators import\
         BMTOOL_OT_reparse_default_modifiers_props_kbs
 
 # UI

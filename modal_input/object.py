@@ -321,7 +321,7 @@ class BMToolModalInput():
         prop_unit = prop.unit
 
         # Info
-        if logger.enabledFor(logging.DEBUG):
+        if logger.isEnabledFor(logging.DEBUG):
             logger.debug('----- Modal input module v1 ------')
             logger.debug(
                     f'delta: {delta_pct}, {delta_pct_i}, {delta}')

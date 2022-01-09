@@ -19,7 +19,7 @@
 
 import logging
 
-from .bmtool_input import BMToolModalInput
+from ..modal_input.object import BMToolModalInput
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

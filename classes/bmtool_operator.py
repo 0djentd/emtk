@@ -23,7 +23,7 @@ import bpy
 
 from ..lib.modifiers_operator import ModifiersOperator
 from ..ui.bmtool_ui import bmtool_modifier_ui_draw
-from .bmtool_input import BMToolModalInput
+from ..modal_input.object import BMToolModalInput
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
