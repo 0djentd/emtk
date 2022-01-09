@@ -29,7 +29,6 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-# TODO: rename to ModalClustersOperator
 class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
     """
     Base class for modal operators that use Blender modifier stack

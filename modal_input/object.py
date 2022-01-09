@@ -73,45 +73,26 @@ class ModalInputOperator():
         = list(__MODAL_LETTERS)\
         + __MODAL_DIGITS_LIST
 
+    __DELTA_TYPES = {'BOOLEAN', 'INT', 'FLOAT', 'ENUM'}
+    # TODO: enum can be used with digits input (using item index)
     __DIGITS_TYPES = {'INT', 'FLOAT'}
     __LETTERS_TYPES = {'STR', 'ENUM'}
-
-    # Currently active mode.
-    # TODO: should this really be here
-    # modal_input_mode
-    # }}}
-
-    # Variables {{{
-    # sens = {
-    #         'INT': {
-    #                 'UNSIGNED': 1,
-    #                 'NONE': 0.5,
-    #                 },
-
-    #         'FLOAT': {
-    #                   'UNSIGNED': 0.0005,
-    #                   'ANGLE': 0.01,
-    #                   'DEGREES': 0.01,
-    #                   'DISTANCE': 0.005,
-    #                   'NONE': 0.005,
-    #                   },
-    #         }
     # }}}
 
     # Properties {{{
+    # This is currently active mode in ModalInputOperator object.
     @property
     def modal_input_mode(self):
-        if self.__editor_removed:
-            raise ValueError
-
         return self.__modal_input_mode
 
     @modal_input_mode.setter
     def modal_input_mode(self, mode):
         if mode not in self.__MODES:
-            raise TypeError
+            raise TypeError(f'Expected str in {self.__MODES}, got {mode}')
 
+        # TODO: what is that
         self.__prop = None
+
         self.__modal_digits_str = ''
         self.__modal_letters_str = ''
         self.__modal_input_mode = mode
@@ -139,8 +120,6 @@ class ModalInputOperator():
         # Str
         self.__modal_digits_str = ''
         self.__modal_letters_str = ''
-
-        self.__editor_removed = False
 
     # Pop val {{{
     # This two methods are used to get variable value from modal input mode.
@@ -275,6 +254,7 @@ class ModalInputOperator():
         return True
     # }}}
 
+    # This is method that use rna_type as attribute
     def modal_input_mouse(self, attr_val, prop, event, sens=1):  # {{{
         if not isinstance(attr_val, bool)\
                 and not isinstance(attr_val, int)\
@@ -604,7 +584,7 @@ def _get_view3d_window(v=None):
     return a
 
 
-def _get_delta_pct(event, bounds=-100, limit=None):
+def _get_delta_pct(event, bounds=-100, use_width=False, limit=None):
     """Returns float between 0 and 100 for event."""
 
     v = _get_view3d_window()
@@ -612,12 +592,18 @@ def _get_delta_pct(event, bounds=-100, limit=None):
     c = (d[0]/2, d[1]/2)
 
     if c[0] > c[1]:
-        m = c[1]
+        if not use_width:
+            m = c[1]
+        else:
+            m = c[0]
     else:
-        m = c[0]
+        if not use_width:
+            m = c[0]
+        else:
+            m = c[1]
+
     m = m - bounds
 
-    # vec = self.__vec_len(event.mouse_x, c[0], event.mouse_y, c[1])
     vec = _vec_len(c[0], event.mouse_x, c[1], event.mouse_y)
     result = vec/(m/100)
 
