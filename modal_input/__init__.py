@@ -16,3 +16,25 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 # ##### END GPL LICENSE BLOCK #####
+
+"""
+This module provides some utility for modal operators.
+
+Features:
+    Editing using mouse input.
+
+    Editing using digits or letters input.
+
+    Correct (?) interpretation of property subtype and units
+    (using rna_type, or manually).
+
+    Modal keyboard shortcuts.
+
+    AddonPreferences mix-in class with shortcuts editor and cache.
+
+    Automatic generation of new shortcuts without duplicates in
+    name or definition.
+
+TODO Planned features:
+    Correct UI property value display.
+"""
