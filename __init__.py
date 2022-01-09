@@ -25,6 +25,9 @@ from . operators.bmtoolm import BMTOOL_OT_bmtoolm
 from . operators.bmtoolm_lite import BMTOOL_OT_bmtoolm_2
 from . operators.bmtoole2 import BMTOOL_OT_bmtoole2
 
+# Operators
+from . operators.dev.add_new_cluster import BMTOOL_OT_add_new_cluster
+
 # Preferences
 from . preferences.panel import BMToolPreferences
 from . modal_input.operators import BMTOOLS_OT_start_editing_modal_shortcut
@@ -78,6 +81,7 @@ classes = [
 
     # dev
     BMTOOL_OT_add_all_modifiers,
+    BMTOOL_OT_add_new_cluster,
     BMTOOL_OT_add_all_modifiers_and_dump_props,
     BMTOOL_OT_reparse_default_modifiers_props_kbs,
 ]

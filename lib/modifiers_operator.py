@@ -46,7 +46,7 @@ class ModifiersOperator():
     switching active object, selecting objects by properties.
     """
 
-    def create_objects_modifiers_lists(self, context,
+    def create_objects_modifiers_lists(self,
                                        cluster_types=None,
                                        *args, **kwargs):
         """
@@ -79,7 +79,7 @@ class ModifiersOperator():
         logger.info("Trying to create modifier lists")
         logger.info("================================")
 
-        if len(context.view_layer.objects.selected) == 0:
+        if len(bpy.context.view_layer.objects.selected) == 0:
             return False
 
         # # Add some cluster types
@@ -102,7 +102,7 @@ class ModifiersOperator():
         # Create extended modifiers lists and initialize
         # it for selected objects
         self.selected_objects = []
-        for obj in context.view_layer.objects.selected:
+        for obj in bpy.context.view_layer.objects.selected:
             obj_mod_list = ExtendedModifiersList(
                     obj, cluster_types=clusters)
             if not obj_mod_list.create_modifiers_list(obj):
@@ -110,7 +110,7 @@ class ModifiersOperator():
 
             # Add modifiers list references
             self.selected_objects.append(obj_mod_list)
-            if obj == context.view_layer.objects.active:
+            if obj == bpy.context.view_layer.objects.active:
                 self.m_list = obj_mod_list
         return True
 
