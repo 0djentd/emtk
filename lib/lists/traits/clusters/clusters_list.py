@@ -65,7 +65,8 @@ class ClustersListTrait():
         elif cluster is None:
             cluster = self
         else:
-            if cluster not in self.get_full_list():
+            if cluster not in self.get_full_list()\
+                    and cluster is not self:
                 raise ValueError
         return cluster
 
@@ -346,6 +347,9 @@ class ClustersListTrait():
         Also returns this ModifiersClustersList.
         Looks in all clusters.
         """
+        if type(cluster) is str:
+            raise TypeError
+
         self._check_if_cluster_removed()
         if cluster is self:
             raise TypeError(

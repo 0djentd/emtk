@@ -248,6 +248,7 @@ class FirstLayerClustersListTrait():
         Duplicates cluster modifiers and reparses them.
         This will add parsed cluster to first layer.
         """
+        cluster = self._check_cluster_or_modifier(cluster)
         modifiers = []
         for x in cluster.get_full_actual_modifiers_list():
             modifier_props = get_modifier_state(x)

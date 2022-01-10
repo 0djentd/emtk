@@ -71,15 +71,12 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
 
     def draw(self, context):
         layout = self.layout
+        layout.label(text='EMTK')
         box = layout.box()
         # self.__draw_clusters_list(box, self.m_list)
         for x in self.m_list.get_list():
             cluster_box = box.box()
-            cluster_box.label(text=x.name)
             self.__draw_cluster(cluster_box, x)
-            # op = cluster_box.operator('bmtools.bmtool_invoke_operator_func')
-            # op.func = str(f'bpy.types.BMTOOLS_OT_clusters_list_popup.m_list.remove("{x.name}")')
-        layout.label(text='EMTK')
 
     def __draw_clusters_list(self, layout, clusters_list):
         for x in clusters_list.get_list():
@@ -108,7 +105,7 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
 
         # Actions {{{
         # Move down
-        line = f'self.m_list.get_cluster_or_layer("{cluster.name}").\
+        line = f'self.m_list.get_cluster_or_layer(self.m_list.find_cluster_by_name("{cluster.name}")).\
                 move_down("{cluster.name}")'
         line = re.sub('self', self.get_class_line(), line)
         col = row.column()
@@ -117,7 +114,7 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
         op.func = line
 
         # Move up
-        line = f'self.m_list.get_cluster_or_layer("{cluster.name}").\
+        line = f'self.m_list.get_cluster_or_layer(self.m_list.find_cluster_by_name("{cluster.name}")).\
                 move_up("{cluster.name}")'
         line = re.sub('self', self.get_class_line(), line)
         col = row.column()
@@ -126,7 +123,7 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
         op.func = line
 
         # Remove
-        line = f'self.m_list.get_cluster_or_layer("{cluster.name}").\
+        line = f'self.m_list.get_cluster_or_layer(self.m_list.find_cluster_by_name("{cluster.name}")).\
                 remove("{cluster.name}")'
         line = re.sub('self', self.get_class_line(), line)
         col = row.column()
@@ -135,7 +132,7 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
         op.func = line
 
         # Duplicate
-        line = f'self.m_list.get_cluster_or_layer("{cluster.name}").\
+        line = f'self.m_list.get_cluster_or_layer(self.m_list.find_cluster_by_name("{cluster.name}")).\
                 duplicate("{cluster.name}")'
         line = re.sub('self', self.get_class_line(), line)
         col = row.column()
@@ -144,7 +141,7 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
         op.func = line
 
         # Deconstruct
-        line = f'self.m_list.get_cluster_or_layer("{cluster.name}").\
+        line = f'self.m_list.get_cluster_or_layer(self.m_list.find_cluster_by_name("{cluster.name}")).\
                 deconstruct("{cluster.name}")'
         line = re.sub('self', self.get_class_line(), line)
         col = row.column()
@@ -176,5 +173,5 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
 
     def invoke(self, context, event):
         print('Operator invoked')
-        context.window_manager.invoke_popup(self)
+        context.window_manager.invoke_popup(self, width=350)
         return {'RUNNING_MODAL'}
