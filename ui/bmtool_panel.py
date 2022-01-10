@@ -437,6 +437,7 @@ class VIEW3D_PT_bmtool_panel(Panel):
 
 class BMTOOLS_OT_bmtool_invoke_operator_func(Operator):
     """Workaround to change panel class variables from button."""
+
     bl_idname = "bmtools.bmtool_invoke_operator_func"
     bl_label = "Invoke one of bmtools operator functions."
     
@@ -460,24 +461,34 @@ class BMTOOLS_OT_bmtool_invoke_operator_func(Operator):
 
         if not re.search('bpy.types.', line)\
                 and not re.search('bpy.ops.', line):
-            raise ValueError(f'Expected "bpy.types. ..." or "bpy.ops. ...", got "{line[0:10]}. ..."')
+            a = f'''Expected "bpy.types. ..." \
+                    or "bpy.ops. ...", got "{line[0:10]}. ..."'''
+            a = re.sub('\n\s*', '', a)
+            raise ValueError(a)
 
         for x in line[:]:
             if x not in string.ascii_letters\
                     and x not in string.digits\
                     and x not in list('()[]"\',._ =;'):
-                raise ValueError(f'Expected x in [A-Z][a-z][0-9], [[]()"\',._ ], got "{x}"')
+                a = f'Expected x in [A-Z][a-z][0-9], [[]()"\',._ ], got "{x}"'
+                raise ValueError(a)
 
         if len(line_2) > 4:
             if not re.match('bpy.types.', line_2)\
                     and not re.match('bpy.ops.', line_2):
-                raise ValueError(f'Expected "bpy.types. ..." or "bpy.ops. ...", got "{line_2[0:10]} ..."')
+                a = f'''Expected "bpy.types. ..." or "bpy.ops. ...", \
+                        got "{line_2[0:10]} ..."'''
+                a = re.sub('\n\s*', '', a)
+                raise ValueError(a)
 
             for x in line_2[:]:
                 if x not in string.ascii_letters\
                         and x not in string.digits\
                         and x not in list('[]"\'._'):
-                    raise ValueError(f'Expected x in [A-Z][a-z][0-9], [[]"\',._ ], got "{x}"')
+                    a = f'''Expected x 
+        in [A-Z][a-z][0-9], [[]"\',._ ], got "{x}"'''
+                    a = re.sub('\n\s*', '', a)
+                    raise ValueError(a)
 
         print(line)
         print(line_2)
