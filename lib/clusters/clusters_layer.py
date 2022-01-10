@@ -37,6 +37,18 @@ class ClustersLayer(
     Base class for modifiers clusters that contain other clusters
     in them.
     """
+    def find_cluster_by_name(self, name: str):
+        if name == self.name:
+            return self
+        for x in self.get_full_list():
+            if x.name == name:
+                return x
+
+    def find_modifier_by_name(self, name: str):
+        for x in self.get_full_actual_modifiers_list():
+            if x.name == name:
+                return x
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

@@ -37,7 +37,7 @@ from .actions import (
 from ..lists.traits.clusters.clusters_list import ClustersListTrait
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 
 
 class ClustersController():

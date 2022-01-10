@@ -34,6 +34,32 @@ class ModifiersCluster(
     """
     Base class for modifiers cluster type
     """
+
+    # This method is different in ClustersListTrait.
+    def _check_cluster_or_modifier(self, cluster):
+        if type(cluster) is str:
+            result = self.find_cluster_by_name(cluster)
+            if result is None:
+                result = self.find_modifier_by_name(cluster)
+            if result is None:
+                raise ValueError
+            cluster = result
+        elif cluster is None:
+            cluster = self
+        else:
+            if cluster not in self.get_full_list():
+                raise ValueError
+        return cluster
+
+    def find_cluster_by_name(self, name: str):
+        if name == self.name:
+            return self
+
+    def find_modifier_by_name(self, name: str):
+        for x in self.get_full_actual_modifiers_list():
+            if x.name == name:
+                return x
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 

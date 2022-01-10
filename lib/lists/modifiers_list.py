@@ -112,11 +112,8 @@ class ModifiersList():
         If cluster is None, removes cluster itself.
         """
         self._check_if_cluster_removed()
+        cluster = self._check_cluster_or_modifier(cluster)
         logger.info(f'Removing {cluster} on layer {self}')
-        if type(cluster) is str:
-            cluster = self.find_by_name(cluster)
-            if cluster is None:
-                raise ValueError
 
         if cluster is None:
             cluster = self
@@ -129,17 +126,13 @@ class ModifiersList():
                             )
         self._controller.do(x)
 
-    def find_by_name(self, name: str):
-        for x in self.get_all_clusters_and_modifiers():
-            if x.name == name:
-                return x
-
     def apply(self, cluster=None):
         """
         Removes cluster or modifier from this list.
         If cluster is None, applies cluster itself.
         """
         self._check_if_cluster_removed()
+        cluster = self._check_cluster_or_modifier(cluster)
         logger.info(f'Applying {cluster} on layer {self}')
 
         if cluster is None:
@@ -173,6 +166,7 @@ class ModifiersList():
         Returns None or False.
         """
         self._check_if_cluster_removed()
+        cluster = self._check_cluster_or_modifier(cluster)
         logger.info(f'Moving {cluster} on layer {self}')
         logger.debug(f'Direction is {direction} allow_deconstruct={self}')
         if len(self._modifiers_list) < 2:
@@ -238,6 +232,7 @@ class ModifiersList():
 
     def move_to_index(self, mod, i):
         """Moves cluster to index. Returns True if moved modifier."""
+        mod = self._check_cluster_or_modifier(mod)
         self._check_if_cluster_removed()
         # TODO: not tested
         if i < self.get_list_length():

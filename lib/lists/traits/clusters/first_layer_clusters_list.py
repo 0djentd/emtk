@@ -50,6 +50,16 @@ class FirstLayerClustersListTrait():
     # editing.
     _EXTENDED_MODIFIERS_LIST_VERSION = (0, 1, 0)
 
+    def find_cluster_by_name(self, name: str):
+        for x in self.get_full_list():
+            if x.name == name:
+                return x
+
+    def find_modifier_by_name(self, name: str):
+        for x in self.get_full_actual_modifiers_list():
+            if x.name == name:
+                return x
+
     def __init__(self, *args,
                  no_default_actions=None,
                  no_parse=None, **kwargs):

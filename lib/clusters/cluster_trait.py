@@ -422,7 +422,7 @@ class ClusterTrait():
             return True
 
         # Or allowed to reset modifiers
-        elif self._MODCLUSTER_DYNAMIC:
+        elif self._cluster_definition['dynamic']:
             self._modifiers_list = modifiers
             self._mod = self._modifiers_list[0]
             return True

@@ -54,6 +54,21 @@ class ClustersListTrait():
     def clusters(self):
         return copy.copy(self._modifiers_list)
 
+    def _check_cluster_or_modifier(self, cluster):
+        if type(cluster) is str:
+            result = self.find_cluster_by_name(cluster)
+            if result is None:
+                result = self.find_modifier_by_name(cluster)
+            if result is None:
+                raise ValueError
+            cluster = result
+        elif cluster is None:
+            cluster = self
+        else:
+            if cluster not in self.get_full_list():
+                raise ValueError
+        return cluster
+
     # ====================
     # Actions
     # ====================
