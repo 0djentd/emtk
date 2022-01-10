@@ -99,18 +99,41 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
                              text=cluster.name)
         op.func = line
 
+        row = layout.row()
+
+        # Move up
+        line = f'c = self.m_list.find_cluster_by_name(\'{cluster.name}\'); \
+                self.m_list.get_cluster_or_layer(c).move_up(c)'
+        line = re.sub('self', self.get_class_line(), line)
+        col = row.column()
+        op = col.operator('bmtools.bmtool_invoke_operator_func',
+                          text='Move up')
+        op.func = line
+
+        # Move down
+        line = f'c = self.m_list.find_cluster_by_name(\'{cluster.name}\'); \
+                self.m_list.get_cluster_or_layer(c).move_down(c)'
+        line = re.sub('self', self.get_class_line(), line)
+        col = row.column()
+        op = col.operator('bmtools.bmtool_invoke_operator_func',
+                          text='Move down')
+        op.func = line
+
         # Remove
         line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').remove()'
         line = re.sub('self', self.get_class_line(), line)
-        op = layout.operator('bmtools.bmtool_invoke_operator_func',
-                             text=cluster.name)
+        col = row.column()
+        op = col.operator('bmtools.bmtool_invoke_operator_func',
+                          text='Remove')
         op.func = line
 
         # Duplicate
-        line = f'self.m_list.get_cluster_or_layer(self.m_list.find_cluster_by_name(\'{cluster.name}\')).duplicate(self.m_list.find_cluster_by_name(\'{cluster.name}\'))'
+        line = f'c = self.m_list.find_cluster_by_name(\'{cluster.name}\'); \
+                self.m_list.get_cluster_or_layer(c).duplicate(c)'
         line = re.sub('self', self.get_class_line(), line)
-        op = layout.operator('bmtools.bmtool_invoke_operator_func',
-                             text=cluster.name)
+        col = row.column()
+        op = col.operator('bmtools.bmtool_invoke_operator_func',
+                          text='Duplicate')
         op.func = line
 
         if not cluster.collapsed:

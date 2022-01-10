@@ -245,13 +245,13 @@ class BMToolUi:  # {{{
 
         # Info about its modifiers
         elif not cluster.has_clusters() and (
-                cluster.modcluster_collapsed is False):
+                cluster.collapsed is False):
             ui_t.append("------------------------------")
             for mod in cluster.get_list():
                 ui_t.append([f"{mod.name}", 2])
             ui_t.append("------------------------------")
         elif not cluster.has_clusters() and (
-                cluster.modcluster_collapsed is True):
+                cluster.collapsed is True):
             ui_t.append("modifiers cluster collapsed")
 
         ui_t.append("")
