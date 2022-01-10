@@ -90,9 +90,29 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
             self.__draw_modifier(layout, x)
 
     def __draw_cluster(self, layout, cluster):
-        line_2 = str(not cluster.collapsed)
-        line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').collapsed = {line_2}'
-        op = self.panel_operator(layout, line, text=cluster.name)
+
+        # Collapsed
+        val = not cluster.collapsed
+        line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').collapsed = {val}'
+        line = re.sub('self', self.get_class_line(), line)
+        op = layout.operator('bmtools.bmtool_invoke_operator_func',
+                             text=cluster.name)
+        op.func = line
+
+        # Remove
+        line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').remove()'
+        line = re.sub('self', self.get_class_line(), line)
+        op = layout.operator('bmtools.bmtool_invoke_operator_func',
+                             text=cluster.name)
+        op.func = line
+
+        # Duplicate
+        line = f'self.m_list.get_cluster_or_layer(self.m_list.find_cluster_by_name(\'{cluster.name}\')).duplicate(self.m_list.find_cluster_by_name(\'{cluster.name}\'))'
+        line = re.sub('self', self.get_class_line(), line)
+        op = layout.operator('bmtools.bmtool_invoke_operator_func',
+                             text=cluster.name)
+        op.func = line
+
         if not cluster.collapsed:
             for x, y in zip(cluster._cluster_definition,
                             cluster._cluster_definition.values()):
@@ -113,24 +133,6 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
                 and bpy.types.Operator not in cls.mro():
             raise TypeError
         return f'bpy.types.{cls.__name__}'
-
-    @classmethod
-    def panel_operator(cls, layout, line, line_2=None, text=None):
-        if type(line) is not str:
-            raise TypeError
-        if type(line_2) is not str and line_2 is not None:
-            raise TypeError
-        if text is not None:
-            op = layout.operator('bmtools.bmtool_invoke_operator_func',
-                                 text=text)
-        else:
-            op = layout.operator('bmtools.bmtool_invoke_operator_func')
-        op.func = re.sub('self', cls.get_class_line(), line, count=1)
-        if line_2 is not None:
-            op.returned_variable = re.sub(
-                'self', cls.get_class_line(), line_2, count=1)
-        print(op.func)
-        return op
 
     def invoke(self, context, event):
         print('Operator invoked')
