@@ -433,55 +433,56 @@ class VIEW3D_PT_bmtool_panel(Panel):
     #         raise TypeError
 
 
-# Workaround to change panel class variables from button.
 class BMTOOLS_OT_bmtool_invoke_operator_func(Operator):
-    """
-    Example usage:
-    layout = self.layout
-    x = layout.operator('bmtools.bmtool_invoke_operator_func')
-    x.obj = BMTOOLS_OT_popup
-    x.func = 'move'
-    x.func = '({cluster.name}, direction=UP)'
-    """
+    """Workaround to change panel class variables from button."""
     bl_idname = "bmtools.bmtool_invoke_operator_func"
     bl_label = "Invoke one of bmtools operator functions."
     
-    # Object
-    obj: StringProperty("")
-
-    # Function (without args)
+    # Line to eval
     func: StringProperty("")
 
-    # Args
-    args: StringProperty("")
+    # Variable to write result to
+    returned_variable: StringProperty("")
 
     def execute(self, context):
-        if not isinstance(self.obj, str):
+        line = self.func
+        line_2 = self.returned_variable
+        if not isinstance(line, str):
             raise TypeError
-        if not isinstance(self.func, str):
+        if not isinstance(line_2, str):
             raise TypeError
-        if not isinstance(self.args, str):
+        if type(line) is not str:
+            raise TypeError
+        if type(line_2) is not str:
             raise TypeError
 
-        if len(self.obj) == 0:
-            raise ValueError
-        if len(self.func) == 0:
-            raise ValueError
-
-        if self.obj[0:5] != 'types.'\
-                and self.obj[0:3] != 'ops.':
+        if line[0:9] != 'bpy.types.'\
+                and line[0:7] != 'bpy.ops.':
             raise ValueError
 
-        if len(self.args) > 0:
-            if self.args[0:1] != '('\
-                    and self.args[-1:-2] != ')':
-                raise TypeError
+        for x in line[:]:
+            if x not in string.ascii_letters\
+                    and not in '()[],._ ':
+                raise ValueError
 
-        # if len(self.args):
-        #     obj = getattr(bpy, str(obj))
-        #     func = getattr(bpy, str(func))
-        #     func(tuple(args.split()))
+        if line_2[0:9] != 'bpy.types.'\
+                and line_2[0:7] != 'bpy.ops.':
+            raise ValueError
 
+        for x in line_2[:]:
+            if x not in string.ascii_letters\
+                    and not in list("[]'._"):
+                raise ValueError
+
+        line = self.func
+        result = eval(line)
+        if len(line_2) > 4:
+            line_2 = line_2 + ' = result'
+            eval(line_2)
+        print(f"'{line}'")
+        print(f"'{result}'")
+        print(f"'{line_2}'")
+        return {'FINISHED'}
 
 # Workaround to change panel class variables from button.
 class BMTOOLS_OT_update_panel_dict(Operator):
