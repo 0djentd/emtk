@@ -102,6 +102,9 @@ class ModalShortcutsPreferences():
     # }}}
 
     # Search {{{
+    def draw_shortcuts_search(self, context):
+        return self.__draw_shortcuts_search(context)
+
     def __draw_shortcuts_search(self, context):
         layout = self.layout
         layout.prop(self, "shortcuts_groups_search_str")

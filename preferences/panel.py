@@ -111,7 +111,7 @@ class BMToolPreferences(ModalShortcutsPreferences, AddonPreferences):
         layout.prop(self, "bmtool_modal_operators_serialized_shortcuts")
 
     def __draw_shortcuts_search(self, context):
-        return type(self)._ModalShortcutsPreferences__draw_shorcuts_search(context)
+        return self.draw_shortcuts_search(context)
 
     def __draw_additional_settings(self, context):
         layout = self.layout
