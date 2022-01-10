@@ -434,6 +434,56 @@ class VIEW3D_PT_bmtool_panel(Panel):
 
 
 # Workaround to change panel class variables from button.
+class BMTOOLS_OT_bmtool_invoke_operator_func(Operator):
+    """
+    Example usage:
+    layout = self.layout
+    x = layout.operator('bmtools.bmtool_invoke_operator_func')
+    x.obj = BMTOOLS_OT_popup
+    x.func = 'move'
+    x.func = '({cluster.name}, direction=UP)'
+    """
+    bl_idname = "bmtools.bmtool_invoke_operator_func"
+    bl_label = "Invoke one of bmtools operator functions."
+    
+    # Object
+    obj: StringProperty("")
+
+    # Function (without args)
+    func: StringProperty("")
+
+    # Args
+    args: StringProperty("")
+
+    def execute(self, context):
+        if not isinstance(self.obj, str):
+            raise TypeError
+        if not isinstance(self.func, str):
+            raise TypeError
+        if not isinstance(self.args, str):
+            raise TypeError
+
+        if len(self.obj) == 0:
+            raise ValueError
+        if len(self.func) == 0:
+            raise ValueError
+
+        if self.obj[0:5] != 'types.'\
+                and self.obj[0:3] != 'ops.':
+            raise ValueError
+
+        if len(self.args) > 0:
+            if self.args[0:1] != '('\
+                    and self.args[-1:-2] != ')':
+                raise TypeError
+
+        # if len(self.args):
+        #     obj = getattr(bpy, str(obj))
+        #     func = getattr(bpy, str(func))
+        #     func(tuple(args.split()))
+
+
+# Workaround to change panel class variables from button.
 class BMTOOLS_OT_update_panel_dict(Operator):
     bl_idname = "bmtools.update_panel_dict_attr"
     bl_label = "Change bmtools panel dict value."
