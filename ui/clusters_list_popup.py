@@ -45,8 +45,6 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
 
     def __del__(self):
         cls = type(self)
-        for x in bpy.context.object.modifiers:
-            x.show_expanded = False
         cls.m_list.save_clusters_state()
         del(cls.m_list)
         print('Operator removed')
@@ -143,6 +141,15 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
                           text='', icon='X')
         op.func = line
 
+        # Apply
+        line = f'self.m_list.get_cluster_or_layer(self.m_list.find_cluster_by_name("{cluster.name}")).\
+                apply("{cluster.name}")'
+        line = re.sub('self', self.get_class_line(), line)
+        col = row.column()
+        op = col.operator('bmtools.bmtool_invoke_operator_func',
+                          text='', icon='CHECKMARK')
+        op.func = line
+
         # Duplicate
         line = f'self.m_list.get_cluster_or_layer(self.m_list.find_cluster_by_name("{cluster.name}")).\
                 duplicate("{cluster.name}")'
@@ -165,7 +172,7 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
         if not cluster.collapsed:
             row = layout.row()
 
-            # Cluster definition collapsed {{{
+            # Cluster definition {{{
             col = row.column()
             val = not cluster.show_definition_expanded
             line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').\
@@ -180,7 +187,7 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
             op.func = line
             # }}}
 
-            # Cluster props collapsed {{{
+            # Cluster props {{{
             col = row.column()
             val = not cluster.show_props_expanded
             line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').\
@@ -199,6 +206,7 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
                     or cluster.show_definition_expanded:
 
                 box = layout.box()
+
                 if cluster.show_definition_expanded:
                     box_2 = box.box()
                     for x, y in zip(cluster._cluster_definition,
