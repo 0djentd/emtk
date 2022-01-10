@@ -93,5 +93,5 @@ class BMTOOL_OT_add_new_cluster(ModifiersOperator, Operator):
 
     def invoke(self, context, event):
         print('Operator invoked')
-        context.window_manager.invoke_props_dialog(self)
+        context.window_manager.invoke_popup(self)
         return {'RUNNING_MODAL'}

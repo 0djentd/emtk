@@ -125,7 +125,7 @@ class ActionDefaultTemplate(ClusterActionAnswer):
         actions = []
 
         # Deconstruct cluster with components if not allowed to change it.
-        if not self.cluster._MODCLUSTER_DYNAMIC:
+        if not self.cluster._cluster_definition['dynamic']:
             actions.append(
                     ClustersCommand(
                         ClustersAction(

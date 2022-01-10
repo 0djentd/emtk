@@ -37,8 +37,12 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
     bl_label = "View and edit active object's clusters."
 
     def __init__(self):
-        self.create_objects_modifiers_lists()
+        type(self).create_objects_modifiers_lists(type(self))
         print('Operator initialized')
+
+    def __del__(self):
+        del(self.m_list)
+        print('Operator removed')
 
     @classmethod
     def poll(cls, context):
@@ -55,8 +59,14 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
             return True
 
     def execute(self, context):
+        raise TypeError
         print('Operator method')
         return {'FINISHED'}
+
+    def modal(self, context, event):
+        raise TypeError
+        print('Operator modal')
+        return {'INTERFACE', 'PASS_THROUGH'}
 
     def draw(self, context):
         layout = self.layout
@@ -64,9 +74,12 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
         for x in self.m_list.get_list():
             cluster_box = box.box()
             cluster_box.label(text=x.name)
+            op = layout.operator('bmtools.bmtool_invoke_operator_func')
+            op.func = str(f'bpy.types.BMTOOLS_OT_clusters_list_popup.m_list.remove("{x.name}")')
+
         layout.label(text='EMTK')
 
     def invoke(self, context, event):
         print('Operator invoked')
-        context.window_manager.invoke_props_dialog(self)
+        context.window_manager.invoke_popup(self)
         return {'RUNNING_MODAL'}

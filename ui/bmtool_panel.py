@@ -17,6 +17,7 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+import string
 
 import bpy
 
@@ -456,24 +457,26 @@ class BMTOOLS_OT_bmtool_invoke_operator_func(Operator):
         if type(line_2) is not str:
             raise TypeError
 
-        if line[0:9] != 'bpy.types.'\
-                and line[0:7] != 'bpy.ops.':
-            raise ValueError
+        if line[0:10] != 'bpy.types.'\
+                and line[0:8] != 'bpy.ops.':
+            raise ValueError(f'Expected "bpy.types. ..." or "bpy.ops. ...", got "{line[0:10]}. ..."')
 
         for x in line[:]:
             if x not in string.ascii_letters\
-                    and not in '()[],._ ':
-                raise ValueError
+                    and x not in string.digits\
+                    and x not in list('()[]"\',._ '):
+                raise ValueError(f'Expected x in [A-Z][a-z][0-9], [[]()"\',._ ], got "{x}"')
 
         if len(line_2) > 4:
-            if line_2[0:9] != 'bpy.types.'\
-                    and line_2[0:7] != 'bpy.ops.':
-                raise ValueError
+            if line_2[0:10] != 'bpy.types.'\
+                    and line_2[0:8] != 'bpy.ops.':
+                raise ValueError(f'Expected "bpy.types. ..." or "bpy.ops. ...", got "{line_2[0:10]}. ..."')
 
             for x in line_2[:]:
                 if x not in string.ascii_letters\
-                        and not in list("[]'._"):
-                    raise ValueError
+                        and x not in string.digits\
+                        and x not in list('[]"\'._'):
+                    raise ValueError(f'Expected x in [A-Z][a-z][0-9], [[]"\',._ ], got "{x}"')
 
         line = self.func
         result = eval(line)
@@ -484,6 +487,7 @@ class BMTOOLS_OT_bmtool_invoke_operator_func(Operator):
         print(f"'{result}'")
         print(f"'{line_2}'")
         return {'FINISHED'}
+
 
 # Workaround to change panel class variables from button.
 class BMTOOLS_OT_update_panel_dict(Operator):

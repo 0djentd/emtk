@@ -113,6 +113,10 @@ class ModifiersList():
         """
         self._check_if_cluster_removed()
         logger.info(f'Removing {cluster} on layer {self}')
+        if type(cluster) is str:
+            cluster = self.find_by_name(cluster)
+            if cluster is None:
+                raise ValueError
 
         if cluster is None:
             cluster = self
@@ -124,6 +128,11 @@ class ModifiersList():
                             dry_modifiers=False,
                             )
         self._controller.do(x)
+
+    def find_by_name(self, name: str):
+        for x in self.get_all_clusters_and_modifiers():
+            if x.name == name:
+                return x
 
     def apply(self, cluster=None):
         """
