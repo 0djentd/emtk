@@ -75,6 +75,12 @@ class ClustersListTrait():
     def deconstruct(self, clusters):
         """Deconstructs clusters on this layer."""
         self._check_if_cluster_removed()
+        if type(clusters) is not list:
+            clusters = [clusters]
+        result = []
+        for x in clusters:
+            result.append(self._check_cluster_or_modifier(x))
+        clusters = result
         logger.info(f'Deconstructing {clusters} on layer {self}')
 
         for cluster in clusters:

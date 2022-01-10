@@ -91,50 +91,67 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
 
     def __draw_cluster(self, layout, cluster):
 
-        # Collapsed
-        val = not cluster.collapsed
-        line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').collapsed = {val}'
-        line = re.sub('self', self.get_class_line(), line)
-        op = layout.operator('bmtools.bmtool_invoke_operator_func',
-                             text=cluster.name)
-        op.func = line
-
         row = layout.row()
 
-        # Move up
-        line = f'c = self.m_list.find_cluster_by_name(\'{cluster.name}\'); \
-                self.m_list.get_cluster_or_layer(c).move_up(c)'
+        # Collapsed
+        val = not cluster.collapsed
+        line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').\
+                collapsed = {val}'
         line = re.sub('self', self.get_class_line(), line)
-        col = row.column()
-        op = col.operator('bmtools.bmtool_invoke_operator_func',
-                          text='Move up')
+        if not cluster.collapsed:
+            icon = 'DOWNARROW_HLT'
+        else:
+            icon = 'RIGHTARROW'
+        op = row.operator('bmtools.bmtool_invoke_operator_func',
+                          text=cluster.name, icon=icon)
         op.func = line
 
+        # Actions {{{
         # Move down
-        line = f'c = self.m_list.find_cluster_by_name(\'{cluster.name}\'); \
-                self.m_list.get_cluster_or_layer(c).move_down(c)'
+        line = f'self.m_list.get_cluster_or_layer("{cluster.name}").\
+                move_down("{cluster.name}")'
         line = re.sub('self', self.get_class_line(), line)
         col = row.column()
         op = col.operator('bmtools.bmtool_invoke_operator_func',
-                          text='Move down')
+                          text='', icon='TRIA_DOWN')
+        op.func = line
+
+        # Move up
+        line = f'self.m_list.get_cluster_or_layer("{cluster.name}").\
+                move_up("{cluster.name}")'
+        line = re.sub('self', self.get_class_line(), line)
+        col = row.column()
+        op = col.operator('bmtools.bmtool_invoke_operator_func',
+                          text='', icon='TRIA_UP')
         op.func = line
 
         # Remove
-        line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').remove()'
+        line = f'self.m_list.get_cluster_or_layer("{cluster.name}").\
+                remove("{cluster.name}")'
         line = re.sub('self', self.get_class_line(), line)
         col = row.column()
         op = col.operator('bmtools.bmtool_invoke_operator_func',
-                          text='Remove')
+                          text='', icon='X')
         op.func = line
 
         # Duplicate
-        line = f'c = self.m_list.find_cluster_by_name(\'{cluster.name}\'); \
-                self.m_list.get_cluster_or_layer(c).duplicate(c)'
+        line = f'self.m_list.get_cluster_or_layer("{cluster.name}").\
+                duplicate("{cluster.name}")'
         line = re.sub('self', self.get_class_line(), line)
         col = row.column()
         op = col.operator('bmtools.bmtool_invoke_operator_func',
-                          text='Duplicate')
+                          text='', icon='DUPLICATE')
         op.func = line
+
+        # Deconstruct
+        line = f'self.m_list.get_cluster_or_layer("{cluster.name}").\
+                deconstruct("{cluster.name}")'
+        line = re.sub('self', self.get_class_line(), line)
+        col = row.column()
+        op = col.operator('bmtools.bmtool_invoke_operator_func',
+                          text='', icon='MOD_DECIM')
+        op.func = line
+        # }}}
 
         if not cluster.collapsed:
             for x, y in zip(cluster._cluster_definition,

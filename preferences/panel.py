@@ -90,12 +90,14 @@ class BMToolPreferences(ModalShortcutsPreferences, AddonPreferences):
             self.__draw_general_settings(context)
         elif self.settings_category == 'SHORTCUTS':
             self.__draw_shortcuts_search(context)
+        elif self.settings_category == 'ADDITIONAL':
+            self.__draw_additional_settings(context)
         else:
             raise ValueError
 
     def __draw_general_settings(self, context):
         layout = self.layout
-        layout.label(text="BMTool settings")
+        layout.label(text="General settings")
         layout.prop(self, "save_clusters")
         if self.save_clusters_backup:
             layout.prop(self, "save_clusters_backup")
@@ -107,3 +109,10 @@ class BMToolPreferences(ModalShortcutsPreferences, AddonPreferences):
             layout.prop(self, "always_add_custom_cluster_types")
             layout.prop(self, "cluster_types")
         layout.prop(self, "bmtool_modal_operators_serialized_shortcuts")
+
+    def __draw_shortcuts_search(self, context):
+        return type(self)._ModalShortcutsPreferences__draw_shorcuts_search(context)
+
+    def __draw_additional_settings(self, context):
+        layout = self.layout
+        layout.label(text="Additional settings")
