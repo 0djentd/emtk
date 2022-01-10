@@ -101,6 +101,10 @@ class ClusterTrait():
                 and not self._cluster_definition['sane']\
                 and not self.check_this_cluster_sanity():
             raise ValueError('This cluster cant be used.')
+
+        # TODO: dont need this
+        self.__show_definition_expanded = False
+        self.__show_props_expanded = False
         # }}}
 
     def _check_cluster_defenition(self, cluster_definition):  # {{{
@@ -246,10 +250,7 @@ class ClusterTrait():
 
     @collapsed.setter
     def collapsed(self, collapsed_val):
-        if collapsed_val:
-            self._cluster_props['collapsed'] = True
-        elif not collapsed_val:
-            self._cluster_props['collapsed'] = False
+        self._cluster_props['collapsed'] = bool(collapsed_val)
     # }}}
 
     # Methods reserved for subclasses {{{
@@ -786,4 +787,22 @@ class ClusterTrait():
             result\
                 = f"Already removed cluster {self._cluster_definition['name']}"
         return result
+    # }}}
+
+    # UI {{{
+    @property
+    def show_definition_expanded(self):
+        return self.__show_definition_expanded
+
+    @show_definition_expanded.setter
+    def show_definition_expanded(self, val):
+        self.__show_definition_expanded = bool(val)
+
+    @property
+    def show_props_expanded(self):
+        return self.__show_props_expanded
+
+    @show_props_expanded.setter
+    def show_props_expanded(self, val):
+        self.__show_props_expanded = bool(val)
     # }}}

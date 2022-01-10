@@ -20,6 +20,7 @@
 import logging
 import string
 import re
+import math
 
 import bpy
 
@@ -27,6 +28,7 @@ from bpy.props import BoolProperty, IntProperty, FloatProperty, StringProperty
 from bpy.types import Operator
 
 from ..lib.modifiers_operator import ModifiersOperator
+from ..lib.utils.modifier_prop_types import get_all_editable_props
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -90,7 +92,7 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
 
         row = layout.row()
 
-        # Collapsed
+        # Cluster collapsed
         val = not cluster.collapsed
         line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').\
                 collapsed = {val}'
@@ -151,18 +153,80 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
         # }}}
 
         if not cluster.collapsed:
-            for x, y in zip(cluster._cluster_definition,
-                            cluster._cluster_definition.values()):
-                layout.label(text=f'{x}: {y}')
-            for x in cluster.get_list():
-                self.__draw_cluster(layout, x)
+            box = layout.box()
+
+            # Cluster definition collapsed {{{
+            val = not cluster.show_definition_expanded
+            line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').\
+                    show_definition_expanded = {val}'
+            line = re.sub('self', self.get_class_line(), line)
+            if cluster.show_definition_expanded:
+                icon = 'DOWNARROW_HLT'
+            else:
+                icon = 'RIGHTARROW'
+            op = box.operator('bmtools.bmtool_invoke_operator_func',
+                              text='Definition', icon=icon)
+            op.func = line
+
+            if cluster.show_definition_expanded:
+                box_2 = box.box()
+                for x, y in zip(cluster._cluster_definition,
+                                cluster._cluster_definition.values()):
+                    box_2.label(text=f"{x}: {y}")
+            # }}}
+
+            # Cluster props collapsed {{{
+            val = not cluster.show_props_expanded
+            line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').\
+                    show_props_expanded = {val}'
+            line = re.sub('self', self.get_class_line(), line)
+            if cluster.show_props_expanded:
+                icon = 'DOWNARROW_HLT'
+            else:
+                icon = 'RIGHTARROW'
+            op = box.operator('bmtools.bmtool_invoke_operator_func',
+                              text='Properties', icon=icon)
+            op.func = line
+            if cluster.show_props_expanded:
+                box_2 = box.box()
+                for x, y in zip(cluster._cluster_props,
+                                cluster._cluster_props.values()):
+                    box_2.label(text=f"{x}: {y}")
+            # }}}
+
             if cluster.has_clusters():
                 self.__draw_clusters_list(layout, cluster)
             else:
                 self.__draw_modifiers_list(layout, cluster)
 
     def __draw_modifier(self, layout, modifier):
-        layout.label(text=f'Modifier {modifier.name}')
+        if modifier.show_expanded:
+            icon = 'DOWNARROW_HLT'
+        else:
+            icon = 'RIGHTARROW'
+
+        # Modifier collapsed {{{
+        val = not modifier.show_expanded
+        line = f'self.m_list.find_modifier_by_name(\'{modifier.name}\').\
+                show_expanded = {val}'
+        line = re.sub('self', self.get_class_line(), line)
+        if modifier.show_expanded:
+            icon = 'DOWNARROW_HLT'
+        else:
+            icon = 'RIGHTARROW'
+        op = layout.operator('bmtools.bmtool_invoke_operator_func',
+                             text=modifier.name + ' modifier', icon=icon)
+        op.func = line
+
+        if modifier.show_expanded:
+            box = layout.box()
+            p = get_all_editable_props(modifier)
+            for i, y in enumerate(p):
+                if math.remainder(i, 2) == 0:
+                    row = box.row()
+                col = row.column()
+                col.prop(modifier, y)
+        # }}}
 
     @classmethod
     def get_class_line(cls):
