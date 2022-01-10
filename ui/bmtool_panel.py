@@ -465,14 +465,15 @@ class BMTOOLS_OT_bmtool_invoke_operator_func(Operator):
                     and not in '()[],._ ':
                 raise ValueError
 
-        if line_2[0:9] != 'bpy.types.'\
-                and line_2[0:7] != 'bpy.ops.':
-            raise ValueError
-
-        for x in line_2[:]:
-            if x not in string.ascii_letters\
-                    and not in list("[]'._"):
+        if len(line_2) > 4:
+            if line_2[0:9] != 'bpy.types.'\
+                    and line_2[0:7] != 'bpy.ops.':
                 raise ValueError
+
+            for x in line_2[:]:
+                if x not in string.ascii_letters\
+                        and not in list("[]'._"):
+                    raise ValueError
 
         line = self.func
         result = eval(line)
