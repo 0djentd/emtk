@@ -22,6 +22,23 @@ import blf
 # import math
 
 
+# class ClustersListUI():
+#     def __init__(self, clusters_list):
+#         return
+
+
+# def draw_bmtool(self, context):
+#     displayed_objects = self.bmtool_draw(context)
+#     for x in displayed_objects:
+#         if isinstance(x, ClustersListUI):
+#             draw_clusters_list(x, context)
+#         elif isinstance(x, ModifiersListUI):
+#             draw_modifiers_list(x, context)
+#         elif isinstance(x, PropertiesListUI):
+#             draw_properties_list(x, context)
+#         elif isinstance(x, OperatorInfoUI):
+#             draw_operator_info(x, context)
+
 def bmtool_modifier_ui_draw(self, context):  # {{{
     ui_t = self.bmtool_ui(context)
     offset = 0
