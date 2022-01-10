@@ -87,6 +87,9 @@ class ClusterTrait():
         # Initialized.
         self._cluster_props['initialized'] = False
 
+        # Collapsed.
+        self._cluster_props['collapsed'] = False
+
         # Modifiers list.
         self._modifiers_list = []
 

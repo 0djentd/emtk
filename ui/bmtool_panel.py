@@ -17,6 +17,7 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+import re
 import string
 
 import bpy
@@ -446,8 +447,8 @@ class BMTOOLS_OT_bmtool_invoke_operator_func(Operator):
     returned_variable: StringProperty("")
 
     def execute(self, context):
-        line = self.func
-        line_2 = self.returned_variable
+        line = str(self.func)
+        line_2 = str(self.returned_variable)
         if not isinstance(line, str):
             raise TypeError
         if not isinstance(line_2, str):
@@ -457,20 +458,20 @@ class BMTOOLS_OT_bmtool_invoke_operator_func(Operator):
         if type(line_2) is not str:
             raise TypeError
 
-        if line[0:10] != 'bpy.types.'\
-                and line[0:8] != 'bpy.ops.':
+        if not re.search('bpy.types.', line)\
+                and not re.search('bpy.ops.', line):
             raise ValueError(f'Expected "bpy.types. ..." or "bpy.ops. ...", got "{line[0:10]}. ..."')
 
         for x in line[:]:
             if x not in string.ascii_letters\
                     and x not in string.digits\
-                    and x not in list('()[]"\',._ '):
+                    and x not in list('()[]"\',._ =;'):
                 raise ValueError(f'Expected x in [A-Z][a-z][0-9], [[]()"\',._ ], got "{x}"')
 
         if len(line_2) > 4:
-            if line_2[0:10] != 'bpy.types.'\
-                    and line_2[0:8] != 'bpy.ops.':
-                raise ValueError(f'Expected "bpy.types. ..." or "bpy.ops. ...", got "{line_2[0:10]}. ..."')
+            if not re.match('bpy.types.', line_2)\
+                    and not re.match('bpy.ops.', line_2):
+                raise ValueError(f'Expected "bpy.types. ..." or "bpy.ops. ...", got "{line_2[0:10]} ..."')
 
             for x in line_2[:]:
                 if x not in string.ascii_letters\
@@ -478,8 +479,9 @@ class BMTOOLS_OT_bmtool_invoke_operator_func(Operator):
                         and x not in list('[]"\'._'):
                     raise ValueError(f'Expected x in [A-Z][a-z][0-9], [[]"\',._ ], got "{x}"')
 
-        line = self.func
-        result = eval(line)
+        print(line)
+        print(line_2)
+        result = exec(line)
         if len(line_2) > 4:
             line_2 = line_2 + ' = result'
             eval(line_2)
