@@ -39,6 +39,7 @@ from . modal_input.operators import\
 from . ui.bmtools_pie import VIEW3D_MT_PIE_bmtools_pie_1
 from . ui.bmtool_panel import VIEW3D_PT_bmtool_panel
 from . ui.bmtool_panel import BMTOOLS_OT_update_panel_dict
+from . ui.clusters_list_popup import BMTOOLS_OT_clusters_list_popup
 
 # Dev
 from . operators.dev.add_all_modifiers import BMTOOL_OT_add_all_modifiers
@@ -78,6 +79,7 @@ classes = [
     VIEW3D_MT_PIE_bmtools_pie_1,
     VIEW3D_PT_bmtool_panel,
     BMTOOLS_OT_update_panel_dict,
+    BMTOOLS_OT_clusters_list_popup,
 
     # dev
     BMTOOL_OT_add_all_modifiers,

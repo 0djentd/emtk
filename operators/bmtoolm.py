@@ -37,7 +37,6 @@ class BMTOOL_OT_bmtoolm(BMToolUi, ModalClustersOperator, Operator):
     bl_idname = "object.bmtoolm"
     bl_label = "BMToolM"
     bl_description = "Edit modifiers on selected objects"
-    bl_options = {'GRAB_CURSOR'}
 
     # List of all editors
     # _BMTOOL_OT_bmtoolm_editors[]

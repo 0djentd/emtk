@@ -46,7 +46,7 @@ class ModifiersOperator():
     switching active object, selecting objects by properties.
     """
 
-    def create_objects_modifiers_lists(self,
+    def create_objects_modifiers_lists(self, context=None,
                                        cluster_types=None,
                                        *args, **kwargs):
         """
@@ -56,6 +56,9 @@ class ModifiersOperator():
         after changing selected objects/switching active object
         Returns False if no objects selected
         """
+
+        if context is None:
+            context = bpy.context
 
         if cluster_types is None:
             clusters = []

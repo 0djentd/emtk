@@ -30,3 +30,7 @@ class VIEW3D_MT_PIE_bmtools_pie_1(Menu):
         # pie.operator("object.bmtoolm_2", text="BMToolM lite", icon="CUBE")
         pie.operator("object.bmtoolm", text="BMToolM", icon="CUBE")
         pie.operator("object.bmtoole2", text="BMToolE2", icon="CUBE")
+        pie.operator("bmtools.clusters_list_popup",
+                     text="Clusters list", icon="CUBE")
+        pie.operator("bmtools.add_new_cluster",
+                     text="Add new cluster", icon="CUBE")
