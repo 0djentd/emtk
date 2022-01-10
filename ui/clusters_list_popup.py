@@ -39,12 +39,16 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
     bl_label = "View and edit active object's clusters."
 
     def __init__(self):
-        type(self).create_objects_modifiers_lists(type(self))
+        cls = type(self)
+        cls.create_objects_modifiers_lists(cls)
         print('Operator initialized')
 
     def __del__(self):
-        self.m_list.save_clusters_state()
-        del(self.m_list)
+        cls = type(self)
+        for x in bpy.context.object.modifiers:
+            x.show_expanded = False
+        cls.m_list.save_clusters_state()
+        del(cls.m_list)
         print('Operator removed')
 
     @classmethod
@@ -62,9 +66,15 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
             return True
 
     def execute(self, context):
-        raise TypeError
         print('Operator method')
+        cls = type(self)
+        cls.m_list.save_clusters_state()
         return {'FINISHED'}
+
+    def cancel(self, context):
+        cls = type(self)
+        cls.m_list.save_clusters_state()
+        print('Operator cancelled')
 
     def modal(self, context, event):
         raise TypeError
@@ -85,11 +95,10 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
             self.__draw_cluster(layout, x)
 
     def __draw_modifiers_list(self, layout, modifiers_list):
-        layout.template_modifiers()
-        # for x in modifiers_list.get_list():
-        #     self.__draw_modifier(layout, x)
+        for x in modifiers_list.get_list():
+            self.__draw_modifier(layout, x)
 
-    def __draw_cluster(self, layout, cluster):
+    def __draw_cluster(self, layout, cluster):  # {{{
 
         row = layout.row()
 
@@ -157,7 +166,7 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
             row = layout.row()
 
             # Cluster definition collapsed {{{
-            col = layout.column()
+            col = row.column()
             val = not cluster.show_definition_expanded
             line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').\
                     show_definition_expanded = {val}'
@@ -169,16 +178,10 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
             op = col.operator('bmtools.bmtool_invoke_operator_func',
                               text='Definition', icon=icon)
             op.func = line
-
-            if cluster.show_definition_expanded:
-                box_2 = box.box()
-                for x, y in zip(cluster._cluster_definition,
-                                cluster._cluster_definition.values()):
-                    box_2.label(text=f"{x}: {y}")
             # }}}
 
             # Cluster props collapsed {{{
-            col = layout.column()
+            col = row.column()
             val = not cluster.show_props_expanded
             line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').\
                     show_props_expanded = {val}'
@@ -190,19 +193,31 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
             op = col.operator('bmtools.bmtool_invoke_operator_func',
                               text='Properties', icon=icon)
             op.func = line
-            if cluster.show_props_expanded:
-                box_2 = box.box()
-                for x, y in zip(cluster._cluster_props,
-                                cluster._cluster_props.values()):
-                    box_2.label(text=f"{x}: {y}")
             # }}}
+
+            if cluster.show_props_expanded\
+                    or cluster.show_definition_expanded:
+
+                box = layout.box()
+                if cluster.show_definition_expanded:
+                    box_2 = box.box()
+                    for x, y in zip(cluster._cluster_definition,
+                                    cluster._cluster_definition.values()):
+                        box_2.label(text=f"{x}: {y}")
+
+                if cluster.show_props_expanded:
+                    box_2 = box.box()
+                    for x, y in zip(cluster._cluster_props,
+                                    cluster._cluster_props.values()):
+                        box_2.label(text=f"{x}: {y}")
 
             if cluster.has_clusters():
                 self.__draw_clusters_list(layout, cluster)
             else:
                 self.__draw_modifiers_list(layout, cluster)
+        # }}}
 
-    def __draw_modifier(self, layout, modifier):
+    def __draw_modifier(self, layout, modifier):  # {{{
         if modifier.show_expanded:
             icon = 'DOWNARROW_HLT'
         else:
@@ -220,6 +235,7 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
         op = layout.operator('bmtools.bmtool_invoke_operator_func',
                              text=modifier.name + ' modifier', icon=icon)
         op.func = line
+        # }}}
 
         if modifier.show_expanded:
             box = layout.box()
@@ -240,6 +256,8 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
 
     def invoke(self, context, event):
         print('Operator invoked')
+        for x in context.object.modifiers:
+            x.show_expanded = False
         prefs = context.preferences.addons['bmtools'].preferences
         context.window_manager.invoke_popup(
                 self, width=prefs.clusters_list_popup_width)

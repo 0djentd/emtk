@@ -502,6 +502,45 @@ class BMTOOLS_OT_bmtool_invoke_operator_func(Operator):
         return {'FINISHED'}
 
 
+class BMTOOLS_OT_bmtool_change_modifier(Operator):
+    bl_idname = "bmtools.bmtool_change_modifier"
+    bl_label = "bmtools change modifier."
+    
+    # Line to eval
+    func: StringProperty("")
+
+    def execute(self, context):
+        line = str(self.func)
+        line_2 = str(self.returned_variable)
+        if not isinstance(line, str):
+            raise TypeError
+        if not isinstance(line_2, str):
+            raise TypeError
+        if type(line) is not str:
+            raise TypeError
+        if type(line_2) is not str:
+            raise TypeError
+
+        if not re.search('bpy.context.', line)\
+                and not re.search('context.', line):
+            a = f'''Expected "bpy.types. ..." \
+                    or "bpy.ops. ...", got "{line[0:10]}. ..."'''
+            a = re.sub('\n\s*', '', a)
+            raise ValueError(a)
+
+        for x in line[:]:
+            if x not in string.ascii_letters\
+                    and x not in string.digits\
+                    and x not in list('()[]"\',._ =;'):
+                a = f'Expected x in [A-Z][a-z][0-9], [[]()"\',._ ], got "{x}"'
+                raise ValueError(a)
+
+        print(line)
+        result = exec(line)
+        print(f"'{line}'")
+        print(f"'{result}'")
+        return {'FINISHED'}
+
 # Workaround to change panel class variables from button.
 class BMTOOLS_OT_update_panel_dict(Operator):
     bl_idname = "bmtools.update_panel_dict_attr"

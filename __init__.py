@@ -40,6 +40,7 @@ from . ui.bmtools_pie import VIEW3D_MT_PIE_bmtools_pie_1
 from . ui.bmtool_panel import VIEW3D_PT_bmtool_panel
 from . ui.bmtool_panel import BMTOOLS_OT_update_panel_dict
 from . ui.bmtool_panel import BMTOOLS_OT_bmtool_invoke_operator_func
+from . ui.bmtool_panel import BMTOOLS_OT_bmtool_change_modifier
 from . ui.clusters_list_popup import BMTOOLS_OT_clusters_list_popup
 
 # Dev
@@ -87,6 +88,7 @@ classes = [
     BMTOOL_OT_add_new_cluster,
     BMTOOL_OT_add_all_modifiers_and_dump_props,
     BMTOOLS_OT_bmtool_invoke_operator_func,
+    BMTOOLS_OT_bmtool_change_modifier,
     BMTOOL_OT_reparse_default_modifiers_props_kbs,
 ]
 
