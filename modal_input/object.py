@@ -254,28 +254,56 @@ class ModalInputOperator():
         return True
     # }}}
 
-    def modal_input_mouse_rna_type(self, obj, attr, event, sens=1):
+    def modal_input_mouse_rna_type(self, obj, attr, event, sens=1):  # {{{
+        """This is a wrapper for 'modal_input_mouse_variables' method.
+
+        obj is expected to be rna_type struct (Blender object with rna_type
+        attribute).
+        attr is expected to be name of obj's attribute.
+        """
         if not isinstance(attr, str):
             raise TypeError
-        if len(attr) < 1:
+        if len(attr) == 0:
             raise ValueError
         for x in attr:
-            if x not in string.ascii_lowercase:
+            if x not in string.ascii_lowercase\
+                    and x != '_':
                 raise ValueError
-        sens = float(sens)
 
         attr_val = getattr(obj, attr)
+        attr_name = attr
         prop_def = getattr(obj, f"rna_type.properties[{attr}]")
+
         prop_type = prop_def.type
         prop_subtype = prop_def.subtype
         prop_unit = prop_def.unit
         prop_soft_max = prop_def.soft_max
         prop_soft_min = prop_def.soft_min
         prop_step = prop_def.step
+        sens = float(sens)
 
-    def modal_input_mouse_variables(self,
+        # Checks {{{
+        possible_prop_types = {'BOOLEAN': bool, 'INT': int, 'FLOAT': float}
+        if type(attr_val) is not possible_prop_types[prop_type]:
+            raise TypeError
+        # }}}
+
+        return self.modal_input_mouse_variables(event,
+                                                attr_val=attr_val,
+                                                attr_name=attr_name,
+                                                prop_type=prop_type,
+                                                prop_subtype=prop_subtype,
+                                                prop_unit=prop_unit,
+                                                prop_soft_min=prop_soft_min,
+                                                prop_soft_max=prop_soft_max,
+                                                prop_step=prop_step,
+                                                sens=sens)
+    # }}}
+
+    def modal_input_mouse_variables(self,  # {{{
                                     event,
                                     attr_val=None,
+                                    attr_name=None,
                                     prop_type=None,
                                     prop_subtype=None,
                                     prop_unit=None,
@@ -284,20 +312,9 @@ class ModalInputOperator():
                                     prop_step=None,
                                     sens=1
                                     ):
-        return
-
-    # This is method that use rna_type as attribute
-    def modal_input_mouse(self, attr_val, prop, event, sens=1):  # {{{
-        if not isinstance(attr_val, bool)\
-                and not isinstance(attr_val, int)\
-                and not isinstance(attr_val, float):
-            raise TypeError
-        if event is None:
-            raise TypeError
-        if prop is None:
-            raise TypeError
-
-        possible_prop_types = {'BOOLEAN': bool, 'INT': int, 'FLOAT': float}
+        # Distance
+        v = _get_view3d_window()
+        distance = v.data.view_distance
 
         # Delta percentage
         # 10
@@ -313,24 +330,7 @@ class ModalInputOperator():
             # This variable should be used when possible
             delta = delta_pct_i
 
-        # Distance
-        v = _get_view3d_window()
-        distance = v.data.view_distance
-
-        # Max and min value
-        max_val = prop.soft_max
-        min_val = prop.soft_min
-
-        if min_val < 0:
-            raise ValueError
-
-        # Step
-        step = prop.step/100
-
-        # Prop type, subtype, units
-        prop_type = prop.type
-        prop_subtype = prop.subtype
-        prop_unit = prop.unit
+        possible_prop_types = {'BOOLEAN': bool, 'INT': int, 'FLOAT': float}
 
         # Info
         if logger.isEnabledFor(logging.DEBUG):
@@ -339,12 +339,13 @@ class ModalInputOperator():
                     f'delta: {delta_pct}, {delta_pct_i}, {delta}')
             logger.debug(f'Distance: {distance}')
             logger.debug(' ')
-            logger.debug(f'Prop: {prop.name}')
-            logger.debug(f'Type: {prop.type}')
-            logger.debug(f'Subtype: {prop.subtype}')
-            logger.debug(f'Units: {prop.unit}')
-            logger.debug(f'Step: {prop.step}')
-            logger.debug(f'Max value: {max_val}')
+            logger.debug(f'Prop: {attr_name}')
+            logger.debug(f'Type: {prop_type}')
+            logger.debug(f'Subtype: {prop_subtype}')
+            logger.debug(f'Units: {prop_unit}')
+            logger.debug(f'Step: {prop_step}')
+            logger.debug(f'Min value: {prop_soft_min}')
+            logger.debug(f'Max value: {prop_soft_max}')
 
         """
         Currently implemented types and their subtypes:
@@ -407,20 +408,20 @@ class ModalInputOperator():
 
         elif prop_type == 'INT':  # {{{
             if prop_subtype == 'NONE':
-                if max_val < step*1000:
-                    x = delta_pct_i*max_val
+                if prop_soft_max < prop_step * 1000:
+                    x = delta_pct_i * prop_soft_max
                 else:
-                    x = delta_pct_i*distance
+                    x = delta_pct_i * distance
                 result = int(x)
 
             # elif prop_subtype == 'PIXEL':
             #     raise TypeError
 
             elif prop_subtype == 'UNSIGNED':
-                if max_val < step*1000:
-                    x = delta_pct_i*max_val
+                if prop_soft_max < prop_step * 1000:
+                    x = delta_pct_i * prop_soft_max
                 else:
-                    x = delta_pct_i*distance
+                    x = delta_pct_i * distance
                 result = int(x)
 
             # elif prop_subtype == 'PERCENTAGE':
@@ -463,19 +464,19 @@ class ModalInputOperator():
                 raise TypeError
 
             elif prop_subtype == 'PERCENTAGE':
-                if max_val <= 100:
+                if prop_soft_max <= 100:
                     result = delta * 100
                 else:
                     result = distance * delta
 
             elif prop_subtype == 'FACTOR':
-                if max_val != 1.0:
+                if prop_soft_max != 1.0:
                     raise ValueError
                 result = delta_pct_i
 
             elif prop_subtype == 'ANGLE':
-                if max_val*math.degrees(1) <= 360:
-                    result = delta * max_val
+                if prop_soft_max * math.degrees(1) <= 360:
+                    result = delta * prop_soft_max
                 else:
                     result = delta * math.degrees(1)
 
@@ -484,8 +485,8 @@ class ModalInputOperator():
 
             elif prop_subtype == 'DISTANCE':
                 if prop_unit == 'LENGTH':
-                    if max_val <= distance:
-                        result = max_val*delta
+                    if prop_soft_max <= distance:
+                        result = prop_soft_max * delta
                     else:
                         result = distance*delta
 
@@ -505,6 +506,7 @@ class ModalInputOperator():
             else:
                 raise TypeError(
                     f'Not implemented prop subtype "{prop_subtype}"')
+        # }}}
 
         # elif prop_type == 'VECTOR_FLOAT':  # {{{
             # if prop_subtype == 'NONE':
@@ -559,7 +561,6 @@ class ModalInputOperator():
         else:
             raise TypeError(
                 f'Not implemented prop type "{prop_type}"')
-        # }}}
 
         # Check types
         if result is None:
@@ -568,12 +569,12 @@ class ModalInputOperator():
             raise TypeError
 
         # Limit
-        if result > max_val:
+        if result > prop_soft_max:
             logger.debug(f'{result} is more than max_val.')
-            result = max_val
-        if result < min_val:
+            result = prop_soft_max
+        if result < prop_soft_min:
             logger.debug(f'{result} is less than min_val.')
-            result = max_val
+            result = prop_soft_min
 
         logger.debug(f'Returning {result}')
         logger.debug(' ')
