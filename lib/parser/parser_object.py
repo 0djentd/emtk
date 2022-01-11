@@ -36,8 +36,8 @@ from ..utils import EMTK_VERSION
 CLUSTERS_PARSER_VERSION = (0, 1, 0)
 
 logger = logging.getLogger(__name__)
-# logger.setLevel(logging.ERROR)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.ERROR)
+# logger.setLevel(logging.DEBUG)
 
 
 class ClustersParser():

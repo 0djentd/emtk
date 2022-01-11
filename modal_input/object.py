@@ -272,7 +272,9 @@ class ModalInputOperator():
 
         attr_val = getattr(obj, attr)
         attr_name = attr
-        prop_def = getattr(obj, f"rna_type.properties[{attr}]")
+        rna_type = getattr(obj, 'rna_type')
+        properties = getattr(rna_type, 'properties')
+        prop_def = properties[attr_name]
 
         prop_type = prop_def.type
         prop_subtype = prop_def.subtype

@@ -544,23 +544,17 @@ class AdaptiveModalEditor(ModalClustersEditor):
 
     def __modal_int(self, event, prop_name):
         logger.debug(f'Modal int {prop_name}')
-
-        prop_def = self.__mods[0].rna_type.properties[prop_name]
         for x in self.__mods:
-            attr_val = getattr(x, prop_name)
-            new_val = self.modal_input_mouse(
-                    attr_val, prop_def, event=event)
+            new_val = self.modal_input_mouse_rna_type(
+                    x, prop_name, event)
             setattr(x, prop_name, new_val)
         return
 
     def __modal_float(self, event, prop_name):
         logger.debug(f'Modal float {prop_name}')
-
-        prop_def = self.__mods[0].rna_type.properties[prop_name]
         for x in self.__mods:
-            attr_val = getattr(x, prop_name)
-            new_val = self.modal_input_mouse(
-                    attr_val, prop_def, event=event)
+            new_val = self.modal_input_mouse_rna_type(
+                    x, prop_name, event)
             setattr(x, prop_name, new_val)
         return
 
