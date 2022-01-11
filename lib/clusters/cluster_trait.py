@@ -754,10 +754,10 @@ class ClusterTrait():
         return True
 
     def serialize_this_cluster_type(self):
-        result = json.dumps(self.get_thisparser_variables())
+        result = json.dumps(self.get_this_cluster_parser_variables())
         return result
 
-    def get_thisparser_variables(self):
+    def get_this_cluster_parser_variables(self):
         x = copy.copy(self.parser_variables)
 
         # TODO: use some attribute instead
