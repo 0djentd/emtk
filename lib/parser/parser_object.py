@@ -555,12 +555,16 @@ class ClustersParser():
                     logger.info(f"Added {cluster_type} to clusters")
                     self._available_cluster_types.append(cluster_type)
 
+                cluster_type.modcluster_index\
+                    = self._get_new_cluster_type_index()
                 result = True
 
             # If modcluster cant be used
             else:
                 result = False
         else:
+            cluster_type.modcluster_index\
+                    = self._get_new_cluster_type_index()
             if cluster_type.has_clusters():
                 self._available_layer_types.append(cluster_type)
             else:
@@ -687,6 +691,9 @@ class ClustersParser():
             logger.debug(
                     f"Adding tag to {cluster_type}")
             cluster_type.add_tag_to_this_cluster('RESTORED')
+
+            # Set index for new cluster type.
+            cluster_type.modcluster_index = self._get_new_cluster_type_index()
 
             # Add cluster type to result.
             result.append(cluster_type)
@@ -915,8 +922,7 @@ class ClustersParser():
                     # if cluster is already there.
                     k = False
                     for x in possible_cluster_types:
-                        if y.type == x.type and y.parser_variables['by_type']\
-                                == x.parser_variables['by_type']:
+                        if y.modcluster_index == x.modcluster_index:
                             logger.debug(f"{y} is already in possible types")
                             k = True
                     if k is False:
@@ -1315,6 +1321,13 @@ class ClustersParser():
 
         return x
     # }}}
+
+    # TODO: remove this
+    def _get_new_cluster_type_index(self):
+        """Returns unique for this parser cluster type index."""
+        self._last_cluster_type_index += 1
+        return self._last_cluster_type_index - 1
+
 
 # UTILS {{{
 def _get_clusters_names(clusters):
