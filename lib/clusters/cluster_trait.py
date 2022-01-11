@@ -663,18 +663,16 @@ class ClusterTrait():
         Takes list as an argument.
         """
         self._check_if_cluster_removed()
-        if vis_settings is None:
-            vis_settings = [False, False, False, False]
 
-        if True not in vis_settings:
-            return
+        result = []
+        for x in vis_settings:
+            result.append(bool(x))
+        vis_settings = result
 
         old_cluster_vis = self.get_this_cluster_visibility()
         new_cluster_vis = []
 
-        i = 0
-
-        for x in old_cluster_vis:
+        for i, x in enumerate(old_cluster_vis):
             if vis_settings[i] is True:
                 if x == 'HALF':
                     new_cluster_vis.append(False)
@@ -684,9 +682,6 @@ class ClusterTrait():
                     new_cluster_vis.append(True)
             else:
                 new_cluster_vis.append(None)
-
-            i += 1
-
         self.set_this_cluster_visibility(new_cluster_vis)
     # }}}
 
