@@ -51,12 +51,14 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
             cls.create_objects_modifiers_lists(cls)
         print('Operator initialized')
 
-    def __del__(self):
-        cls = type(self)
-        cls.iteration = 0
-        cls.m_list.save_clusters_state()
-        del(cls.m_list)
-        print('Operator removed')
+    # TODO: this throws an error.
+    # def __del__(self):
+    #     cls = type(self)
+    #     print(cls)
+    #     cls.iteration = 0
+    #     cls.m_list.save_clusters_state()
+    #     del(cls.m_list)
+    #     print('Operator removed')
 
     @classmethod
     def poll(cls, context):
@@ -98,7 +100,9 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
         if USE_PROFILER and cls.iteration in {1, 10, 100}:
             c = 'self._BMTOOLS_OT_clusters_list_popup__draw_clusters_list(\
                     box, cls.m_list)'
+            # TODO: this doesnt work
             c = re.sub('\n\s*\t*', '', c)
+            print('Profiler stats for clusters list popup ')
             print(c)
             cProfile.runctx(c, globals(), locals())
         else:
