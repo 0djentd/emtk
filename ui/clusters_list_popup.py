@@ -34,7 +34,7 @@ from ..lib.utils.modifier_prop_types import get_all_editable_props
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-USE_PROFILER = True
+USE_PROFILER = False
 
 
 class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
@@ -45,7 +45,8 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
         cls = type(self)
         cls.iteration = 0
         if USE_PROFILER:
-            cProfile.runctx('cls.create_objects_modifiers_lists(cls)', globals(), locals())
+            cProfile.runctx('cls.create_objects_modifiers_lists(cls)',
+                            globals(), locals())
         else:
             cls.create_objects_modifiers_lists(cls)
         print('Operator initialized')
@@ -101,7 +102,8 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
             print(c)
             cProfile.runctx(c, globals(), locals())
         else:
-            self._BMTOOLS_OT_clusters_list_popup__draw_clusters_list(box, self.m_list)
+            self._BMTOOLS_OT_clusters_list_popup__draw_clusters_list(
+                    box, self.m_list)
 
     def __draw_clusters_list(self, layout, clusters_list):
         for x in clusters_list.get_list():
