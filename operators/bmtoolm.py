@@ -54,14 +54,7 @@ class BMTOOL_OT_bmtoolm(BMToolUi, ModalClustersOperator, Operator):
         self.__possible_editors = []
         self.__active_editor = None
 
-        editor = AdaptiveModalEditor()
-        self.__editors.append(editor)
-
-        # editor = BMToolEditorWeightedNormal()
-        # self.__editors.append(editor)
-
-        # editor = BMToolEditorBevel()
-        # self.__editors.append(editor)
+        self.__editors.append(AdaptiveModalEditor())
 
     # BMToolMod methods {{{
     def bmtool_modal_pre(self, context, event):

@@ -681,15 +681,13 @@ class ClustersParser():
                 raise ValueError
 
             cluster_names = cluster_type.variables['by_name']
-            logger.debug(
-                    f"Modifiers names {cluster_names}")
+            logger.debug(f"Modifiers names {cluster_names}")
 
             # Set custom cluster name.
             cluster_type.set_this_cluster_custom_name(cluster_info[3])
 
             # Add 'RESTORED' tag.
-            logger.debug(
-                    f"Adding tag to {cluster_type}")
+            logger.debug(f"Adding tag to {cluster_type}")
             cluster_type.add_tag_to_this_cluster('RESTORED')
 
             # Set index for new cluster type.
@@ -734,27 +732,19 @@ class ClustersParser():
         """
 
         if not isinstance(mods, list):
-            logger.error(
-                    "modifiers_to_parse is not a list.")
+            logger.error("modifiers_to_parse is not a list.")
             raise TypeError
 
         if len(mods) == 0:
-            logger.info(
-                    "modifiers_to_parse is 0 modifiers long.")
+            logger.info("modifiers_to_parse is 0 modifiers long.")
             return []
 
         modifiers_to_parse = copy.copy(mods)
-
         if len(available_to_parser_cluster_types) == 0:
-            logger.info(
-                    "No cluster types available to parser, skipping all.")
+            logger.info("No cluster types available to parser, skipping all.")
             result = []
             for modifier in modifiers_to_parse:
-                e = []
-                e.append('SKIP')
-                e.append(modifier)
-                e.append(None)
-                result.append(e)
+                result.append(['SKIP', modifier, None])
             return result
 
         # Only use default modifier cluster in parsing
@@ -763,14 +753,7 @@ class ClustersParser():
             cluster = DefaultModifierCluster()
             available_to_parser_cluster_types.append(cluster)
 
-        # Returned parse result
-        parse_result = []
-
-        # Previous iteration result
-        # One of SUCCESS, POSSIBLE, FOUND or False
-        iteration_result = None
-
-        # Info
+        # Info  {{{
         if logger.isEnabledFor(logging.DEBUG):
             for x in modifiers_to_parse:
                 logger.debug(f"{x}")
@@ -797,7 +780,9 @@ class ClustersParser():
                 logger.debug(
                         f"priority is {x.parser_variables['priority']}")
                 logger.debug(" ")
+        # }}}
 
+        # Variables {{{
         # if _WITH_BPY:
         #     modifier_type = bpy.types.Modifier
         # elif not _WITH_BPY:
@@ -817,6 +802,13 @@ class ClustersParser():
         #         else:
         #             y = copy.copy(x.get_full_actual_modifiers_list())
         #             old_actual_modifiers.extend(y)
+
+        # Returned parse result
+        parse_result = []
+
+        # Previous iteration result
+        # One of SUCCESS, POSSIBLE, FOUND or False
+        iteration_result = None
 
         # Sequence of modifiers that currently being
         # parsed inside iteration loop
@@ -841,13 +833,13 @@ class ClustersParser():
 
         # False, if no modifiers left to parse
         parsing_modifiers = True
+        # }}}
 
-        # Iterate over modifiers of object
+        # Iterate over modifiers or clusters {{{
         while parsing_modifiers:
-            logger.debug(
-                    f"Parse iteration {parse_iteration}")
+            logger.debug(f"Parse iteration {parse_iteration}")
 
-            # Parser sanity checks
+            # Parser sanity checks  {{{
             if parser_sanity_checks:
                 if len(possible_clusters_confirmed) > len(
                         available_to_parser_cluster_types):
@@ -861,11 +853,11 @@ class ClustersParser():
                 elif parse_iteration\
                         >= max_iterations:
                     raise ValueError("Parsing failed, too many iterations")
+            # }}}
 
             # Add modifier to sequence
             modifier = modifiers_to_parse.pop(0)
-            logger.debug(
-                    f"Adding modifier to sequence {modifier}")
+            logger.debug(f"Adding modifier to sequence {modifier}")
             parsed_modifiers.append(modifier)
             need_another_modifier = False
 
@@ -874,20 +866,19 @@ class ClustersParser():
             # while parsing clusters
             skipped_modifier = False
 
-            # Info
+            # Info  {{{
             if logger.isEnabledFor(logging.DEBUG):
                 logger.debug("Currently parsed modifiers:")
                 logger.debug(parsed_modifiers)
                 logger.debug("All modifiers to parse:")
                 logger.debug(modifiers_to_parse)
-                logger.debug(
-                        "Current potentially possible cluster types:")
+                logger.debug("Current potentially possible cluster types:")
                 logger.debug(possible_cluster_types)
-                logger.debug(
-                        "Current confirmed possible cluster types:")
+                logger.debug("Current confirmed possible cluster types:")
                 logger.debug(possible_clusters_confirmed)
                 logger.debug(
                         f"Previous iteration result was '{iteration_result}'")
+            # }}}
 
             # Decide what clusters types to use in checking
             if iteration_result == 'SUCCESS' or parse_iteration == 0:
@@ -898,6 +889,7 @@ class ClustersParser():
             # =================
             # Checking clusters
             # =================
+            # {{{
             # Check cluster types for compatibility with this sequence
             # of modifiers.
             for y in clusters_to_parse_against:
@@ -953,6 +945,7 @@ class ClustersParser():
 
                     if iteration_result == 'POSSIBLE':
                         clusters_to_remove.append(y)
+            # }}}
 
             # Removing not compatible with this modifiers sequence
             # clusters from possible types.
@@ -964,9 +957,10 @@ class ClustersParser():
                 possible_cluster_types.remove(x)
             clusters_to_remove.clear()
 
-            # ====================
+            # ================
             # Cluster creation
-            # ====================
+            # ================
+            # {{{
             # If allowed to skip cluster or modifier if no cluster can be
             # created at all, and add it to result.
             # Then request another modifier.
@@ -1038,6 +1032,7 @@ class ClustersParser():
 
                 need_another_modifier = True
                 iteration_result = 'SUCCESS'
+            # }}}
 
             # Parser needs another modifier
             elif need_another_modifier is True:
@@ -1073,8 +1068,9 @@ class ClustersParser():
 
             # Start next iteration
             parse_iteration += 1
+        # }}}
 
-        # Parse result sanity check
+        # Parse result sanity check  {{{
         if parser_sanity_checks:
             if not isinstance(parse_result, list):
                 raise ValueError(
@@ -1121,8 +1117,9 @@ class ClustersParser():
             #     # of sanity check itself
             #     # raise ValueError(
             #     #         "Actual modifiers count after parsing is wrong.")
+        # }}}
 
-        # Info
+        # Info {{{
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug("-------------")
             logger.debug("Parse result:")
@@ -1131,6 +1128,7 @@ class ClustersParser():
             logger.debug("         Finished parsing")
             logger.debug("===================================")
             logger.debug(" ")
+        # }}}
 
         return parse_result
     # }}}
