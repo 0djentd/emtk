@@ -42,7 +42,9 @@ class ClustersListTrait():
                          no_default_actions=no_default_actions,
                          *args, **kwargs)
         if not no_default_actions:
-            self.add_action_answer(ActionDefaultDeconstuct(self))
+            default_actions = [ActionDefaultDeconstuct]
+            for x in default_actions:
+                self.add_action_answer(x(self))
 
     def _check_if_cluster_removed(self):
         pass

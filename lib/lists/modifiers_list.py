@@ -42,6 +42,7 @@ MODIFIERS LIST METHODS NAMING
 =============================
 
 ModifiersCluster is a Cluster without clusters in it.
+
 ClustersLayer, or Layer, is a Cluster too, but without modifiers.
 
 All methods that have 'actual_modifier' in their name
@@ -79,10 +80,10 @@ class ModifiersList():
         self._modifiers_list = []
         self._actions = {}
         if not no_default_actions:
-            self.add_action_answer(ActionDefaultRemove(self))
-            self.add_action_answer(ActionDefaultApply(self))
-            self.add_action_answer(ActionDefaultMove(self))
-            self.add_action_answer(ActionDefaultDeconstuct(self))
+            default_actions = [ActionDefaultRemove, ActionDefaultApply,
+                               ActionDefaultMove, ActionDefaultDeconstuct]
+            for x in default_actions:
+                self.add_action_answer(x(self))
 
     def __len__(self):
         return len(self._modifiers_list)
