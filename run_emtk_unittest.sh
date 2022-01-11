@@ -1,3 +1,3 @@
 #!/bin/sh
 
-python -m unittest -v --locals > unittest_result
+python -m unittest -vbf --locals
