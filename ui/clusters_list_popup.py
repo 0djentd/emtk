@@ -51,15 +51,6 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
             cls.create_objects_modifiers_lists(cls)
         print('Operator initialized')
 
-    # TODO: this throws an error.
-    # def __del__(self):
-    #     cls = type(self)
-    #     print(cls)
-    #     cls.iteration = 0
-    #     cls.m_list.save_clusters_state()
-    #     del(cls.m_list)
-    #     print('Operator removed')
-
     @classmethod
     def poll(cls, context):
         print('Operator polled')
@@ -84,11 +75,6 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
         cls = type(self)
         cls.m_list.save_clusters_state()
         print('Operator cancelled')
-
-    def modal(self, context, event):
-        raise TypeError
-        print('Operator modal')
-        return {'INTERFACE', 'PASS_THROUGH'}
 
     def draw(self, context):
         cls = type(self)
