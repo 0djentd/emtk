@@ -1,0 +1,122 @@
+         1217896 function calls (1146001 primitive calls) in 0.969 seconds
+
+   Ordered by: standard name
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.000    0.000    0.969    0.969 <string>:1(<module>)
+    20949    0.014    0.000    0.018    0.000 __init__.py:119(getLevelName)
+    20921    0.039    0.000    0.648    0.000 __init__.py:1446(debug)
+       28    0.000    0.000    0.001    0.000 __init__.py:1458(info)
+    20949    0.065    0.000    0.098    0.000 __init__.py:1540(findCaller)
+    20949    0.025    0.000    0.403    0.000 __init__.py:1576(makeRecord)
+    20949    0.045    0.000    0.602    0.000 __init__.py:1591(_log)
+    20949    0.011    0.000    0.016    0.000 __init__.py:160(<lambda>)
+    20949    0.021    0.000    0.057    0.000 __init__.py:1617(handle)
+    20949    0.027    0.000    0.027    0.000 __init__.py:1671(callHandlers)
+    21741    0.008    0.000    0.008    0.000 __init__.py:1715(isEnabledFor)
+    20949    0.173    0.000    0.378    0.000 __init__.py:283(__init__)
+    20949    0.009    0.000    0.009    0.000 __init__.py:806(filter)
+        1    0.000    0.000    0.000    0.000 active_cluster.py:33(__init__)
+        1    0.000    0.000    0.000    0.000 active_modifier.py:29(__init__)
+        8    0.000    0.000    0.000    0.000 answers.py:121(__init__)
+        3    0.000    0.000    0.000    0.000 answers.py:154(__init__)
+        2    0.000    0.000    0.000    0.000 answers.py:192(__init__)
+        3    0.000    0.000    0.000    0.000 answers.py:228(__init__)
+        2    0.000    0.000    0.000    0.000 answers.py:264(__init__)
+       10    0.000    0.000    0.000    0.000 answers.py:45(__init__)
+        1    0.000    0.000    0.000    0.000 cluster_trait.py:114(_check_cluster_definition)
+     1631    0.001    0.000    0.002    0.000 cluster_trait.py:202(get_this_cluster_name)
+       48    0.000    0.000    0.000    0.000 cluster_trait.py:212(get_this_cluster_custom_name)
+      222    0.000    0.000    0.000    0.000 cluster_trait.py:219(get_this_cluster_default_name)
+       48    0.000    0.000    0.000    0.000 cluster_trait.py:226(set_this_cluster_custom_name)
+      424    0.000    0.000    0.001    0.000 cluster_trait.py:238(type)
+      621    0.000    0.000    0.001    0.000 cluster_trait.py:242(get_this_cluster_type)
+        4    0.000    0.000    0.000    0.000 cluster_trait.py:267(check_this_cluster_sanity_custom)
+      478    0.000    0.000    0.001    0.000 cluster_trait.py:343(get_this_cluster_tags)
+        1    0.000    0.000    0.000    0.000 cluster_trait.py:36(__init__)
+       48    0.000    0.000    0.000    0.000 cluster_trait.py:388(set_this_cluster_modifiers)
+     1937    0.001    0.000    0.001    0.000 cluster_trait.py:482(get_this_cluster_possible_length)
+      516    0.000    0.000    0.000    0.000 cluster_trait.py:486(get_this_cluster_priority)
+     1201    0.005    0.000    0.007    0.000 cluster_trait.py:490(check_availability)
+        4    0.000    0.000    0.000    0.000 cluster_trait.py:690(check_this_cluster_sanity)
+     2769    0.001    0.000    0.001    0.000 cluster_trait.py:758(_check_if_cluster_removed)
+      630    0.000    0.000    0.003    0.000 cluster_trait.py:766(__repr__)
+     3415    0.004    0.000    0.010    0.000 cluster_trait.py:769(__str__)
+        1    0.000    0.000    0.000    0.000 clusters_controller.py:46(__init__)
+        1    0.000    0.000    0.000    0.000 clusters_list.py:40(__init__)
+      546    0.000    0.000    0.000    0.000 clusters_list.py:47(_check_if_cluster_removed)
+        2    0.000    0.000    0.000    0.000 clusters_list.py:50(has_clusters)
+64509/619    0.122    0.000    0.252    0.000 copy.py:128(deepcopy)
+    48457    0.007    0.000    0.007    0.000 copy.py:182(_deepcopy_atomic)
+5529/4333    0.007    0.000    0.019    0.000 copy.py:201(_deepcopy_list)
+ 4952/619    0.032    0.000    0.236    0.000 copy.py:227(_deepcopy_dict)
+    13576    0.012    0.000    0.016    0.000 copy.py:243(_keep_alive)
+ 3095/619    0.015    0.000    0.246    0.000 copy.py:259(_reconstruct)
+     6190    0.003    0.000    0.011    0.000 copy.py:264(<genexpr>)
+        8    0.000    0.000    0.000    0.000 copy.py:66(copy)
+     3095    0.002    0.000    0.003    0.000 copyreg.py:100(__newobj__)
+        1    0.000    0.000    0.000    0.000 default_modifier_cluster.py:39(__init__)
+     2381    0.002    0.000    0.003    0.000 default_modifier_cluster.py:52(get_this_cluster_name)
+     2503    0.003    0.000    0.004    0.000 default_modifier_cluster.py:59(get_this_cluster_type)
+      167    0.000    0.000    0.000    0.000 default_modifier_cluster.py:81(set_this_cluster_modifiers)
+     1540    0.002    0.000    0.003    0.000 dummy_modifiers.py:36(__str__)
+      266    0.000    0.000    0.001    0.000 dummy_modifiers.py:39(__repr__)
+     4812    0.001    0.000    0.001    0.000 dummy_modifiers.py:42(type)
+     3711    0.001    0.000    0.001    0.000 dummy_modifiers.py:46(name)
+        1    0.000    0.000    0.969    0.969 extended_modifiers_list.py:41(__init__)
+        1    0.000    0.000    0.969    0.969 first_layer_clusters_list.py:63(__init__)
+        1    0.000    0.000    0.967    0.967 first_layer_clusters_list.py:82(create_modifiers_list)
+    20949    0.036    0.000    0.047    0.000 genericpath.py:121(_splitext)
+        1    0.000    0.000    0.000    0.000 modifiers_cluster.py:64(__init__)
+       10    0.000    0.000    0.000    0.000 modifiers_list.py:337(add_action_answer)
+      215    0.000    0.000    0.000    0.000 modifiers_list.py:443(get_first)
+        2    0.000    0.000    0.000    0.000 modifiers_list.py:68(__init__)
+       12    0.000    0.000    0.000    0.000 modifiers_list.py:95(has_clusters)
+      215    0.002    0.000    0.023    0.000 parser_object.py:1174(_cluster_priority_select)
+        3    0.001    0.000    0.001    0.000 parser_object.py:1241(_unwrap_parse_result)
+        3    0.004    0.001    0.079    0.026 parser_object.py:1267(_initialize_clusters)
+        1    0.000    0.000    0.958    0.958 parser_object.py:131(parse_recursively)
+      215    0.001    0.000    0.010    0.000 parser_object.py:1330(_initialize_cluster)
+        4    0.000    0.000    0.000    0.000 parser_object.py:1361(_get_new_cluster_type_index)
+        3    0.000    0.000    0.001    0.000 parser_object.py:1370(_get_clusters_names)
+      215    0.001    0.000    0.001    0.000 parser_object.py:1378(cluster_number_format)
+        4    0.000    0.000    0.002    0.001 parser_object.py:253(update_cluster_types)
+        1    0.000    0.000    0.669    0.669 parser_object.py:347(_parse_modifiers)
+        1    0.000    0.000    0.002    0.002 parser_object.py:42(__init__)
+        2    0.000    0.000    0.286    0.143 parser_object.py:420(_parse_clusters)
+        1    0.001    0.001    0.289    0.289 parser_object.py:465(_parse_clusters_recursively)
+        3    0.028    0.009    0.875    0.292 parser_object.py:711(_clusters_parser)
+    20949    0.027    0.000    0.082    0.000 posixpath.py:117(splitext)
+    20949    0.032    0.000    0.056    0.000 posixpath.py:140(basename)
+    20949    0.009    0.000    0.014    0.000 posixpath.py:41(_get_sep)
+    20949    0.009    0.000    0.012    0.000 posixpath.py:52(normcase)
+        1    0.000    0.000    0.000    0.000 sortable_clusters_list.py:28(__init__)
+    20949    0.007    0.000    0.007    0.000 threading.py:1122(name)
+    20949    0.012    0.000    0.015    0.000 threading.py:1423(current_thread)
+     3095    0.001    0.000    0.001    0.000 {built-in method __new__ of type object at 0x7fb018cdd0a0}
+    41898    0.008    0.000    0.008    0.000 {built-in method _thread.get_ident}
+        1    0.000    0.000    0.969    0.969 {built-in method builtins.exec}
+     6190    0.002    0.000    0.002    0.000 {built-in method builtins.getattr}
+    44993    0.010    0.000    0.010    0.000 {built-in method builtins.hasattr}
+    92280    0.016    0.000    0.016    0.000 {built-in method builtins.id}
+    54739    0.013    0.000    0.013    0.000 {built-in method builtins.isinstance}
+     3095    0.001    0.000    0.001    0.000 {built-in method builtins.issubclass}
+    17638    0.003    0.000    0.003    0.000 {built-in method builtins.len}
+    62847    0.009    0.000    0.009    0.000 {built-in method posix.fspath}
+    20949    0.009    0.000    0.009    0.000 {built-in method posix.getpid}
+    20949    0.005    0.000    0.005    0.000 {built-in method sys._getframe}
+    20949    0.005    0.000    0.005    0.000 {built-in method time.time}
+     3095    0.004    0.000    0.004    0.000 {method '__reduce_ex__' of 'object' objects}
+    21765    0.003    0.000    0.003    0.000 {method 'append' of 'list' objects}
+     1488    0.000    0.000    0.000    0.000 {method 'clear' of 'list' objects}
+        8    0.000    0.000    0.000    0.000 {method 'copy' of 'list' objects}
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+   171543    0.029    0.000    0.029    0.000 {method 'get' of 'dict' objects}
+      105    0.000    0.000    0.000    0.000 {method 'insert' of 'list' objects}
+     4952    0.001    0.000    0.001    0.000 {method 'items' of 'dict' objects}
+     1062    0.000    0.000    0.000    0.000 {method 'pop' of 'list' objects}
+      142    0.000    0.000    0.000    0.000 {method 'remove' of 'list' objects}
+    62847    0.019    0.000    0.019    0.000 {method 'rfind' of 'str' objects}
+     3105    0.001    0.000    0.001    0.000 {method 'update' of 'dict' objects}
+
+
