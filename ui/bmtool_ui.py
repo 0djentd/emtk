@@ -233,25 +233,25 @@ class BMToolUi:  # {{{
                 ui_t.append([f"{y2} {cluster.name} {y3} {y} {y5}", 3])
 
         # Info about its clusters
-        if cluster.has_clusters() and (cluster.collapsed is False):
+        if cluster.has_clusters() and cluster.variables['collapsed'] is False:
             ui_t.append("------------------------------")
             for x in cluster.get_list():
                 ui_t += self._bmtool_ui_get_cluster_ui(
                         x, cluster_selection, m_list, m_name, m_type)
 
             ui_t.append("------------------------------")
-        elif cluster.has_clusters() and (cluster.collapsed is True):
+        elif cluster.has_clusters() and cluster.variables['collapsed'] is True:
             ui_t.append("layer collapsed")
 
         # Info about its modifiers
-        elif not cluster.has_clusters() and (
-                cluster.collapsed is False):
+        elif not cluster.has_clusters()\
+                and cluster.variables['collapsed'] is False:
             ui_t.append("------------------------------")
             for mod in cluster.get_list():
                 ui_t.append([f"{mod.name}", 2])
             ui_t.append("------------------------------")
-        elif not cluster.has_clusters() and (
-                cluster.collapsed is True):
+        elif not cluster.has_clusters()\
+                and cluster.variables['collapsed'] is True:
             ui_t.append("modifiers cluster collapsed")
 
         ui_t.append("")

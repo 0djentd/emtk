@@ -85,10 +85,16 @@ class ClusterTrait():
         self.variables['tags'] = []
 
         # Initialized.
+        # TODO: remove this
         self.variables['initialized'] = False
 
         # Collapsed.
         self.variables['collapsed'] = True
+
+        # Show expanded
+        self.variables['show_expanded'] = False
+        self.variables['show_definition_expanded'] = False
+        self.variables['show_props_expanded'] = False
 
         # Modifiers list.
         self._modifiers_list = []
@@ -103,8 +109,6 @@ class ClusterTrait():
             raise ValueError('This cluster cant be used.')
 
         # TODO: dont need this
-        self.__show_definition_expanded = False
-        self.__show_props_expanded = False
         # }}}
 
     def _check_cluster_definition(self, cluster_definition):  # {{{
@@ -242,15 +246,6 @@ class ClusterTrait():
         """
         self._check_if_cluster_removed()
         return self.parser_variables['type']
-
-    # Collapsed/expanded
-    @property
-    def collapsed(self):
-        return self.variables['collapsed']
-
-    @collapsed.setter
-    def collapsed(self, collapsed_val):
-        self.variables['collapsed'] = bool(collapsed_val)
     # }}}
 
     # Methods reserved for subclasses {{{

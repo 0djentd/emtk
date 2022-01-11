@@ -52,7 +52,7 @@ class ActiveClusterTrait():
         """
         cluster = self.active_modifier_get()
         if cluster.has_clusters():
-            if cluster.collapsed is True:
+            if cluster.variables['collapsed'] is True:
                 return cluster
             else:
                 return cluster.get_cluster()

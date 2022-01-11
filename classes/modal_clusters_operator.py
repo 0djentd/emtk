@@ -398,19 +398,19 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
 
             # Collapse cluster.
             if event.shift:
-                if (cluster.collapsed is False)\
+                if (cluster.variables['collapsed'] is False)\
                         & (cluster.has_clusters() is False):
-                    cluster.collapsed = True
-                elif (cluster.collapsed is True)\
+                    cluster.variables['collapsed'] = True
+                elif (cluster.variables['collapsed'] is True)\
                         & (cluster.has_clusters() is False):
-                    layer.collapsed = True
-                elif (cluster.collapsed is True)\
+                    layer.variables['collapsed'] = True
+                elif (cluster.variables['collapsed'] is True)\
                         & (cluster.has_clusters() is True):
-                    layer.collapsed = True
+                    layer.variables['collapsed'] = True
 
             # Uncollapse cluster.
             else:
-                cluster.collapsed = False
+                cluster.variables['collapsed'] = False
 
             # Trigger active modifier change.
             self.bmtool_modifier_update(context)

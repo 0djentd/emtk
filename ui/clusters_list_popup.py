@@ -101,11 +101,11 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
         row = layout.row()
 
         # Cluster collapsed
-        val = not cluster.collapsed
+        val = not cluster.variables['collapsed']
         line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').\
-                collapsed = {val}'
+                variables[\'collapsed\'] = {val}'
         line = re.sub('self', self.get_class_line(), line)
-        if not cluster.collapsed:
+        if not cluster.variables['collapsed']:
             icon = 'DOWNARROW_HLT'
         else:
             icon = 'RIGHTARROW'
@@ -169,14 +169,14 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
         op.func = line
         # }}}
 
-        if not cluster.collapsed:
+        if not cluster.variables['collapsed']:
             row = layout.row()
 
             # Cluster definition {{{
             col = row.column()
-            val = not cluster.show_definition_expanded
+            val = not cluster.variables['show_definition_expanded']
             line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').\
-                    show_definition_expanded = {val}'
+                    variables[\'show_definition_expanded\'] = {val}'
             line = re.sub('self', self.get_class_line(), line)
             if cluster.show_definition_expanded:
                 icon = 'DOWNARROW_HLT'
@@ -189,9 +189,9 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
 
             # Cluster props {{{
             col = row.column()
-            val = not cluster.show_props_expanded
+            val = not cluster.variables['show_props_expanded']
             line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').\
-                    show_props_expanded = {val}'
+                    variables[\'show_props_expanded\'] = {val}'
             line = re.sub('self', self.get_class_line(), line)
             if cluster.show_props_expanded:
                 icon = 'DOWNARROW_HLT'
@@ -202,18 +202,18 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
             op.func = line
             # }}}
 
-            if cluster.show_props_expanded\
-                    or cluster.show_definition_expanded:
+            if cluster.variables['show_props_expanded']\
+                    or cluster.variables['show_definition_expanded']:
 
                 box = layout.box()
 
-                if cluster.show_definition_expanded:
+                if cluster.variables['show_definition_expanded']:
                     box_2 = box.box()
                     for x, y in zip(cluster.parser_variables,
                                     cluster.parser_variables.values()):
                         box_2.label(text=f"{x}: {y}")
 
-                if cluster.show_props_expanded:
+                if cluster.variables['show_props_expanded']:
                     box_2 = box.box()
                     for x, y in zip(cluster.variables,
                                     cluster.variables.values()):
