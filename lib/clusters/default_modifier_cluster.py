@@ -50,16 +50,16 @@ class DefaultModifierCluster(
                          )
 
     def get_this_cluster_name(self):
-        if not self._cluster_props['initialized']\
+        if not self.variables['initialized']\
                 or len(self._modifiers_list) == 0:
             return self.get_this_cluster_default_name()
         else:
             return self._modifiers_list[0].name
 
     def get_this_cluster_type(self):
-        if not self._cluster_props['initialized']\
+        if not self.variables['initialized']\
                 or len(self._modifiers_list) == 0:
-            return self._cluster_definition['type']
+            return self.parser_variables['type']
         else:
             return f'{self._modifiers_list[0].type}_CLUSTER'
 
@@ -103,13 +103,13 @@ class DefaultModifierCluster(
                 raise TypeError('Cluster needs actual Blender modifier.')
 
         # If havent set modifiers already
-        if self._cluster_props['initialized'] is False:
+        if self.variables['initialized'] is False:
             self._modifiers_list = modifiers
-            self._cluster_props['initialized'] = True
+            self.variables['initialized'] = True
             return True
 
         # If allowed to reset modifiers
-        elif self._cluster_definition['dynamic']:
+        elif self.parser_variables['dynamic']:
             self._modifiers_list = modifiers
             return True
         else:

@@ -65,34 +65,30 @@ class ClusterTrait():
              }
 
         # Check dict.
-        self._cluster_definition\
+        self.parser_variables\
             = self._check_cluster_defenition(x)
-
-        # TODO: Rename _cluster_definition and _cluster_props to this.
-        self.parser_variables = {}
-        self.variables = {}
 
         # Cluster shouldnt be used, if it is already
         # removed from clusters list.
         self._cluster_removed = False
 
-        self._cluster_props = {}
+        self.variables = {}
 
         # Modifiers names that can be sometimes used
         # instead of default ones.
-        self._cluster_props['by_name'] = []
+        self.variables['by_name'] = []
 
         # Custom name that can be changed in runtime.
-        self._cluster_props['name'] = None
+        self.variables['name'] = None
 
         # Custom tags that can be changed in runtime.
-        self._cluster_props['tags'] = []
+        self.variables['tags'] = []
 
         # Initialized.
-        self._cluster_props['initialized'] = False
+        self.variables['initialized'] = False
 
         # Collapsed.
-        self._cluster_props['collapsed'] = True
+        self.variables['collapsed'] = True
 
         # Modifiers list.
         self._modifiers_list = []
@@ -102,7 +98,7 @@ class ClusterTrait():
 
         # Check cluster sanity.
         if not dont_define_cluster\
-                and not self._cluster_definition['sane']\
+                and not self.parser_variables['sane']\
                 and not self.check_this_cluster_sanity():
             raise ValueError('This cluster cant be used.')
 
@@ -205,24 +201,24 @@ class ClusterTrait():
         Returns this ModifiersCluster's custom name, or default name.
         """
         self._check_if_cluster_removed()
-        if self._cluster_props['name'] is not None:
-            return self._cluster_props['name']
+        if self.variables['name'] is not None:
+            return self.variables['name']
         else:
-            return self._cluster_definition['name']
+            return self.parser_variables['name']
 
     def get_this_cluster_custom_name(self):
         """
         Returns this ModifiersCluster's custom name.
         """
         self._check_if_cluster_removed()
-        return self._cluster_props['name']
+        return self.variables['name']
 
     def get_this_cluster_default_name(self):
         """
         Returns this ModifiersCluster's default name.
         """
         self._check_if_cluster_removed()
-        return self._cluster_definition['name']
+        return self.parser_variables['name']
 
     def set_this_cluster_custom_name(self, cluster_name):
         """
@@ -231,7 +227,7 @@ class ClusterTrait():
         """
         self._check_if_cluster_removed()
         if isinstance(cluster_name, str):
-            self._cluster_props['name'] = cluster_name
+            self.variables['name'] = cluster_name
         else:
             raise TypeError
 
@@ -245,16 +241,16 @@ class ClusterTrait():
         Returns this ModifiersCluster's type
         """
         self._check_if_cluster_removed()
-        return self._cluster_definition['type']
+        return self.parser_variables['type']
 
     # Collapsed/expanded
     @property
     def collapsed(self):
-        return self._cluster_props['collapsed']
+        return self.variables['collapsed']
 
     @collapsed.setter
     def collapsed(self, collapsed_val):
-        self._cluster_props['collapsed'] = bool(collapsed_val)
+        self.variables['collapsed'] = bool(collapsed_val)
     # }}}
 
     # Methods reserved for subclasses {{{
@@ -354,7 +350,7 @@ class ClusterTrait():
         Returns this ModifiersCluster's custom tags, or default tags.
         """
         self._check_if_cluster_removed()
-        return self._cluster_definition['tags'] + self._cluster_props['tags']
+        return self.parser_variables['tags'] + self.variables['tags']
 
     def add_tag_to_this_cluster(self, custom_tag):
         """
@@ -364,8 +360,8 @@ class ClusterTrait():
         """
         self._check_if_cluster_removed()
         if isinstance(custom_tag, str):
-            if custom_tag not in self._cluster_props['tags']:
-                self._cluster_props['tags'].append(custom_tag)
+            if custom_tag not in self.variables['tags']:
+                self.variables['tags'].append(custom_tag)
                 return True
             else:
                 return False
@@ -382,13 +378,13 @@ class ClusterTrait():
         self._check_if_cluster_removed()
         y = []
         result = False
-        for x in self._cluster_props['tags']:
+        for x in self.variables['tags']:
             if x == custom_tag:
                 y.append(x)
                 result = True
 
         for x in y:
-            self._cluster_props['tags'].remove(x)
+            self.variables['tags'].remove(x)
 
         return result
     # }}}
@@ -419,14 +415,14 @@ class ClusterTrait():
                     raise TypeError
 
         # If havent set modifiers already
-        if self._cluster_props['initialized'] is False:
+        if self.variables['initialized'] is False:
             self._modifiers_list = modifiers
-            self._cluster_props['initialized'] = True
+            self.variables['initialized'] = True
             self._mod = self._modifiers_list[0]
             return True
 
         # Or allowed to reset modifiers
-        elif self._cluster_definition['dynamic']:
+        elif self.parser_variables['dynamic']:
             self._modifiers_list = modifiers
             self._mod = self._modifiers_list[0]
             return True
@@ -492,13 +488,13 @@ class ClusterTrait():
         """
         Returns maximum possible modifiers sequence length for this cluster.
         """
-        return len(self._cluster_definition['by_type'])
+        return len(self.parser_variables['by_type'])
 
     def get_this_cluster_priority(self):
         """
         Returns priority for this cluster in parsing.
         """
-        return self._cluster_definition['priority']
+        return self.parser_variables['priority']
 
     def check_availability(self, modifiers):
         """
@@ -528,7 +524,7 @@ class ClusterTrait():
         x = 0
 
         # How many modifiers should be correct?
-        x2 = len(self._cluster_definition['by_type'])
+        x2 = len(self.parser_variables['by_type'])
 
         # Iteration number
         y = 0
@@ -536,7 +532,7 @@ class ClusterTrait():
         # Iterate over provided modifiers sequence
         for mod in modifiers:
 
-            modifiers_by_type = self._cluster_definition['by_type']
+            modifiers_by_type = self.parser_variables['by_type']
 
             # Check modifiers by types
             if (modifiers_by_type[y] != ['ANY'])\
@@ -551,12 +547,12 @@ class ClusterTrait():
                         return 'WRONG ACTUAL MODIFIER TYPE'
 
             # Use specific names list, if there is one
-            if len(self._cluster_props['by_name']) != 0:
+            if len(self.variables['by_name']) != 0:
                 modifiers_by_names\
-                        = self._cluster_props['by_name']
+                        = self.variables['by_name']
             else:
                 modifiers_by_names\
-                        = self._cluster_definition['by_name']
+                        = self.parser_variables['by_name']
 
             # Check name
             if (modifiers_by_names[y] != ['ANY'])\
@@ -725,17 +721,17 @@ class ClusterTrait():
         if not self.check_this_cluster_sanity_custom():
             raise ValueError
 
-        if self._cluster_definition['sane']:
+        if self.parser_variables['sane']:
             return True
 
-        l_1 = self._cluster_definition['by_type']
+        l_1 = self.parser_variables['by_type']
         len_1 = len(l_1)
 
-        l_2 = self._cluster_definition['by_name']
+        l_2 = self.parser_variables['by_name']
         len_2 = len(l_2)
 
-        if len(self._cluster_props['by_name']) > 0:
-            if len_2 != len(self._cluster_props['by_name']):
+        if len(self.variables['by_name']) > 0:
+            if len_2 != len(self.variables['by_name']):
                 raise ValueError(
                         'Length of specified modifiers names is wrong.')
         if len_1 != len_2:
@@ -744,25 +740,25 @@ class ClusterTrait():
         if len_1 == 0:
             raise ValueError(
                     'Length of modifiers types cant be 0.')
-        if self._cluster_definition['by_type'][0] == ['ANY']:
+        if self.parser_variables['by_type'][0] == ['ANY']:
             raise ValueError(
                     'First modifier cant be any, specify modifier type.')
-        for mod_types in self._cluster_definition['by_type']:
+        for mod_types in self.parser_variables['by_type']:
             if isinstance(mod_types, list):
                 if len(mod_types) == 0:
                     raise ValueError('Modifier types length is 0.')
-        for mod_names in self._cluster_definition['by_name']:
+        for mod_names in self.parser_variables['by_name']:
             if isinstance(mod_names, list):
                 if len(mod_names) == 0:
                     raise ValueError('Modifier names length is 0.')
         return True
 
     def serialize_this_cluster_type(self):
-        result = json.dumps(self.get_this_cluster_definition())
+        result = json.dumps(self.get_thisparser_variables())
         return result
 
-    def get_this_cluster_definition(self):
-        x = copy.copy(self._cluster_definition)
+    def get_thisparser_variables(self):
+        x = copy.copy(self.parser_variables)
 
         # TODO: use some attribute instead
         if self.has_clusters():
@@ -784,12 +780,12 @@ class ClusterTrait():
         return self.__str__()
 
     def __str__(self):
-        if not self._cluster_removed and self._cluster_props['initialized']:
+        if not self._cluster_removed and self.variables['initialized']:
             name = self.get_this_cluster_name()
             result = f"Cluster {name}, {self.get_this_cluster_type()}"
         else:
             result\
-                = f"Already removed cluster {self._cluster_definition['name']}"
+                = f"Already removed cluster {self.parser_variables['name']}"
         return result
     # }}}
 

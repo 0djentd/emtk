@@ -209,14 +209,14 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
 
                 if cluster.show_definition_expanded:
                     box_2 = box.box()
-                    for x, y in zip(cluster._cluster_definition,
-                                    cluster._cluster_definition.values()):
+                    for x, y in zip(cluster.parser_variables,
+                                    cluster.parser_variables.values()):
                         box_2.label(text=f"{x}: {y}")
 
                 if cluster.show_props_expanded:
                     box_2 = box.box()
-                    for x, y in zip(cluster._cluster_props,
-                                    cluster._cluster_props.values()):
+                    for x, y in zip(cluster.variables,
+                                    cluster.variables.values()):
                         box_2.label(text=f"{x}: {y}")
 
             if cluster.has_clusters():

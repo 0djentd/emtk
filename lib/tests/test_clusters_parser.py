@@ -34,12 +34,12 @@ class ClustersSerializationClusterTests(
                                         cluster_createable=True,
                                         )
 
-        self.serialized_cluster = self.cluster.get_this_cluster_definition()
+        self.serialized_cluster = self.cluster.get_thisparser_variables()
 
     def tearDown(self):
         del(self.cluster)
         del(self.serialized_cluster)
 
-    def test_get_cluster_definition(self):
-        x = self.cluster.get_this_cluster_definition()
+    def test_getparser_variables(self):
+        x = self.cluster.get_thisparser_variables()
         self.assertEqual(x, self.serialized_cluster)

@@ -88,7 +88,7 @@ class ModifiersOperator():
         # # Add some cluster types
         # default_clusters = self._default_cluster_types()
         # for x in default_clusters:
-        #     y = x.get_this_cluster_definition()
+        #     y = x.get_thisparser_variables()
         #     if y not in clusters:
         #         save_cluster_type_definition_to_settings(y, 'bmtools')
 

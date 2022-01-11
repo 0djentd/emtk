@@ -74,12 +74,12 @@ class ModifiersCluster(
         that are required to create this cluster.
         Returns None, if cluster cant be created.
         """
-        if not self._cluster_definition['createable']:
+        if not self.parser_variables['createable']:
             return None
 
         modifiers = []
-        for x, y in zip(self._cluster_definition['by_name'],
-                        self._cluster_definition['by_type']):
+        for x, y in zip(self.parser_variables['by_name'],
+                        self.parser_variables['by_type']):
             if x != 'ANY' or y == 'ANY':
                 return None
             modifiers.append(x, y)
