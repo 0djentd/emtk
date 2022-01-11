@@ -39,7 +39,7 @@ logger.setLevel(logging.DEBUG)
 class ClustersParser():
     """Base class for objects that should be able to parse clusters."""
 
-    def __init__(self, *args,
+    def __init__(self, *args,  # {{{
                  skip_parser=None,
                  cluster_types=None,
                  only_default_cluster=None,
@@ -119,6 +119,7 @@ class ClustersParser():
         if isinstance(cluster_types, list):
             for x in cluster_types:
                 self.update_cluster_types(x)
+    # }}}
 
     """
     parse_result is a list of lists with string, cluster and modifiers.
@@ -128,7 +129,7 @@ class ClustersParser():
      ['SKIP', <DOUBLE_BEVEL>, None]]
     """
 
-    def parse_recursively(self, modifiers_to_parse,
+    def parse_recursively(self, modifiers_to_parse,  # {{{
                           additional_types=None,
                           no_available_types=False,
                           no_available_layer_types=False,
@@ -210,8 +211,9 @@ class ClustersParser():
                                                   clusters_names,
                                                   layers_to_create)
         return result
+    # }}}
 
-    def parse_clusters_state(self, modifiers,
+    def parse_clusters_state(self, modifiers,  # {{{
                              clusters_state,
                              clusters_names=None):
         """
@@ -249,102 +251,11 @@ class ClustersParser():
         logger.debug(f"result is {parse_result}")
         logger.debug("FINISHED RESTORING CLUSTERS STATE")
         return parse_result
+    # }}}
 
-    def update_cluster_types(self, cluster_type_to_add):
-        """Adds cluster type to available cluster types"""
-        if not isinstance(cluster_type_to_add, ClusterTrait):
-            raise TypeError
-
-        cluster_type = copy.deepcopy(cluster_type_to_add)
-        logger.info("Trying to update cluster types list")
-        logger.info(cluster_type)
-
-        y = None
-
-        # Check for duplicates.
-        for x in self._available_cluster_types:
-            if x.get_this_cluster_default_name()\
-                    == cluster_type.get_this_cluster_default_name():
-                logger.info(f"{cluster_type} is a duplacate.")
-                if self._ClustersParser__REPLACE_ON_UPDATE:
-                    y = x
-                else:
-                    raise ValueError
-
-        # Delete duplicate
-        if y is not None:
-            self._available_cluster_types.remove(y)
-
-        y = None
-
-        # Check for duplicates in layers.
-        for x in self._available_layer_types:
-            if x.get_this_cluster_default_name()\
-                    == cluster_type.get_this_cluster_default_name():
-                logger.info(f"{cluster_type} is a duplacate.")
-                if self._ClustersParser__REPLACE_ON_UPDATE:
-                    y = x
-                else:
-                    raise ValueError
-
-        # Delete duplicate in layers.
-        if y is not None:
-            self._available_layer_types.remove(y)
-
-        # If sanity checks are enabled
-        if self._ClustersParser__CLUSTERS_SANITY_CHECKS:
-            # Check cluster for any usual errors
-            if cluster_type.check_this_cluster_sanity():
-                if cluster_type.has_clusters():
-                    logger.info(f"Added {cluster_type} to layers")
-                    self._available_layer_types.append(cluster_type)
-                else:
-                    logger.info(f"Added {cluster_type} to clusters")
-                    self._available_cluster_types.append(cluster_type)
-
-                cluster_type.modcluster_index\
-                    = self._get_new_cluster_type_index()
-                result = True
-
-            # If modcluster cant be used
-            else:
-                result = False
-        else:
-            cluster_type.modcluster_index\
-                    = self._get_new_cluster_type_index()
-            if cluster_type.has_clusters():
-                self._available_layer_types.append(cluster_type)
-            else:
-                self._available_cluster_types.append(cluster_type)
-            result = True
-
-        for x in self._available_cluster_types:
-            if x.has_clusters():
-                raise TypeError
-
-        for x in self._available_layer_types:
-            if not x.has_clusters():
-                raise TypeError
-
-        logger.info(f"Modifiers cluster availability is {result}")
-        logger.info("Finished updating cluster types list")
-        logger.info(" ")
-        return result
-
-    def remove_cluster_type(self, cluster_type_to_remove):
-        """Removes cluster type from available types."""
-        if not isinstance(cluster_type_to_remove, ClusterTrait):
-            raise TypeError
-
-        if cluster_type_to_remove in self._available_cluster_types:
-            self._available_cluster_types.remove(cluster_type_to_remove)
-        if cluster_type_to_remove in self._available_layer_types:
-            self._available_layer_types.remove(cluster_type_to_remove)
-
-    # ==============================
-    # Wrappers
-    # ===============================
-    def _parse_modifiers(self, modifiers_to_parse,
+    # TODO: remove this
+    # Wrappers {{{
+    def _parse_modifiers(self, modifiers_to_parse,  # {{{
                          additional_types=None,
                          no_available_types=False,
                          clusters_names=None):
@@ -416,8 +327,9 @@ class ClustersParser():
         clusters = self._initialize_clusters(unwrapped_result, clusters_names)
 
         return clusters
+    # }}}
 
-    def _parse_clusters(self, clusters_to_parse,
+    def _parse_clusters(self, clusters_to_parse,  # {{{
                         additional_types=None,
                         no_available_types=False,
                         clusters_names=None):
@@ -454,15 +366,13 @@ class ClustersParser():
         parse_result = self._clusters_parser(clusters_to_parse,
                                              cluster_types,
                                              )
-
         unwrapped_result = self._unwrap_parse_result(
                 parse_result, ['SKIP', 'CREATE'])
-
         clusters = self._initialize_clusters(unwrapped_result, clusters_names)
-
         return clusters
+    # }}}
 
-    def _parse_clusters_recursively(self,
+    def _parse_clusters_recursively(self,  # {{{
                                     modifiers_to_parse,
                                     additional_types=None,
                                     no_available_types=False,
@@ -549,9 +459,9 @@ class ClustersParser():
                 parsing_iteration += 1
 
         return parse_result
+    # }}}
 
-    # TODO: remove this method
-    def _parse_modifiers_for_simple_clusters(self, modifiers_to_parse,
+    def _parse_modifiers_for_simple_clusters(self, modifiers_to_parse,  # {{{
                                              additional_types=None,
                                              no_available_types=False):
         """
@@ -586,16 +496,94 @@ class ClustersParser():
         parse_result = self._clusters_parser(e,
                                              simple_clusters
                                              )
-
         unwrapped_result = self._unwrap_parse_result(parse_result, ['CREATE'])
-
         clusters = self._initialize_clusters(unwrapped_result)
-
         return clusters
+    # }}}
+    # }}}
 
-    # ==============================
-    # cluster types
-    # ===============================
+    # Cluster types  {{{
+    def update_cluster_types(self, cluster_type_to_add):
+        """Adds cluster type to available cluster types"""
+        if not isinstance(cluster_type_to_add, ClusterTrait):
+            raise TypeError
+
+        cluster_type = copy.deepcopy(cluster_type_to_add)
+        logger.info("Trying to update cluster types list")
+        logger.info(cluster_type)
+
+        y = None
+
+        # Check for duplicates.
+        for x in self._available_cluster_types:
+            if x.get_this_cluster_default_name()\
+                    == cluster_type.get_this_cluster_default_name():
+                logger.info(f"{cluster_type} is a duplacate.")
+                if self._ClustersParser__REPLACE_ON_UPDATE:
+                    y = x
+                else:
+                    raise ValueError
+
+        # Delete duplicate
+        if y is not None:
+            self._available_cluster_types.remove(y)
+
+        y = None
+
+        # Check for duplicates in layers.
+        for x in self._available_layer_types:
+            if x.get_this_cluster_default_name()\
+                    == cluster_type.get_this_cluster_default_name():
+                logger.info(f"{cluster_type} is a duplacate.")
+                if self._ClustersParser__REPLACE_ON_UPDATE:
+                    y = x
+                else:
+                    raise ValueError
+
+        # Delete duplicate in layers.
+        if y is not None:
+            self._available_layer_types.remove(y)
+
+        # If sanity checks are enabled
+        if self._ClustersParser__CLUSTERS_SANITY_CHECKS:
+            # Check cluster for any usual errors
+            if cluster_type.check_this_cluster_sanity():
+                if cluster_type.has_clusters():
+                    logger.info(f"Added {cluster_type} to layers")
+                    self._available_layer_types.append(cluster_type)
+                else:
+                    logger.info(f"Added {cluster_type} to clusters")
+                    self._available_cluster_types.append(cluster_type)
+
+                cluster_type.modcluster_index\
+                    = self._get_new_cluster_type_index()
+                result = True
+
+            # If modcluster cant be used
+            else:
+                result = False
+        else:
+            cluster_type.modcluster_index\
+                    = self._get_new_cluster_type_index()
+            if cluster_type.has_clusters():
+                self._available_layer_types.append(cluster_type)
+            else:
+                self._available_cluster_types.append(cluster_type)
+            result = True
+
+        for x in self._available_cluster_types:
+            if x.has_clusters():
+                raise TypeError
+
+        for x in self._available_layer_types:
+            if not x.has_clusters():
+                raise TypeError
+
+        logger.info(f"Modifiers cluster availability is {result}")
+        logger.info("Finished updating cluster types list")
+        logger.info(" ")
+        return result
+
     def get_cluster_type_by_name(self, cluster_type_name):
         """
         Returns one of available to this object cluster
@@ -636,10 +624,19 @@ class ClustersParser():
                         in {self._available_layer_types}\
                         and {self._available_cluster_types}")
 
-    # ===================
-    # Loading clusters state
-    # ====================
-    def _unwrap_saved_clusters_state(self, clusters_state):
+    def remove_cluster_type(self, cluster_type_to_remove):
+        """Removes cluster type from available types."""
+        if not isinstance(cluster_type_to_remove, ClusterTrait):
+            raise TypeError
+
+        if cluster_type_to_remove in self._available_cluster_types:
+            self._available_cluster_types.remove(cluster_type_to_remove)
+        if cluster_type_to_remove in self._available_layer_types:
+            self._available_layer_types.remove(cluster_type_to_remove)
+
+    # }}}
+
+    def _unwrap_saved_clusters_state(self, clusters_state):  # {{{
         """
         Returns clusters instances that are specified
         for reconstructing clusters.
@@ -700,9 +697,10 @@ class ClustersParser():
 
             # Add cluster type to result.
             result.append(cluster_type)
-
         return result
+    # }}}
 
+    # Parser {{{
     # =============================
     #
     #       CLUSTERS PARSER
@@ -738,14 +736,12 @@ class ClustersParser():
         if not isinstance(mods, list):
             logger.error(
                     "modifiers_to_parse is not a list.")
-            x = []
-            return x
+            raise TypeError
 
         if len(mods) == 0:
             logger.info(
                     "modifiers_to_parse is 0 modifiers long.")
-            x = []
-            return x
+            return []
 
         modifiers_to_parse = copy.copy(mods)
 
@@ -774,8 +770,8 @@ class ClustersParser():
         # One of SUCCESS, POSSIBLE, FOUND or False
         iteration_result = None
 
+        # Info
         if logger.isEnabledFor(logging.DEBUG):
-            # Info
             for x in modifiers_to_parse:
                 logger.debug(f"{x}")
 
@@ -890,14 +886,13 @@ class ClustersParser():
                 logger.debug(
                         "Current confirmed possible cluster types:")
                 logger.debug(possible_clusters_confirmed)
+                logger.debug(
+                        f"Previous iteration result was '{iteration_result}'")
 
             # Decide what clusters types to use in checking
             if iteration_result == 'SUCCESS' or parse_iteration == 0:
-                logger.debug(
-                        "Previous iteration was successfull")
                 clusters_to_parse_against = available_to_parser_cluster_types
             elif iteration_result == 'POSSIBLE':
-                logger.debug("Previous iteration failed")
                 clusters_to_parse_against = possible_cluster_types
 
             # =================
@@ -909,47 +904,37 @@ class ClustersParser():
                 possible_seq_len = len(modifiers_to_parse)\
                         + len(parsed_modifiers)
 
-                cluster_len = y.get_this_cluster_possible_length()
+                cluster_len = len(y.parser_variables['by_type'])
 
                 # Check if cluster is too long.
                 if possible_seq_len < cluster_len:
                     result = False
-
-                    logger.debug(
-                            f"Checking {y.get_this_cluster_name()}, {result}")
-                    logger.debug(
-                            "Cant use it, not enough modifiers.")
+                    logger.debug("Cant use {y.name}, not enough modifiers.")
                 else:
                     result = y.check_availability(parsed_modifiers)
-
-                    logger.debug(
-                            f"Checking {y.get_this_cluster_name()}, {result}")
+                    logger.debug(f"Checking {y.name}, {result}")
 
                 # Cluster need more modifiers than provided.
                 if result == 'CONTINUE':
-                    logger.debug(
-                            f"Continuing parsing, {y} need another modifier")
+                    logger.debug(f"Parsing, {y} need another modifier")
 
                     # Dont append possible_cluster_types
                     # if cluster is already there.
                     k = False
                     for x in possible_cluster_types:
                         if y.modcluster_index == x.modcluster_index:
-                            logger.debug(
-                                    f"{y} is already in possible types")
+                            logger.debug(f"{y} is already in possible types")
                             k = True
                     if k is False:
                         new_cluster = copy.deepcopy(y)
                         possible_cluster_types.append(new_cluster)
-                        logger.debug(
-                                f"Adding {y} to possible types")
+                        logger.debug(f"Adding {y} to possible types")
 
                     need_another_modifier = True
 
                 # Cluster can be used with this sequence.
                 elif result == 'FOUND':
-                    logger.debug(
-                            f"Cluster {y} can be used")
+                    logger.debug(f"Cluster {y} can be used")
 
                     # Get a copy of cluster type and add it to possible
                     # cluster types.
@@ -964,29 +949,19 @@ class ClustersParser():
 
                 # Cluster cant be used.
                 else:
-                    logger.debug(
-                            "This cluster type cant be used")
+                    logger.debug("This cluster type cant be used")
 
                     if iteration_result == 'POSSIBLE':
                         clusters_to_remove.append(y)
 
             # Removing not compatible with this modifiers sequence
             # clusters from possible types.
+            if logger.isEnabledFor(logging.DEBUG):
+                logger.debug(
+                    f"possible_cluster_types: {possible_cluster_types}")
+                logger.debug(f"Deleting {clusters_to_remove}")
             for x in clusters_to_remove:
-                logger.debug(
-                        "Current possible_cluster_types")
-                for y in possible_cluster_types:
-                    logger.debug(f"{x}")
-                logger.debug(
-                        f"Deleting {x} from possible_cluster_types")
-
-                # Remove cluster from possible cluster types.
                 possible_cluster_types.remove(x)
-
-                logger.debug(
-                        "Current possible_cluster_types")
-                for y in possible_cluster_types:
-                    logger.debug(f"{x}")
             clusters_to_remove.clear()
 
             # ====================
@@ -995,9 +970,8 @@ class ClustersParser():
             # If allowed to skip cluster or modifier if no cluster can be
             # created at all, and add it to result.
             # Then request another modifier.
-            # TODO: allow_skip_modiifers variable doesnt do anything
-            if (len(possible_cluster_types) == 0)\
-                    & (len(possible_clusters_confirmed) == 0):
+            if len(possible_cluster_types) == 0\
+                    and len(possible_clusters_confirmed) == 0:
                 for x in parsed_modifiers:
                     parsed_cluster_wrap = ['SKIP',
                                            x, None]
@@ -1032,28 +1006,20 @@ class ClustersParser():
                 modifiers_to_add_to_cluster = []
 
                 # Add modifiers to cluster
-                i = 0
-                while i < modifiers_count:
+                for i in range(modifiers_count):
                     mod = parsed_modifiers.pop(0)
-                    logger.debug(
-                            f"Deleted {mod} from modifiers_to_parse")
+                    logger.debug(f"Deleted {mod} from modifiers_to_parse")
                     modifiers_to_add_to_cluster.append(mod)
-                    logger.debug(
-                            "Added it to modifiers_to_add_to_cluster")
-                    i += 1
+                    logger.debug("Added it to modifiers_to_add_to_cluster")
 
                 # Add not parsed modifiers back to modifiers_to_parse
-                not_parsed_modifiers_count = len(parsed_modifiers)
-                if not_parsed_modifiers_count > 0:
-                    logger.debug(
-                            f"{not_parsed_modifiers_count} not parsed")
+                if len(parsed_modifiers) > 0:
+                    logger.debug(f"{len(parsed_modifiers)} not parsed")
                     for x in reversed(parsed_modifiers):
-                        logger.debug(
-                                f"Adding {x} back to modifiers_to_parse")
+                        logger.debug(f"Adding {x} back to modifiers_to_parse")
                         modifiers_to_parse.insert(0, x)
                     parsed_modifiers.clear()
-                    logger.debug(
-                            "Cleared parsed modifiers list")
+                    logger.debug("Cleared parsed modifiers list")
 
                 new_cluster = copy.deepcopy(cluster_to_add)
 
@@ -1067,23 +1033,20 @@ class ClustersParser():
                                        modifiers_to_add_to_cluster]
                 parse_result.append(parsed_cluster_wrap)
 
-                logger.debug(
-                        "Added new cluster to result.")
-                logger.debug(
-                        f"It is {len(modifiers_to_add_to_cluster)} modifiers")
+                logger.debug("Added new cluster to result.")
                 logger.debug(" ")
+
                 need_another_modifier = True
                 iteration_result = 'SUCCESS'
 
             # Parser needs another modifier
             elif need_another_modifier is True:
-                logger.debug(
-                        "Parser needs another modifier")
+                logger.debug("Parser needs another modifier")
                 iteration_result = 'POSSIBLE'
             else:
-                logger.debug("Parser doesnt work")
                 logger.debug(
                         "Something is wrong with cluster creation")
+                raise ValueError
 
             # Info
             if iteration_result == 'SUCCESS':
@@ -1115,12 +1078,15 @@ class ClustersParser():
         if parser_sanity_checks:
             if not isinstance(parse_result, list):
                 raise ValueError(
-                        "Parse result is not a list, why?")
+                        "Expected parse_result to be a list.")
             else:
                 for x in parse_result:
                     if not isinstance(x[1], ClusterTrait):
                         raise ValueError(
-                                "Parse result is not a cluster list, why?")
+                            "Expeced parse_result to have clusters in it.")
+                if len(parse_result) == 0:
+                    raise ValueError(
+                            "Expected parse_result with at least one element.")
 
             # new_actual_modifiers = []
 
@@ -1166,12 +1132,10 @@ class ClustersParser():
             logger.debug("===================================")
             logger.debug(" ")
 
-        if len(parse_result) == 0:
-            return False
-
         return parse_result
+    # }}}
 
-    def _cluster_priority_select(self, clusters):
+    def _cluster_priority_select(self, clusters):  # {{{
         """
         Takes list of clusters as an argument.
         Returns cluster that have higher priority when
@@ -1234,10 +1198,9 @@ class ClustersParser():
         logger.debug(f"Selected {result} cluster.")
         logger.debug(f"{result.get_this_cluster_tags()}")
         return result
+    # }}}
 
-    # ====================
-    # Parse result processing
-    # ====================
+    # Parse result processing  {{{
     def _unwrap_parse_result(self, parse_result, tags):
         """
         Returns parse result filtered by parser decision.
@@ -1357,16 +1320,16 @@ class ClustersParser():
         x[1]._clusters_parser = self
 
         return x
+    # }}}
 
+    # TODO: remove this
     def _get_new_cluster_type_index(self):
         """Returns unique for this parser cluster type index."""
         self._last_cluster_type_index += 1
         return self._last_cluster_type_index - 1
 
 
-# =============
-# UTILS
-# =============
+# UTILS {{{
 def _get_clusters_names(clusters):
     """Returns list of custom names from list of clusters."""
     result = []
@@ -1426,3 +1389,4 @@ def _clean_restored_clusters(clusters):
         x.remove_tag_from_this_cluster('RESTORED')
         x.variables['by_name'] = []
     return clusters
+# }}}
