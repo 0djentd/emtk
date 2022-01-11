@@ -66,7 +66,7 @@ class ClusterTrait():
 
         # Check dict.
         self.parser_variables\
-            = self._check_cluster_defenition(x)
+            = self._check_cluster_definition(x)
 
         # Cluster shouldnt be used, if it is already
         # removed from clusters list.
@@ -107,7 +107,7 @@ class ClusterTrait():
         self.__show_props_expanded = False
         # }}}
 
-    def _check_cluster_defenition(self, cluster_definition):  # {{{
+    def _check_cluster_definition(self, cluster_definition):  # {{{
         """
         Checks types in cluster definition and add default
         values.
