@@ -178,7 +178,7 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
             line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').\
                     variables[\'show_definition_expanded\'] = {val}'
             line = re.sub('self', self.get_class_line(), line)
-            if cluster.show_definition_expanded:
+            if cluster.variables['show_definition_expanded']:
                 icon = 'DOWNARROW_HLT'
             else:
                 icon = 'RIGHTARROW'
@@ -193,7 +193,7 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
             line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').\
                     variables[\'show_props_expanded\'] = {val}'
             line = re.sub('self', self.get_class_line(), line)
-            if cluster.show_props_expanded:
+            if cluster.variables['show_props_expanded']:
                 icon = 'DOWNARROW_HLT'
             else:
                 icon = 'RIGHTARROW'

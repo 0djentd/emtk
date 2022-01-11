@@ -191,9 +191,8 @@ class ClusterTrait():
     # }}}
 
     # Props {{{
-    # Cluster name
     @property
-    def name(self):
+    def name(self):  # {{{
         return self.get_this_cluster_name()
 
     @name.setter
@@ -234,10 +233,10 @@ class ClusterTrait():
             self.variables['name'] = cluster_name
         else:
             raise TypeError
+    # }}}
 
-    # Cluster type
     @property
-    def type(self):
+    def type(self):  # {{{
         return self.get_this_cluster_type()
 
     def get_this_cluster_type(self):
@@ -246,6 +245,7 @@ class ClusterTrait():
         """
         self._check_if_cluster_removed()
         return self.parser_variables['type']
+    # }}}
     # }}}
 
     # Methods reserved for subclasses {{{
@@ -480,15 +480,11 @@ class ClusterTrait():
 
     # Parsing {{{
     def get_this_cluster_possible_length(self):
-        """
-        Returns maximum possible modifiers sequence length for this cluster.
-        """
+        """Returns maximum possible modifiers sequence length."""
         return len(self.parser_variables['by_type'])
 
     def get_this_cluster_priority(self):
-        """
-        Returns priority for this cluster in parsing.
-        """
+        """Returns priority for this cluster in parsing."""
         return self.parser_variables['priority']
 
     def check_availability(self, modifiers):
@@ -752,6 +748,7 @@ class ClusterTrait():
         result = json.dumps(self.get_this_cluster_parser_variables())
         return result
 
+    # TODO: what is that
     def get_this_cluster_parser_variables(self):
         x = copy.copy(self.parser_variables)
 
@@ -782,22 +779,4 @@ class ClusterTrait():
             result\
                 = f"Already removed cluster {self.parser_variables['name']}"
         return result
-    # }}}
-
-    # UI {{{
-    @property
-    def show_definition_expanded(self):
-        return self.__show_definition_expanded
-
-    @show_definition_expanded.setter
-    def show_definition_expanded(self, val):
-        self.__show_definition_expanded = bool(val)
-
-    @property
-    def show_props_expanded(self):
-        return self.__show_props_expanded
-
-    @show_props_expanded.setter
-    def show_props_expanded(self, val):
-        self.__show_props_expanded = bool(val)
     # }}}
