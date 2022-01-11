@@ -31,9 +31,13 @@ from ..clusters.cluster_trait import ClusterTrait
 from ..clusters.default_modifier_cluster import DefaultModifierCluster
 from ..lists.traits.clusters.active_cluster import ActiveClusterTrait
 from ..lists.traits.modifiers.active_modifier import ActiveModifierTrait
+from ..utils import EMTK_VERSION
+
+CLUSTERS_PARSER_VERSION = (0, 1, 0)
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.ERROR)
+# logger.setLevel(logging.ERROR)
+logger.setLevel(logging.DEBUG)
 
 
 class ClustersParser():
@@ -761,6 +765,8 @@ class ClustersParser():
             logger.debug("===================================")
             logger.debug("       CLUSTERS PARSER LOG")
             logger.debug("===================================")
+            logger.debug(f"EMTK_VERSION: {EMTK_VERSION}")
+            logger.debug(f"CLUSTERS_PARSER_VERSION: {CLUSTERS_PARSER_VERSION}")
             logger.debug("Modifiers to parse:")
             logger.debug(modifiers_to_parse)
             logger.debug(" ")

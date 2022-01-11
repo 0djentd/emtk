@@ -189,7 +189,7 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
             if val == 'ON':
                 icon = 'CUBE'
             elif val == 'HALF':
-                icon = 'BEVEL'
+                icon = 'CUBE'
             elif val == 'OFF':
                 icon = 'X'
             else:
@@ -283,8 +283,11 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
         else:
             icon = 'RIGHTARROW'
 
+        row = layout.row()
+
         # Modifier collapsed {{{
         val = not modifier.show_expanded
+        col = row.column()
         line = f'self.m_list.find_modifier_by_name(\'{modifier.name}\').\
                 show_expanded = {val}'
         line = re.sub('self', self.get_class_line(), line)
@@ -292,19 +295,97 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
             icon = 'DOWNARROW_HLT'
         else:
             icon = 'RIGHTARROW'
-        op = layout.operator('bmtools.bmtool_invoke_operator_func',
-                             text=modifier.name + ' modifier', icon=icon)
+        op = col.operator('bmtools.bmtool_invoke_operator_func',
+                          text=modifier.name + ' modifier', icon=icon)
         op.func = line
         # }}}
 
-        if modifier.show_expanded:
-            box = layout.box()
-            p = get_all_editable_props(modifier, no_ignore=True)
-            for i, y in enumerate(p):
-                if math.remainder(i, 2) == 0:
-                    row = box.row()
-                col = row.column()
-                col.prop(modifier, y)
+        # Actions {{{
+        # Move down
+        line = f'self.m_list.get_cluster_or_layer(self.m_list.find_modifier_by_name("{modifier.name}")).\
+                move_down("{modifier.name}")'
+        line = re.sub('self', self.get_class_line(), line)
+        col = row.column()
+        op = col.operator('bmtools.bmtool_invoke_operator_func',
+                          text='', icon='TRIA_DOWN')
+        op.func = line
+
+        # Move up
+        line = f'self.m_list.get_cluster_or_layer(self.m_list.find_modifier_by_name("{modifier.name}")).\
+                move_up("{modifier.name}")'
+        line = re.sub('self', self.get_class_line(), line)
+        col = row.column()
+        op = col.operator('bmtools.bmtool_invoke_operator_func',
+                          text='', icon='TRIA_UP')
+        op.func = line
+
+        # Remove
+        line = f'self.m_list.get_cluster_or_layer(self.m_list.find_modifier_by_name("{modifier.name}")).\
+                remove("{modifier.name}")'
+        line = re.sub('self', self.get_class_line(), line)
+        col = row.column()
+        op = col.operator('bmtools.bmtool_invoke_operator_func',
+                          text='', icon='X')
+        op.func = line
+
+        # Apply
+        line = f'self.m_list.get_cluster_or_layer(self.m_list.find_modifier_by_name("{modifier.name}")).\
+                apply("{modifier.name}")'
+        line = re.sub('self', self.get_class_line(), line)
+        col = row.column()
+        op = col.operator('bmtools.bmtool_invoke_operator_func',
+                          text='', icon='CHECKMARK')
+        op.func = line
+
+        # Visibility {{{
+        # v = {
+        #      'show_viewport': None,
+        #      'show_editmode': None,
+        #      'show_on_cage': None,
+        #      'show_render': None,
+        #      }
+
+        # for i, x in enumerate(v):
+        #     m = [0, 0, 0, 0]
+        #     m[i] = 1
+        #     line_2 = str(m)
+        #     line = f'self.m_list.find_cluster_by_name("{cluster.name}").\
+        #             toggle_this_cluster_visibility({line_2})'
+        #     line = re.sub('self', self.get_class_line(), line)
+        #     val = cluster.get_this_cluster_visibility()[i]
+
+        #     if val == 'ON':
+        #         icon = 'CUBE'
+        #     elif val == 'HALF':
+        #         icon = 'CUBE'
+        #     elif val == 'OFF':
+        #         icon = 'X'
+        #     else:
+        #         raise ValueError
+
+        #     col = row.column()
+        #     op = col.operator('bmtools.bmtool_invoke_operator_func',
+        #                       text='', icon=icon)
+        #     op.func = line
+
+        # }}}
+
+        # Duplicate
+        # line = f'self.m_list.get_cluster_or_layer(self.m_list.find_cluster_by_name("{cluster.name}")).\
+        #         duplicate("{cluster.name}")'
+        # line = re.sub('self', self.get_class_line(), line)
+        # col = row.column()
+        # op = col.operator('bmtools.bmtool_invoke_operator_func',
+        #                   text='', icon='DUPLICATE')
+        # op.func = line
+        # if modifier.show_expanded:
+        #     box = layout.box()
+        #     p = get_all_editable_props(modifier, no_ignore=True)
+        #     for i, y in enumerate(p):
+        #         if math.remainder(i, 2) == 0:
+        #             row = box.row()
+        #         col = row.column()
+        #         col.prop(modifier, y)
         # }}}
 
     @classmethod

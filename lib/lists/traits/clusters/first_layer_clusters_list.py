@@ -44,12 +44,6 @@ class FirstLayerClustersListTrait():
     clusters or modifiers of the same object.
     """
 
-    # ExtendedModifiersList version.
-    # Used to check if saved clusters state can
-    # be used 'as is', or need some kind of
-    # editing.
-    _EXTENDED_MODIFIERS_LIST_VERSION = (0, 1, 0)
-
     def find_cluster_by_name(self, name: str):
         for x in self.get_full_list():
             if x.name == name:
@@ -119,7 +113,11 @@ class FirstLayerClustersListTrait():
             elif not _WITH_BPY:
                 clusters_state = self._object.props['PreviousClusters']
 
-            already_parsed = True
+            if clusters_state in {'[]', '{}', '', ' '}:
+                already_parsed = False
+            else:
+                already_parsed = True
+
         except KeyError:
             already_parsed = False
 
@@ -264,12 +262,11 @@ class FirstLayerClustersListTrait():
     # }}}
 
     # Storing clusters state {{{
-    def get_clusters_state(self):
+    def get_clusters_state(self) -> list:
         """
         Returns list with info about current clusters state.
         """
-        result = []
-
+        # TODO: use cluster.parser_variables dict
         # Example of cluster
         # [[0, Triple_Bevel, BEVEL_CLUSTER, triple_bevel.005],
         # [[0, TripleBevel, DOUBLE_BEVEL], [1, TripleBevel.001, DOUBLE_BEVEL]],
@@ -279,6 +276,8 @@ class FirstLayerClustersListTrait():
         # [[1, DoubleBevel, DOUBLE_BEVEL,],
         # [[4, Bevel, BEVEL], [5, Bevel.001, BEVEL]],
         # 'LAYER']
+
+        result = []
 
         # Get actual modifiers.
         actual_modifiers = []
@@ -344,7 +343,7 @@ class FirstLayerClustersListTrait():
         logger.info("Saved clusters")
         logger.debug(f"{x}")
 
-    def load_clusters_state(self, prop_name=None):
+    def load_clusters_state(self, prop_name=None) -> list:
         """
         Returns previous object clusters info
         from object property with prop_name.
@@ -366,11 +365,18 @@ class FirstLayerClustersListTrait():
                 previous_clusters = self._object[name]
             elif not _WITH_BPY:
                 previous_clusters = self._object.props[name]
+            if previous_clusters == '[]':
+                previous_clusters = False
         except KeyError:
             previous_clusters = False
 
         if previous_clusters is not False:
             x = json.loads(previous_clusters)
+            if not isinstance(x, list):
+                raise TypeError
+            for y in x:
+                if not isinstance(y, list):
+                    raise TypeError
             logger.info("Loaded clusters")
             logger.debug(f"{x}")
             return x
