@@ -21,6 +21,7 @@ import logging
 import string
 import re
 import math
+import cProfile
 
 import bpy
 
@@ -33,6 +34,8 @@ from ..lib.utils.modifier_prop_types import get_all_editable_props
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+USE_PROFILER = True
+
 
 class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
     bl_idname = "bmtools.clusters_list_popup"
@@ -40,11 +43,16 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
 
     def __init__(self):
         cls = type(self)
-        cls.create_objects_modifiers_lists(cls)
+        cls.iteration = 0
+        if USE_PROFILER:
+            cProfile.runctx('cls.create_objects_modifiers_lists(cls)', globals(), locals())
+        else:
+            cls.create_objects_modifiers_lists(cls)
         print('Operator initialized')
 
     def __del__(self):
         cls = type(self)
+        cls.iteration = 0
         cls.m_list.save_clusters_state()
         del(cls.m_list)
         print('Operator removed')
@@ -80,17 +88,25 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
         return {'INTERFACE', 'PASS_THROUGH'}
 
     def draw(self, context):
+        cls = type(self)
+        cls.iteration += 1
         layout = self.layout
         layout.label(text='EMTK')
         box = layout.box()
-        # self.__draw_clusters_list(box, self.m_list)
-        for x in self.m_list.get_list():
-            cluster_box = box.box()
-            self.__draw_cluster(cluster_box, x)
+
+        if USE_PROFILER and cls.iteration in {1, 10, 100}:
+            c = 'self._BMTOOLS_OT_clusters_list_popup__draw_clusters_list(\
+                    box, cls.m_list)'
+            c = re.sub('\n\s*\t*', '', c)
+            print(c)
+            cProfile.runctx(c, globals(), locals())
+        else:
+            self._BMTOOLS_OT_clusters_list_popup__draw_clusters_list(box, self.m_list)
 
     def __draw_clusters_list(self, layout, clusters_list):
         for x in clusters_list.get_list():
-            self.__draw_cluster(layout, x)
+            cluster_box = layout.box()
+            self.__draw_cluster(cluster_box, x)
 
     def __draw_modifiers_list(self, layout, modifiers_list):
         for x in modifiers_list.get_list():
