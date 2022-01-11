@@ -254,7 +254,7 @@ class ModalInputOperator():
         return True
     # }}}
 
-    def modal_input_mouse_rna_type(self, obj, attr, sens=1):
+    def modal_input_mouse_rna_type(self, obj, attr, event, sens=1):
         if not isinstance(attr, str):
             raise TypeError
         if len(attr) < 1:
@@ -273,6 +273,18 @@ class ModalInputOperator():
         prop_soft_min = prop_def.soft_min
         prop_step = prop_def.step
 
+    def modal_input_mouse_variables(self,
+                                    event,
+                                    attr_val=None,
+                                    prop_type=None,
+                                    prop_subtype=None,
+                                    prop_unit=None,
+                                    prop_soft_min=None,
+                                    prop_soft_max=None,
+                                    prop_step=None,
+                                    sens=1
+                                    ):
+        return
 
     # This is method that use rna_type as attribute
     def modal_input_mouse(self, attr_val, prop, event, sens=1):  # {{{
