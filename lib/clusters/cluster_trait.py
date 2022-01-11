@@ -68,6 +68,10 @@ class ClusterTrait():
         self._cluster_definition\
             = self._check_cluster_defenition(x)
 
+        # TODO: Rename _cluster_definition and _cluster_props to this.
+        self.parser_variables = {}
+        self.variables = {}
+
         # Cluster shouldnt be used, if it is already
         # removed from clusters list.
         self._cluster_removed = False
