@@ -337,15 +337,17 @@ class ModalInputOperator():
             logger.debug('----- Modal input module v1 ------')
             logger.debug(
                     f'delta: {delta_pct}, {delta_pct_i}, {delta}')
-            logger.debug(f'Distance: {distance}')
+            logger.debug(f'distance: {distance}')
+            logger.debug(f'attr_val: {attr_val}')
+            logger.debug(f'attr_name: {attr_name}')
+            logger.debug(f'prop_type: {prop_type}')
+            logger.debug(f'prop_subtype: {prop_subtype}')
+            logger.debug(f'prop_unit: {prop_unit}')
+            logger.debug(f'prop_soft_min: {prop_soft_min}')
+            logger.debug(f'prop_soft_max: {prop_soft_max}')
+            logger.debug(f'prop_step: {prop_step}')
+            logger.debug(f'sens: {sens}')
             logger.debug(' ')
-            logger.debug(f'Prop: {attr_name}')
-            logger.debug(f'Type: {prop_type}')
-            logger.debug(f'Subtype: {prop_subtype}')
-            logger.debug(f'Units: {prop_unit}')
-            logger.debug(f'Step: {prop_step}')
-            logger.debug(f'Min value: {prop_soft_min}')
-            logger.debug(f'Max value: {prop_soft_max}')
 
         """
         Currently implemented types and their subtypes:
