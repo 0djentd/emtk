@@ -710,7 +710,7 @@ class ClustersParser():
     # =============================
     def _clusters_parser(self, mods,
                          available_to_parser_cluster_types, *,
-                         max_iterations=500,
+                         max_iterations=2000,
                          parser_sanity_checks=True
                          ):
         """

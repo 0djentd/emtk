@@ -31,7 +31,7 @@ from lib.clusters.clusters_layer import ClustersLayer
 obj = DummyBlenderObj()
 mods = []
 
-for x in range(2):
+for x in range(5):
     mods.append(obj.modifier_add('Bevel6', 'BEVEL'))
     mods.append(obj.modifier_add('Bevel5', 'BEVEL'))
     mods.append(obj.modifier_add('Bevel5', 'BEVEL'))
@@ -189,12 +189,34 @@ cluster = ModifiersCluster(cluster_name='Triple Bevel',
                            )
 clusters.append(cluster)
 
+cluster = ModifiersCluster(cluster_name='Triple Bevel 2',
+                           cluster_type='TRIPLE_BEVEL_2',
+                           modifiers_by_type=[
+                               ['ARRAY'], ['BEVEL'], ['BEVEL']],
+                           modifiers_by_name=[
+                               ['ANY'], ['Bevel4'], ['ANY']],
+                           cluster_priority=3,
+                           cluster_createable=False,
+                           )
+clusters.append(cluster)
+
 cluster = ClustersLayer(cluster_name='Double Triple Bevel Cluster',
                         cluster_type='BEVEL_CLUSTER',
                         modifiers_by_type=[
                             ['TRIPLE_BEVEL'], ['TRIPLE_BEVEL']],
                         modifiers_by_name=[['ANY'], ['ANY']],
                         cluster_priority=0,
+                        cluster_createable=True,
+                        )
+clusters.append(cluster)
+
+cluster = ClustersLayer(cluster_name='Double 2 Triple Bevel Cluster',
+                        cluster_type='BEVEL_CLUSTER_2',
+                        modifiers_by_type=[
+                            ['DOUBLE_BEVEL'], ['TRIPLE_BEVEL']],
+                        modifiers_by_name=[['Double Triple Bevel Cluster'],
+                                           ['ANY']],
+                        cluster_priority=1,
                         cluster_createable=True,
                         )
 clusters.append(cluster)
