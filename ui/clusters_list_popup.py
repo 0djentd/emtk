@@ -18,9 +18,9 @@
 # ##### END GPL LICENSE BLOCK #####
 
 import logging
-import string
+# import string
 import re
-import math
+# import math
 import cProfile
 
 import bpy
@@ -29,7 +29,7 @@ from bpy.props import BoolProperty, IntProperty, FloatProperty, StringProperty
 from bpy.types import Operator
 
 from ..lib.modifiers_operator import ModifiersOperator
-from ..lib.utils.modifier_prop_types import get_all_editable_props
+# from ..lib.utils.modifier_prop_types import get_all_editable_props
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -41,7 +41,7 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
     bl_idname = "bmtools.clusters_list_popup"
     bl_label = "View and edit active object's clusters."
 
-    # Class variables editor props 
+    # Class variables editor props
     var_editor_bool: BoolProperty(False)
     var_editor_int: IntProperty(0)
     var_editor_float: FloatProperty(0.0)
