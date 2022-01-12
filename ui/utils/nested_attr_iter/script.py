@@ -29,9 +29,9 @@ import re
 
 def set_attr_or_iter_from_str_nested(
         obj, attr_str, val, check=True, fast=False):
-    m = re.findall('\..*', attr_str)[-1]
+    m = re.search('\..*', attr_str)
     obj_str = attr_str[0:m.start()]
-    obj = get_attr_or_iter_from_str_nested(obj, obj_str)
+    obj = get_attr_or_iter_from_str_nested(obj, obj_str, check, fast)
     attr = attr_str[m.start()+1:]
     setattr(obj, attr, val)
     return
