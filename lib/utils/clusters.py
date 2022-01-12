@@ -33,8 +33,9 @@ from ..clusters.clusters_layer import ClustersLayer
 
 _cluster_utils_type_checks = True
 
-logger = logging.getLogger(__package__)
-logger.setLevel(logging.DEBUG)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.ERROR)
+# logger.setLevel(logging.DEBUG)
 
 
 """

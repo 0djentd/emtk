@@ -34,7 +34,8 @@ from ....controller.answers import ActionDefaultRemove
 from ....utils.modifiers import get_modifier_state, restore_modifier_state
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.ERROR)
+# logger.setLevel(logging.DEBUG)
 
 
 class FirstLayerClustersListTrait():
@@ -104,8 +105,10 @@ class FirstLayerClustersListTrait():
         # Get actual object modifiers
         modifiers_to_parse = []
         for modifier in self._object.modifiers:
-            logger.debug(f"Adding {modifier} to modifiers to parse")
             modifiers_to_parse.append(modifier)
+
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug(f"modifiers_to_parse: {modifiers_to_parse}")
 
         try:
             if _WITH_BPY:

@@ -36,7 +36,8 @@ from .utils.clusters import (get_cluster_types_definitions_from_settings,
                              instantiate_clusters_from_definitions)
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.ERROR)
+# logger.setLevel(logging.DEBUG)
 
 
 class ModifiersOperator():

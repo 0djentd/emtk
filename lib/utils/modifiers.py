@@ -27,7 +27,8 @@ except ModuleNotFoundError:
     _WITH_BPY = False
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.ERROR)
+# logger.setLevel(logging.INFO)
 
 _MODIFIER_TYPES = [
                    "DATA_TRANSFER",
