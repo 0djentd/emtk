@@ -21,7 +21,6 @@ import logging
 import string
 import re
 import math
-import cProfile
 
 import bpy
 
@@ -33,8 +32,6 @@ from .utils import set_attr_or_iter_from_str_nested
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-
-USE_PROFILER = False
 
 
 class UIClassVariablesEditorCache(PropertyGroup):
@@ -58,6 +55,11 @@ class UIClassVariablesEditorCache(PropertyGroup):
 
 
 class UIClassVariablesEditor():
+    """
+    Mix-in class for operators and panels that
+    should edit class variables.
+    """
+
     # info {{{
     """
     How this thing should work:
@@ -152,7 +154,7 @@ class UIClassVariablesEditor():
     # }}}
 
     @classmethod
-    def var_editor_start(cls, variable):
+    def var_editor_start(cls, variable):  # {{{
         if type(variable) is not str:
             raise TypeError
 
@@ -160,6 +162,7 @@ class UIClassVariablesEditor():
         prop_group = getattr(bpy.context.scene, prop_group_name)
 
         if logger.isEnabledFor(logging.DEBUG):
+            logger.debug(' ')
             logger.debug(f'Variable editor inv. {cls}, {variable}')
             logger.debug(f'prop_group_name: {prop_group_name}')
             logger.debug(f'prop_group: {prop_group}')
@@ -171,10 +174,10 @@ class UIClassVariablesEditor():
             logger.debug(f'var_editor_str: {prop_group.var_editor_str}')
 
         prop_group.var_editor_currently_edited = variable
-        prop_group.var_editor_bool = False
-        prop_group.var_editor_int = 0
-        prop_group.var_editor_float = 0.0
-        prop_group.var_editor_str = ""
+        attr = get_attr_or_iter_from_str_nested(cls, variable)
+        prop_name = _get_var_editor_prop_name(attr)
+
+        setattr(prop_group, prop_name, attr)
 
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug(f'var_editor_currently_edited: {prop_group.var_editor_currently_edited}')
@@ -183,9 +186,11 @@ class UIClassVariablesEditor():
             logger.debug(f'var_editor_float: {prop_group.var_editor_float}')
             logger.debug(f'var_editor_str: {prop_group.var_editor_str}')
             logger.debug('Variable editor inv. finished')
+            logger.debug(' ')
+    # }}}
 
     @classmethod
-    def var_editor_stop(cls, variable):
+    def var_editor_stop(cls, variable):  # {{{
         if type(variable) is not str:
             raise TypeError
 
@@ -193,6 +198,7 @@ class UIClassVariablesEditor():
         prop_group = getattr(bpy.context.scene, prop_group_name)
 
         if logger.isEnabledFor(logging.DEBUG):
+            logger.debug(' ')
             logger.debug(f'Variable editor remove {cls}, {variable}')
             logger.debug(f'prop_group_name: {prop_group_name}')
             logger.debug(f'prop_group: {prop_group}')
@@ -206,33 +212,21 @@ class UIClassVariablesEditor():
         attr = get_attr_or_iter_from_str_nested(
                 cls, prop_group.var_editor_currently_edited)
 
-        var_type = type(attr)
-        if var_type is bool:
-            prop_name = "var_editor_bool"
-        elif var_type is int:
-            prop_name = "var_editor_int"
-        elif var_type is float:
-            prop_name = "var_editor_float"
-        elif var_type is str:
-            prop_name = "var_editor_str"
-        else:
-            raise TypeError
-
+        prop_name = _get_var_editor_prop_name(attr)
         attr_val = getattr(prop_group, prop_name)
 
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug(f'attr: {attr}')
-            logger.debug(f'var_type: {var_type}')
             logger.debug(f'prop_name: {prop_name}')
             logger.debug(f'attr_val: {attr_val}')
 
         set_attr_or_iter_from_str_nested(
                 cls, prop_group.var_editor_currently_edited, attr_val)
 
-        attr = get_attr_or_iter_from_str_nested(
-                cls, prop_group.var_editor_currently_edited)
-
         if logger.isEnabledFor(logging.DEBUG):
+            attr = get_attr_or_iter_from_str_nested(
+                    cls, prop_group.var_editor_currently_edited)
+
             logger.debug(f'new attr: {attr}')
 
             logger.debug(f'var_editor_currently_edited: {prop_group.var_editor_currently_edited}')
@@ -242,6 +236,25 @@ class UIClassVariablesEditor():
             logger.debug(f'var_editor_str: {prop_group.var_editor_str}')
 
             logger.debug('Variable editor remove finished')
+            logger.debug(' ')
+
+        prop_group.var_editor_currently_edited = ''
+    # }}}
+
+
+def _get_var_editor_prop_name(attr):
+    var_type = type(attr)
+    if var_type is bool:
+        prop_name = "var_editor_bool"
+    elif var_type is int:
+        prop_name = "var_editor_int"
+    elif var_type is float:
+        prop_name = "var_editor_float"
+    elif var_type is str:
+        prop_name = "var_editor_str"
+    else:
+        raise TypeError
+    return prop_name
 
 
 def get_prop_group_name(cls):

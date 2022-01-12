@@ -18,21 +18,35 @@
 # ##### END GPL LICENSE BLOCK #####
 
 import re
-# import logging
+import logging
 # import math
 # import string
 
-# logger = logging.getLogger(__name__)
-# logger.setLevel(logging.DEBUG)
-# logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+# logger.setLevel(logging.ERROR)
+logger.setLevel(logging.DEBUG)
 
 
+# TODO: add checks for attr_str
 def set_attr_or_iter_from_str_nested(
         obj, attr_str, val, check=True, fast=False):
-    m = re.search('\..*', attr_str)
-    obj_str = attr_str[0:m.start()]
-    obj = get_attr_or_iter_from_str_nested(obj, obj_str, check, fast)
-    attr = attr_str[m.start()+1:]
+
+    if logger.isEnabledFor(logging.DEBUG):
+        logger.debug(f'obj: {obj}')
+        logger.debug(f'attr_str: {attr_str}')
+        logger.debug(f'val: {val}')
+        logger.debug(f'check: {check}')
+
+    m = re.search('\.[^.]*\\Z', attr_str)
+
+    if m is not None:
+        obj_str = attr_str[0:m.start()]
+        logger.debug(f'obj_str: {obj_str}')
+        obj = get_attr_or_iter_from_str_nested(obj, obj_str, check, fast)
+        attr = attr_str[m.start()+1:]
+    else:
+        attr = attr_str
+
     setattr(obj, attr, val)
     return
 
