@@ -31,6 +31,8 @@ from bpy.types import Operator
 from ..lib.modifiers_operator import ModifiersOperator
 # from ..lib.utils.modifier_prop_types import get_all_editable_props
 
+from .utils import get_attr_or_iter_from_str_nested
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -501,84 +503,3 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
         context.window_manager.invoke_popup(
                 self, width=prefs.clusters_list_popup_width)
         return {'RUNNING_MODAL'}
-
-
-def get_attr_from_str_nested(obj, attr_str, check=True):  # {{{
-    logger.debug(obj, attr_str, check)
-    if type(attr_str) is not str:
-        raise TypeError
-    if len(attr_str) == 0:
-        raise ValueError
-    if obj is None:
-        raise TypeError
-
-    for x in ',/\\=+-':
-        if x in attr_str:
-            raise ValueError
-
-    var_str_elements = attr_str.split('.')
-    logger.debug(var_str_elements)
-
-    for i, x in enumerate(var_str_elements):
-        logger.debug(i, x, obj)
-
-        # DICT
-        if '"' in x or "'" in x:
-            if check:
-                if '"' in x and "'" in x:
-                    raise ValueError
-
-            element_split = re.split("'", x)
-
-            if check:
-                if len(element_split) != 3:
-                    raise ValueError
-                if len(re.findall("\[", element_split[0])) != 1:
-                    raise ValueError
-                if element_split[2] != ']':
-                    raise ValueError
-
-            element_split[0] = re.sub('\[', '', element_split[0])
-            d = getattr(obj, element_split[0])
-
-            if check:
-                if not isinstance(d, dict):
-                    raise TypeError
-
-            obj = d[element_split[1]]
-
-        # LIST
-        elif '[' in x or ']' in x:
-            if check:
-                if '"' in x or '"' in x:
-                    raise ValueError
-
-            element_split = re.split("\[", x)
-
-            if check:
-                if len(element_split) != 2:
-                    raise ValueError
-                if len(re.findall("\[", element_split[0])) != 0:
-                    raise ValueError
-                if len(re.findall("]", element_split[1])) != 1:
-                    raise ValueError
-
-            element_split[0] = re.sub('\[', '', element_split[0])
-            element_split[1] = re.sub(']', '', element_split[1])
-
-            if check:
-                if len(re.findall('[0-9]', element_split[1]))\
-                        != len(element_split[1]):
-                    raise ValueError
-
-            d = getattr(obj, element_split[0])
-            obj = d[0][int(element_split[1])]
-
-        else:
-            obj = getattr(obj, x)
-
-        if i == len(var_str_elements) - 1:
-            break
-    logger.debug(obj)
-    return obj
-# }}}
