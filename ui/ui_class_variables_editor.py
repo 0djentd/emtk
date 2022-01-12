@@ -99,8 +99,17 @@ class UIClassVariablesEditor():
     """
     # }}}
 
-    def draw_var_editor(self, layout, attr_str):  # {{{
+    def draw_var_editor(self,  # {{{
+                        layout,
+                        attr_str,
+                        draw_name=True,
+                        name=None,
+                        draw_value=None,
+                        round_value=2,
+                        ):
+
         """Draw editor for variable."""
+
         if type(attr_str) is not str:
             raise TypeError
         for x in '+=-':
@@ -113,21 +122,10 @@ class UIClassVariablesEditor():
 
         cls = type(self)
         attr = get_attr_or_iter_from_str_nested(cls, attr_str)
-        var_type = type(attr)
 
         prop_group_name = get_prop_group_name(cls)
         prop_group = getattr(bpy.context.scene, prop_group_name)
-
-        if var_type is bool:
-            prop_name = "var_editor_bool"
-        elif var_type is int:
-            prop_name = "var_editor_int"
-        elif var_type is float:
-            prop_name = "var_editor_float"
-        elif var_type is str:
-            prop_name = "var_editor_str"
-        else:
-            raise TypeError
+        prop_name = _get_var_editor_prop_name(attr)
 
         row = layout.row()
         col = row.column()
@@ -136,7 +134,21 @@ class UIClassVariablesEditor():
         if prop_group.var_editor_currently_edited == attr_str:
             col.prop(prop_group, prop_name)
         else:
-            col.label(text=str(attr))
+            if draw_name:
+                if name is not None:
+                    var_name = name
+                else:
+                    var_name = re.sub('.*\.', '', attr_str)
+                var_name += ': '
+            else:
+                var_name = ''
+
+            if type(attr) is float:
+                val = math.round(attr, round_value)
+            else:
+                val = attr
+
+            col.label(text=var_name + str(val))
 
         # Button
         if prop_group.var_editor_currently_edited == attr_str:
@@ -176,7 +188,6 @@ class UIClassVariablesEditor():
         prop_group.var_editor_currently_edited = variable
         attr = get_attr_or_iter_from_str_nested(cls, variable)
         prop_name = _get_var_editor_prop_name(attr)
-
         setattr(prop_group, prop_name, attr)
 
         if logger.isEnabledFor(logging.DEBUG):
