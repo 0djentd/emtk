@@ -400,9 +400,9 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
     There is no list and dict properties that can be easily used
     to edit class variable.
 
-    bool, int, float and str should have following properties:
+    bool, int, float and str should have following buttons:
         edit variable
-    
+
     list and dict should have following buttons:
         edit variable
         move variable up
@@ -427,44 +427,55 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
             draw buttons "start editing"
     """
 
-    def draw_var_editor(self, layout, var, var_type):
+    def draw_var_editor(self, layout, attr_str):  # {{{
         """Draw editor for variable."""
-        if type(var) is not str:
+        if type(attr_str) is not str:
             raise TypeError
         for x in '+=-':
-            if x in var:
+            if x in attr_str:
                 raise ValueError
         """
         Property and button look like this:
         distance [123] (stop)
         """
 
-        row = layout.row()
-        col = row.column()
+        cls = type(self)
+        attr = get_attr_or_iter_from_str_nested(cls, attr_str)
+        var_type = type(attr)
+
         if var_type is bool:
-            col.prop(self, "var_editor_bool")
+            prop_name = "var_editor_bool"
         elif var_type is int:
-            col.prop(self, "var_editor_int")
+            prop_name = "var_editor_int"
         elif var_type is float:
-            col.prop(self, "var_editor_float")
+            prop_name = "var_editor_float"
         elif var_type is str:
-            col.prop(self, "var_editor_str")
+            prop_name = "var_editor_str"
         else:
             raise TypeError
+
+        row = layout.row()
+        col = row.column()
+
+        if self.var_editor_currently_edited == attr_str:
+            col.prop(self, prop_name)
+        else:
+            col.label(text=str(attr))
 
         # TODO: stop editing variable
         # cls = type(self)
         # var_p = self.var_editor_currently_edited.split()
 
         # Start editing variable {{{
-        if self.var_editor_currently_edited == var:
-            line = f"""self.var_editor_stop('{var}')"""
+        if self.var_editor_currently_edited == attr_str:
+            line = f"""self.var_editor_stop('{attr_str}')"""
         else:
-            line = f"""self.var_editor_start('{var}')"""
+            line = f"""self.var_editor_start('{attr_str}')"""
 
         line = re.sub('self', self.get_class_line(), line)
+        col = row.column()
         op = col.operator('bmtools.bmtool_invoke_operator_func',
-                          text=f"Edit {var}", icon='CUBE')
+                          text=f"Edit {attr_str}", icon='CUBE')
         op.func = line
         # }}}
     # }}}
@@ -477,16 +488,26 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
         self.var_editor_float = 0.0
         self.var_editor_str = ""
 
-    def __get_variable_attr(self, variable):
-        cls = type(self)
-        try:
-            val = getattr(cls, variable)
-        except AttributeError:
-            val = None
-        if val is None:
+    def var_editor_stop(self, variable):
+        if type(variable) is not str:
             raise TypeError
+        attr = get_attr_or_iter_from_str_nested(
+                self, self.var_editor_currently_edited)
+
+        var_type = type(attr)
+        if var_type is bool:
+            prop_name = "var_editor_bool"
+        elif var_type is int:
+            prop_name = "var_editor_int"
+        elif var_type is float:
+            prop_name = "var_editor_float"
+        elif var_type is str:
+            prop_name = "var_editor_str"
         else:
-            return val
+            raise TypeError
+
+        attr = getattr(self, prop_name)
+    # }}}
 
     @classmethod
     def get_class_line(cls):
