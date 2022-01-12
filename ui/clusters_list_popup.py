@@ -41,6 +41,14 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
     bl_idname = "bmtools.clusters_list_popup"
     bl_label = "View and edit active object's clusters."
 
+    # Class variables editor props 
+    var_editor_bool: BoolProperty(False)
+    var_editor_int: IntProperty(0)
+    var_editor_float: FloatProperty(0.0)
+    var_editor_str: StringProperty('')
+
+    var_editor_currently_edited: StringProperty('')
+
     def __init__(self):
         cls = type(self)
         cls.iteration = 0
@@ -377,6 +385,106 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
         #         col = row.column()
         #         col.prop(modifier, y)
         # }}}
+        # }}}
+
+    # Class variables editors {{{
+    """
+    How this thing should work:
+
+    To edit class variable from ui, some property should be used.
+    Type of property should be same as edited variable type.
+
+    There is bool, int, float and str properties in blender.
+    There is no list and dict properties that can be easily used
+    to edit class variable.
+
+    bool, int, float and str should have following properties:
+        edit variable
+    
+    list and dict should have following buttons:
+        edit variable
+        move variable up
+        move variable down
+        add new variable
+        remove variable
+
+    edit variable should be useable with other lists and dicts.
+
+    Only one variable should be edited at the time.
+
+    What internal states should editor have:
+        1) no variable edited:
+            dont draw editor.
+            dont update variables.
+            draw buttons "start editing"
+
+        2) editing variable:
+            draw property
+            update variable in draw method.
+            draw button "stop editing"
+            draw buttons "start editing"
+    """
+
+    def draw_var_editor(self, layout, var, var_type):
+        """Draw editor for variable."""
+        if type(var) is not str:
+            raise TypeError
+        for x in '+=-':
+            if x in var:
+                raise ValueError
+        """
+        Property and button look like this:
+        distance [123] (stop)
+        """
+
+        row = layout.row()
+        col = row.column()
+        if var_type is bool:
+            col.prop(self, "var_editor_bool")
+        elif var_type is int:
+            col.prop(self, "var_editor_int")
+        elif var_type is float:
+            col.prop(self, "var_editor_float")
+        elif var_type is str:
+            col.prop(self, "var_editor_str")
+        else:
+            raise TypeError
+
+        # TODO: stop editing variable
+        # cls = type(self)
+        # var_p = self.var_editor_currently_edited.split()
+
+        # Start editing variable {{{
+        if self.var_editor_currently_edited == var:
+            line = f"""self.var_editor_stop('{var}')"""
+        else:
+            line = f"""self.var_editor_start('{var}')"""
+
+        line = re.sub('self', self.get_class_line(), line)
+        op = col.operator('bmtools.bmtool_invoke_operator_func',
+                          text=f"Edit {var}", icon='CUBE')
+        op.func = line
+        # }}}
+    # }}}
+
+    def var_editor_start(self, variable):
+        if type(variable) is not str:
+            raise TypeError
+        self.var_editor_bool = False
+        self.var_editor_int = 0
+        self.var_editor_float = 0.0
+        self.var_editor_str = ""
+
+    def __get_variable_attr(self, variable):
+        cls = type(self)
+        try:
+            val = getattr(cls, variable)
+        except AttributeError:
+            val = None
+        if val is None:
+            raise TypeError
+        else:
+            return val
 
     @classmethod
     def get_class_line(cls):
@@ -393,3 +501,84 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
         context.window_manager.invoke_popup(
                 self, width=prefs.clusters_list_popup_width)
         return {'RUNNING_MODAL'}
+
+
+def get_attr_from_str_nested(obj, attr_str, check=True):  # {{{
+    logger.debug(obj, attr_str, check)
+    if type(attr_str) is not str:
+        raise TypeError
+    if len(attr_str) == 0:
+        raise ValueError
+    if obj is None:
+        raise TypeError
+
+    for x in ',/\\=+-':
+        if x in attr_str:
+            raise ValueError
+
+    var_str_elements = attr_str.split('.')
+    logger.debug(var_str_elements)
+
+    for i, x in enumerate(var_str_elements):
+        logger.debug(i, x, obj)
+
+        # DICT
+        if '"' in x or "'" in x:
+            if check:
+                if '"' in x and "'" in x:
+                    raise ValueError
+
+            element_split = re.split("'", x)
+
+            if check:
+                if len(element_split) != 3:
+                    raise ValueError
+                if len(re.findall("\[", element_split[0])) != 1:
+                    raise ValueError
+                if element_split[2] != ']':
+                    raise ValueError
+
+            element_split[0] = re.sub('\[', '', element_split[0])
+            d = getattr(obj, element_split[0])
+
+            if check:
+                if not isinstance(d, dict):
+                    raise TypeError
+
+            obj = d[element_split[1]]
+
+        # LIST
+        elif '[' in x or ']' in x:
+            if check:
+                if '"' in x or '"' in x:
+                    raise ValueError
+
+            element_split = re.split("\[", x)
+
+            if check:
+                if len(element_split) != 2:
+                    raise ValueError
+                if len(re.findall("\[", element_split[0])) != 0:
+                    raise ValueError
+                if len(re.findall("]", element_split[1])) != 1:
+                    raise ValueError
+
+            element_split[0] = re.sub('\[', '', element_split[0])
+            element_split[1] = re.sub(']', '', element_split[1])
+
+            if check:
+                if len(re.findall('[0-9]', element_split[1]))\
+                        != len(element_split[1]):
+                    raise ValueError
+
+            d = getattr(obj, element_split[0])
+            obj = d[0][int(element_split[1])]
+
+        else:
+            obj = getattr(obj, x)
+
+        if i == len(var_str_elements) - 1:
+            break
+    logger.debug(obj)
+    return obj
+# }}}
