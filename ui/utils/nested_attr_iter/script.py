@@ -29,7 +29,7 @@ import re
 
 def set_attr_or_iter_from_str_nested(
         obj, attr_str, val, check=True, fast=False):
-    m = re.findall('\..*')[-1]
+    m = re.findall('\..*', attr_str)[-1]
     obj_str = attr_str[0:m.start()]
     obj = get_attr_or_iter_from_str_nested(obj, obj_str)
     attr = attr_str[m.start()+1:]

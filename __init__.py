@@ -17,8 +17,11 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-import bpy
+import re
+import string
 import logging
+
+import bpy
 
 # Modal operators
 from . operators.bmtoolm import BMTOOL_OT_bmtoolm
@@ -42,6 +45,11 @@ from . ui.bmtool_panel import BMTOOLS_OT_update_panel_dict
 from . ui.bmtool_panel import BMTOOLS_OT_bmtool_invoke_operator_func
 from . ui.bmtool_panel import BMTOOLS_OT_bmtool_change_modifier
 from . ui.clusters_list_popup import BMTOOLS_OT_clusters_list_popup
+
+# Class variables editor
+from . ui.ui_class_variables_editor import UIClassVariablesEditorCache
+from . ui.ui_class_variables_editor import UIClassVariablesEditor
+from . ui.ui_class_variables_editor import get_prop_group_name
 
 # Dev
 from . operators.dev.add_all_modifiers import BMTOOL_OT_add_all_modifiers
@@ -90,6 +98,9 @@ classes = [
     BMTOOLS_OT_bmtool_invoke_operator_func,
     BMTOOLS_OT_bmtool_change_modifier,
     BMTOOL_OT_reparse_default_modifiers_props_kbs,
+
+    # property groups
+    UIClassVariablesEditorCache
 ]
 
 addon_keymaps = []
@@ -109,10 +120,31 @@ def register():
     for cls in classes:
         bpy.utils.register_class(cls)
 
+    # Create scene property groups for all classes
+    # that use class variables editor module
+    # Example: bpy.context.scene.cls_var_editor_operator_clusters_list_popup
+    for x in classes:
+
+        line = get_prop_group_name(x)
+
+        if line is not None and UIClassVariablesEditor in x.mro():
+            if logger.isEnabledFor(logging.DEBUG):
+                logger.debug(x)
+                logger.debug(x.__name__)
+                logger.debug(x.mro())
+                logger.debug(line)
+
+            prop = bpy.props.PointerProperty(type=UIClassVariablesEditorCache)
+            setattr(bpy.types.Scene, line, prop)
+
 
 def unregister():
     wm = bpy.context.window_manager
     kc = wm.keyconfigs.addon
+
+    # for x in bpy.types.Scene.__dir__:
+    #     if 'cls_var_editor' in x:
+    #         delattr(bpy.types.Scene, x)
 
     if kc is not None:
         for km, kmi in addon_keymaps:

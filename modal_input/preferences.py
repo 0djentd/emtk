@@ -191,6 +191,7 @@ class ModalShortcutsPreferences():
         if not isinstance(shortcut, dict):
             raise TypeError
 
+        # TODO: remove this
         if not check_shortcut_formatting(shortcut):
             layout.label(text='Shortcut is broken.')
             return
