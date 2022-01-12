@@ -208,10 +208,6 @@ class UIClassVariablesEditor():
             logger.debug(f'prop_group: {prop_group}')
 
             logger.debug(f'var_editor_currently_edited: {prop_group.var_editor_currently_edited}')
-            logger.debug(f'var_editor_bool: {prop_group.var_editor_bool}')
-            logger.debug(f'var_editor_int: {prop_group.var_editor_int}')
-            logger.debug(f'var_editor_float: {prop_group.var_editor_float}')
-            logger.debug(f'var_editor_str: {prop_group.var_editor_str}')
 
         prop_group.var_editor_currently_edited = variable
         if '(' in variable:
@@ -225,10 +221,6 @@ class UIClassVariablesEditor():
 
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug(f'var_editor_currently_edited: {prop_group.var_editor_currently_edited}')
-            logger.debug(f'var_editor_bool: {prop_group.var_editor_bool}')
-            logger.debug(f'var_editor_int: {prop_group.var_editor_int}')
-            logger.debug(f'var_editor_float: {prop_group.var_editor_float}')
-            logger.debug(f'var_editor_str: {prop_group.var_editor_str}')
             logger.debug('Variable editor inv. finished')
             logger.debug(' ')
     # }}}
@@ -248,10 +240,6 @@ class UIClassVariablesEditor():
             logger.debug(f'prop_group: {prop_group}')
 
             logger.debug(f'var_editor_currently_edited: {prop_group.var_editor_currently_edited}')
-            logger.debug(f'var_editor_bool: {prop_group.var_editor_bool}')
-            logger.debug(f'var_editor_int: {prop_group.var_editor_int}')
-            logger.debug(f'var_editor_float: {prop_group.var_editor_float}')
-            logger.debug(f'var_editor_str: {prop_group.var_editor_str}')
 
         if '(' in variable:
             attr = get_attr_or_iter_from_str_nested(
@@ -269,6 +257,7 @@ class UIClassVariablesEditor():
             logger.debug(f'prop_name: {prop_name}')
             logger.debug(f'attr_val: {attr_val}')
 
+        # Set attribute value
         if '(' in variable:
             set_attr_or_iter_from_str_nested(
                     cls, prop_group.var_editor_currently_edited,
@@ -288,11 +277,6 @@ class UIClassVariablesEditor():
             logger.debug(f'new attr: {attr}')
 
             logger.debug(f'var_editor_currently_edited: {prop_group.var_editor_currently_edited}')
-            logger.debug(f'var_editor_bool: {prop_group.var_editor_bool}')
-            logger.debug(f'var_editor_int: {prop_group.var_editor_int}')
-            logger.debug(f'var_editor_float: {prop_group.var_editor_float}')
-            logger.debug(f'var_editor_str: {prop_group.var_editor_str}')
-
             logger.debug('Variable editor remove finished')
             logger.debug(' ')
 
