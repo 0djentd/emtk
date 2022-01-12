@@ -102,10 +102,13 @@ class UIClassVariablesEditor():
     def draw_var_editor(self,  # {{{
                         layout,
                         attr_str,
+                        *args,
                         draw_name=True,
                         name=None,
                         draw_value=None,
                         round_value=2,
+                        icon=None,
+                        **kwargs
                         ):
 
         """Draw editor for variable."""
@@ -130,39 +133,42 @@ class UIClassVariablesEditor():
         row = layout.row()
         col = row.column()
 
-        # Prop
+        # Active
         if prop_group.var_editor_currently_edited == attr_str:
-            col.prop(prop_group, prop_name)
+            col.prop(prop_group, prop_name, text='')
+            line = f"""self.var_editor_stop('{attr_str}')"""
+            line = re.sub('self', self.get_class_line(), line)
+            col = row.column()
+            op = col.operator('bmtools.bmtool_invoke_operator_func',
+                              text="Save", icon='CUBE')
+            op.func = line
+
+        # Editable
         else:
             if draw_name:
                 if name is not None:
                     var_name = name
                 else:
                     var_name = re.sub('.*\.', '', attr_str)
-                var_name += ': '
+                if draw_value:
+                    var_name += ': '
             else:
                 var_name = ''
 
-            if type(attr) is float:
-                val = math.round(attr, round_value)
+            if draw_value:
+                if type(attr) is float:
+                    val = math.round(attr, round_value)
+                else:
+                    val = attr
+                val = str(val)
             else:
-                val = attr
+                val = ''
 
-            col.label(text=var_name + str(val))
-
-        # Button
-        if prop_group.var_editor_currently_edited == attr_str:
-            line_2 = 'Save'
-            line = f"""self.var_editor_stop('{attr_str}')"""
-        else:
-            line_2 = 'Edit'
             line = f"""self.var_editor_start('{attr_str}')"""
-
-        line = re.sub('self', self.get_class_line(), line)
-        col = row.column()
-        op = col.operator('bmtools.bmtool_invoke_operator_func',
-                          text=f"{line_2} {attr_str}", icon='CUBE')
-        op.func = line
+            line = re.sub('self', self.get_class_line(), line)
+            op = col.operator('bmtools.bmtool_invoke_operator_func',
+                              text=var_name + val, icon=icon)
+            op.func = line
     # }}}
 
     @classmethod
