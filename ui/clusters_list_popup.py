@@ -18,9 +18,9 @@
 # ##### END GPL LICENSE BLOCK #####
 
 import logging
-# import string
+import string
 import re
-# import math
+import math
 import cProfile
 
 import bpy
@@ -29,7 +29,7 @@ from bpy.props import BoolProperty, IntProperty, FloatProperty, StringProperty
 from bpy.types import Operator
 
 from ..lib.modifiers_operator import ModifiersOperator
-# from ..lib.utils.modifier_prop_types import get_all_editable_props
+from ..lib.utils.modifier_prop_types import get_all_editable_props
 
 from .utils import get_attr_or_iter_from_str_nested
 from .utils import set_attr_or_iter_from_str_nested
@@ -379,18 +379,20 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
         # op = col.operator('bmtools.bmtool_invoke_operator_func',
         #                   text='', icon='DUPLICATE')
         # op.func = line
-        # if modifier.show_expanded:
-        #     box = layout.box()
-        #     p = get_all_editable_props(modifier, no_ignore=True)
-        #     for i, y in enumerate(p):
-        #         if math.remainder(i, 2) == 0:
-        #             row = box.row()
-        #         col = row.column()
-        #         col.prop(modifier, y)
+
+        if modifier.show_expanded:
+            box = layout.box()
+            p = get_all_editable_props(modifier, no_ignore=True)
+            for i, y in enumerate(p):
+                if math.remainder(i, 2) == 0:
+                    row = box.row()
+                col = row.column()
+                col.prop(modifier, y)
         # }}}
         # }}}
 
     # Class variables editors {{{
+    # info {{{
     """
     How this thing should work:
 
@@ -427,6 +429,7 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
             draw button "stop editing"
             draw buttons "start editing"
     """
+    # }}}
 
     def draw_var_editor(self, layout, attr_str):  # {{{
         """Draw editor for variable."""
