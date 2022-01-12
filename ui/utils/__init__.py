@@ -18,5 +18,6 @@
 # ##### END GPL LICENSE BLOCK #####
 
 from .nested_attr_iter import get_attr_or_iter_from_str_nested
+from .nested_attr_iter import set_attr_or_iter_from_str_nested
 
-__ALL__ = [get_attr_or_iter_from_str_nested]
+__ALL__ = [get_attr_or_iter_from_str_nested, set_attr_or_iter_from_str_nested]

@@ -27,6 +27,16 @@ import re
 # logging.basicConfig(level=logging.DEBUG)
 
 
+def set_attr_or_iter_from_str_nested(
+        obj, attr_str, val, check=True, fast=False):
+    m = re.findall('\..*')[-1]
+    obj_str = attr_str[0:m.start()]
+    obj = get_attr_or_iter_from_str_nested(obj, obj_str)
+    attr = attr_str[m.start()+1:]
+    setattr(obj, attr, val)
+    return
+
+
 def get_attr_or_iter_from_str_nested(obj, attr_str, check=True, fast=False):
     """Wrapper for getattr and iterattr, can be used with nested objects.
 

@@ -32,6 +32,7 @@ from ..lib.modifiers_operator import ModifiersOperator
 # from ..lib.utils.modifier_prop_types import get_all_editable_props
 
 from .utils import get_attr_or_iter_from_str_nested
+from .utils import set_attr_or_iter_from_str_nested
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -506,7 +507,9 @@ class BMTOOLS_OT_clusters_list_popup(ModifiersOperator, Operator):
         else:
             raise TypeError
 
-        attr = getattr(self, prop_name)
+        attr_val = getattr(self, prop_name)
+        set_attr_or_iter_from_str_nested(
+                self, self.var_editor_currently_edited, attr_val)
     # }}}
 
     @classmethod
