@@ -103,7 +103,6 @@ class BMTOOLS_OT_clusters_list_popup(
                     box, self.m_list)
 
     def __draw_clusters_list(self, layout, clusters_list):
-        self.draw_var_editor(layout, 'cluster_type')
         for x in clusters_list.get_list():
             cluster_box = layout.box()
             self.__draw_cluster(cluster_box, x)
@@ -261,13 +260,15 @@ class BMTOOLS_OT_clusters_list_popup(
                     box_2 = box.box()
                     for x, y in zip(cluster.parser_variables,
                                     cluster.parser_variables.values()):
-                        box_2.label(text=f"{x}: {y}")
+                        line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').parser_variables[\'{x}\']'
+                        self.draw_var_editor(box_2, line, fast=True)
 
                 if cluster.variables['show_props_expanded']:
                     box_2 = box.box()
                     for x, y in zip(cluster.variables,
                                     cluster.variables.values()):
-                        box_2.label(text=f"{x}: {y}")
+                        line = f'self.m_list.find_cluster_by_name("{cluster.name}").variables["{x}"]'
+                        self.draw_var_editor(box_2, line, fast=True)
 
             if cluster.has_clusters():
                 self.__draw_clusters_list(layout, cluster)

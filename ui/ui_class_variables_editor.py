@@ -108,6 +108,8 @@ class UIClassVariablesEditor():
                         draw_value=None,
                         round_value=2,
                         icon=None,
+                        fast=False,
+                        check=False,
                         **kwargs
                         ):
 
@@ -122,13 +124,24 @@ class UIClassVariablesEditor():
         Property and button look like this:
         distance [123] (stop)
         """
+        m = re.match('self\.', attr_str)
+        if m is not None:
+            attr_str = attr_str[5:]
 
         cls = type(self)
-        attr = get_attr_or_iter_from_str_nested(cls, attr_str)
+        attr = get_attr_or_iter_from_str_nested(
+                cls, attr_str, fast=fast, check=check)
 
         prop_group_name = get_prop_group_name(cls)
         prop_group = getattr(bpy.context.scene, prop_group_name)
-        prop_name = _get_var_editor_prop_name(attr)
+        attr_type = type(attr)
+        if attr_type is list:
+            return
+
+        elif attr_type is dict:
+            return
+        else:
+            prop_name = _get_var_editor_prop_name(attr_type)
 
         row = layout.row()
         col = row.column()
@@ -136,11 +149,15 @@ class UIClassVariablesEditor():
         # Active
         if prop_group.var_editor_currently_edited == attr_str:
             col.prop(prop_group, prop_name, text='')
-            line = f"""self.var_editor_stop('{attr_str}')"""
+            line = f'self.var_editor_stop("{attr_str}")'
             line = re.sub('self', self.get_class_line(), line)
             col = row.column()
-            op = col.operator('bmtools.bmtool_invoke_operator_func',
-                              text="Save", icon='CUBE')
+            if icon is not None:
+                op = col.operator('bmtools.bmtool_invoke_operator_func',
+                                  text="Save", icon=icon)
+            else:
+                op = col.operator('bmtools.bmtool_invoke_operator_func',
+                                  text="Save")
             op.func = line
 
         # Editable
@@ -164,10 +181,15 @@ class UIClassVariablesEditor():
             else:
                 val = ''
 
-            line = f"""self.var_editor_start('{attr_str}')"""
+            line = f'self.var_editor_start("{attr_str}")'
             line = re.sub('self', self.get_class_line(), line)
-            op = col.operator('bmtools.bmtool_invoke_operator_func',
-                              text=var_name + val, icon=icon)
+
+            if icon is not None:
+                op = col.operator('bmtools.bmtool_invoke_operator_func',
+                                  text=var_name + val, icon=icon)
+            else:
+                op = col.operator('bmtools.bmtool_invoke_operator_func',
+                                  text=var_name + val)
             op.func = line
     # }}}
 
@@ -192,8 +214,13 @@ class UIClassVariablesEditor():
             logger.debug(f'var_editor_str: {prop_group.var_editor_str}')
 
         prop_group.var_editor_currently_edited = variable
-        attr = get_attr_or_iter_from_str_nested(cls, variable)
-        prop_name = _get_var_editor_prop_name(attr)
+        if '(' in variable:
+            attr = get_attr_or_iter_from_str_nested(cls, variable, fast=True)
+        else:
+            attr = get_attr_or_iter_from_str_nested(cls, variable)
+
+        attr_type = type(attr)
+        prop_name = _get_var_editor_prop_name(attr_type)
         setattr(prop_group, prop_name, attr)
 
         if logger.isEnabledFor(logging.DEBUG):
@@ -226,10 +253,15 @@ class UIClassVariablesEditor():
             logger.debug(f'var_editor_float: {prop_group.var_editor_float}')
             logger.debug(f'var_editor_str: {prop_group.var_editor_str}')
 
-        attr = get_attr_or_iter_from_str_nested(
-                cls, prop_group.var_editor_currently_edited)
+        if '(' in variable:
+            attr = get_attr_or_iter_from_str_nested(
+                    cls, prop_group.var_editor_currently_edited, fast=True)
+        else:
+            attr = get_attr_or_iter_from_str_nested(
+                    cls, prop_group.var_editor_currently_edited)
 
-        prop_name = _get_var_editor_prop_name(attr)
+        attr_type = type(attr)
+        prop_name = _get_var_editor_prop_name(attr_type)
         attr_val = getattr(prop_group, prop_name)
 
         if logger.isEnabledFor(logging.DEBUG):
@@ -237,12 +269,21 @@ class UIClassVariablesEditor():
             logger.debug(f'prop_name: {prop_name}')
             logger.debug(f'attr_val: {attr_val}')
 
-        set_attr_or_iter_from_str_nested(
-                cls, prop_group.var_editor_currently_edited, attr_val)
+        if '(' in variable:
+            set_attr_or_iter_from_str_nested(
+                    cls, prop_group.var_editor_currently_edited,
+                    attr_val, fast=True)
+        else:
+            set_attr_or_iter_from_str_nested(
+                    cls, prop_group.var_editor_currently_edited, attr_val)
 
         if logger.isEnabledFor(logging.DEBUG):
-            attr = get_attr_or_iter_from_str_nested(
-                    cls, prop_group.var_editor_currently_edited)
+            if '(' in variable:
+                attr = get_attr_or_iter_from_str_nested(
+                        cls, prop_group.var_editor_currently_edited, fast=True)
+            else:
+                attr = get_attr_or_iter_from_str_nested(
+                        cls, prop_group.var_editor_currently_edited)
 
             logger.debug(f'new attr: {attr}')
 
@@ -259,8 +300,7 @@ class UIClassVariablesEditor():
     # }}}
 
 
-def _get_var_editor_prop_name(attr):
-    var_type = type(attr)
+def _get_var_editor_prop_name(var_type):
     if var_type is bool:
         prop_name = "var_editor_bool"
     elif var_type is int:

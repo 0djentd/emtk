@@ -35,6 +35,11 @@ class Modifier():
 
 
 class Cluster():
+    def mod(self, val):
+        if val != 321:
+            raise ValueError
+        return self.modifier
+
     def __init__(self):
         self.modifier = Modifier()
 
