@@ -31,9 +31,6 @@ from bpy.types import Operator
 from ..lib.modifiers_operator import ModifiersOperator
 from ..lib.utils.modifier_prop_types import get_all_editable_props
 
-from .utils import get_attr_or_iter_from_str_nested
-from .utils import set_attr_or_iter_from_str_nested
-
 from .ui_class_variables_editor import UIClassVariablesEditor
 
 logger = logging.getLogger(__name__)

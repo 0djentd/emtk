@@ -19,8 +19,8 @@
 
 import unittest
 
-from ..script import get_attr_or_iter_from_str_nested
-from ..script import set_attr_or_iter_from_str_nested
+from ..ui_class_variables_editor_utils import get_attr_or_iter_from_str_nested
+from ..ui_class_variables_editor_utils import set_attr_or_iter_from_str_nested
 
 
 class Modifier():
