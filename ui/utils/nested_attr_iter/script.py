@@ -45,7 +45,7 @@ def set_attr_or_iter_from_str_nested(
             raise ValueError
         if re.match('  ', attr_str):
             raise ValueError
-        if re.match('+', attr_str):
+        if re.match('\+', attr_str):
             raise ValueError
 
     line = 'obj.' + attr_str + ' = val'
@@ -69,7 +69,7 @@ def get_attr_or_iter_from_str_nested(obj, attr_str, check=True, fast=False):
             raise ValueError
         if re.match('  ', attr_str):
             raise ValueError
-        if re.match('+', attr_str):
+        if re.match('\+', attr_str):
             raise ValueError
 
     line = 'obj.' + attr_str
