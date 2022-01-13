@@ -41,9 +41,7 @@ from . modal_input.operators import\
 # UI
 from . ui.bmtools_pie import VIEW3D_MT_PIE_bmtools_pie_1
 from . ui.bmtool_panel import VIEW3D_PT_bmtool_panel
-from . ui.bmtool_panel import BMTOOLS_OT_update_panel_dict
-from . ui.bmtool_panel import BMTOOLS_OT_bmtool_invoke_operator_func
-from . ui.bmtool_panel import BMTOOLS_OT_bmtool_change_modifier
+from . ui.utils.operators import BMTOOLS_OT_bmtool_invoke_operator_func
 from . ui.clusters_list_popup import BMTOOLS_OT_clusters_list_popup
 
 # Class variables editor
@@ -77,7 +75,7 @@ classes = [
     BMTOOL_OT_bmtoole2,
     BMTOOL_OT_bmtoolm_2,
 
-    # lib ops
+    # EMTK operators
     BMTOOL_OT_add_cluster_type_object,
 
     # prefs
@@ -85,28 +83,32 @@ classes = [
     BMTOOLS_OT_start_editing_modal_shortcut,
     BMTOOLS_OT_add_or_update_modal_shortcut,
 
+    # popup operators
+    BMTOOLS_OT_clusters_list_popup,
+
     # ui
     VIEW3D_MT_PIE_bmtools_pie_1,
     VIEW3D_PT_bmtool_panel,
-    BMTOOLS_OT_update_panel_dict,
-    BMTOOLS_OT_clusters_list_popup,
 
     # dev
     BMTOOL_OT_add_all_modifiers,
     BMTOOL_OT_add_new_cluster,
     BMTOOL_OT_add_all_modifiers_and_dump_props,
-    BMTOOLS_OT_bmtool_invoke_operator_func,
-    BMTOOLS_OT_bmtool_change_modifier,
     BMTOOL_OT_reparse_default_modifiers_props_kbs,
 
     # property groups
-    UIClassVariablesEditorCache
+    UIClassVariablesEditorCache,
+
+    # utils operators
+    BMTOOLS_OT_bmtool_invoke_operator_func,
 ]
 
 addon_keymaps = []
 
 
 def register():
+    logger.info('Registering BMTools and EMTK')
+
     wm = bpy.context.window_manager
     kc = wm.keyconfigs.addon
 
@@ -118,6 +120,7 @@ def register():
         addon_keymaps.append((km, kmi))
 
     for cls in classes:
+        logger.debug(f'Register class {cls}')
         bpy.utils.register_class(cls)
 
     # Create scene property groups for all classes
@@ -134,17 +137,23 @@ def register():
                 logger.debug(x.mro())
                 logger.debug(line)
 
+            logger.info(f'Adding property group {line} for {x}')
             prop = bpy.props.PointerProperty(type=UIClassVariablesEditorCache)
             setattr(bpy.types.Scene, line, prop)
+    logger.info('Finished registering BMTools and EMTK')
 
 
 def unregister():
+    logger.info('Unregistering BMTools and EMTK')
+
     wm = bpy.context.window_manager
     kc = wm.keyconfigs.addon
 
-    # for x in bpy.types.Scene.__dir__:
-    #     if 'cls_var_editor' in x:
-    #         delattr(bpy.types.Scene, x)
+    for x in bpy.types.Scene.__dir__:
+        if re.match('cls_var_editor', x):
+            logger.info(f'Removing property group {x}')
+            prop_group = getattr(bpy.types.Scene, x)
+            del(prop_group)
 
     if kc is not None:
         for km, kmi in addon_keymaps:
@@ -153,4 +162,6 @@ def unregister():
     addon_keymaps.clear()
 
     for cls in reversed(classes):
+        logger.debug(f'Unregister class {cls}')
         bpy.utils.unregister_class(cls)
+    logger.info('Finished unregistering BMTools and EMTK')
