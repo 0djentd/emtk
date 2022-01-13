@@ -17,13 +17,7 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-import re
-import string
-
-import bpy
-
-from bpy.props import BoolProperty, IntProperty, FloatProperty, StringProperty
-from bpy.types import Panel, Operator
+from bpy.types import Panel
 
 from ..lib.utils.modifier_prop_types import get_all_editable_props
 
@@ -393,27 +387,10 @@ class VIEW3D_PT_bmtool_panel(Panel):
     # }}}
 
     def __draw_modifier_props(self, modifier):
-        cls = type(self)
-        if modifier.name not in self.modifiers_expanded:
-            self.modifiers_expanded.update({modifier.name: True})
-
         layout = self.layout.box()
-        row = layout.row()
-        col = row.column()
-        col.prop(modifier, 'name')
-        col = row.column()
-
-        # Expand
-        x = col.operator('bmtools.update_panel_dict_attr', text='Expand')
-        x.obj = self.bl_idname
-        x.attr_name = 'modifiers_expanded'
-        x.element_name = modifier.name
-        x.action = 'ADD'
-        x.element_val_type = 'BOOL'
-        x.element_val_bool = not self.modifiers_expanded[modifier.name]
 
         # Props
-        if cls.modifiers_expanded[modifier.name]:
+        if modifier.show_expanded:
             p = get_all_editable_props(modifier)
             for y in p:
                 layout.prop(modifier, f'{y}')
