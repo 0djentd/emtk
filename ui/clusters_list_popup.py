@@ -267,7 +267,7 @@ class BMTOOLS_OT_clusters_list_popup(
                     box_2 = box.box()
                     for x, y in zip(cluster.variables,
                                     cluster.variables.values()):
-                        line = f'self.m_list.find_cluster_by_name("{cluster.name}").variables["{x}"]'
+                        line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').variables[\'{x}\']'
                         self.draw_var_editor(box_2, line, fast=True)
 
             if cluster.has_clusters():

@@ -114,12 +114,15 @@ class UIClassVariablesEditor():
                         ):
 
         """Draw editor for variable."""
-
         if type(attr_str) is not str:
             raise TypeError
         for x in '+=-':
             if x in attr_str:
                 raise ValueError
+
+        attr_str = re.sub('"', '\"', attr_str)
+        attr_str = re.sub("'", "\'", attr_str)
+
         """
         Property and button look like this:
         distance [123] (stop)
@@ -134,11 +137,17 @@ class UIClassVariablesEditor():
 
         prop_group_name = get_prop_group_name(cls)
         prop_group = getattr(bpy.context.scene, prop_group_name)
-        attr_type = type(attr)
-        if attr_type is list:
+
+        if attr is None:
             return
 
+        attr_type = type(attr)
+
+        if attr_type is list:
+            return
         elif attr_type is dict:
+            return
+        elif attr_type is None:
             return
         else:
             prop_name = _get_var_editor_prop_name(attr_type)
@@ -294,7 +303,7 @@ def _get_var_editor_prop_name(var_type):
     elif var_type is str:
         prop_name = "var_editor_str"
     else:
-        raise TypeError
+        raise TypeError(var_type)
     return prop_name
 
 
