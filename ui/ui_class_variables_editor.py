@@ -47,12 +47,12 @@ class UIClassVariablesEditorCache(PropertyGroup):
     # Attribute name
     # Example: m_list.get_first().parser_variables['by_type'][0]
     # 'cls' should be skipped, as
-    # var_editor_currently_edited_class is used insead.
+    # var_editor_class is used insead.
     var_editor_currently_edited: StringProperty('')
 
     # Class name
     # Example: bpy.types.BMTOOLS_OT_clusters_list_popup
-    var_editor_currently_edited_class: StringProperty('')
+    var_editor_class: StringProperty('')
 
 
 class UIClassVariablesEditor():
