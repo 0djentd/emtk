@@ -105,16 +105,12 @@ class UIClassVariablesEditor():
                         layout,
                         attr_str,
                         *args,
-                        draw_name=True,
-                        name=None,
-                        draw_value=None,
-                        round_value=2,
-                        icon=None,
-                        check=False,
+                        check=True,
                         **kwargs
                         ):
 
         """Draw editor for variable."""
+
         if type(attr_str) is not str:
             raise TypeError
         for x in '+=-':
@@ -135,23 +131,144 @@ class UIClassVariablesEditor():
         cls = type(self)
         attr = get_attr_or_iter_from_str_nested(
                 cls, attr_str, check=check)
-
-        prop_group_name = get_prop_group_name(cls)
-        prop_group = getattr(bpy.context.scene, prop_group_name)
-
         if attr is None:
+            logger.debug(f'Ignoring variable "{attr_str}", type is None.')
             return
 
         attr_type = type(attr)
+        if attr_type is list:  # {{{
+            self.__draw_list(
+                             layout,
+                             attr_str,
+                             attr=attr,
+                             check=check,
+                             *args,
+                             **kwargs
+                             )
 
-        if attr_type is list:
-            return
         elif attr_type is dict:
-            return
-        elif attr_type is None:
-            return
+            self.__draw_dict(
+                             layout,
+                             attr_str,
+                             attr=attr,
+                             check=check,
+                             *args,
+                             **kwargs
+                             )
+        # draw property
         else:
-            prop_name = _get_var_editor_prop_name(attr_type)
+            self.__draw_property(
+                                 layout,
+                                 attr_str,
+                                 attr=attr,
+                                 check=check,
+                                 *args,
+                                 **kwargs
+                                 )
+    # }}}
+
+    def __draw_list(self,  # {{{
+                    layout,
+                    attr_str,
+                    *args,
+                    attr=None,
+                    draw_name=True,
+                    name=None,
+                    draw_value=None,
+                    round_value=2,
+                    icon=None,
+                    check=False,
+                    **kwargs
+                    ):
+
+        if attr is None:
+            raise TypeError
+
+        cls = type(self)
+        prop_group_name = get_prop_group_name(cls)
+        prop_group = getattr(bpy.context.scene, prop_group_name)
+
+        logger.debug('Drawing list')
+        box = layout.box()
+
+        # Get last attr name in sequence.
+        # Example: 'cluster.type' -> 'type'
+        m = re.search('[^.]*\\Z', attr_str)
+        attr_name = m.string[m.start(): m.end()]
+
+        # Editable
+        if attr_str not in prop_group.var_editor_currently_edited:
+            line = f'self.var_editor_start("{attr_str}")'
+            line = re.sub('self', self.get_class_line(), line)
+            if icon is not None:
+                op = box.operator('bmtools.bmtool_invoke_operator_func',
+                                  text=attr_name, icon=icon)
+            else:
+                op = box.operator('bmtools.bmtool_invoke_operator_func',
+                                  text=attr_name)
+            op.func = line
+            return
+
+        # Expanded (active)
+        else:
+            line = f'self.var_editor_stop("{attr_str}")'
+            line = re.sub('self', self.get_class_line(), line)
+
+            if icon is not None:
+                op = box.operator('bmtools.bmtool_invoke_operator_func',
+                                  text=attr_name, icon=icon)
+            else:
+                op = box.operator('bmtools.bmtool_invoke_operator_func',
+                                  text=attr_name)
+            op.func = line
+
+            for i, e in enumerate(attr):
+                row = box.row()
+                col = row.column()
+                element_str = attr_str + f'[{i}]'
+                logger.debug(f'Drawing element {element_str}')
+                self.draw_var_editor(col, element_str)
+            return
+    # }}}
+
+    def __draw_dict(self,  # {{{
+                    layout,
+                    attr_str,
+                    *args,
+                    draw_name=True,
+                    name=None,
+                    draw_value=None,
+                    round_value=2,
+                    icon=None,
+                    check=False,
+                    **kwargs
+                    ):
+
+        logger.debug('Drawing dict')
+        return
+    # }}}
+
+    def __draw_var(self,  # {{{
+                   layout,
+                   attr_str,
+                   *args,
+                   attr=None,
+                   draw_name=True,
+                   name=None,
+                   draw_value=None,
+                   round_value=2,
+                   icon=None,
+                   check=False,
+                   **kwargs
+                   ):
+
+        if attr is None:
+            raise TypeError
+
+        cls = type(self)
+        prop_group_name = get_prop_group_name(cls)
+        prop_group = getattr(bpy.context.scene, prop_group_name)
+        prop_name = _get_var_editor_prop_name(attr_type)
 
         row = layout.row()
         col = row.column()
@@ -169,6 +286,7 @@ class UIClassVariablesEditor():
                 op = col.operator('bmtools.bmtool_invoke_operator_func',
                                   text="Save")
             op.func = line
+            return
 
         # Editable
         else:
@@ -176,7 +294,8 @@ class UIClassVariablesEditor():
                 if name is not None:
                     var_name = name
                 else:
-                    var_name = re.sub('.*\.', '', attr_str)
+                    m = re.search('[^.]*\\Z', attr_str)
+                    var_name = m.string[m.start(): m.end()]
                 if draw_value:
                     var_name += ': '
             else:
@@ -201,6 +320,7 @@ class UIClassVariablesEditor():
                 op = col.operator('bmtools.bmtool_invoke_operator_func',
                                   text=var_name + val)
             op.func = line
+            return
     # }}}
 
     @classmethod
