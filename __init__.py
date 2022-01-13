@@ -124,12 +124,11 @@ def register():
         bpy.utils.register_class(cls)
 
     # Create scene property groups for all classes
-    # that use class variables editor module
-    # Example: bpy.context.scene.cls_var_editor_operator_clusters_list_popup
+    # that use class variables editor module.
+    # Example:
+    # bpy.context.scene.cls_var_editor_operator_clusters_list_popup
     for x in classes:
-
         line = get_prop_group_name(x)
-
         if line is not None and UIClassVariablesEditor in x.mro():
             if logger.isEnabledFor(logging.DEBUG):
                 logger.debug(x)
@@ -149,7 +148,7 @@ def unregister():
     wm = bpy.context.window_manager
     kc = wm.keyconfigs.addon
 
-    for x in bpy.types.Scene.__dir__:
+    for x in dir(bpy.types.Scene):
         if re.match('cls_var_editor', x):
             logger.info(f'Removing property group {x}')
             prop_group = getattr(bpy.types.Scene, x)
