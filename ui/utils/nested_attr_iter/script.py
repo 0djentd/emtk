@@ -27,17 +27,56 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-# TODO: add checks for attr_str
+# TODO: add checks for attr_str.
+# TODO: remove this method.
 def set_attr_or_iter_from_str_nested(
         obj, attr_str, val, check=True, fast=False):
+    if obj is None:
+        raise TypeError
+
+    if check:
+        if re.match('\*', attr_str):
+            raise ValueError
+        if re.match('/', attr_str):
+            raise ValueError
+        if re.match('\. ', attr_str):
+            raise ValueError
+        if re.match('=', attr_str):
+            raise ValueError
+        if re.match('  ', attr_str):
+            raise ValueError
+        if re.match('+', attr_str):
+            raise ValueError
+
     line = 'obj.' + attr_str + ' = val'
-    logger.info('Executing line: ' + line)
-    exec(line, globals(), locals())
+    if logger.isEnabledFor(logging.DEBUG):
+        logger.debug('Executing line: ' + line)
+    # exec(line, globals(), locals())
+    exec(line, {}, {'obj': obj, 'val': val})
 
 
+# TODO: remove this method.
 def get_attr_or_iter_from_str_nested(obj, attr_str, check=True, fast=False):
+
+    if check:
+        if re.match('\*', attr_str):
+            raise ValueError
+        if re.match('/', attr_str):
+            raise ValueError
+        if re.match('\. ', attr_str):
+            raise ValueError
+        if re.match('=', attr_str):
+            raise ValueError
+        if re.match('  ', attr_str):
+            raise ValueError
+        if re.match('+', attr_str):
+            raise ValueError
+
     line = 'obj.' + attr_str
-    logger.info('Evaluating line: ' + line)
-    result = eval(line, globals(), locals())
-    logger.info(f'Got {result}')
+    if logger.isEnabledFor(logging.DEBUG):
+        logger.debug('Evaluating line: ' + line)
+    # result = eval(line, globals(), locals())
+    result = eval(line, {}, {'obj': obj})
+    if logger.isEnabledFor(logging.DEBUG):
+        logger.debug(f'Got {result}')
     return result
