@@ -101,7 +101,9 @@ class UIClassVariablesEditor():
     """
     # }}}
 
-    def draw_var_editor(self,  # {{{
+    # this method can be recursive.
+    @classmethod
+    def draw_var_editor(cls,  # {{{
                         layout,
                         attr_str,
                         *args,
@@ -117,6 +119,7 @@ class UIClassVariablesEditor():
             if x in attr_str:
                 raise ValueError
 
+        # TODO: remove this
         attr_str = re.sub('"', '\"', attr_str)
         attr_str = re.sub("'", "\'", attr_str)
 
@@ -128,7 +131,6 @@ class UIClassVariablesEditor():
         if m is not None:
             attr_str = attr_str[4:]
 
-        cls = type(self)
         attr = get_attr_or_iter_from_str_nested(
                 cls, attr_str, check=check)
         if attr is None:
@@ -136,38 +138,41 @@ class UIClassVariablesEditor():
             return
 
         attr_type = type(attr)
-        if attr_type is list:  # {{{
-            self.__draw_list(
-                             layout,
-                             attr_str,
-                             attr=attr,
-                             check=check,
-                             *args,
-                             **kwargs
-                             )
+
+        # recursive 'draw_var_editor'
+        if attr_type is list:
+            cls.__draw_list(
+                            layout,
+                            attr_str,
+                            attr=attr,
+                            check=check,
+                            *args,
+                            **kwargs
+                            )
 
         elif attr_type is dict:
-            self.__draw_dict(
-                             layout,
-                             attr_str,
-                             attr=attr,
-                             check=check,
-                             *args,
-                             **kwargs
-                             )
+            cls.__draw_dict(
+                            layout,
+                            attr_str,
+                            attr=attr,
+                            check=check,
+                            *args,
+                            **kwargs
+                            )
         # draw property
         else:
-            self.__draw_property(
-                                 layout,
-                                 attr_str,
-                                 attr=attr,
-                                 check=check,
-                                 *args,
-                                 **kwargs
-                                 )
+            cls.__draw_variable(
+                                layout,
+                                attr_str,
+                                attr=attr,
+                                check=check,
+                                *args,
+                                **kwargs
+                                )
     # }}}
 
-    def __draw_list(self,  # {{{
+    @classmethod
+    def __draw_list(cls,  # {{{
                     layout,
                     attr_str,
                     *args,
@@ -184,7 +189,6 @@ class UIClassVariablesEditor():
         if attr is None:
             raise TypeError
 
-        cls = type(self)
         prop_group_name = get_prop_group_name(cls)
         prop_group = getattr(bpy.context.scene, prop_group_name)
 
@@ -198,8 +202,8 @@ class UIClassVariablesEditor():
 
         # Editable
         if attr_str not in prop_group.var_editor_currently_edited:
-            line = f'self.var_editor_start("{attr_str}")'
-            line = re.sub('self', self.get_class_line(), line)
+            line = f'cls.var_editor_start("{attr_str}")'
+            line = re.sub('cls', cls.get_class_line(), line)
             if icon is not None:
                 op = box.operator('bmtools.bmtool_invoke_operator_func',
                                   text=attr_name, icon=icon)
@@ -211,8 +215,8 @@ class UIClassVariablesEditor():
 
         # Expanded (active)
         else:
-            line = f'self.var_editor_stop("{attr_str}")'
-            line = re.sub('self', self.get_class_line(), line)
+            line = f'cls.var_editor_stop("{attr_str}")'
+            line = re.sub('cls', cls.get_class_line(), line)
 
             if icon is not None:
                 op = box.operator('bmtools.bmtool_invoke_operator_func',
@@ -227,11 +231,12 @@ class UIClassVariablesEditor():
                 col = row.column()
                 element_str = attr_str + f'[{i}]'
                 logger.debug(f'Drawing element {element_str}')
-                self.draw_var_editor(col, element_str)
+                cls.draw_var_editor(col, element_str)
             return
     # }}}
 
-    def __draw_dict(self,  # {{{
+    @classmethod
+    def __draw_dict(cls,  # {{{
                     layout,
                     attr_str,
                     *args,
@@ -248,27 +253,27 @@ class UIClassVariablesEditor():
         return
     # }}}
 
-    def __draw_var(self,  # {{{
-                   layout,
-                   attr_str,
-                   *args,
-                   attr=None,
-                   draw_name=True,
-                   name=None,
-                   draw_value=None,
-                   round_value=2,
-                   icon=None,
-                   check=False,
-                   **kwargs
-                   ):
+    @classmethod
+    def __draw_variable(cls,  # {{{
+                        layout,
+                        attr_str,
+                        *args,
+                        attr=None,
+                        draw_name=True,
+                        name=None,
+                        draw_value=None,
+                        round_value=2,
+                        icon=None,
+                        check=False,
+                        **kwargs
+                        ):
 
         if attr is None:
             raise TypeError
 
-        cls = type(self)
         prop_group_name = get_prop_group_name(cls)
         prop_group = getattr(bpy.context.scene, prop_group_name)
-        prop_name = _get_var_editor_prop_name(attr_type)
+        prop_name = _get_var_editor_prop_name(type(attr))
 
         row = layout.row()
         col = row.column()
@@ -276,8 +281,8 @@ class UIClassVariablesEditor():
         # Active
         if prop_group.var_editor_currently_edited == attr_str:
             col.prop(prop_group, prop_name, text='')
-            line = f'self.var_editor_stop("{attr_str}")'
-            line = re.sub('self', self.get_class_line(), line)
+            line = f'cls.var_editor_stop("{attr_str}")'
+            line = re.sub('cls', cls.get_class_line(), line)
             col = row.column()
             if icon is not None:
                 op = col.operator('bmtools.bmtool_invoke_operator_func',
@@ -310,8 +315,8 @@ class UIClassVariablesEditor():
             else:
                 val = ''
 
-            line = f'self.var_editor_start("{attr_str}")'
-            line = re.sub('self', self.get_class_line(), line)
+            line = f'cls.var_editor_start("{attr_str}")'
+            line = re.sub('cls', cls.get_class_line(), line)
 
             if icon is not None:
                 op = col.operator('bmtools.bmtool_invoke_operator_func',
@@ -352,8 +357,10 @@ class UIClassVariablesEditor():
         attr = get_attr_or_iter_from_str_nested(cls, variable)
 
         attr_type = type(attr)
-        prop_name = _get_var_editor_prop_name(attr_type)
-        setattr(prop_group, prop_name, attr)
+
+        if attr_type not in {list, dict}:
+            prop_name = _get_var_editor_prop_name(attr_type)
+            setattr(prop_group, prop_name, attr)
 
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug(f'var_editor_currently_edited: \
@@ -391,17 +398,14 @@ class UIClassVariablesEditor():
                 cls, prop_group.var_editor_currently_edited)
 
         attr_type = type(attr)
-        prop_name = _get_var_editor_prop_name(attr_type)
-        attr_val = getattr(prop_group, prop_name)
 
-        if logger.isEnabledFor(logging.DEBUG):
-            logger.debug(f'attr: {attr}')
-            logger.debug(f'prop_name: {prop_name}')
-            logger.debug(f'attr_val: {attr_val}')
+        if attr_type not in {list, dict}:
+            prop_name = _get_var_editor_prop_name(attr_type)
+            attr_val = getattr(prop_group, prop_name)
 
-        # Set attribute value
-        set_attr_or_iter_from_str_nested(
-                cls, prop_group.var_editor_currently_edited, attr_val)
+            # Set attribute value
+            set_attr_or_iter_from_str_nested(
+                    cls, prop_group.var_editor_currently_edited, attr_val)
 
         if logger.isEnabledFor(logging.DEBUG):
             attr = get_attr_or_iter_from_str_nested(
