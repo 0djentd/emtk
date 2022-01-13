@@ -19,7 +19,6 @@
 
 import logging
 import re
-import math
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -55,20 +54,7 @@ def set_attr_or_iter_from_str_nested(
         raise TypeError
 
     if check:
-        if re.match('obj\.', attr_str):
-            raise ValueError
-        if re.search('\*', attr_str):
-            raise ValueError
-        if re.search('/', attr_str):
-            raise ValueError
-        if re.search('\. ', attr_str):
-            raise ValueError
-        if re.search('=', attr_str):
-            raise ValueError
-        if re.search('  ', attr_str):
-            raise ValueError
-        if re.search('\+', attr_str):
-            raise ValueError
+        _check_attr_str(attr_str)
 
     line = 'obj.' + attr_str + ' = val'
     if logger.isEnabledFor(logging.DEBUG):
@@ -80,20 +66,7 @@ def set_attr_or_iter_from_str_nested(
 def get_attr_or_iter_from_str_nested(obj, attr_str, check=True, fast=False):
 
     if check:
-        if re.match('obj\.', attr_str):
-            raise ValueError
-        if re.search('\*', attr_str):
-            raise ValueError
-        if re.search('/', attr_str):
-            raise ValueError
-        if re.search('\. ', attr_str):
-            raise ValueError
-        if re.search('=', attr_str):
-            raise ValueError
-        if re.search('  ', attr_str):
-            raise ValueError
-        if re.search('\+', attr_str):
-            raise ValueError
+        _check_attr_str(attr_str)
 
     line = 'obj.' + attr_str
 
@@ -106,3 +79,20 @@ def get_attr_or_iter_from_str_nested(obj, attr_str, check=True, fast=False):
     if logger.isEnabledFor(logging.DEBUG):
         logger.debug(f'Got {result}')
     return result
+
+
+def _check_attr_str(attr_str: str):
+    if re.match('obj\.', attr_str):
+        raise ValueError
+    if re.search('\*', attr_str):
+        raise ValueError
+    if re.search('/', attr_str):
+        raise ValueError
+    if re.search('\. ', attr_str):
+        raise ValueError
+    if re.search('=', attr_str):
+        raise ValueError
+    if re.search('  ', attr_str):
+        raise ValueError
+    if re.search('\+', attr_str):
+        raise ValueError

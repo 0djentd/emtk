@@ -58,12 +58,13 @@ class UIClassVariablesEditorCache(PropertyGroup):
 class UIClassVariablesEditor():
     """
     Mix-in class for operators and panels that
-    should edit class variables.
+    should be able to edit class variables from
+    Blender UI ('draw(self, context)' method) using this module.
     """
 
     # info {{{
     """
-    How this thing should work:
+    How this thing works:
 
     To edit class variable from ui, some property should be used.
     Type of property should be same as edited variable type.
@@ -109,7 +110,6 @@ class UIClassVariablesEditor():
                         draw_value=None,
                         round_value=2,
                         icon=None,
-                        fast=False,
                         check=False,
                         **kwargs
                         ):
@@ -124,17 +124,17 @@ class UIClassVariablesEditor():
         attr_str = re.sub('"', '\"', attr_str)
         attr_str = re.sub("'", "\'", attr_str)
 
-        """
-        Property and button look like this:
-        distance [123] (stop)
-        """
         m = re.match('self\.', attr_str)
         if m is not None:
             attr_str = attr_str[5:]
 
+        m = re.match('cls\.', attr_str)
+        if m is not None:
+            attr_str = attr_str[4:]
+
         cls = type(self)
         attr = get_attr_or_iter_from_str_nested(
-                cls, attr_str, fast=fast, check=check)
+                cls, attr_str, check=check)
 
         prop_group_name = get_prop_group_name(cls)
         prop_group = getattr(bpy.context.scene, prop_group_name)
@@ -205,6 +205,14 @@ class UIClassVariablesEditor():
 
     @classmethod
     def var_editor_start(cls, variable):  # {{{
+        """Start editing class variable in UI.
+
+        variable str should only use " or '.
+
+        Example:
+        var_editor_start(bpy.types.BMTOOLS_OT_clusters_list_popup,
+                         'm_list.get_cluster().name')
+        """
         if type(variable) is not str:
             raise TypeError
 
@@ -221,10 +229,7 @@ class UIClassVariablesEditor():
                     {prop_group.var_editor_currently_edited}')
 
         prop_group.var_editor_currently_edited = variable
-        if '(' in variable:
-            attr = get_attr_or_iter_from_str_nested(cls, variable, fast=True)
-        else:
-            attr = get_attr_or_iter_from_str_nested(cls, variable)
+        attr = get_attr_or_iter_from_str_nested(cls, variable)
 
         attr_type = type(attr)
         prop_name = _get_var_editor_prop_name(attr_type)
@@ -239,6 +244,14 @@ class UIClassVariablesEditor():
 
     @classmethod
     def var_editor_stop(cls, variable):  # {{{
+        """Stop editing class variable in UI and set edited class variable.
+
+        variable str should only use " or '.
+
+        Example:
+        var_editor_stop(bpy.types.BMTOOLS_OT_clusters_list_popup,
+                         'm_list.get_cluster().name')
+        """
         if type(variable) is not str:
             raise TypeError
 
@@ -254,12 +267,8 @@ class UIClassVariablesEditor():
             logger.debug(f'var_editor_currently_edited: \
                     {prop_group.var_editor_currently_edited}')
 
-        if '(' in variable:
-            attr = get_attr_or_iter_from_str_nested(
-                    cls, prop_group.var_editor_currently_edited, fast=True)
-        else:
-            attr = get_attr_or_iter_from_str_nested(
-                    cls, prop_group.var_editor_currently_edited)
+        attr = get_attr_or_iter_from_str_nested(
+                cls, prop_group.var_editor_currently_edited)
 
         attr_type = type(attr)
         prop_name = _get_var_editor_prop_name(attr_type)
@@ -271,21 +280,12 @@ class UIClassVariablesEditor():
             logger.debug(f'attr_val: {attr_val}')
 
         # Set attribute value
-        if '(' in variable:
-            set_attr_or_iter_from_str_nested(
-                    cls, prop_group.var_editor_currently_edited,
-                    attr_val, fast=True)
-        else:
-            set_attr_or_iter_from_str_nested(
-                    cls, prop_group.var_editor_currently_edited, attr_val)
+        set_attr_or_iter_from_str_nested(
+                cls, prop_group.var_editor_currently_edited, attr_val)
 
         if logger.isEnabledFor(logging.DEBUG):
-            if '(' in variable:
-                attr = get_attr_or_iter_from_str_nested(
-                        cls, prop_group.var_editor_currently_edited, fast=True)
-            else:
-                attr = get_attr_or_iter_from_str_nested(
-                        cls, prop_group.var_editor_currently_edited)
+            attr = get_attr_or_iter_from_str_nested(
+                    cls, prop_group.var_editor_currently_edited)
 
             logger.debug(f'new attr: {attr}')
 
