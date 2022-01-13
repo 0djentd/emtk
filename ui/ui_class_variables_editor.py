@@ -195,10 +195,7 @@ class UIClassVariablesEditor():
         logger.debug('Drawing list')
         box = layout.box()
 
-        # Get last attr name in sequence.
-        # Example: 'cluster.type' -> 'type'
-        m = re.search('[^.]*\\Z', attr_str)
-        attr_name = m.string[m.start(): m.end()]
+        attr_name = get_last_attr_name_in_sequence(attr_str)
 
         # Editable
         if attr_str not in prop_group.var_editor_currently_edited:
@@ -420,3 +417,83 @@ class UIClassVariablesEditor():
 
         prop_group.var_editor_currently_edited = ''
     # }}}
+
+    @classmethod
+    def __move_list_element(cls, attr_name, direction):
+        if type(attr_name) is not str:
+            raise TypeError
+        if direction != 'UP' and direction != 'DOWN':
+            raise ValueError
+
+        attr_list_str = get_attr_obj_str(attr_name)
+        obj = get_attr_or_iter_from_str_nested(attr_list_str)
+        # example: [123]
+        m = re.search('\[-*[0-9]]\\Z', attr_name)[-1]
+        if not m:
+            raise ValueError
+        # example: 123
+        index = int(m.string[m.start():m.end()][1:-1])
+        if direction == 'UP':
+            if index != len(obj) - 1:
+                e = obj.pop(index)
+                obj.insert(index + 1, e)
+            else:
+                return
+        elif direction == 'DOWN':
+            if index != 0:
+                e = obj.pop(index)
+                obj.insert(index - 1, e)
+            else:
+                return
+
+
+def get_last_attr_name_in_sequence(sequence):
+    """Get last attr name in sequence.
+
+    Example:
+    >>> get_last_attr_name_in_sequence('cluster.name')
+    <<< 'name'
+    >>> get_last_attr_name_in_sequence('cluster.modifiers[3]')
+    <<< 'modifiers[3]'
+    """
+    if type(sequence) is not str:
+        raise TypeError
+
+    m = re.search('[^.]*\\Z', sequence)
+    return m.string[m.start(): m.end()]
+
+
+def get_attr_obj_str(sequence):
+    """Get attribute's object from attr str.
+
+    Returns list attr_str if attr is element of list.
+
+    Example:
+    >>> get_last_attr_name_in_sequence('m_list.cluster.name')
+    <<< 'm_list.cluster'
+    >>> get_last_attr_name_in_sequence('m_list.cluster.name[1]')
+    <<< 'm_list.cluster.name'
+    >>> get_attr_obj_str('cluster.modifiers[3]')
+    <<< 'cluster.modifiers'
+    >>> get_attr_obj_str('cluster')
+    <<< None
+    """
+    if type(sequence) is not str:
+        raise TypeError
+    if '.' not in sequence and '[' not in sequence:
+        return None
+
+    # Example: 'cluster.modifiers[1]' -> 'cluster'
+    m = re.search('[^.]*\\Z', sequence)
+    f = False
+    for x in '[]':
+        if x in m.string[m.start():m.end()]:
+            f = True
+            break
+    # Example: 'cluster.modifiers[1]' -> 'cluster.modifiers'
+    if f:
+        m = re.search('[.*\\Z', sequence)
+        result = sequence[:m.start()-1]
+    else:
+        result = m.string[m.start():m.end()]
+    return result
