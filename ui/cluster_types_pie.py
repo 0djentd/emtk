@@ -20,17 +20,23 @@
 from bpy.types import Menu
 
 
-class VIEW3D_MT_PIE_bmtools_pie_1(Menu):
-    bl_label = "BMTools"
-    bl_idname = "BMTOOLS_MT_PIE_bmtpie"
+# TODO: not implemented
+class VIEW3D_MT_PIE_cluster_types(Menu):
+    bl_label = "Cluster types editing"
+    bl_idname = "BMTOOLS_MT_PIE_cluster_types"
 
     def draw(self, context):
-        layout = self.layout
+        layout = self.layout()
         pie = layout.menu_pie()
-        # pie.operator("object.bmtoolm_2", text="BMToolM lite", icon="CUBE")
-        pie.operator("object.bmtoolm", text="BMToolM", icon="CUBE")
-        pie.operator("object.bmtoole2", text="Add modifier", icon="MOD_BEVEL")
-        pie.operator("bmtools.clusters_list_popup",
-                     text="Clusters list", icon="CUBE")
-        # pie.operator("bmtools.add_new_cluster",
-        #              text="Add new cluster", icon="CUBE")
+
+        op = pie.operator("emtk.edit_cluster_types",
+                          text="Edit cluster types")
+        op.obj = 'SETTINGS'
+
+        op = pie.operator("emtk.edit_cluster_types",
+                          text="Edit scene cluster types")
+        op.obj = 'SCENE'
+
+        op = pie.operator("emtk.edit_cluster_types",
+                          text="Edit object cluster types")
+        op.obj = 'OBJECT'

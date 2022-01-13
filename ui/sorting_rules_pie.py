@@ -20,17 +20,23 @@
 from bpy.types import Menu
 
 
-class VIEW3D_MT_PIE_bmtools_pie_1(Menu):
-    bl_label = "BMTools"
-    bl_idname = "BMTOOLS_MT_PIE_bmtpie"
+# TODO: not implemented
+class VIEW3D_MT_PIE_sorting_rules(Menu):
+    bl_label = "Sorting rules editing"
+    bl_idname = "BMTOOLS_MT_PIE_sorting_rules"
 
     def draw(self, context):
-        layout = self.layout
+        layout = self.layout()
         pie = layout.menu_pie()
-        # pie.operator("object.bmtoolm_2", text="BMToolM lite", icon="CUBE")
-        pie.operator("object.bmtoolm", text="BMToolM", icon="CUBE")
-        pie.operator("object.bmtoole2", text="Add modifier", icon="MOD_BEVEL")
-        pie.operator("bmtools.clusters_list_popup",
-                     text="Clusters list", icon="CUBE")
-        # pie.operator("bmtools.add_new_cluster",
-        #              text="Add new cluster", icon="CUBE")
+
+        op = pie.operator("emtk.edit_sorting_rules",
+                          text="Edit sorting rules")
+        op.obj = 'SETTINGS'
+
+        op = pie.operator("emtk.edit_sorting_rules",
+                          text="Edit scene sorting rules")
+        op.obj = 'SCENE'
+
+        op = pie.operator("emtk.edit_sorting_rules",
+                          text="Edit object sorting rules")
+        op.obj = 'OBJECT'
