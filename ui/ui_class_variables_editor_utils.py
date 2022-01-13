@@ -96,3 +96,57 @@ def _check_attr_str(attr_str: str):
         raise ValueError
     if re.search('\+', attr_str):
         raise ValueError
+
+
+def get_last_attr_name_in_sequence(sequence):
+    """Get last attr name in sequence.
+
+    Example:
+    >>> get_last_attr_name_in_sequence('cluster.name')
+    <<< 'name'
+    >>> get_last_attr_name_in_sequence('cluster.modifiers[3]')
+    <<< 'modifiers[3]'
+    """
+    if type(sequence) is not str:
+        raise TypeError
+
+    m = re.search('[^.]*\\Z', sequence)
+    return m.string[m.start(): m.end()]
+
+
+def get_attr_obj_str(sequence):
+    """Get attribute's object from attr str.
+
+    Returns list attr_str if attr is element of list.
+
+    Example:
+    >>> get_last_attr_name_in_sequence('m_list.cluster.name')
+    <<< 'm_list.cluster'
+    >>> get_last_attr_name_in_sequence('m_list.cluster.name[1]')
+    <<< 'm_list.cluster.name'
+    >>> get_attr_obj_str('cluster.modifiers[3]')
+    <<< 'cluster.modifiers'
+    >>> get_attr_obj_str('cluster')
+    <<< None
+    """
+    if type(sequence) is not str:
+        raise TypeError
+    if '.' not in sequence and '[' not in sequence:
+        return None
+
+    # Example: 'cluster.modifiers[1]' -> 'modifiers[1]'
+    m = re.search('[^.]*\\Z', sequence)
+    f = False
+    for x in '[]':
+        if x in m.string[m.start():m.end()]:
+            f = True
+            break
+
+    # Example: 'cluster.modifiers[1]' -> 'cluster.modifiers'
+    if f:
+        m = re.search('[.*\\Z', sequence)
+        result = sequence[:m.start()-1]
+    # Example: 'cluster.name' -> 'cluster'
+    else:
+        result = m.string[:m.start()-1]
+    return result

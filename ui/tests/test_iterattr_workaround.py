@@ -21,6 +21,8 @@ import unittest
 
 from ..ui_class_variables_editor_utils import get_attr_or_iter_from_str_nested
 from ..ui_class_variables_editor_utils import set_attr_or_iter_from_str_nested
+from ..ui_class_variables_editor_utils import get_last_attr_name_in_sequence
+from ..ui_class_variables_editor_utils import get_attr_obj_str
 
 
 class Modifier():
@@ -179,3 +181,37 @@ class WorkaroundScriptTests_no_check(WorkaroundScriptTests):
 
 class WorkaroundScriptTests_fast_no_check(WorkaroundScriptTests_fast):
     check = False
+
+
+class SequenceParserFunctionsTests(unittest.TestCase):
+    def test_get_last_attr_name_in_sequence(self):
+        result_1 = get_last_attr_name_in_sequence('cluster.name')
+        result_2 = 'name'
+        self.assertEqual(result_1, result_2)
+
+    def test_get_last_attr_name_in_sequence_2(self):
+        result_1 = get_last_attr_name_in_sequence('modifiers[1].type')
+        result_2 = 'type'
+        self.assertEqual(result_1, result_2)
+
+    def test_get_last_attr_name_in_sequence_3(self):
+        result_1 = get_last_attr_name_in_sequence(
+                'cluster.modifiers[\'Bevel\'].type')
+        result_2 = 'type'
+        self.assertEqual(result_1, result_2)
+
+    def test_get_attr_obj_str(self):
+        result_1 = get_attr_obj_str('cluster.name')
+        result_2 = 'cluster'
+        self.assertEqual(result_1, result_2)
+
+    def test_get_attr_obj_str_2(self):
+        result_1 = get_attr_obj_str('modifiers[1].type')
+        result_2 = 'modifiers[1]'
+        self.assertEqual(result_1, result_2)
+
+    def test_get_attr_obj_str_3(self):
+        result_1 = get_attr_obj_str(
+                'cluster.modifiers[\'Bevel\'].type')
+        result_2 = 'cluster.modifiers[\'Bevel\']'
+        self.assertEqual(result_1, result_2)
