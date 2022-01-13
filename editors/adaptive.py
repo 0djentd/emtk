@@ -185,18 +185,9 @@ class AdaptiveModalEditor(ModalClustersEditor):
 
     # Constructor {{{
     def __init__(self, *args, allow_cluster=True, **kwargs):
-        t = self.__MODIFIER_TYPES
-
-        # Allow using with '{mod_name}_CLUSTER' cluster types.
-        if allow_cluster:
-            new_types = []
-            for x in self.__MODIFIER_TYPES:
-                new_types.append(f'{x}_CLUSTER')
-            t = t + new_types
-
         super().__init__(*args,
                          name='Adaptive_Editor',
-                         cluster_types=t,
+                         cluster_types=['ANY'],
                          **kwargs)
 
         self.mode = self.__DEFAULT_MODE

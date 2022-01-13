@@ -156,9 +156,12 @@ class BMTOOL_OT_bmtoolm(BMToolUi, ModalClustersOperator, Operator):
         ui_t_2 = self.bmtool_ui_list()
         for x in ui_t_2:
             ui_t.append(x)
-        ui_t_3 = self.__active_editor.get_mappings_for_ui()
-        for x in ui_t_3:
-            ui_t.append([x, 20])
+        if self.__active_editor is not None:
+            ui_t_3 = self.__active_editor.get_mappings_for_ui()
+            for x in ui_t_3:
+                ui_t.append([x, 20])
+        else:
+            ui_t.append(['No editor.', 20])
         return ui_t
     # }}}
 
@@ -212,6 +215,8 @@ class BMTOOL_OT_bmtoolm(BMToolUi, ModalClustersOperator, Operator):
         editors_list = []
         for editor in self.__editors:
             if cluster.type in editor.props['cluster_types']:
+                editors_list.append(editor)
+            elif 'ANY' in editor.props['cluster_types']:
                 editors_list.append(editor)
         return editors_list
 
