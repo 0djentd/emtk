@@ -21,6 +21,7 @@ import math
 import copy
 import logging
 import string
+import functools
 
 import bpy
 
@@ -587,6 +588,7 @@ class ModalInputOperator():
 
 
 # Utils {{{
+@functools.lru_cache
 def _vec_len(x1, x2, y1, y2):
     x = x1 - x2
     y = y1 - y2
