@@ -41,6 +41,7 @@ from .shortcuts import (
                         search_modal_operators_shortcuts,
                         generate_new_shortcut,
                         )
+from .shortcuts import ModalShortcutsGroup, ModalShortcutsCache, ModalShortcut
 
 
 class BMTOOLS_OT_start_editing_modal_shortcut(bpy.types.Operator):  # {{{
@@ -78,17 +79,14 @@ class BMTOOLS_OT_start_editing_modal_shortcut(bpy.types.Operator):  # {{{
             prefs.bmtool_editing_modal_shortcut_group\
                 = self.shortcut_group
 
-            group = prefs.get_modal_operators_shortcuts_group(
-                    self.shortcut_group)
-            shortcut = group[self.shortcut_name]
+            group = prefs.modal_shortcuts.find_shortcuts_group_by_name(
+                self.shortcut_group)
+            shortcut = group.find_shortcut_by_value(self.shortcut_name)
 
-            if 'sens' in shortcut:
-                prefs.edited_shortcut_sens = shortcut['sens']
             prefs.edited_shortcut_letter = shortcut['letter']
             prefs.edited_shortcut_shift = shortcut['shift']
             prefs.edited_shortcut_ctrl = shortcut['ctrl']
             prefs.edited_shortcut_alt = shortcut['alt']
-
         return {'FINISHED'}
 # }}}
 
@@ -104,7 +102,6 @@ class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):  # {{{
     # shortcut_shift
     # shortcut_ctrl
     # shortcut_alt
-    # shortcut_sens
 
     # Shortcut name and group {{{
     shortcut_name: StringProperty(
@@ -139,36 +136,21 @@ class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):  # {{{
             name="Shortcut require alt to be pressed",
             default=False
             )
-
-    shortcut_sens: FloatProperty(
-            name="Sens",
-            default=0.0
-            )
     # }}}
 
     def execute(self, context):
         prefs = context.preferences.addons['bmtools'].preferences
-        shortcut = {'letter': self.shortcut_letter,
-                    'shift': self.shortcut_shift,
-                    'ctrl': self.shortcut_ctrl,
-                    'alt': self.shortcut_alt,
-                    'sens': self.shortcut_sens,
-                    }
+        group = prefs.find_shortcuts_group_by_name(
+                self.shortcut_group)
+        shortcut = ModalShortcut(self.shortcut_name,
+                                 self.shortcut_letter,
+                                 self.shortcut_shift,
+                                 self.shortcut_ctrl,
+                                 self.shortcut_alt,
+                                 )
 
-        if not check_shortcut_formatting(shortcut):
-            return {'CANCELLED'}
-        kbs = deserialize_kbs(
-                prefs.bmtool_modal_operators_serialized_shortcuts)
-
-        if self.shortcut_group not in kbs:
-            kbs.update({self.shortcut_group: {}})
-
-        kbs[self.shortcut_group].update(
-                {self.shortcut_name: shortcut})
-
-        prefs.bmtool_modal_operators_serialized_shortcuts = serialize_kbs(kbs)
-        prefs.refresh_modal_opertors_shortcuts_cache()
-
+        group.update_shortcut(shortcut)
+        prefs.save_modal_shortcuts_cache()
         prefs.bmtool_editing_modal_shortcut_name = ""
         prefs.bmtool_editing_modal_shortcut_group = ""
         return {'FINISHED'}
@@ -209,42 +191,27 @@ class BMTOOL_OT_reparse_default_modifiers_props_kbs(  # {{{
 
         replace = self.replace_kbs
 
-        s = {}
+        groups = []
         for x in modifiers:
             props = get_all_editable_props(x, no_ignore=True)
 
             if replace:
-                d = {}
+                shortcuts = []
             else:
-                d = prefs.get_modal_operators_shortcuts_group(x.type)
+                shortcuts = prefs.modal_shortcuts.find_shortcuts_group_by_name(
+                        x.type).shortcuts
 
+            shortcuts = []
             for y in props:
-                for z in d:
-                    if not isinstance(d[z], dict):
-                        raise TypeError
-                    for h in d[z]:
-                        if not isinstance(d[z][h], str)\
-                                and not isinstance(d[z][h], bool):
-                            raise TypeError(d[z])
+                shortcuts.append(generate_new_shortcut(y, shortcuts))
 
-                shortcut = generate_new_shortcut(y, d)
-                d.update(shortcut)
-                if len(d) < 1:
-                    raise ValueError
+            groups.append(ModalShortcutsGroup(x.type, shortcuts))
 
-            s_e = {x.type: d}
-            s.update(s_e)
-
+        result = ModalShortcutsCache(groups)
         if replace:
             prefs.bmtool_modal_operators_serialized_shortcuts\
-                    = serialize_kbs(s)
+                    = result.serialize()
         else:
-            i = 0
-            for x, y in zip(s.keys(), s.values()):
-                for z, e in zip(y.keys(), y.values()):
-                    shortcut = {z: e}
-                    prefs.add_modal_operators_shortcut(x, shortcut)
-                    i += 1
-            prefs.save_modal_operators_shortcuts_cache()
+            raise ValueError
         return {'FINISHED'}
 # }}}

@@ -39,6 +39,7 @@ from .shortcuts import (
                         search_modal_operators_shortcuts,
                         generate_new_shortcut,
                         )
+from .shortcuts import ModalShortcutsCache, ModalShortcut, ModalShortcutsGroup
 
 
 class ModalShortcutsPreferences():
@@ -49,7 +50,7 @@ class ModalShortcutsPreferences():
 
     __need_modal_operators_shortcuts_cache_refresh = True
     __modal_operator_shortcuts_cache = None
-    __last_bmtools_str_search = None
+    modal_shortcuts = None
 
     bmtool_modal_operators_serialized_shortcuts: StringProperty(
             name='Modal operators serialized shortcuts.',
@@ -58,7 +59,7 @@ class ModalShortcutsPreferences():
 
     # Currently edited shortcut props {{{
     # Shortcut and group that is being edited
-    bmtool_editing_modal_shortcut_name: StringProperty("")
+    bmtool_editing_modal_shortcut_value: StringProperty("")
     bmtool_editing_modal_shortcut_group: StringProperty("")
 
     # Its properties
@@ -88,37 +89,21 @@ class ModalShortcutsPreferences():
         layout.prop(self, "shortcuts_groups_search_str")
         layout.prop(self, "shortcuts_search_str")
 
-        if len(self.shortcuts_search_str) != 'NO_SHORTCUTS':
+        self.__refresh_modal_opertors_shortcuts_cache()
 
-            self.__refresh_modal_opertors_shortcuts_cache()
+        result = self.modal_shortcuts.search_by_name(
+                self.shortcuts_groups_search_str, self.shortcuts_search_str)
 
-            # Get filtered version of shortcuts.
-            if self.__last_bmtools_str_search != self.shortcuts_search_str:
-                props_groups_filtered = search_modal_operators_shortcuts(
-                        self.__modal_operator_shortcuts_cache,
-                        self.shortcuts_search_str)
-                self.__props_groups_filtered_cache = props_groups_filtered
-            else:
-                self.__last_bmtools_str_search = self.shortcuts_search_str
-                props_groups_filtered = self.__props_groups_filtered_cache
-
-            # Filter by group
-            if self.shortcuts_groups_search_str != "":
-                props_groups_to_display = {}
-                for x in props_groups_filtered:
-                    if self.shortcuts_groups_search_str.upper() in x:
-                        props_groups_to_display.update(
-                                {x: props_groups_filtered[x]})
-            else:
-                props_groups_to_display = props_groups_filtered
-
-            # Draw
-            self.__draw_shortcuts_groups_dict(layout, props_groups_to_display)
-
-        else:
+        if not result:
             layout.label(
                     text="Type shortcut name above to see modal shortcuts.")
             layout.label(text="Example: bevel angle")
+            return
+
+        for x in result:
+            self.layout.label(x.name)
+            for y in x.search_by_name(self.shortcuts_search_str):
+                self.__draw_shortcut(y)
     # }}}
 
     # Draw shortcut {{{
@@ -226,3 +211,8 @@ class ModalShortcutsPreferences():
         a.shortcut_ctrl = self.edited_shortcut_ctrl
         a.shortcut_alt = self.edited_shortcut_alt
     # }}}
+
+    def __refresh_modal_opertors_shortcuts_cache(self):
+        if self.modal_shortcuts is None:
+            self.modal_shortcuts = ModalShortcutsCache(
+                    self.bmtool_modal_operators_serialized_shortcuts)
