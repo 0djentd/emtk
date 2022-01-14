@@ -66,7 +66,7 @@ class ClustersListTrait():
                 raise ValueError
             cluster = result
         elif cluster is None:
-            cluster = self
+            return None
         else:
             if cluster not in self.get_full_list()\
                     and cluster is not self:

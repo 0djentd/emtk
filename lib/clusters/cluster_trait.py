@@ -27,7 +27,7 @@ except ModuleNotFoundError:
     from ..dummy_modifiers import DummyBlenderModifier
     _WITH_BPY = False
 
-from ..lists.utils import check_if_removed, check_obj_ref
+from ..lists.utils import check_if_removed
 
 
 class ClusterTrait():
@@ -739,7 +739,8 @@ class ClusterTrait():
         removed cluster.
         """
         if self._cluster_removed:
-            raise ValueError(f'Cluster {self} already removed.')
+            name = self.parser_variables["name"]
+            raise ValueError(f'Cluster {name} at {id(self)} already removed.')
 
     def __repr__(self):
         return self.__str__()

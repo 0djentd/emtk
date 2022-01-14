@@ -54,7 +54,8 @@ class DefaultModifierCluster(
                 or len(self._modifiers_list) == 0:
             return self.get_this_cluster_default_name()
         else:
-            return self._modifiers_list[0].name
+            # return self._modifiers_list[0].name
+            return f'{self._modifiers_list[0].name}_CLUSTER'
 
     def get_this_cluster_type(self):
         if not self.variables['initialized']\
