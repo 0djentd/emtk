@@ -158,10 +158,11 @@ class ModalShortcut():  # {{{
 class ModalShortcutsGroup():  # {{{
     """This object represents keyboard shortcut group for modal operators."""
 
-    def __init__(self, shortcuts=None):
+    def __init__(self, name, shortcuts=None):
         if shortcuts is None:
             shortcuts = []
         self.shortcuts = shortcuts
+        self.name = name
 
     # Properties {{{
     @property
@@ -285,6 +286,55 @@ def fix_duplicates(shortcuts):
         shortcuts.remove(x)
     return shortcuts
 # }}}
+
+
+class ModalShortcutsCache():
+    def __init__(self, serialized_shortcuts_cache):
+        if serialized_shortcuts_cache is None:
+            serialized_shortcuts_cache = '[]'
+
+    @functools.lru_cache
+    @staticmethod
+    def deserialize_shortcuts_cache(serialized_shortcuts_groups):
+        if type(serialized_shortcuts_groups) is not str:
+            raise TypeError
+        deserialized_shortcuts_groups = json.loads(serialized_shortcuts_groups)
+
+        if type(deserialized_shortcuts_groups) is list:
+            for group in deserialized_shortcuts_groups:
+                check_deserialized_shortcuts_group(group)
+        else:
+            raise TypeError
+
+        groups = []
+        for x in deserialized_shortcuts_cache:
+            shortcuts = []
+            for y in x['shortcuts']:
+                elements = {}
+                for k, v in y.items():
+                    elements.update({k: v})
+                shortcuts.append(ModalShortcut(elements))
+            name = x['name']
+            groups.append(ModalShortcutsGroup(name, shortcuts)
+        return groups
+
+@functools.lru_cache
+def check_deserialized_shortcuts_group(group: dict):
+    if type(group) is dict:
+        if type(group['name']) not str:
+            raise TypeError
+        if type(group['shortcuts']) is list:
+            for shortcut in shortcuts:
+                if type(shortcut) is dict:
+                    for element in _MAPPING:
+                        if element not in shortcut:
+                            raise ValueError
+                else:
+                    raise TypeError
+        else:
+            raise TypeError
+    else:
+        raise TypeError
 
 
 # Serialization {{{
