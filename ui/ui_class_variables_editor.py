@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-class UIClassVariablesEditorCache(PropertyGroup):
+class UIClassVariablesEditorCache(PropertyGroup):  # {{{
     """This prop group used to edit variables in ui."""
 
     # New attribute value
@@ -56,9 +56,10 @@ class UIClassVariablesEditorCache(PropertyGroup):
     # Class name with 'bpy.types.' prefix
     # Example: bpy.types.BMTOOLS_OT_clusters_list_popup
     var_editor_class: StringProperty('')
+# }}}
 
 
-class UIClassVariablesEditor():
+class UIClassVariablesEditor():   # {{{
     """
     Mix-in class for operators and panels that
     should be able to edit class variables from
@@ -487,6 +488,7 @@ class UIClassVariablesEditor():
                 return
         else:
             raise ValueError
+    # }}}
 
     @classmethod
     def __duplicate_list_element(  # {{{
@@ -505,3 +507,4 @@ class UIClassVariablesEditor():
         logger.debug(f'{element}, {duplicate}')
 
     # }}}
+# }}}
