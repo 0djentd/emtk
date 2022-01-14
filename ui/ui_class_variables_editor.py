@@ -20,6 +20,7 @@
 import logging
 import re
 import math
+import copy
 
 import bpy
 from bpy.props import (BoolProperty, IntProperty,
@@ -228,9 +229,50 @@ class UIClassVariablesEditor():
             for i, e in enumerate(attr):
                 row = box.row()
                 col = row.column()
+
                 element_str = attr_str + f'[{i}]'
                 logger.debug(f'Drawing element {element_str}')
+
+                # Variable
                 cls.draw_var_editor(col, element_str)
+
+                # Remove element
+                col = row.column()
+                line = f'cls.{attr_str}.pop({i})'
+                line = re.sub('cls', cls.get_class_line(), line)
+                op = col.operator('bmtools.bmtool_invoke_operator_func',
+                                  text="", icon='X')
+                op.func = line
+
+                line_2 = 'cls._UIClassVariablesEditor__move_list_element'
+
+                # Move element
+                col = row.column()
+                line = line_2 + f'("{attr_str}", index={i}, direction=\'UP\')'
+                line = re.sub('cls', cls.get_class_line(), line)
+                op = col.operator('bmtools.bmtool_invoke_operator_func',
+                                  text="", icon='TRIA_UP')
+                op.func = line
+
+                # Move element
+                col = row.column()
+                line = line_2 \
+                    + f'("{attr_str}", index={i}, direction=\'DOWN\')'
+                line = re.sub('cls', cls.get_class_line(), line)
+                op = col.operator('bmtools.bmtool_invoke_operator_func',
+                                  text="", icon='TRIA_DOWN')
+                op.func = line
+
+                line_2 = 'cls._UIClassVariablesEditor__duplicate_list_element'
+
+                # Duplicate element
+                col = row.column()
+                line = line_2 \
+                    + f'("{attr_str}", index={i})'
+                line = re.sub('cls', cls.get_class_line(), line)
+                op = col.operator('bmtools.bmtool_invoke_operator_func',
+                                  text="", icon='TRIA_DOWN')
+                op.func = line
             return
     # }}}
 
@@ -421,31 +463,45 @@ class UIClassVariablesEditor():
     # }}}
 
     @classmethod
-    def __move_list_element(cls, attr_name: str, direction: str):  # {{{
-        if type(attr_name) is not str:
+    def __move_list_element(  # {{{
+            cls, list_attr_str: str, index: int, direction: str):
+        if type(list_attr_str) is not str:
+            raise TypeError
+        if type(index) is not int:
             raise TypeError
 
-        attr_list_str = get_attr_obj_str(attr_name)
-        obj = get_attr_or_iter_from_str_nested(attr_list_str)
-        # example: [123]
-        m = re.search('\[-*[0-9]]\\Z', attr_name)[-1]
-        if not m:
-            raise ValueError
-        # example: 123
-        index = int(m.string[m.start():m.end()][1:-1])
+        attr = get_attr_or_iter_from_str_nested(cls, list_attr_str)
+        logger.info(f'Moving {attr} element {index} {direction}')
 
         if direction == 'UP':
-            if index != len(obj) - 1:
-                e = obj.pop(index)
-                obj.insert(index + 1, e)
+            if index != len(attr) - 1:
+                e = attr.pop(index)
+                attr.insert(index + 1, e)
             else:
                 return
         elif direction == 'DOWN':
             if index != 0:
-                e = obj.pop(index)
-                obj.insert(index - 1, e)
+                e = attr.pop(index)
+                attr.insert(index - 1, e)
             else:
                 return
         else:
             raise ValueError
+
+    @classmethod
+    def __duplicate_list_element(  # {{{
+            cls, list_attr_str: str, index: int):
+        if type(list_attr_str) is not str:
+            raise TypeError
+        if type(index) is not int:
+            raise TypeError
+
+        attr = get_attr_or_iter_from_str_nested(cls, list_attr_str)
+        element = attr[index]
+        duplicate = copy.deepcopy(element)
+        attr.insert(index + 1, duplicate)
+
+        logger.info(f'Duplicating {attr} element {index}')
+        logger.debug(f'{element}, {duplicate}')
+
     # }}}
