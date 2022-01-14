@@ -187,7 +187,7 @@ class ModalShortcutsGroup():  # {{{
         for x in shortcuts:
             if not isinstance(x, ModalShortcut):
                 raise TypeError
-        if self.fix_duplicates(shortcuts):
+        if len(find_duplicates(shortcuts)) != 0:
             raise ValueError
         self._shortcuts = shortcuts
         self.cache_clear()
@@ -253,15 +253,15 @@ class ModalShortcutsGroup():  # {{{
                 raise TypeError(f'Expected bool, got {type(x)}')
 
         for x in self.shortcuts:
-            y = x.compare(letter, shift, ctrl, alt)
+            y = x.compare_mappings(letter, shift, ctrl, alt)
             if y:
                 return y
 
     @functools.lru_cache
-    def search_by_name(self, name):
+    def search_by_name(self, shortcut_name):
         result = []
         for x in self.shortcuts:
-            if name in x.name:
+            if shortcut_name in x.value:
                 result.append(x)
         return result
 
@@ -270,8 +270,6 @@ class ModalShortcutsGroup():  # {{{
         return line
 
     def cache_clear(self):
-        fix_duplicates.cache_clear()
-        find_duplicates.cache_clear()
         self.search_by_name.cache_clear()
         self.find_shortcut_by_mapping.cache_clear()
         self.find_shortcut_by_value.cache_clear()
@@ -289,9 +287,16 @@ class ModalShortcutsGroup():  # {{{
 class ModalShortcutsCache():  # {{{
     """Object that represents modal shortcuts groups."""
 
-    def __init__(self, serialized_shortcuts_groups):
-        self.shortcuts_groups = deserialize_shortcuts_cache(
-                serialized_shortcuts_groups)
+    def __init__(self, shortcuts_groups=None):
+        if type(shortcuts_groups) is str:
+            self.shortcuts_groups = deserialize_shortcuts_cache(
+                    shortcuts_groups)
+        elif type(shortcuts_groups) is list:
+            self.shortcuts_groups = shortcuts_groups
+        elif shortcuts_groups is None:
+            self.shortcuts_groups = []
+        else:
+            raise TypeError
 
     @property
     def shortcuts_groups(self):
@@ -302,7 +307,7 @@ class ModalShortcutsCache():  # {{{
         if type(val) is not list:
             raise TypeError
         for x in val:
-            if not isinstance(ModalShortcutsGroup):
+            if not isinstance(x, ModalShortcutsGroup):
                 raise TypeError
         self._shortcuts_groups = val
         self.cache_clear()
@@ -334,10 +339,13 @@ class ModalShortcutsCache():  # {{{
                 return x
 
     @functools.lru_cache
-    def search_by_name(self, name):
+    def search_by_name(self, shortcuts_group_name, shortcut_name):
         result = []
         for x in self.shortcuts_groups:
-            shortcuts = x.search_by_name(name)
+            if shortcuts_group_name not in x.name:
+                continue
+
+            shortcuts = x.search_by_name(shortcut_name)
             if len(shortcuts) != 0:
                 result.append(x)
         return result
@@ -367,51 +375,6 @@ def _check_letter_type(val):
         return f'Expected str, got {type(val)}'
 
 
-@functools.lru_cache
-def deserialize_shortcuts_cache(serialized_shortcuts_groups):
-    if type(serialized_shortcuts_groups) is not str:
-        raise TypeError
-    deserialized_shortcuts_groups = json.loads(serialized_shortcuts_groups)
-
-    if type(deserialized_shortcuts_groups) is list:
-        for group in deserialized_shortcuts_groups:
-            check_deserialized_shortcuts_group(group)
-    else:
-        raise TypeError
-
-    groups = []
-    for x in deserialized_shortcuts_groups:
-        shortcuts = []
-        for y in x['shortcuts']:
-            elements = {}
-            for k, v in y.items():
-                elements.update({k: v})
-            # probably dont work
-            shortcuts.append(ModalShortcut(elements))
-        name = x['name']
-        groups.append(ModalShortcutsGroup(name, shortcuts))
-    return groups
-
-
-@functools.lru_cache
-def check_deserialized_shortcuts_group(group: dict):
-    if type(group) is dict:
-        if type(group['name']) is not str:
-            raise TypeError
-        if type(group['shortcuts']) is list:
-            for shortcut in group['shortcuts']:
-                if type(shortcut) is dict:
-                    if 'value' not in shortcut:
-                        raise TypeError
-                else:
-                    raise TypeError
-        else:
-            raise TypeError
-    else:
-        raise TypeError
-
-
-@functools.lru_cache
 def find_duplicates(shortcuts):
     duplicates = []
     for x in shortcuts:
@@ -421,12 +384,60 @@ def find_duplicates(shortcuts):
     return duplicates
 
 
-@functools.lru_cache
 def fix_duplicates(shortcuts):
     shortcuts = shortcuts[:]
     for x in find_duplicates(shortcuts):
         shortcuts.remove(x)
     return shortcuts
+# }}}
+
+
+# Deserialization {{{
+@functools.lru_cache
+def deserialize_shortcuts_cache(serialized_shortcuts_groups):
+    if type(serialized_shortcuts_groups) is not str:
+        raise TypeError(type(serialized_shortcuts_groups))
+
+    serialized_shortcuts_groups = json.loads(serialized_shortcuts_groups)
+    if type(serialized_shortcuts_groups) is not list:
+        raise TypeError
+
+    shortcuts_groups = []
+    for x in serialized_shortcuts_groups:
+        shortcuts_groups.append(deserialize_shortcuts_group(x))
+    return shortcuts_groups
+
+
+@functools.lru_cache
+def deserialize_shortcuts_group(serialized_shortcuts_group):
+    if type(serialized_shortcuts_group) is not str:
+        raise TypeError(type(serialized_shortcuts_group))
+
+    serialized_shortcuts_group_2 = json.loads(serialized_shortcuts_group)
+    if type(serialized_shortcuts_group_2) is not dict:
+        raise TypeError
+    for x in {'name', 'shortcuts'}:
+        if x not in serialized_shortcuts_group_2:
+            raise ValueError
+
+    shortcuts = []
+    for x in serialized_shortcuts_group_2['shortcuts']:
+        shortcuts.append(deserialize_shortcut(x))
+    return ModalShortcutsGroup(serialized_shortcuts_group_2['name'],
+                               shortcuts)
+
+
+@functools.lru_cache
+def deserialize_shortcut(serialized_shortcut):
+    if type(serialized_shortcut) is not str:
+        raise TypeError(type(serialized_shortcut))
+
+    s = json.loads(serialized_shortcut)
+    return ModalShortcut(s['value'],
+                         s['letter'],
+                         s['shift'],
+                         s['ctrl'],
+                         s['alt'])
 # }}}
 
 

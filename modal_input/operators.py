@@ -30,17 +30,7 @@ from ..lib.utils.modifier_prop_types import get_all_editable_props
 # from ..lib.utils.modifier_prop_types import get_props_filtered_by_types
 from ..lib.utils.modifier_prop_types import MODIFIER_TYPES
 
-from .shortcuts import (
-                        serialize_kbs,
-                        deserialize_kbs,
-                        check_shortcuts_formatting,
-                        check_shortcuts_group_formatting,
-                        check_shortcut_formatting,
-                        check_shortcut_element_formatting,
-                        filter_shortcuts_group_by_str,
-                        search_modal_operators_shortcuts,
-                        generate_new_shortcut,
-                        )
+from .shortcuts import generate_new_shortcut
 from .shortcuts import ModalShortcutsGroup, ModalShortcutsCache, ModalShortcut
 
 
@@ -65,16 +55,16 @@ class BMTOOLS_OT_start_editing_modal_shortcut(bpy.types.Operator):  # {{{
         prefs = context.preferences.addons['bmtools'].preferences
 
         # Deselect
-        if prefs.bmtool_editing_modal_shortcut_name\
+        if prefs.bmtool_editing_modal_shortcut_value\
                 == self.shortcut_name\
                 and prefs.bmtool_editing_modal_shortcut_group\
                 == self.shortcut_group:
-            prefs.bmtool_editing_modal_shortcut_name = ""
+            prefs.bmtool_editing_modal_shortcut_value = ""
             prefs.bmtool_editing_modal_shortcut_group = ""
 
         # Select
         else:
-            prefs.bmtool_editing_modal_shortcut_name\
+            prefs.bmtool_editing_modal_shortcut_value\
                 = self.shortcut_name
             prefs.bmtool_editing_modal_shortcut_group\
                 = self.shortcut_group
@@ -83,10 +73,10 @@ class BMTOOLS_OT_start_editing_modal_shortcut(bpy.types.Operator):  # {{{
                 self.shortcut_group)
             shortcut = group.find_shortcut_by_value(self.shortcut_name)
 
-            prefs.edited_shortcut_letter = shortcut['letter']
-            prefs.edited_shortcut_shift = shortcut['shift']
-            prefs.edited_shortcut_ctrl = shortcut['ctrl']
-            prefs.edited_shortcut_alt = shortcut['alt']
+            prefs.edited_shortcut_letter = shortcut.letter
+            prefs.edited_shortcut_shift = shortcut.shift
+            prefs.edited_shortcut_ctrl = shortcut.ctrl
+            prefs.edited_shortcut_alt = shortcut.alt
         return {'FINISHED'}
 # }}}
 
@@ -140,7 +130,7 @@ class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):  # {{{
 
     def execute(self, context):
         prefs = context.preferences.addons['bmtools'].preferences
-        group = prefs.find_shortcuts_group_by_name(
+        group = prefs.modal_shortcuts.find_shortcuts_group_by_name(
                 self.shortcut_group)
         shortcut = ModalShortcut(self.shortcut_name,
                                  self.shortcut_letter,
@@ -151,7 +141,7 @@ class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):  # {{{
 
         group.update_shortcut(shortcut)
         prefs.save_modal_shortcuts_cache()
-        prefs.bmtool_editing_modal_shortcut_name = ""
+        prefs.bmtool_editing_modal_shortcut_value = ""
         prefs.bmtool_editing_modal_shortcut_group = ""
         return {'FINISHED'}
 # }}}

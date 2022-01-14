@@ -19,6 +19,7 @@
 
 import math
 # import re
+import json
 
 from bpy.props import (
                        BoolProperty,
@@ -28,17 +29,7 @@ from bpy.props import (
                        EnumProperty,
                        )
 
-from .shortcuts import (
-                        serialize_kbs,
-                        deserialize_kbs,
-                        check_shortcuts_formatting,
-                        check_shortcuts_group_formatting,
-                        check_shortcut_formatting,
-                        check_shortcut_element_formatting,
-                        filter_shortcuts_group_by_str,
-                        search_modal_operators_shortcuts,
-                        generate_new_shortcut,
-                        )
+# from .shortcuts import generate_new_shortcut
 from .shortcuts import ModalShortcutsCache, ModalShortcut, ModalShortcutsGroup
 
 
@@ -50,11 +41,23 @@ class ModalShortcutsPreferences():
 
     __need_modal_operators_shortcuts_cache_refresh = True
     __modal_operator_shortcuts_cache = None
-    modal_shortcuts = None
+    _modal_shortcuts = None
 
     bmtool_modal_operators_serialized_shortcuts: StringProperty(
             name='Modal operators serialized shortcuts.',
             default='')
+
+    @property
+    def modal_shortcuts(self):
+        self.__refresh_modal_opertors_shortcuts_cache()
+        return self._modal_shortcuts
+
+    @modal_shortcuts.setter
+    def modal_shortcuts(self, val):
+        if isinstance(val, ModalShortcutsCache):
+            self._modal_shortcuts = val
+        else:
+            raise TypeError
 
     # Currently edited shortcut props {{{
     # Shortcut and group that is being edited
@@ -100,14 +103,15 @@ class ModalShortcutsPreferences():
             return
 
         for x in result:
-            self.layout.label(x.name)
+            self.layout.label(text=x.name)
             box = layout.box()
             for y in x.search_by_name(self.shortcuts_search_str):
                 if x.name == self.bmtool_editing_modal_shortcut_group\
-                        and y.value == self.bmtool_editing_modal_shortcut_name:
+                        and y.value\
+                        == self.bmtool_editing_modal_shortcut_value:
                     self.__draw_shortcut_editor(box.box(), x.name, y.value, y)
                 else:
-                    self.__draw_shortcut_editor(box.box(), x.name, y.value, y)
+                    self.__draw_shortcut(box.box(), x.name, y.value, y)
     # }}}
 
     # Draw shortcut {{{
@@ -149,7 +153,7 @@ class ModalShortcutsPreferences():
         a = layout.operator("bmtools.add_or_update_modal_shortcut")
 
         a.shortcut_name\
-            = self.bmtool_editing_modal_shortcut_name
+            = self.bmtool_editing_modal_shortcut_value
         a.shortcut_group\
             = self.bmtool_editing_modal_shortcut_group
 
@@ -159,11 +163,13 @@ class ModalShortcutsPreferences():
         a.shortcut_alt = self.edited_shortcut_alt
     # }}}
 
+    # TODO: remove this
     def __refresh_modal_opertors_shortcuts_cache(self):
-        if self.modal_shortcuts is None:
-            self.modal_shortcuts = ModalShortcutsCache(
+        if self._modal_shortcuts is None:
+            self._modal_shortcuts = ModalShortcutsCache(
                     self.bmtool_modal_operators_serialized_shortcuts)
 
+    # TODO: remove this
     def save_modal_shortcuts_cache(self):
         self.bmtool_modal_operators_serialized_shortcuts\
             = self.modal_shortcuts.serialize()
