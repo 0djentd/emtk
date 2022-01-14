@@ -42,20 +42,20 @@ class UIClassVariablesEditorCache(PropertyGroup):  # {{{
     """This prop group used to edit variables in ui."""
 
     # New attribute value
-    var_editor_bool: BoolProperty(False)
-    var_editor_int: IntProperty(0)
-    var_editor_float: FloatProperty(0.0)
-    var_editor_str: StringProperty('')
+    var_editor_bool: BoolProperty(default=False, options={'SKIP_SAVE'})
+    var_editor_int: IntProperty(default=0, options={'SKIP_SAVE'})
+    var_editor_float: FloatProperty(default=0.0, options={'SKIP_SAVE'})
+    var_editor_str: StringProperty(default='', options={'SKIP_SAVE'})
 
     # Attribute name
     # Example: m_list.get_first().parser_variables['by_type'][0]
     # 'cls' should be skipped, as
     # var_editor_class is used insead.
-    var_editor_currently_edited: StringProperty('')
+    var_editor_currently_edited: StringProperty('', options={'SKIP_SAVE'})
 
     # Class name with 'bpy.types.' prefix
     # Example: bpy.types.BMTOOLS_OT_clusters_list_popup
-    var_editor_class: StringProperty('')
+    var_editor_class: StringProperty('', options={'SKIP_SAVE'})
 # }}}
 
 
@@ -281,6 +281,7 @@ class UIClassVariablesEditor():   # {{{
     def __draw_dict(cls,  # {{{
                     layout,
                     attr_str,
+                    attr,
                     *args,
                     draw_name=True,
                     name=None,
@@ -292,6 +293,64 @@ class UIClassVariablesEditor():   # {{{
                     ):
 
         logger.debug('Drawing dict')
+
+        if attr is None:
+            raise TypeError
+
+        prop_group_name = get_prop_group_name(cls)
+        prop_group = getattr(bpy.context.scene, prop_group_name)
+
+        logger.debug('Drawing list')
+        box = layout.box()
+
+        attr_name = get_last_attr_name_in_sequence(attr_str)
+
+        # Editable
+        if attr_str not in prop_group.var_editor_currently_edited:
+            line = f'cls.var_editor_start("{attr_str}")'
+            line = re.sub('cls', cls.get_class_line(), line)
+            if icon is not None:
+                op = box.operator('bmtools.bmtool_invoke_operator_func',
+                                  text=attr_name, icon=icon)
+            else:
+                op = box.operator('bmtools.bmtool_invoke_operator_func',
+                                  text=attr_name)
+            op.func = line
+            return
+
+        # Expanded (active)
+        else:
+            line = f'cls.var_editor_stop("{attr_str}")'
+            line = re.sub('cls', cls.get_class_line(), line)
+
+            if icon is not None:
+                op = box.operator('bmtools.bmtool_invoke_operator_func',
+                                  text=attr_name, icon=icon)
+            else:
+                op = box.operator('bmtools.bmtool_invoke_operator_func',
+                                  text=attr_name)
+            op.func = line
+
+            i = 0
+            for x, y in zip(attr, attr.values()):
+                row = box.row()
+                col = row.column()
+
+                element_str = attr_str + f'[\'{x}\']'
+                logger.debug(f'Drawing element {element_str}')
+
+                # Variable
+                cls.draw_var_editor(col, element_str)
+
+                # Remove element
+                col = row.column()
+                line = f'cls.{attr_str}.pop(\'{x}\')'
+                line = re.sub('cls', cls.get_class_line(), line)
+                op = col.operator('bmtools.bmtool_invoke_operator_func',
+                                  text="", icon='X')
+                op.func = line
+
+                i += 1
         return
     # }}}
 
