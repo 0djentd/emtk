@@ -26,6 +26,7 @@ from ....controller.actions import (
                                     ClustersAction,
                                     ClustersCommand,
                                     )
+from ...utils import check_if_removed, check_obj_ref
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -75,9 +76,9 @@ class ClustersListTrait():
     # ====================
     # Actions
     # ====================
+    @check_if_removed
     def deconstruct(self, clusters):
         """Deconstructs clusters on this layer."""
-        self._check_if_cluster_removed()
         if type(clusters) is not list:
             clusters = [clusters]
         result = []
@@ -100,9 +101,9 @@ class ClustersListTrait():
                 logger.debug(f'Created {x}')
             self._controller.do(x)
 
+    @check_if_removed
     def create(self, cluster_type_instance):
         """Creates cluster or layer on this layer."""
-        self._check_if_cluster_removed()
         logger.info(f'Creating {cluster_type_instance} on layer {self}')
         raise ValueError
 
@@ -116,7 +117,6 @@ class ClustersListTrait():
         Looks in nested clusters.
         Always return actual modifiers.
         """
-        self._check_if_cluster_removed()
         x = self.get_full_actual_modifiers_list()
         return x[i]
 
@@ -126,7 +126,6 @@ class ClustersListTrait():
         Looks in nested clusters.
         Returns None if not found.
         """
-        self._check_if_cluster_removed()
         for x in self.get_full_actual_modifiers_list():
             if x.name == m_name:
                 return x
@@ -134,19 +133,16 @@ class ClustersListTrait():
 
     def get_first_actual_modifier(self):
         """Returns first modifier of first cluster."""
-        self._check_if_cluster_removed()
         x = self.get_full_actual_modifiers_list()
         return x[0]
 
     def get_last_actual_modifier(self):
         """Returns last modifier of last cluster."""
-        self._check_if_cluster_removed()
         x = self.get_full_actual_modifiers_list()
         return x[-1]
 
     def get_actual_modifier_index(self, mod):
         """Returns actual modifier index"""
-        self._check_if_cluster_removed()
         x = self.get_full_actual_modifiers_list()
         return x.index(mod)
 
@@ -250,7 +246,6 @@ class ClustersListTrait():
         Returns full list of clusters, including nested ones.
         Also returns cluster that have other clusters in them.
         """
-        self._check_if_cluster_removed()
         result = []
         for x in self.get_list():
             result.append(x)
@@ -264,7 +259,6 @@ class ClustersListTrait():
         Returns list of this layer clusters including nested ones.
         Only return clusters that contain no other clusters.
         """
-        self._check_if_cluster_removed()
         result = []
         for x in self.get_list():
             if x.has_clusters():
@@ -280,8 +274,6 @@ class ClustersListTrait():
         clusters in it, including nested ones.
         Returns empty list if no such clusters found.
         """
-        self._check_if_cluster_removed()
-
         result = []
         for x in self.get_full_list():
             if x.has_clusters():
@@ -294,8 +286,6 @@ class ClustersListTrait():
         including nested ones.
         Returns empty list if no actual modifiers found.
         """
-        self._check_if_cluster_removed()
-
         result = []
         for x in self.get_deep_list():
             for y in x.get_full_actual_modifiers_list():
@@ -315,7 +305,6 @@ class ClustersListTrait():
     # ==============================
     def get_full_list_by_type(self, m_type):
         """Returns full list of clusters by type."""
-        self._check_if_cluster_removed()
         result = []
         for x in self.get_full_list():
             if m_type == x.get_this_cluster_type():
@@ -324,7 +313,6 @@ class ClustersListTrait():
 
     def get_full_list_by_name(self, m_name):
         """Returns full list of clusters by name."""
-        self._check_if_cluster_removed()
         result = []
         for x in self.get_full_list():
             if m_name in x.get_this_cluster_name():
@@ -333,7 +321,6 @@ class ClustersListTrait():
 
     def get_full_list_by_tags(self, m_tags):
         """Returns full list of clusters by tags."""
-        self._check_if_cluster_removed()
         result = []
         for x in self.get_full_list():
             if m_tags in x.get_this_cluster_tags():
@@ -343,29 +330,29 @@ class ClustersListTrait():
     # ==============================
     # Methods based on get_cluster_or_layer
     # ==============================
-    def get_cluster_or_layer(self, cluster):
+    @check_obj_ref
+    @check_if_removed
+    def get_cluster_or_layer(self, obj):
         """
         Returns cluster or layer that cluster or modifier belongs to.
         Also returns this ModifiersClustersList.
         Looks in all clusters.
         """
-        if type(cluster) is str:
+        if type(obj) is str:
             raise TypeError
 
-        self._check_if_cluster_removed()
-        if cluster is self:
+        if obj is self:
             raise TypeError(
                     'First layer of ExtendedModifiersList is not a cluster.')
 
-        if cluster in self._modifiers_list:
+        if obj in self._modifiers_list:
             return self
 
         g = self.get_full_list()
         for x in g:
-            if cluster in x.get_list():
+            if obj in x.get_list():
                 return x
-
-        raise ValueError(f'Cluster {cluster} is not in this list {self}.')
+        raise ValueError(f'Cluster {obj} is not in this list {self}.')
 
     def get_trace_to(self, cluster):
         """Returns trace to cluster, starting from this layer."""
@@ -390,7 +377,6 @@ class ClustersListTrait():
     # ==============================
     def get_deep_list_by_type(self, m_type):
         """Returns deep list of clusters by type, including nested ones."""
-        self._check_if_cluster_removed()
         result = []
         for x in self.get_deep_list():
             if m_type == x.get_this_cluster_type():
@@ -399,7 +385,6 @@ class ClustersListTrait():
 
     def get_deep_list_by_name(self, m_name):
         """Returns deep list of clusters by name, including nested ones."""
-        self._check_if_cluster_removed()
         result = []
         for x in self.get_deep_list():
             if m_name in x.get_this_cluster_name():
@@ -408,7 +393,6 @@ class ClustersListTrait():
 
     def get_deep_list_by_tags(self, m_tags):
         """Returns deep list of clusters by tags, including nested ones."""
-        self._check_if_cluster_removed()
         result = []
         for x in self.get_deep_list():
             if m_tags in x.get_this_cluster_tags():
@@ -419,20 +403,20 @@ class ClustersListTrait():
     # ==============================
     # Methods based on get_full_actual_modifiers_list
     # ==============================
+    @check_if_removed
     def get_full_actual_modifiers_list_by_type(self, m_type):
         """Returns full list of actual modifiers by type, including nested ones.
         """
-        self._check_if_cluster_removed()
         result = []
         for x in self.get_full_actual_modifiers_list():
             if x.type == m_type:
                 result.append(x)
         return result
 
+    @check_if_removed
     def get_full_actual_modifiers_list_by_name(self, m_name):
         """Returns full list of actual modifiers by name, including nested ones.
         """
-        self._check_if_cluster_removed()
         result = []
         for x in self.get_full_actual_modifiers_list():
             if m_name in x.name:
@@ -443,9 +427,9 @@ class ClustersListTrait():
     # First and last actual cluster's modifier methods.
     # Used when moving clusters.
     # ==================
+    @check_if_removed
     def recursive_get_first_actual_modifier(self, cluster):
         """Returns first actual modifier of a cluster."""
-        self._check_if_cluster_removed()
         x = self.get_first().has_clusters()
         if x.has_clusters():
             y = x.get_first()
@@ -453,9 +437,9 @@ class ClustersListTrait():
         else:
             return x.get_first()
 
+    @check_if_removed
     def recursive_get_last_actual_modifier(self, cluster):
         """Returns last actual modifier of a cluster."""
-        self._check_if_cluster_removed()
         x = self.get_last().has_clusters()
         if x.has_clusters():
             y = x.get_last()
@@ -466,6 +450,7 @@ class ClustersListTrait():
     # ===============================
     # Renaming objects
     # ===============================
+    @check_if_removed
     def rename_cluster(self, cluster, new_cluster_name):
         """
         Renames cluster.
@@ -473,7 +458,6 @@ class ClustersListTrait():
 
         Returns True or False.
         """
-        self._check_if_cluster_removed()
         if not isinstance(cluster, ClusterTrait):
             raise TypeError
 

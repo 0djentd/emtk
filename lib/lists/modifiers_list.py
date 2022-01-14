@@ -33,6 +33,8 @@ from ..controller.answers import (
                                   ActionDefaultDeconstuct
                                   )
 
+from .utils import check_if_removed, check_obj_ref
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -107,25 +109,18 @@ class ModifiersList():
     instead if you want to check if
     there is anything wrong with solved command.
     """
-    def check_if_removed(func):
-        def wrapper_check_if_removed(self, *args, **kwargs):
-            # logger.debug(f'Method is {func}')
-            self._check_if_cluster_removed()
-            return func(self, *args, **kwargs)
-        return wrapper_check_if_removed
-
     @check_if_removed
-    def remove(self, cluster=None):
+    @check_obj_ref
+    def remove(self, obj=None):
         """
         Removes cluster or modifier from this list.
         If cluster is None, removes cluster itself.
         """
-        cluster = self._check_cluster_or_modifier(cluster)
-        logger.info(f'Removing {cluster} on layer {self}')
+        logger.info(f'Removing {obj} on layer {self}')
 
-        if cluster is None:
-            cluster = self
-        x = ClustersAction('REMOVE', cluster)
+        if obj is None:
+            obj = self
+        x = ClustersAction('REMOVE', obj)
         x = ClustersCommand(x,
                             affect_clusters=True,
                             affect_modifiers=True,
@@ -135,17 +130,17 @@ class ModifiersList():
         self._controller.do(x)
 
     @check_if_removed
-    def apply(self, cluster=None):
+    @check_obj_ref
+    def apply(self, obj=None):
         """
         Removes cluster or modifier from this list.
         If cluster is None, applies cluster itself.
         """
-        cluster = self._check_cluster_or_modifier(cluster)
-        logger.info(f'Applying {cluster} on layer {self}')
+        logger.info(f'Applying {obj} on layer {self}')
 
-        if cluster is None:
-            cluster = self
-        x = ClustersAction('APPLY', cluster)
+        if obj is None:
+            obj = self
+        x = ClustersAction('APPLY', obj)
         x = ClustersCommand(x,
                             affect_clusters=True,
                             affect_modifiers=True,
@@ -154,34 +149,34 @@ class ModifiersList():
                             )
         self._controller.do(x)
 
-    def move_up(self, cluster):
+    def move_up(self, obj):
         """Moves cluster or modifier in this list.
         Returns True, if successfully moved cluster or modifier.
         """
-        return self._move(cluster, direction='UP')
+        return self._move(obj, direction='UP')
 
-    def move_down(self, cluster):
+    def move_down(self, obj):
         """Moves cluster or modifier in this list.
         Returns True, if successfully moved cluster or modifier.
         """
-        return self._move(cluster, direction='DOWN')
+        return self._move(obj, direction='DOWN')
 
     @check_if_removed
-    def _move(self, cluster, direction, allow_deconstruct=False):
+    @check_obj_ref
+    def _move(self, obj, direction, allow_deconstruct=False):
         """Moves cluster or modifier in this list.
         If allow_deconstruct is true, skips check
         for position in list.
 
         Returns None or False.
         """
-        cluster = self._check_cluster_or_modifier(cluster)
-        logger.info(f'Moving {cluster} on layer {self}')
+        logger.info(f'Moving {obj} on layer {self}')
         logger.debug(f'Direction is {direction} allow_deconstruct={self}')
         if len(self._modifiers_list) < 2:
             logger.info('Not enough modifiers.')
             return False
 
-        i = self._modifiers_list.index(cluster)
+        i = self._modifiers_list.index(obj)
 
         if direction == 'UP':
             if i == 0 and not allow_deconstruct:
@@ -204,7 +199,7 @@ class ModifiersList():
         length = len(
                 cluster_to_move_through.get_full_actual_modifiers_list())
 
-        x = ClustersAction('MOVE', cluster)
+        x = ClustersAction('MOVE', obj)
         x_2 = ClustersAction('MOVE', cluster_to_move_through)
         x_2.dry = True
 
@@ -239,22 +234,22 @@ class ModifiersList():
         return True
 
     @check_if_removed
-    def move_to_index(self, mod, i):
+    @check_obj_ref
+    def move_to_index(self, obj, i):
         """Moves cluster to index. Returns True if moved modifier."""
-        mod = self._check_cluster_or_modifier(mod)
         # TODO: not tested
-        if i < self.get_list_length():
-            m_i = self.get_index(mod)
+        if i < len(self._modifiers_list):
+            m_i = self.get_index(obj)
             d_i = i - m_i
             x = 0
             if d_i > 0:
                 while x <= d_i:
-                    self.move_up(mod)
+                    self.move_up(obj)
                     x += 1
                 return True
             elif d_i < 0:
                 while x >= d_i:
-                    self.move_up(mod)
+                    self.move_up(obj)
                     x -= 1
                 return True
 
@@ -262,6 +257,7 @@ class ModifiersList():
     def ask(self, action):
         self._actions[action.verb].ask(action)
 
+    # TODO: remove this
     @check_if_removed
     def do(self, action):
         """
@@ -349,9 +345,7 @@ class ModifiersList():
         """
         if not isinstance(action_answer, ClusterActionAnswer):
             raise TypeError
-
         self._actions.update({action_answer.action_type: action_answer})
-        return
     # }}}
 
     # Modifiers list utils. {{{
@@ -409,6 +403,8 @@ class ModifiersList():
         If two references of same object, returns list
         with one object.
         """
+        mod1 = self._check_cluster_or_modifier(mod1)
+        mod2 = self._check_cluster_or_modifier(mod2)
 
         if (mod1 is None) or (mod2 is None):
             raise TypeError
@@ -507,7 +503,7 @@ class ModifiersList():
 
         # Offset for iterating over list
         x = 1
-        m_list_len = self.get_list_length()
+        m_list_len = len(self._modifiers_list) 
         while x < m_list_len + 1:
 
             # y = index of modifier that should be returned
@@ -532,7 +528,7 @@ class ModifiersList():
 
         # Offset for iterating over list
         x = 1
-        m_list_len = self.get_list_length()
+        m_list_len = len(self._modifiers_list)
         while x < m_list_len + 1:
             y = self.get_index(mod) + x
             if y >= m_list_len:
@@ -552,7 +548,7 @@ class ModifiersList():
         """
 
         x = self.get_index(mod)
-        y = self.get_list_length()
+        y = len(self._modifiers_list)
 
         if y > 0:
             if x > 0:
@@ -572,7 +568,7 @@ class ModifiersList():
         """
 
         x = self.get_index(mod)
-        y = self.get_list_length()
+        y = len(self._modifiers_list)
 
         if x < (y - 1):
             return self.get_by_index(x+1)
@@ -597,7 +593,7 @@ class ModifiersList():
 
         # Offset for iterating over list
         x = 1
-        m_list_len = self.get_list_length()
+        m_list_len = len(self._modifiers_list)
         while x < m_list_len + 1:
             y = self.get_index(mod) - x
             if y < 0:
