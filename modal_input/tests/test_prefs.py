@@ -19,6 +19,7 @@
 
 import unittest
 
+from ..shortcuts import ModalShortcut
 from ..shortcuts import generate_new_shortcut
 from ..shortcuts import _get_next_letter_in_shortcut_name
 
@@ -26,20 +27,20 @@ from ..shortcuts import _get_next_letter_in_shortcut_name
 class UtilsTests(unittest.TestCase):
 
     def test_generate_new_shortcut(self):
-        props_names = {'angle_limit': {},
-                       'array': {},
-                       'segments': {}}
-        result = {}
+        props_names = ['angle_limit',
+                       'array',
+                       'segments']
+        result = []
         for x in props_names:
-            result.update(generate_new_shortcut(x, result))
+            result.append(generate_new_shortcut(x, result))
 
-        result = result['array']
-        result_expected = {'letter': 'A',
-                           'shift': True,
-                           'ctrl': False,
-                           'alt': False}
-
-        self.assertEqual(result, result_expected)
+        result = result[1]
+        result_expected = ModalShortcut('array', 'A', True, False, False)
+        f = True
+        for x in {'letter', 'shift', 'ctrl', 'alt', 'value'}:
+            if getattr(result, x) != getattr(result_expected, x):
+                f = False
+        self.assertTrue(f)
 
     def test_get_next_letter_in_name(self):
         shortcut_name = 'angle_limit'

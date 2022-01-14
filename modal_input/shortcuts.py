@@ -107,18 +107,22 @@ class ModalShortcut():  # {{{
 
     @description.setter
     def description(self, d):
-        if type(d) is not str:
-            raise TypeError
-        self._description = d
+        if d is None:
+            self._description = 'No description'
+        elif type(d) is str:
+            self._description = d
+        else:
+            raise TypeError(f'Expected None or str, got {type(d)}')
     # }}}
 
     def compare(self, obj):
         """Compare with bpy.types.event or another ModalShortcut."""
-        return self.__compare_mappings(obj.letter,
-                                       obj.shift,
-                                       obj.ctrl,
-                                       obj.alt)
+        return self._compare_mappings(obj.letter,
+                                      obj.shift,
+                                      obj.ctrl,
+                                      obj.alt)
 
+    @functools.lru_cache
     def _compare_mappings(self, letter, shift, ctrl, alt):
         if letter != self.letter:
             return
@@ -134,12 +138,12 @@ class ModalShortcut():  # {{{
         line = self.letter
         for x in _MAPPING:
             if getattr(self, x):
-                line = line + ' + {x}'
+                line = line + f' + {x}'
         line = line + ': ' + self.value
         return line
 
     def clear_cache(self):
-        self._compare_mappings.clear_cache()
+        self._compare_mappings.cache_clear()
 
     def serialize(self):
         result = {'value': self.value,
@@ -380,9 +384,7 @@ def fix_duplicates(shortcuts):
 # }}}
 
 
-# Utils {{{
-def generate_new_shortcut(
-                          shortcut_value: str,
+def generate_new_shortcut(shortcut_value: str,  # {{{
                           already_existing_shortcuts: list = [],
                           max_iterations=512) -> dict:
     """Generates new unique modal operator shortcut object."""
@@ -412,6 +414,7 @@ def generate_new_shortcut(
 
     if len(already_existing_shortcuts) == 0:
         return ModalShortcut(shortcut_value,
+                             shortcut_elements['letter'],
                              shortcut_elements['shift'],
                              shortcut_elements['ctrl'],
                              shortcut_elements['alt'],
@@ -434,8 +437,8 @@ def generate_new_shortcut(
 
             # Props that are same.
             same = []
-            for z in _MODIFIERS + 'letter':
-                if getattr(x, z) == shortcut_elements[z]
+            for z in _MAPPING:
+                if getattr(x, z) == shortcut_elements[z]:
                     same.append(z)
 
             # If at least one element is different, check next.
@@ -471,12 +474,14 @@ def generate_new_shortcut(
             checking = False
 
     return ModalShortcut(shortcut_value,
+                         shortcut_elements['letter'],
                          shortcut_elements['shift'],
                          shortcut_elements['ctrl'],
                          shortcut_elements['alt'],
                          )
 
 
+@functools.lru_cache
 def _get_next_letter_in_shortcut_name(shortcut_value, index):
     """
     Example 1:
