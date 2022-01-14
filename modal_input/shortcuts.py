@@ -273,7 +273,7 @@ class ModalShortcutsGroup():  # {{{
 # }}}
 
 
-class ModalShortcutsCache():
+class ModalShortcutsCache():  # {{{
     """Object that represents modal shortcuts groups."""
 
     def __init__(self, serialized_shortcuts_groups):
@@ -301,6 +301,7 @@ class ModalShortcutsCache():
             serialized_shortcuts_groups.append(x.serialize())
         result = json.dumps(serialized_shortcuts_groups)
         return result
+# }}}
 
 
 # Utils {{{
@@ -376,126 +377,6 @@ def fix_duplicates(shortcuts):
     for x in find_duplicates(shortcuts):
         shortcuts.remove(x)
     return shortcuts
-# }}}
-
-
-# Serialization {{{
-def serialize_kbs(shortcuts: dict) -> str:
-    """Serialize json dict with shortcuts."""
-    check_shortcuts_formatting(shortcuts)
-
-    kbs = json.dumps(shortcuts)
-
-    if not isinstance(kbs, str):
-        raise TypeError
-    if deserialize_kbs(kbs) != shortcuts:
-        raise ValueError
-    return kbs
-
-
-def deserialize_kbs(kbs: str) -> dict:
-    """Deserialize json string with shortcuts."""
-    if not isinstance(kbs, str):
-        raise TypeError
-    shortcuts = json.loads(kbs)
-    check_shortcuts_formatting(shortcuts)
-    return shortcuts
-# }}}
-
-
-# Checks {{{
-def check_shortcuts_formatting(shortcuts: dict) -> bool:
-    if not isinstance(shortcuts, dict):
-        raise TypeError(f'Expected dict, got {type(shortcuts)}')
-    for x in shortcuts:
-        check_shortcuts_group_formatting(shortcuts[x])
-
-
-def check_shortcuts_group_formatting(shortcuts_group: dict) -> bool:
-    if not isinstance(shortcuts_group, dict):
-        raise TypeError(f'Expected dict, got {type(shortcuts_group)}')
-    for y in shortcuts_group.values():
-        check_shortcut_formatting(y)
-
-
-def check_shortcut_formatting(shortcut):
-    if not isinstance(shortcut, dict):
-        raise TypeError(f'Expected dict, got {type(shortcut)}')
-    e = False
-    for x in shortcut:
-        if isinstance(shortcut[x], dict):
-            e = x
-    if e is not False:
-        shortcut = shortcut[e]
-    if len(shortcut) < 4:
-        raise ValueError
-    g = {'letter', 'shift', 'ctrl', 'alt'}
-    for x in g:
-        if x not in shortcut:
-            raise ValueError(f'Expected {x}, got {shortcut}')
-    for x, y in zip(shortcut.keys(), shortcut.values()):
-        check_shortcut_element_formatting(x, y)
-    return True
-
-
-def check_shortcut_element_formatting(element_name, element):
-    if element_name == 'letter':
-        if not isinstance(element, str):
-            raise TypeError
-        if len(element) != 1:
-            raise ValueError
-        if element not in string.ascii_uppercase:
-            if element in string.ascii_lowercase:
-                element = element.upper()
-            else:
-                raise ValueError
-    elif element_name in {'shift', 'alt', 'ctrl'}:
-        if not isinstance(element, bool):
-            raise TypeError
-    elif element_name == 'sens':
-        if not isinstance(element, float):
-            raise TypeError
-
-    if not isinstance(element, str)\
-            and not isinstance(element, bool)\
-            and not isinstance(element, int)\
-            and not isinstance(element, float):
-        raise TypeError(f'Expected str, bool, int or float, got {element}')
-# }}}
-
-
-# Filtering {{{
-def filter_shortcuts_group_by_str(
-        shortcuts: dict, s: str) -> dict:
-    """Filters shortcuts in a shortcuts group by name.
-
-    Returns new shortcuts group.
-    """
-    result = {}
-    for x, z in zip(
-            shortcuts.keys(),
-            shortcuts.values()):
-        if s in x:
-            result.update({x: z})
-    return result
-
-
-def search_modal_operators_shortcuts(
-        shortcuts: dict, shortcut_name: str) -> dict:
-    """Filters shortcuts groups dict by shortcut name.
-
-    Returns new shortcuts groups dict.
-    """
-    if not isinstance(shortcut_name, str):
-        raise TypeError
-
-    result = {}
-    for x, y in zip(shortcuts.keys(), shortcuts.values()):
-        f = filter_shortcuts_group_by_str(y, shortcut_name)
-        if len(f) > 0:
-            result.update({x: f})
-    check_shortcuts_formatting(result)
-    return result
 # }}}
 
 
@@ -599,7 +480,6 @@ def generate_new_shortcut(
             checking = False
 
     shortcut = {shortcut_name: shortcut}
-    check_shortcut_formatting(shortcut)
     for x, y in zip(already_existing_shortcuts.keys(),
                     already_existing_shortcuts.values()):
         if shortcut_name == x:

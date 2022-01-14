@@ -55,25 +55,10 @@ class ModalShortcutsPreferences():
     """
     Serialized keyboard shortcuts to be used in adaptive modifiers
     editor.
-
-    Examples:
-    kbs = {
-           # Group
-           'bevel': {
-                     # Prop
-                     'angle_limit': {'letter': 'A',
-                                     'shift': True,
-                                     'ctrl': False,
-                                     'alt': False,
-                                     'sens': 0.005
-                                     }
-                     }
-           }
-    {{{
     """
     bmtool_modal_operators_serialized_shortcuts: StringProperty(
             name='Modal operators serialized shortcuts.',
-            default='{"BEVEL": {"angle_limit": {"letter": "A", "shift": false, "ctrl": false, "alt": false, "sens": 0.0005}}}'
+            default=''
             )
     # }}}
 
@@ -87,7 +72,6 @@ class ModalShortcutsPreferences():
     edited_shortcut_shift: BoolProperty(name="Shift", default=False)
     edited_shortcut_ctrl: BoolProperty(name="Ctrl", default=False)
     edited_shortcut_alt: BoolProperty(name="Alt", default=False)
-    edited_shortcut_sens: FloatProperty(name="Sens", default=1)
 
     # This is search field
     shortcuts_groups_search_str: StringProperty(
@@ -235,8 +219,6 @@ class ModalShortcutsPreferences():
         col.prop(self, "edited_shortcut_ctrl")
         col = row.column()
         col.prop(self, "edited_shortcut_alt")
-        col = row.column()
-        col.prop(self, "edited_shortcut_sens")
 
         a = layout.operator("bmtools.add_or_update_modal_shortcut")
 
@@ -249,89 +231,4 @@ class ModalShortcutsPreferences():
         a.shortcut_shift = self.edited_shortcut_shift
         a.shortcut_ctrl = self.edited_shortcut_ctrl
         a.shortcut_alt = self.edited_shortcut_alt
-        a.shortcut_sens = self.edited_shortcut_sens
-    # }}}
-
-    # Cache {{{
-    def get_modal_operators_shortcuts_group(
-            self, group_name: str, strict_checks=False) -> dict:
-        """This method should be used to get shortcuts in operator."""
-        if not isinstance(group_name, str):
-            raise TypeError
-
-        self.__refresh_modal_opertors_shortcuts_cache()
-        if group_name in self.__modal_operator_shortcuts_cache:
-            g = self.__modal_operator_shortcuts_cache[group_name]
-            check_shortcuts_group_formatting(g)
-            return g
-        else:
-            print(f'No modal operators shortcuts group named {group_name}')
-            if strict_checks:
-                raise ValueError
-            else:
-                return {}
-
-    def refresh_modal_opertors_shortcuts_cache(self):
-        self.__refresh_modal_opertors_shortcuts_cache()
-
-    def __refresh_modal_opertors_shortcuts_cache(self):
-        """Load serialized shortcuts from json str."""
-        if not self.__need_modal_operators_shortcuts_cache_refresh:
-            return
-        self.__modal_operator_shortcuts_cache = deserialize_kbs(
-                    self.bmtool_modal_operators_serialized_shortcuts)
-        self.__need_modal_operators_shortcuts_cache_refresh = False
-
-    def add_modal_operators_shortcuts_group(self, group_name: str) -> bool:
-        """Add new modal operators shortcuts group."""
-        if not isinstance(group_name, str):
-            raise TypeError
-
-        self.__refresh_modal_opertors_shortcuts_cache()
-        if group_name not in self.__modal_operator_shortcuts_cache:
-            g = {group_name: {}}
-            self.__modal_operator_shortcuts_cache.update(g)
-            return True
-        return False
-
-    def add_modal_operators_shortcut(
-            self, group_name: str, shortcut: dict) -> bool:
-        """Add new modal operators shortcut.
-
-        This method only edits cache, not serialized str.
-        save_modal_operators_shortcuts_cache should be used after editing.
-
-        Expecting dict with dicts as its values.
-        Example:
-        {"angle_limit": {"letter": "A",
-                         "shift": false,
-                         "ctrl": false,
-                         "alt": false,
-                         "sens": 0.0005}}
-        """
-
-        print(f'Adding {shortcut}')
-        if not isinstance(group_name, str):
-            raise TypeError
-        if not isinstance(shortcut, dict):
-            raise TypeError
-        for x in shortcut:
-            if not isinstance(shortcut[x], dict):
-                raise TypeError
-            if len(shortcut[x]) < 4:
-                raise ValueError(shortcut)
-        if len(shortcut) > 1:
-            raise ValueError
-
-        for x, y in zip(shortcut.keys(), shortcut.values()):
-            check_shortcut_formatting(shortcut[x])
-
-        self.add_modal_operators_shortcuts_group(group_name)
-        self.__modal_operator_shortcuts_cache[group_name].update(shortcut)
-
-    def save_modal_operators_shortcuts_cache(self):
-        """Saves modal operators shortcuts cache to prop."""
-
-        s = serialize_kbs(self.__modal_operator_shortcuts_cache)
-        self.bmtool_modal_operators_serialized_shortcuts = s
     # }}}
