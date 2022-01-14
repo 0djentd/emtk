@@ -49,7 +49,7 @@ class ModalShortcut():  # {{{
         if c:
             raise TypeError(c)
         self._letter = val
-        self.clear_cache()
+        self.cache_clear()
 
     @property
     def shift(self):
@@ -60,7 +60,7 @@ class ModalShortcut():  # {{{
         if type(val) is not bool:
             raise TypeError
         self._shift = val
-        self.clear_cache()
+        self.cache_clear()
 
     @property
     def ctrl(self):
@@ -71,7 +71,7 @@ class ModalShortcut():  # {{{
         if type(val) is not bool:
             raise TypeError
         self._ctrl = val
-        self.clear_cache()
+        self.cache_clear()
 
     @property
     def alt(self):
@@ -82,7 +82,7 @@ class ModalShortcut():  # {{{
         if type(val) is not bool:
             raise TypeError
         self._alt = val
-        self.clear_cache()
+        self.cache_clear()
     # }}}
 
     @property
@@ -98,7 +98,7 @@ class ModalShortcut():  # {{{
         else:
             raise TypeError
         self._value = value
-        self.clear_cache()
+        self.cache_clear()
 
     @property
     def description(self):
@@ -142,7 +142,7 @@ class ModalShortcut():  # {{{
         line = line + ': ' + self.value
         return line
 
-    def clear_cache(self):
+    def cache_clear(self):
         self.compare_mappings.cache_clear()
 
     def serialize(self):
@@ -176,7 +176,7 @@ class ModalShortcutsGroup():  # {{{
         else:
             raise TypeError
         self._name = val
-        self.clear_cache()
+        self.cache_clear()
 
     @property
     def shortcuts(self):
@@ -190,13 +190,13 @@ class ModalShortcutsGroup():  # {{{
         if self.fix_duplicates(shortcuts):
             raise ValueError
         self._shortcuts = shortcuts
-        self.clear_cache()
+        self.cache_clear()
     # }}}
 
     def update_shortcut(self, shortcut):
         self.remove_shortcut(shortcut)
         self._shortcuts.add(shortcut)
-        self.clear_cache()
+        self.cache_clear()
 
     def remove_shortcut(self, shortcut):
         if not isinstance(shortcut, ModalShortcut):
@@ -230,7 +230,7 @@ class ModalShortcutsGroup():  # {{{
             result = True
 
         if result:
-            self.clear_cache()
+            self.cache_clear()
         return result
 
     @functools.lru_cache
@@ -257,15 +257,24 @@ class ModalShortcutsGroup():  # {{{
             if y:
                 return y
 
+    @functools.lru_cache
+    def search_by_name(self, name):
+        result = []
+        for x in self.shortcuts:
+            if name in x.name:
+                result.append(x)
+        return result
+
     def __str__(self):
         line = f'Group {self.name}, {len(self.shortcuts)} shortcuts.'
         return line
 
-    def clear_cache(self):
-        fix_duplicates.clear_cache()
-        find_duplicates.clear_cache()
-        self.find_shortcut_by_mapping.clear_cache()
-        self.find_shortcut_by_value.clear_cache()
+    def cache_clear(self):
+        fix_duplicates.cache_clear()
+        find_duplicates.cache_clear()
+        self.search_by_name.cache_clear()
+        self.find_shortcut_by_mapping.cache_clear()
+        self.find_shortcut_by_value.cache_clear()
 
     def serialize(self):
         serialized_shortcuts = []
@@ -324,6 +333,15 @@ class ModalShortcutsCache():  # {{{
             if name == x.name:
                 return x
 
+    @functools.lru_cache
+    def search_by_name(self, name):
+        result = []
+        for x in self.shortcuts_groups:
+            shortcuts = x.search_by_name(name)
+            if len(shortcuts) != 0:
+                result.append(x)
+        return result
+
     def serialize(self):
         serialized_shortcuts_groups = []
         for x in self.shortcuts_groups:
@@ -331,6 +349,7 @@ class ModalShortcutsCache():  # {{{
         return json.dumps(serialized_shortcuts_groups)
 
     def cache_clear(self):
+        self.search_by_name.cache_clear()
         self.find_shortcuts_group_by_name.cache_clear()
 # }}}
 

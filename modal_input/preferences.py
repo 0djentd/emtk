@@ -54,8 +54,7 @@ class ModalShortcutsPreferences():
 
     bmtool_modal_operators_serialized_shortcuts: StringProperty(
             name='Modal operators serialized shortcuts.',
-            default=''
-            )
+            default='')
 
     # Currently edited shortcut props {{{
     # Shortcut and group that is being edited
@@ -102,93 +101,41 @@ class ModalShortcutsPreferences():
 
         for x in result:
             self.layout.label(x.name)
+            box = layout.box()
             for y in x.search_by_name(self.shortcuts_search_str):
-                self.__draw_shortcut(y)
+                if x.name == self.bmtool_editing_modal_shortcut_group\
+                        and y.value == self.bmtool_editing_modal_shortcut_name:
+                    self.__draw_shortcut_editor(box.box(), x.name, y.value, y)
+                else:
+                    self.__draw_shortcut_editor(box.box(), x.name, y.value, y)
     # }}}
 
     # Draw shortcut {{{
-    def __draw_shortcuts_groups_dict(
-            self, layout, shortcut_groups_dict: dict):
-        if not isinstance(shortcut_groups_dict, dict):
-            raise TypeError
-
-        layout = layout.box()
-        layout.label(text="Shortcuts")
-        for x, y in zip(
-                shortcut_groups_dict.keys(),
-                shortcut_groups_dict.values()):
-            box = layout.box()
-            self.__draw_shortcuts_group(box, x, y)
-        return
-
-    def __draw_shortcuts_group(
-            self, layout, shortcuts_group_name: str, shortcut_group: dict):
-        if not isinstance(shortcuts_group_name, str):
-            raise TypeError
-        if not isinstance(shortcut_group, dict):
-            raise TypeError
-
-        layout.label(text=shortcuts_group_name)
-        i = 0
-        row = None
-        for x, y in zip(shortcut_group.keys(), shortcut_group.values()):
-            if math.remainder(i, 5) == 0:
-                row = layout.row()
-            col = row.column()
-            self.__draw_shortcut(col, shortcuts_group_name, x, y)
-            i += 1
-            if i == len(shortcut_group.values()):
-                for x in range(int(math.remainder(i, 5))):
-                    col = row.column()
-                    col.label(text="")
-        return
-
     def __draw_shortcut(self,
                         layout,
                         shortcuts_group_name: str,
                         shortcut_name: str,
-                        shortcut: dict):
+                        shortcut):
 
-        if not isinstance(shortcut_name, str):
+        if type(shortcuts_group_name) is not str:
             raise TypeError
-        if not isinstance(shortcut, dict):
+        if type(shortcut_name) is not str:
             raise TypeError
-
-        # TODO: remove this
-        if not check_shortcut_formatting(shortcut):
-            layout.label(text='Shortcut is broken.')
-            return
-        # Example:
-        # 'bevel: angle_limit: [letter=A, shift=True, sens=0.0005]'
-        t = f"{shortcut_name}: ["
-        # Shortcut's elements.
-        i = 0
-        for z, v in zip(shortcut.keys(), shortcut.values()):
-            if type(v) == float:
-                t = t + f"{z}={round(v, 2)}"
-            else:
-                t = t + f"{z}={v}"
-
-            if i < (len(shortcut) - 1):
-                t = t + ', '
-            i += 1
-        t = t + "]"
+        if not isinstance(shortcut, ModalShortcut):
+            raise TypeError
 
         b = layout.operator("bmtools.start_editing_modal_shortcut",
-                            text=t)
+                            text=f'{shortcut}')
 
         b.shortcut_name = shortcut_name
         b.shortcut_group = shortcuts_group_name
 
-        if self.bmtool_editing_modal_shortcut_name == shortcut_name\
-                and self.bmtool_editing_modal_shortcut_group\
-                == shortcuts_group_name:
-            self.__draw_shortcut_editor(
-                    layout, shortcut_name, shortcuts_group_name)
-        return
+    def __draw_shortcut_editor(self,
+                               layout,
+                               shortcuts_group_name: str,
+                               shortcut_name: str,
+                               shortcut):
 
-    def __draw_shortcut_editor(
-            self, layout, shortcut_name, shortcuts_group_name):
         row = layout.row()
         col = row.column()
         col.prop(self, "edited_shortcut_letter")
@@ -216,3 +163,7 @@ class ModalShortcutsPreferences():
         if self.modal_shortcuts is None:
             self.modal_shortcuts = ModalShortcutsCache(
                     self.bmtool_modal_operators_serialized_shortcuts)
+
+    def save_modal_shortcuts_cache(self):
+        self.bmtool_modal_operators_serialized_shortcuts\
+            = self.modal_shortcuts.serialize()
