@@ -383,46 +383,39 @@ def fix_duplicates(shortcuts):
 # Utils {{{
 def generate_new_shortcut(
                           shortcut_name: str,
-                          already_existing_shortcuts: dict,
+                          already_existing_shortcuts: list = [],
                           max_iterations=512) -> dict:
-    """Generates new unique modal operator shortcut dict.
+    """Generates new unique modal operator shortcut object."""
 
-    Example:
-    >>> d = {'array': {'letter': 'a', 'shift': True,\
-    ...                'ctrl': False, 'alt': False}}
-    >>> generate_new_shortcut('angle', d, max_iterations=10)
-    <<< {'angle': {'letter': 'a', 'shift': True, 'ctrl': True, 'alt': False}}
-    """
-
-    if not isinstance(shortcut_name, str):
-        raise TypeError
-    if not isinstance(already_existing_shortcuts, dict):
-        raise TypeError
-    for x, y in zip(already_existing_shortcuts.keys(),
-                    already_existing_shortcuts.values()):
-        if not isinstance(x, str):
+    if type(shortcut_name) is str:
+        if len(shortcut_name) == 0:
             raise TypeError
-        if not isinstance(y, dict):
-            raise TypeError
-        k = ['letter', 'shift', 'ctrl', 'alt']
-        for z in k:
-            if z not in y:
-                raise ValueError
-            if type(y[z]) is not str\
-                    and type(y[z]) is not bool\
-                    and type(y[z]) is not float:
+    else:
+        raise TypeError
+    if isinstance(already_existing_shortcuts, list):
+        for x in already_existing_shortcuts:
+            if not isinstance(x, ModalShortcut):
                 raise TypeError
-    shortcut = {}
+    else:
+        raise TypeError
+    if type(max_iterations) is not int:
+        raise TypeError
+
+    shortcut_elements = {'value': shortcut_name}
     k = ['shift', 'ctrl', 'alt']
     for x in k:
-        shortcut.update({x: False})
+        shortcut_elements.update({x: False})
     letter_index = None
-    letter_index, shortcut['letter']\
+    letter_index, shortcut_elements['letter']\
         = _get_next_letter_in_shortcut_name(
                     shortcut_name, letter_index)
 
     if len(already_existing_shortcuts) == 0:
-        return {shortcut_name: shortcut}
+        return ModalShortcut(shortcut_name,
+                             shortcut_elements['shift'],
+                             shortcut_elements['ctrl'],
+                             shortcut_elements['alt'],
+                             )
 
     iteration = 0
     checking = True
@@ -430,21 +423,19 @@ def generate_new_shortcut(
         if iteration > max_iterations:
             raise ValueError
 
-        # If this loop breaks, loop iteration failed.
         reparse = False
 
-        for x, y in zip(already_existing_shortcuts.keys(),
-                        already_existing_shortcuts.values()):
+        # If this loop breaks, parse iteration failed.
+        for x in already_existing_shortcuts:
 
             # Check if shortcut already exists.
-            if x == shortcut_name:
+            if x.value == shortcut_name:
                 raise ValueError(f'{shortcut_name} already exists.')
 
             # Props that are same.
             same = []
-            for z in shortcut:
-                if z in y.keys()\
-                        and y[z] == shortcut[z]:
+            for z in _MODIFIERS + 'letter':
+                if getattr(x, z) == shortcut_elements[z]
                     same.append(z)
 
             # If at least one element is different, check next.
@@ -454,38 +445,36 @@ def generate_new_shortcut(
             # Filter elements.
             e = []
             for z in same:
-                if isinstance(shortcut[z], bool)\
-                        and shortcut[z] is False:
+                if isinstance(shortcut_elements[z], bool)\
+                        and shortcut_elements[z] is False:
                     e.append(z)
 
             # If all boolean elements already True, change letter.
             if len(e) == 0:
-                letter_index, shortcut['letter']\
+                letter_index, shortcut_elements['letter']\
                         = _get_next_letter_in_shortcut_name(
                                 shortcut_name, letter_index)
                 for z in k:
-                    shortcut.update({z: False})
+                    shortcut_elements.update({z: False})
                 reparse = True
                 break
             else:
                 # Change first changeable element
-                shortcut[e[0]] = True
+                shortcut_elements[e[0]] = True
                 reparse = True
                 break
 
+        # Start new iteratiion
         if reparse:
-            # Start new iteratiion
             iteration += 1
         else:
             checking = False
 
-    shortcut = {shortcut_name: shortcut}
-    for x, y in zip(already_existing_shortcuts.keys(),
-                    already_existing_shortcuts.values()):
-        if shortcut_name == x:
-            if shortcut[shortcut_name] == y:
-                raise ValueError(shortcut, x, y)
-    return shortcut
+    return ModalShortcut(shortcut_name,
+                         shortcut_elements['shift'],
+                         shortcut_elements['ctrl'],
+                         shortcut_elements['alt'],
+                         )
 
 
 def _get_next_letter_in_shortcut_name(shortcut_name, index):
@@ -507,8 +496,9 @@ def _get_next_letter_in_shortcut_name(shortcut_name, index):
                 new_index = i
                 letter = x.upper()
                 break
-    elif isinstance(index, int):
-        if (index + 1) >= len(shortcut_name):
+
+    elif type(index) is int:
+        if index + 1 >= len(shortcut_name):
             raise ValueError
         for i, x in enumerate(shortcut_name[index:-1]):
             if i == 0:
