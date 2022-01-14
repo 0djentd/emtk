@@ -136,7 +136,7 @@ class ModalShortcut():  # {{{
 
     def __str__(self):
         line = self.letter
-        for x in _MAPPING:
+        for x in _MAPPING[1:]:
             if getattr(self, x):
                 line = line + f' + {x}'
         line = line + ': ' + self.value
@@ -194,23 +194,26 @@ class ModalShortcutsGroup():  # {{{
     # }}}
 
     def update_shortcut(self, shortcut):
-        self.remove_shortcut(shortcut)
-        self._shortcuts.add(shortcut)
+        index = self.remove_shortcut(shortcut)
+        if index is not None:
+            self._shortcuts.insert(index, shortcut)
+        self._shortcuts.append(shortcut)
         self.cache_clear()
 
     def remove_shortcut(self, shortcut):
         if not isinstance(shortcut, ModalShortcut):
             raise TypeError
 
-        result = False
+        index = None
 
         remove = []
-        for x in self._shortcuts:
+        for i, x in enumerate(self._shortcuts):
             if x == shortcut:
+                index = i
                 remove.append(x)
+
         for x in remove:
             self._shortcuts.remove(x)
-            result = True
 
         d = self.find_shortcut_by_mapping(
                                           shortcut.letter,
@@ -219,19 +222,19 @@ class ModalShortcutsGroup():  # {{{
                                           shortcut.alt,
                                           )
         if d:
+            index = self._shortcuts.index(d)
             self._shortcuts.remove(d)
-            result = True
 
         d = self.find_shortcut_by_value(
                                         shortcut.value,
                                         )
         if d:
+            index = self._shortcuts.index(d)
             self._shortcuts.remove(d)
-            result = True
 
-        if result:
+        if index is not None:
             self.cache_clear()
-        return result
+        return index
 
     @functools.lru_cache
     def find_shortcut_by_value(self, value):
