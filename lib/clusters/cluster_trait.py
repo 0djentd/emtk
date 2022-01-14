@@ -27,6 +27,8 @@ except ModuleNotFoundError:
     from ..dummy_modifiers import DummyBlenderModifier
     _WITH_BPY = False
 
+from ..lists.utils import check_if_removed, check_obj_ref
+
 
 class ClusterTrait():
     """This ModifiersList trait should be in every
@@ -199,36 +201,36 @@ class ClusterTrait():
     def name(self, cluster_name):
         return self.set_this_cluster_custom_name(cluster_name)
 
+    @check_if_removed
     def get_this_cluster_name(self):
         """
         Returns this ModifiersCluster's custom name, or default name.
         """
-        self._check_if_cluster_removed()
         if self.variables['name'] is not None:
             return self.variables['name']
         else:
             return self.parser_variables['name']
 
+    @check_if_removed
     def get_this_cluster_custom_name(self):
         """
         Returns this ModifiersCluster's custom name.
         """
-        self._check_if_cluster_removed()
         return self.variables['name']
 
+    @check_if_removed
     def get_this_cluster_default_name(self):
         """
         Returns this ModifiersCluster's default name.
         """
-        self._check_if_cluster_removed()
         return self.parser_variables['name']
 
+    @check_if_removed
     def set_this_cluster_custom_name(self, cluster_name):
         """
         Sets cluster custom cluster name.
         Returns True or False, if cluster is not editable.
         """
-        self._check_if_cluster_removed()
         if isinstance(cluster_name, str):
             self.variables['name'] = cluster_name
         else:
@@ -239,16 +241,17 @@ class ClusterTrait():
     def type(self):  # {{{
         return self.get_this_cluster_type()
 
+    @check_if_removed
     def get_this_cluster_type(self):
         """
         Returns this ModifiersCluster's type
         """
-        self._check_if_cluster_removed()
         return self.parser_variables['type']
     # }}}
     # }}}
 
     # Methods reserved for subclasses {{{
+    # TODO: remove this
     def modcluster_extra_availability_check(self, modifiers):  # {{{
         """
         Additional method reserved for custom types.
@@ -340,20 +343,20 @@ class ClusterTrait():
     # }}}
 
     # Cluster tags {{{
+    @check_if_removed
     def get_this_cluster_tags(self):
         """
         Returns this ModifiersCluster's custom tags, or default tags.
         """
-        self._check_if_cluster_removed()
         return self.parser_variables['tags'] + self.variables['tags']
 
+    @check_if_removed
     def add_tag_to_this_cluster(self, custom_tag):
         """
         Set this ModifiersCluster's custom tags.
         Takes string as an argument.
         Returns True if successfully added tag.
         """
-        self._check_if_cluster_removed()
         if isinstance(custom_tag, str):
             if custom_tag not in self.variables['tags']:
                 self.variables['tags'].append(custom_tag)
@@ -363,6 +366,7 @@ class ClusterTrait():
         else:
             raise TypeError
 
+    @check_if_removed
     def remove_tag_from_this_cluster(self, custom_tag):
         """
         Remove this ModifiersCluster's custom tag.
@@ -370,7 +374,6 @@ class ClusterTrait():
         Returns True if successfully removed tag.
         Returns False if no such tag or cant remove.
         """
-        self._check_if_cluster_removed()
         y = []
         result = False
         for x in self.variables['tags']:
@@ -385,14 +388,12 @@ class ClusterTrait():
     # }}}
 
     # Initializing cluster  {{{
+    @check_if_removed
     def set_this_cluster_modifiers(self, modifiers):
         """
         Replaces list of modifiers with modifiers.
         Returns True or False, if cluster is not editable.
         """
-
-        self._check_if_cluster_removed()
-
         if not isinstance(modifiers, list):
             raise TypeError
         if len(modifiers) == 0:
@@ -427,6 +428,7 @@ class ClusterTrait():
     # }}}
 
     # Clusters sorting {{{
+    @check_if_removed
     def add_sorting_rule(self, sorting_rule):
         """
         Add new sorting rule for this cluster or
@@ -434,8 +436,6 @@ class ClusterTrait():
 
         Returns True or False, if cluster not sortable.
         """
-
-        self._check_if_cluster_removed()
         if 'NO_SORT' in self.get_this_cluster_tags():
             return False
 
@@ -444,6 +444,7 @@ class ClusterTrait():
         self._sorting_rules.append(sorting_rule)
         return True
 
+    @check_if_removed
     def remove_sorting_rule(self, sorting_rule_name):
         """
         Removes sorting rule by name.
@@ -451,8 +452,6 @@ class ClusterTrait():
         Returns True or False, if no such sorting
         rule.
         """
-
-        self._check_if_cluster_removed()
         removed_sorting_rule = False
         r = []
         for x in self._sorting_rules:
@@ -465,13 +464,13 @@ class ClusterTrait():
             raise ValueError
         return removed_sorting_rule
 
+    @check_if_removed
     def get_sorting_rules(self):
         """
         Returns sorting rules for this cluster.
         Returns empty list, if cluster disabled
         sorting.
         """
-        self._check_if_cluster_removed()
         if 'NO_SORT' in self.get_this_cluster_tags():
             return []
         else:
@@ -498,7 +497,6 @@ class ClusterTrait():
         ModifiersCluster of this type.
         Returns False, if not usable.
         """
-
         for mod in modifiers:
             if _WITH_BPY:
                 if isinstance(mod, bpy.types.Modifier):
@@ -511,23 +509,17 @@ class ClusterTrait():
             else:
                 raise TypeError(f'{mod} is not a modifier or cluster.')
 
-        # How many modifiers are correct?
-        x = 0
-
         # How many modifiers should be correct?
         x2 = len(self.parser_variables['by_type'])
 
-        # Iteration number
-        y = 0
-
         # Iterate over provided modifiers sequence
-        for mod in modifiers:
+        for y, mod in enumerate(modifiers):
 
             modifiers_by_type = self.parser_variables['by_type']
 
             # Check modifiers by types
-            if (modifiers_by_type[y] != ['ANY'])\
-                    and (modifiers_by_type[y] != 'ANY'):
+            if modifiers_by_type[y] != ['ANY']\
+                    and modifiers_by_type[y] != 'ANY':
 
                 # Check modifier type
                 if isinstance(mod, ClusterTrait):
@@ -546,8 +538,8 @@ class ClusterTrait():
                         = self.parser_variables['by_name']
 
             # Check name
-            if (modifiers_by_names[y] != ['ANY'])\
-                    and (modifiers_by_names[y] != 'ANY'):
+            if modifiers_by_names[y] != ['ANY']\
+                    and modifiers_by_names[y] != 'ANY':
 
                 # Check modifiers names
                 if isinstance(mod, ClusterTrait):
@@ -567,12 +559,10 @@ class ClusterTrait():
                         if mod.name != modifiers_by_names[y]:
                             return 'WRONG ACTUAL MODIFIER NAME'
 
-            x += 1
-            if x == x2:
+            if y == x2:
                 return 'FOUND'
-            elif (x < x2) & (x == len(modifiers)):
+            elif y < x2 and y == len(modifiers):
                 return 'CONTINUE'
-            y += 1
 
         # Additional checks reserved for custom types
         additional_checks = self.modcluster_extra_availability_check(
@@ -589,8 +579,6 @@ class ClusterTrait():
         """
         Returns list with info about this cluster visability
         """
-        self._check_if_cluster_removed()
-
         y1 = []
         y2 = []
         y3 = []
@@ -624,17 +612,10 @@ class ClusterTrait():
         Sets this cluster visibility.
         Takes list as an argument.
         """
-        self._check_if_cluster_removed()
-
         if vis_settings is None:
             vis_settings = [None, None, None, None]
 
         y1, y2, y3, y4 = vis_settings
-
-        # y1 = vis_settings[0]
-        # y2 = vis_settings[1]
-        # y3 = vis_settings[2]
-        # y4 = vis_settings[3]
 
         mods = self.get_full_actual_modifiers_list()
 
@@ -662,8 +643,6 @@ class ClusterTrait():
 
         Takes list as an argument.
         """
-        self._check_if_cluster_removed()
-
         result = []
         for x in vis_settings:
             result.append(bool(x))
@@ -687,6 +666,7 @@ class ClusterTrait():
 
     # Utility {{{
     # TODO: allow checking without throwing error
+    @check_if_removed
     def check_this_cluster_sanity(self):
         """
         Checks if this cluster type would work properly.
@@ -700,8 +680,6 @@ class ClusterTrait():
 
         Returns True if not found any errors.
         """
-
-        self._check_if_cluster_removed()
 
         # Additional checks
         if not self.check_this_cluster_sanity_custom():
