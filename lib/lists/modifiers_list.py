@@ -109,8 +109,7 @@ class ModifiersList():
     """
     def check_if_removed(func):
         def wrapper_check_if_removed(self, *args, **kwargs):
-            logger.debug(f'Checking cluster {self} for being removed')
-            logger.debug(f'Method is {func}')
+            # logger.debug(f'Method is {func}')
             self._check_if_cluster_removed()
             return func(self, *args, **kwargs)
         return wrapper_check_if_removed
@@ -463,12 +462,15 @@ class ModifiersList():
     # ===============
     # INFO ABOUT LIST
     # ===============
+    @check_if_removed
     def has_modifier(self, mod):
         """Returns True, if found object in list."""
         if mod in self.get_list():
             return True
         return False
 
+    # TODO: replace this with 'has obj with attr'
+    @check_if_removed
     def has_modifier_by_type(self, m_type):
         """Returns True if found any mod of m_type."""
         for mod in self._modifiers_list:
@@ -476,6 +478,7 @@ class ModifiersList():
                 return True
         return False
 
+    @check_if_removed
     def has_modifier_by_name(self, m_name):
         """Returns True if found any objects with m_name."""
         for mod in self._modifiers_list:

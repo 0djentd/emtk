@@ -31,6 +31,7 @@ import bpy
 from ..lib.utils.modifier_prop_types import get_props_filtered_by_types
 from ..lib.clusters.cluster_trait import ClusterTrait
 from ..classes.editor import ModalClustersEditor
+from ..modal_input.shortcuts import generate_new_shortcut
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -236,14 +237,14 @@ class AdaptiveModalEditor(ModalClustersEditor):
                     try:
                         self.__kbs_modal.update({y: kbs[y]})
                     except KeyError:
-                        s = prefs.generate_new_shortcut(x, y)
+                        s = generate_new_shortcut(y, self.__kbs_modal)
                         self.__kbs_modal.update(s)
             elif x in self.__NOT_MODAL_INPUT_PROP_TYPES:
                 for y in props[x]:
                     try:
                         self.__kbs_no_modal.update({y: kbs[y]})
                     except KeyError:
-                        s = prefs.generate_new_shortcut(x, y)
+                        s = generate_new_shortcut(y, self.__kbs_no_modal)
                         self.__kbs_no_modal.update(s)
             else:
                 raise TypeError

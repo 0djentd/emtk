@@ -49,9 +49,13 @@ class ClusterTrait():
                  **kwargs
                  ):
 
+        # Cluster shouldnt be used, if it is already
+        # removed from clusters list.
+        self._cluster_removed = False
+
         super().__init__(no_obj=True, *args, **kwargs)
 
-        x = {
+        d = {
              'name': cluster_name,
              'type': cluster_type,
              'by_type': modifiers_by_type,
@@ -66,11 +70,7 @@ class ClusterTrait():
 
         # Check dict.
         self.parser_variables\
-            = self._check_cluster_definition(x)
-
-        # Cluster shouldnt be used, if it is already
-        # removed from clusters list.
-        self._cluster_removed = False
+            = self._check_cluster_definition(d)
 
         self.variables = {}
 

@@ -35,6 +35,9 @@ class ModifiersCluster(
     Base class for modifiers cluster type
     """
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     # This method is different in ClustersListTrait.
     def _check_cluster_or_modifier(self, cluster):
         if type(cluster) is str:
@@ -60,9 +63,6 @@ class ModifiersCluster(
         for x in self.get_full_actual_modifiers_list():
             if x.name == name:
                 return x
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
 
     @property
     def modifiers(self):
