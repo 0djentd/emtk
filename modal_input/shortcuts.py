@@ -21,6 +21,265 @@
 import json
 import string
 # import math
+import functools
+
+_MAPPING = ('letter', 'shift', 'ctrl', 'alt')
+
+
+@functools.lru_cache
+def _check_letter_type(val):
+    if type(val) is str:
+        if len(val) == 1:
+            if val not in string.ascii_lowercase:
+                val = val.upper()
+        else:
+            return f'Expected str with length == 1, got {val}'
+    else:
+        return f'Expected str, got {type(val)}'
+
+
+class ModalShortcut():  # {{{
+    """This object represents keyboard shortcut for modal operators."""
+
+    def __init__(self, value, letter, shift, ctrl, alt, description=None):
+        self.value = value
+        self.letter = letter
+        self.shift = shift
+        self.ctrl = ctrl
+        self.alt = alt
+        self.description = description
+
+    # Properties {{{
+    # Mapping {{{
+    @property
+    def letter(self):
+        return self._letter
+
+    @letter.setter
+    def letter(self, val):
+        c = _check_letter_type(val)
+        if c:
+            raise TypeError(c)
+        self._letter = val
+        self.clear_cache()
+
+    @property
+    def shift(self):
+        return self._shift
+
+    @shift.setter
+    def shift(self, val):
+        if type(val) is not bool:
+            raise TypeError
+        self._shift = val
+        self.clear_cache()
+
+    @property
+    def ctrl(self):
+        return self._ctrl
+
+    @ctrl.setter
+    def ctrl(self, val):
+        if type(val) is not bool:
+            raise TypeError
+        self._ctrl = val
+        self.clear_cache()
+
+    @property
+    def alt(self):
+        return self._alt
+
+    @alt.setter
+    def alt(self, val):
+        if type(val) is not bool:
+            raise TypeError
+        self._alt = val
+        self.clear_cache()
+    # }}}
+
+    @property
+    def value(self):
+        """Shortcut value."""
+        return self._value
+
+    @value.setter
+    def value(self, value):
+        if type(value) is str:
+            if len(value) == 0:
+                raise ValueError
+        else:
+            raise TypeError
+        self._value = value
+        self.clear_cache()
+
+    @property
+    def description(self):
+        """Shortcut description. Used in UI."""
+        return self._description
+
+    @description.setter
+    def description(self, d):
+        if type(d) is not str:
+            raise TypeError
+        self._description = d
+    # }}}
+
+    @functools.lru_cache
+    def compare(self, obj):
+        """Compare with bpy.types.event or another ModalShortcut."""
+        for x in _MAPPING:
+            if getattr(self, x) != getattr(obj, x):
+                return
+        return self.value
+
+    def __str__(self):
+        line = self.letter
+        for x in _MAPPING:
+            if getattr(self, x):
+                line = line + ' + {x}'
+        line = line + ': ' + self.value
+        return line
+
+    def clear_cache(self):
+        self.compare.clear_cache()
+# }}}
+
+
+class ModalShortcutsGroup():  # {{{
+    """This object represents keyboard shortcut group for modal operators."""
+
+    def __init__(self, shortcuts=None):
+        if shortcuts is None:
+            shortcuts = []
+        self.shortcuts = shortcuts
+
+    # Properties {{{
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, val):
+        if type(val) is str:
+            if len(val) == 0:
+                raise ValueError
+        else:
+            raise TypeError
+        self._name = val
+        self.clear_cache()
+
+    @property
+    def shortcuts(self):
+        return self._shortcuts[:]
+
+    @shortcuts.setter
+    def shortcuts(self, shortcuts):
+        for x in shortcuts:
+            if not isinstance(x, ModalShortcut):
+                raise TypeError
+        if self.fix_duplicates(shortcuts):
+            raise ValueError
+        self._shortcuts = shortcuts
+        self.clear_cache()
+    # }}}
+
+    def update_shortcut(self, shortcut):
+        self.remove_shortcut(shortcut)
+        self._shortcuts.add(shortcut)
+        self.clear_cache()
+
+    def remove_shortcut(self, shortcut):
+        if not isinstance(shortcut, ModalShortcut):
+            raise TypeError
+
+        result = False
+
+        remove = []
+        for x in self._shortcuts:
+            if x == shortcut:
+                remove.append(x)
+        for x in remove:
+            self._shortcuts.remove(x)
+            result = True
+
+        d = self.find_shortcut_by_mapping(
+                                          shortcut.letter,
+                                          shortcut.shift,
+                                          shortcut.ctrl,
+                                          shortcut.alt,
+                                          )
+        if d:
+            self._shortcuts.remove(d)
+            result = True
+
+        d = self.find_shortcut_by_value(
+                                        shortcut.value,
+                                        )
+        if d:
+            self._shortcuts.remove(d)
+            result = True
+
+        if result:
+            self.clear_cache()
+        return result
+
+    @functools.lru_cache
+    def find_shortcut_by_value(self, value):
+        if type(value) is not str:
+            raise TypeError
+        for x in self.shortcuts:
+            if x.value == value:
+                return x
+
+    @functools.lru_cache
+    def find_shortcut_by_mapping(self, letter, shift, ctrl, alt):
+        c = _check_letter_type(letter)
+        if c:
+            raise TypeError(c)
+
+        m = [shift, ctrl, alt]
+        for x in m:
+            if type(x) is not bool:
+                raise TypeError(f'Expected bool, got {type(x)}')
+
+        for x in self.shortcuts:
+            if x.letter != letter:
+                continue
+            if x.shift != shift:
+                continue
+            if x.ctrl != ctrl:
+                continue
+            if x.alt != alt:
+                continue
+            return x
+
+    @staticmethod
+    @functools.lru_cache
+    def find_duplicates(shortcuts):
+        duplicates = []
+        for x in shortcuts:
+            for y in shortcuts:
+                if x.compare(y) and y not in duplicates:
+                    duplicates.append(x)
+        return duplicates
+
+    @functools.lru_cache
+    def fix_duplicates(self, shortcuts):
+        shortcuts = shortcuts[:]
+        for x in self.find_duplicates(shortcuts):
+            shortcuts.remove(x)
+        return shortcuts
+
+    def __str__(self):
+        line = f'Group {self.name}, {len(self.shortcuts)} shortcuts.'
+        return line
+
+    def clear_cache(self):
+        self.fix_duplicates.clear_cache()
+        self.find_duplicates.clear_cache()
+        self.find_shortcut_by_mapping.clear_cache()
+        self.find_shortcut_by_value.clear_cache()
+# }}}
 
 
 # Serialization {{{
