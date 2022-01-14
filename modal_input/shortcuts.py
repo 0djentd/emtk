@@ -260,6 +260,12 @@ class ModalShortcutsGroup():  # {{{
             if y:
                 return y
 
+    def find_shortcut_by_event(self, event):
+        return self.find_shortcut_by_mapping(event.type,
+                                             event.shift,
+                                             event.ctrl,
+                                             event.alt)
+
     @functools.lru_cache
     def search_by_name(self, shortcut_name):
         result = []

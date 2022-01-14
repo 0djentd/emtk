@@ -18,16 +18,13 @@
 # ##### END GPL LICENSE BLOCK #####
 
 import math
-# import string
 import logging
 # import copy
-# import json
 # import time
 import re
 
 import bpy
 
-# from .bmtool_input import ModalInputOperator
 from ..lib.utils.modifier_prop_types import get_props_filtered_by_types
 from ..lib.clusters.cluster_trait import ClusterTrait
 from ..classes.editor import ModalClustersEditor
@@ -556,6 +553,11 @@ class AdaptiveModalEditor(ModalClustersEditor):
     # }}}
 
     # Props utils {{{
+    def __get_shortcut_value(self, event):
+        s = self.modal_shortcuts.find_shortcut_by_event(event)
+        if s:
+            return s.value
+
     def __get_shortcut_name(self, event) -> str:
         """Returns property name that were mapped to event type."""
         if len(event.type) > 1:
