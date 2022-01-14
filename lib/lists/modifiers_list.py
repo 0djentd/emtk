@@ -107,12 +107,20 @@ class ModifiersList():
     instead if you want to check if
     there is anything wrong with solved command.
     """
+    def check_if_removed(func):
+        def wrapper_check_if_removed(self, *args, **kwargs):
+            logger.debug(f'Checking cluster {self} for being removed')
+            logger.debug(f'Method is {func}')
+            self._check_if_cluster_removed()
+            return func(self, *args, **kwargs)
+        return wrapper_check_if_removed
+
+    @check_if_removed
     def remove(self, cluster=None):
         """
         Removes cluster or modifier from this list.
         If cluster is None, removes cluster itself.
         """
-        self._check_if_cluster_removed()
         cluster = self._check_cluster_or_modifier(cluster)
         logger.info(f'Removing {cluster} on layer {self}')
 
@@ -127,12 +135,12 @@ class ModifiersList():
                             )
         self._controller.do(x)
 
+    @check_if_removed
     def apply(self, cluster=None):
         """
         Removes cluster or modifier from this list.
         If cluster is None, applies cluster itself.
         """
-        self._check_if_cluster_removed()
         cluster = self._check_cluster_or_modifier(cluster)
         logger.info(f'Applying {cluster} on layer {self}')
 
@@ -159,6 +167,7 @@ class ModifiersList():
         """
         return self._move(cluster, direction='DOWN')
 
+    @check_if_removed
     def _move(self, cluster, direction, allow_deconstruct=False):
         """Moves cluster or modifier in this list.
         If allow_deconstruct is true, skips check
@@ -166,7 +175,6 @@ class ModifiersList():
 
         Returns None or False.
         """
-        self._check_if_cluster_removed()
         cluster = self._check_cluster_or_modifier(cluster)
         logger.info(f'Moving {cluster} on layer {self}')
         logger.debug(f'Direction is {direction} allow_deconstruct={self}')
@@ -231,10 +239,10 @@ class ModifiersList():
         self._controller.do([x, x_2])
         return True
 
+    @check_if_removed
     def move_to_index(self, mod, i):
         """Moves cluster to index. Returns True if moved modifier."""
         mod = self._check_cluster_or_modifier(mod)
-        self._check_if_cluster_removed()
         # TODO: not tested
         if i < self.get_list_length():
             m_i = self.get_index(mod)
@@ -251,17 +259,16 @@ class ModifiersList():
                     x -= 1
                 return True
 
+    @check_if_removed
     def ask(self, action):
-        self._check_if_cluster_removed()
         self._actions[action.verb].ask(action)
 
-    # TODO: remove
+    @check_if_removed
     def do(self, action):
         """
         Do batch command, simple command or action on this
         modifiers list elements.
         """
-        self._check_if_cluster_removed()
         if not isinstance(action, list):
             action = [action]
 
@@ -279,18 +286,18 @@ class ModifiersList():
             elif isinstance(x, ClustersAction):
                 self.do_action(x)
 
+    @check_if_removed
     def do_batch(self, batch):
-        self._check_if_cluster_removed()
         for x in batch.commands:
             self.do_command(x)
 
+    @check_if_removed
     def do_command(self, command):
-        self._check_if_cluster_removed()
         for x in command.actions:
             self.do_action(x)
 
+    @check_if_removed
     def do_action(self, action):
-        self._check_if_cluster_removed()
         logger.debug(f'Cluster {self}, action is {action}')
         if action.subject not in self._modifiers_list:
             layer = self.get_cluster_or_layer(action.subject)
@@ -312,22 +319,22 @@ class ModifiersList():
         else:
             raise TypeError
 
+    @check_if_removed
     def _check_batch(self, batch):
-        self._check_if_cluster_removed()
         if not isinstance(batch, ClustersBatchCommand):
             raise TypeError
         for x in batch.commands:
             self._check_command(x)
 
+    @check_if_removed
     def _check_command(self, command):
-        self._check_if_cluster_removed()
         if not isinstance(command, ClustersCommand):
             raise TypeError
         for x in command.actions:
             self._check_action(x)
 
+    @check_if_removed
     def _check_action(self, action):
-        self._check_if_cluster_removed()
         if not isinstance(action, ClustersAction):
             raise TypeError
         for x in self.get_all_clusters_and_modifiers():
@@ -335,6 +342,7 @@ class ModifiersList():
                 return
         raise ValueError
 
+    @check_if_removed
     def add_action_answer(self, action_answer):
         """
         Adds new ClusterActionAnswer to this cluster.
@@ -352,9 +360,10 @@ class ModifiersList():
     # This methods work on _modifiers_list
     # This means that they dont differ simple or nested clusters and modifiers
     # ==============================================
+
+    @check_if_removed
     def get_list(self):
         """Returns list of objects"""
-        self._check_if_cluster_removed()
         return self._modifiers_list
 
     # This methods are different in clusters list.
@@ -370,9 +379,9 @@ class ModifiersList():
     def get_all_clusters_and_modifiers(self):
         return self.get_list()
 
+    @check_if_removed
     def get_list_in_range_not_inclusive(self, mod1, mod2):
         """Returns list of objects between two objects. Not inclusive."""
-        self._check_if_cluster_removed()
 
         if (mod1 is None) or (mod2 is None):
             raise TypeError
@@ -394,13 +403,13 @@ class ModifiersList():
 
         return self._modifiers_list[x:y+1]
 
+    @check_if_removed
     def get_list_in_range_inclusive(self, mod1, mod2):
         """
         Returns list of objects between two objects. Inclusive.
         If two references of same object, returns list
         with one object.
         """
-        self._check_if_cluster_removed()
 
         if (mod1 is None) or (mod2 is None):
             raise TypeError
@@ -417,38 +426,38 @@ class ModifiersList():
             e.append(self._modifiers_list[x])
             return e
 
+    @check_if_removed
     def get_list_length(self):
         """Returns length of list of objects."""
-        self._check_if_cluster_removed()
         return len(self._modifiers_list)
 
+    @check_if_removed
     def get_list_by_type(self, m_type):
         """Returns list of m_type objects."""
-        self._check_if_cluster_removed()
         y = []
         for x in self._modifiers_list:
             if x.type == m_type:
                 y.append(x)
         return y
 
+    @check_if_removed
     def get_by_index(self, i):
         """Returns object by index."""
-        self._check_if_cluster_removed()
         return self._modifiers_list[i]
 
+    @check_if_removed
     def get_index(self, mod):
         """Returns index of object."""
-        self._check_if_cluster_removed()
         return self._modifiers_list.index(mod)
 
+    @check_if_removed
     def get_first(self):
         """Returns first object."""
-        self._check_if_cluster_removed()
         return self._modifiers_list[0]
 
+    @check_if_removed
     def get_last(self):
         """Returns last object."""
-        self._check_if_cluster_removed()
         return self._modifiers_list[-1]
 
     # ===============
@@ -480,17 +489,18 @@ class ModifiersList():
     # 'find' methods that looking for modifiers relatively
     # to modifiers.
     # ------------------------------------
+
+    @check_if_removed
     def find_previous(self, mod, m_type):
-        self._check_if_cluster_removed()
         return self.find_previous_modifier(mod, m_type)
 
+    @check_if_removed
     def find_previous_modifier(self, mod, m_type):
         """
         Returns index of previous
         modifier of m_type type wrt mod
         Returns None if not found any
         """
-        self._check_if_cluster_removed()
 
         # Offset for iterating over list
         x = 1
@@ -506,16 +516,16 @@ class ModifiersList():
                 return self.get_by_index(y)
             x += 1
 
+    @check_if_removed
     def find_next(self, mod, m_type):
-        self._check_if_cluster_removed()
         return self.find_next_modifier(mod, m_type)
 
+    @check_if_removed
     def find_next_modifier(self, mod, m_type):
         """
         Returns index of next modifier of m_type type wrt mod.
         Returns None if not found any.
         """
-        self._check_if_cluster_removed()
 
         # Offset for iterating over list
         x = 1
@@ -528,15 +538,15 @@ class ModifiersList():
                 return self.get_by_index(y)
             x += 1
 
+    @check_if_removed
     def find_previous_any(self, mod):
-        self._check_if_cluster_removed()
         return self.find_previous_modifier_any(mod)
 
+    @check_if_removed
     def find_previous_modifier_any(self, mod):
         """
         Returns any previous modifier wrt mod
         """
-        self._check_if_cluster_removed()
 
         x = self.get_index(mod)
         y = self.get_list_length()
@@ -547,16 +557,16 @@ class ModifiersList():
             else:
                 return self.get_by_index(0)
 
+    @check_if_removed
     def find_next_any(self, mod):
-        self._check_if_cluster_removed()
         return self.find_next_modifier_any(mod)
 
+    @check_if_removed
     def find_next_modifier_any(self, mod):
         """
         Returns any next modifier
         wrt mod
         """
-        self._check_if_cluster_removed()
 
         x = self.get_index(mod)
         y = self.get_list_length()
@@ -568,10 +578,11 @@ class ModifiersList():
     # }}}
 
     # Methods that are looping around list {{{
+    @check_if_removed
     def find_previous_loop(self, mod, m_type):
-        self._check_if_cluster_removed()
         return self.find_previous_modifier_loop(mod, m_type)
 
+    @check_if_removed
     def find_previous_modifier_loop(self, mod, m_type):
         """
         Returns previous
@@ -580,7 +591,6 @@ class ModifiersList():
         Loops around m_list
         Returns None if not found any
         """
-        self._check_if_cluster_removed()
 
         # Offset for iterating over list
         x = 1
@@ -593,10 +603,11 @@ class ModifiersList():
                 return self.get_by_index(y)
             x += 1
 
+    @check_if_removed
     def find_next_loop(self, mod, m_type):
-        self._check_if_cluster_removed()
         return self.find_next_modifier_loop(mod, m_type)
 
+    @check_if_removed
     def find_next_modifier_loop(self, mod, m_type):
         """
         Returns next
@@ -605,7 +616,6 @@ class ModifiersList():
         Loops around m_list
         Returns None if not found any
         """
-        self._check_if_cluster_removed()
 
         # Offset for iterating over list
         x = 1
@@ -621,17 +631,17 @@ class ModifiersList():
                 return self._modifiers_list[y]
             x += 1
 
+    @check_if_removed
     def find_previous_any_loop(self, mod):
-        self._check_if_cluster_removed()
         return self.find_previous_modifier_any_loop(mod)
 
+    @check_if_removed
     def find_previous_modifier_any_loop(self, mod):
         """
         Returns any previous modifier
         wrt mod
         Loops around m_list
         """
-        self._check_if_cluster_removed()
 
         x = self._modifiers_list.index(mod)
         y = len(self._modifiers_list)
@@ -640,17 +650,17 @@ class ModifiersList():
         else:
             return self._modifiers_list[y-1]
 
+    @check_if_removed
     def find_next_any_loop(self, mod):
-        self._check_if_cluster_removed()
         return self.find_next_modifier_any_loop(mod)
 
+    @check_if_removed
     def find_next_modifier_any_loop(self, mod):
         """
         Returns any next modifier
         wrt mod
         Loops around m_list
         """
-        self._check_if_cluster_removed()
 
         x = self._modifiers_list.index(mod)
         y = len(self._modifiers_list)
