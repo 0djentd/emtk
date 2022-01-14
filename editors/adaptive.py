@@ -312,7 +312,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
             return
 
         # Get prop name for this event.
-        prop_name = self.__get_shortcut_name(event)
+        prop_name = self.__get_shortcut_value(event)
 
         if prop_name is not None:
 
@@ -410,8 +410,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
 
     # Simple events {{{
     def __check_if_should_switch_mode(self, event):
-
-        prop_name = self.__get_shortcut_name(event)
+        prop_name = self.__get_shortcut_value(event)
         if prop_name == self.mode:
             logger.info('Switching back to default mode.')
             self.__switch_to_default()
@@ -552,61 +551,12 @@ class AdaptiveModalEditor(ModalClustersEditor):
         return
     # }}}
 
-    # Props utils {{{
+    # Utils {{{
     def __get_shortcut_value(self, event):
         s = self.modal_shortcuts.find_shortcut_by_event(event)
         if s:
             return s.value
 
-    def __get_shortcut_name(self, event) -> str:
-        """Returns property name that were mapped to event type."""
-        if len(event.type) > 1:
-            return
-
-        d = [self.__kbs_modal, self.__kbs_no_modal, self.__kbs_editing]
-        for x in d:
-            a = self.__get_shortcut_from_dict(event, x)
-            if a is not None:
-                return a
-
-    def __get_shortcut_from_dict(self, event, kbs: dict) -> str:
-        if not isinstance(kbs, dict):
-            raise TypeError
-        for x in kbs:
-            if not isinstance(kbs[x], dict):
-                raise TypeError
-
-        logger.debug(f'Trying to get prop for {event.type} in {kbs}')
-        for x in kbs:
-            e = kbs[x]
-            if event.type == e['letter']\
-                    and event.shift == e['shift']\
-                    and event.ctrl == e['ctrl']\
-                    and event.alt == e['alt']:
-                logger.debug(f'found {x} in {kbs}')
-                return x
-
-    def __get_kbs(self, prop_name, props_dicts):
-        if not isinstance(prop_name, str):
-            raise TypeError
-        result = prop_name[0].upper()
-        result = [result, False, False, False]
-        for z in range(4):
-            if z == 0:
-                continue
-            for props in props_dicts:
-                for x in props:
-                    if props[x][0] == result[0]\
-                            and props[x][1] == result[1]\
-                            and props[x][2] == result[2]\
-                            and props[x][3] == result[3]:
-                        result[z] = True
-        if len(result) > 4:
-            raise TypeError
-        return result
-    # }}}
-
-    # Utils {{{
     def __check_event_is_simple(self, event):
         """Checks if event should not be passed to modal input base class."""
         if (event.type in self._ModalInputOperator__MODAL_LETTERS_LIST
@@ -653,31 +603,11 @@ class AdaptiveModalEditor(ModalClustersEditor):
         Example:
         ['Angle Limit: shift + A | 0.00123']
         """
-        result = []
-        d = [self.__kbs_modal, self.__kbs_no_modal, self.__kbs_editing]
-        a = self.__get_props_names_format(d)
-        b = self.__get_props_kbs_format(d)
-        c = self.__get_props_val_format(d)
 
         result = []
-        for x, y, z in zip(a, b, c):
-            e = [x['name'],
-                 y['shortcut'],
-                 z['value']]
-
-            line = ''
-            for f in e:
-                a = f
-                length = len(a)
-                if length < 20:
-                    for h in range(20 - length):
-                        a = a + " "
-                if length > 20:
-                    a = a[0:17] + '...'
-
-                line = line + a
-
-            result.append(line)
+        for x in self.modal_shortcuts:
+            result.append(str(x) + ' ' + self.__get_props_val_format(
+                getattr(self.__mods[0], x.value), x.value))
 
         for x in result:
             if not isinstance(x, str):
@@ -686,62 +616,20 @@ class AdaptiveModalEditor(ModalClustersEditor):
                 raise ValueError
         return result
 
-    def __get_props_names_format(self, d):
-        """
-        [['angle_limit', 'Angle Limit']...]
-        """
-
-        result = []
-
-        # All props mappings
-        d = [self.__kbs_modal, self.__kbs_no_modal, self.__kbs_editing]
-        for a in d:
-            for x in a:
-                name = re.sub('_', ' ', x).title()
-                result.append({'name': name})
-        return result
-
-    def __get_props_kbs_format(self, d):
-        """
-        [['A + shift + ctrl']...]
-        """
-
-        result = []
-        for a in d:
-            for x in a:
-                t = a[x]
-
-                line = ''
-                if t['shift']:
-                    line = line + 'shift + '
-                if t['ctrl']:
-                    line = line + 'ctl + '
-                if t['alt']:
-                    line = line + 'alt + '
-                line = line + f'{t["letter"]}'
-
-                if len(line) == 0:
-                    line = 'No kb shortcut.'
-                result.append({'shortcut': line})
-        return result
-
-    def __get_props_val_format(self, d, round_val=2):
+    def __get_props_val_format(self,
+                               value,
+                               attr_name: str,
+                               round_val: int = 2):
         """
         [['123.456']...]
         """
-
-        result = []
-        for a in d:
-            for x in a:
-                prop_def = self.__mods[0].rna_type.properties[x]
-                val = getattr(self.__mods[0], x)
-                if prop_def.type == 'FLOAT':
-                    if prop_def.subtype in {'ANGLE', 'DEGREES'}:
-                        val = val * math.degrees(1)
-                    val = round(val, round_val)
-                line = str(val)
-                if len(line) == 0:
-                    line = 'No kb shortcut.'
-                result.append({'value': line})
-        return result
+        prop_def = self.__mods[0].rna_type.properties[attr_name]
+        if prop_def.type == 'FLOAT':
+            if prop_def.subtype in {'ANGLE', 'DEGREES'}:
+                value = value * math.degrees(1)
+            value = round(value, round_val)
+        line = str(value)
+        if len(line) == 0:
+            line = 'No kb shortcut.'
+        return line
     # }}}
