@@ -559,9 +559,9 @@ class ClusterTrait():
                         if mod.name != modifiers_by_names[y]:
                             return 'WRONG ACTUAL MODIFIER NAME'
 
-            if y == x2:
+            if y + 1 == x2:
                 return 'FOUND'
-            elif y < x2 and y == len(modifiers):
+            elif y + 1 < x2 and y + 1 == len(modifiers):
                 return 'CONTINUE'
 
         # Additional checks reserved for custom types
