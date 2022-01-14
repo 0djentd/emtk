@@ -382,13 +382,13 @@ def fix_duplicates(shortcuts):
 
 # Utils {{{
 def generate_new_shortcut(
-                          shortcut_name: str,
+                          shortcut_value: str,
                           already_existing_shortcuts: list = [],
                           max_iterations=512) -> dict:
     """Generates new unique modal operator shortcut object."""
 
-    if type(shortcut_name) is str:
-        if len(shortcut_name) == 0:
+    if type(shortcut_value) is str:
+        if len(shortcut_value) == 0:
             raise TypeError
     else:
         raise TypeError
@@ -401,17 +401,17 @@ def generate_new_shortcut(
     if type(max_iterations) is not int:
         raise TypeError
 
-    shortcut_elements = {'value': shortcut_name}
+    shortcut_elements = {'value': shortcut_value}
     k = ['shift', 'ctrl', 'alt']
     for x in k:
         shortcut_elements.update({x: False})
     letter_index = None
     letter_index, shortcut_elements['letter']\
         = _get_next_letter_in_shortcut_name(
-                    shortcut_name, letter_index)
+                    shortcut_value, letter_index)
 
     if len(already_existing_shortcuts) == 0:
-        return ModalShortcut(shortcut_name,
+        return ModalShortcut(shortcut_value,
                              shortcut_elements['shift'],
                              shortcut_elements['ctrl'],
                              shortcut_elements['alt'],
@@ -429,8 +429,8 @@ def generate_new_shortcut(
         for x in already_existing_shortcuts:
 
             # Check if shortcut already exists.
-            if x.value == shortcut_name:
-                raise ValueError(f'{shortcut_name} already exists.')
+            if x.value == shortcut_value:
+                raise ValueError(f'{shortcut_value} already exists.')
 
             # Props that are same.
             same = []
@@ -453,7 +453,7 @@ def generate_new_shortcut(
             if len(e) == 0:
                 letter_index, shortcut_elements['letter']\
                         = _get_next_letter_in_shortcut_name(
-                                shortcut_name, letter_index)
+                                shortcut_value, letter_index)
                 for z in k:
                     shortcut_elements.update({z: False})
                 reparse = True
@@ -470,14 +470,14 @@ def generate_new_shortcut(
         else:
             checking = False
 
-    return ModalShortcut(shortcut_name,
+    return ModalShortcut(shortcut_value,
                          shortcut_elements['shift'],
                          shortcut_elements['ctrl'],
                          shortcut_elements['alt'],
                          )
 
 
-def _get_next_letter_in_shortcut_name(shortcut_name, index):
+def _get_next_letter_in_shortcut_name(shortcut_value, index):
     """
     Example 1:
     >>> get_next_letter_in_shortcut_name('angle_limit', 4)
@@ -487,20 +487,20 @@ def _get_next_letter_in_shortcut_name(shortcut_name, index):
     >>> get_next_letter_in_shortcut_name('angle_limit', None)
     <<< 0, A
     """
-    if not isinstance(shortcut_name, str):
+    if not isinstance(shortcut_value, str):
         raise TypeError
 
     if index is None:
-        for i, x in enumerate(shortcut_name):
+        for i, x in enumerate(shortcut_value):
             if x in string.ascii_letters:
                 new_index = i
                 letter = x.upper()
                 break
 
     elif type(index) is int:
-        if index + 1 >= len(shortcut_name):
+        if index + 1 >= len(shortcut_value):
             raise ValueError
-        for i, x in enumerate(shortcut_name[index:-1]):
+        for i, x in enumerate(shortcut_value[index:-1]):
             if i == 0:
                 continue
             if x in string.ascii_letters:
