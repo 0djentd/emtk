@@ -150,7 +150,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
     __DEFAULT_MODE = 'NO_MODE'
     # }}}
 
-    # Variables {{{
+    # Constructor {{{
     # Currently active mode.
     # self.mode
 
@@ -164,24 +164,14 @@ class AdaptiveModalEditor(ModalClustersEditor):
     # Property rna_type struct
     # self.__prop_def
 
-    # Mappings.
-    # Lists of modifier props names with mapping.
-    # Elements:
-    # {'prop_name': ('event.type', 'event.shift', 'event.ctl', 'event.alt')}
-    # Example:
-    # __kbs_modal = {
-    #                'angle_limit': ('A', False, False, False),
-    #                'segments': ('S', False, False, False),
-    #                }
+    # Sets of modifier props names.
     # Modal editing prop only.
-    # __kbs_modal = {}
+    # __kbs_modal = set()
     # Not modal prop editing.
-    # __kbs_no_modal = {}
+    # __kbs_no_modal = set()
     # Not a modifier prop.
-    # __kbs_editing = {}
-    # }}}
+    # __kbs_editing = set()
 
-    # Constructor {{{
     def __init__(self, *args, allow_cluster=True, **kwargs):
         super().__init__(*args,
                          name='Adaptive_Editor',
@@ -212,37 +202,25 @@ class AdaptiveModalEditor(ModalClustersEditor):
 
         self.__switch_to_default()
 
-        # Modal editing prop only.
-        self.__kbs_modal = {}
-
-        # Not modal prop editing.
-        self.__kbs_no_modal = {}
-
-        # Not a modifier prop.
-        self.__kbs_editing = {}
+        self.__kbs_modal = set()
+        self.__kbs_no_modal = set()
+        self.__kbs_editing = set()
 
         mods = self.__get_all_clusters_modifiers(clusters)
         mod = mods[0]
         self.__mods = mods
         prefs = bpy.context.preferences.addons['bmtools'].preferences
-        kbs = prefs.get_modal_operators_shortcuts_group(mod.type)
+        s = prefs.modal_shortcuts.find_shortcuts_group_by_name(mod.type)
+        self.modal_shortcuts = s
 
         props = get_props_filtered_by_types(mods[0])
         for x in props:
             if x in self.__MODAL_INPUT_PROP_TYPES:
                 for y in props[x]:
-                    try:
-                        self.__kbs_modal.update({y: kbs[y]})
-                    except KeyError:
-                        s = generate_new_shortcut(y, self.__kbs_modal)
-                        self.__kbs_modal.update(s)
+                    self.__kbs_modal.add(y)
             elif x in self.__NOT_MODAL_INPUT_PROP_TYPES:
                 for y in props[x]:
-                    try:
-                        self.__kbs_no_modal.update({y: kbs[y]})
-                    except KeyError:
-                        s = generate_new_shortcut(y, self.__kbs_no_modal)
-                        self.__kbs_no_modal.update(s)
+                    self.__kbs_no_modal.add(y)
             else:
                 raise TypeError
 
@@ -267,9 +245,9 @@ class AdaptiveModalEditor(ModalClustersEditor):
 
         self.__mods = []
 
-        self.__kbs_modal = {}
-        self.__kbs_no_modal = {}
-        self.__kbs_editing = {}
+        self.__kbs_modal = set()
+        self.__kbs_no_modal = set()
+        self.__kbs_editing = set()
 
         logger.debug('Editor switched from.')
     # }}}
@@ -553,6 +531,8 @@ class AdaptiveModalEditor(ModalClustersEditor):
 
     # Utils {{{
     def __get_shortcut_value(self, event):
+        if len(event.type) != 1:
+            return
         s = self.modal_shortcuts.find_shortcut_by_event(event)
         if s:
             return s.value
@@ -605,7 +585,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
         """
 
         result = []
-        for x in self.modal_shortcuts:
+        for x in self.modal_shortcuts.shortcuts:
             result.append(str(x) + ' ' + self.__get_props_val_format(
                 getattr(self.__mods[0], x.value), x.value))
 
