@@ -42,20 +42,20 @@ class UIClassVariablesEditorCache(PropertyGroup):  # {{{
     """This prop group used to edit variables in ui."""
 
     # New attribute value
-    var_editor_bool: BoolProperty(default=False, options={'SKIP_SAVE'})
-    var_editor_int: IntProperty(default=0, options={'SKIP_SAVE'})
-    var_editor_float: FloatProperty(default=0.0, options={'SKIP_SAVE'})
-    var_editor_str: StringProperty(default='', options={'SKIP_SAVE'})
+    var_editor_bool: BoolProperty(default=False)
+    var_editor_int: IntProperty(default=0)
+    var_editor_float: FloatProperty(default=0.0)
+    var_editor_str: StringProperty(default='')
 
     # Attribute name
     # Example: m_list.get_first().parser_variables['by_type'][0]
     # 'cls' should be skipped, as
     # var_editor_class is used insead.
-    var_editor_currently_edited: StringProperty('', options={'SKIP_SAVE'})
+    var_editor_currently_edited: StringProperty('')
 
     # Class name with 'bpy.types.' prefix
     # Example: bpy.types.BMTOOLS_OT_clusters_list_popup
-    var_editor_class: StringProperty('', options={'SKIP_SAVE'})
+    var_editor_class: StringProperty('')
 # }}}
 
 
