@@ -342,8 +342,9 @@ class ClustersListTrait():
     # ==============================
     # Methods based on get_cluster_or_layer
     # ==============================
+    # TODO: this doesnt work at all.
     # @check_obj_ref
-    # @check_if_removed
+    @check_if_removed
     def get_cluster_or_layer(self, obj):
         """
         Returns cluster or layer that cluster or modifier belongs to.
