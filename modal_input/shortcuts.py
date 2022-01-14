@@ -277,9 +277,9 @@ class ModalShortcutsCache():
     """Object that represents modal shortcuts groups."""
 
     def __init__(self, serialized_shortcuts_groups):
-        if serialized_shortcuts_groups is '':
+        if serialized_shortcuts_groups != '':
             serialized_shortcuts_groups = '[]'
-        self.shortcuts_groups = deserialized_shortcuts_cache(
+        self.shortcuts_groups = deserialize_shortcuts_cache(
                 serialized_shortcuts_groups)
 
     @property
@@ -301,6 +301,7 @@ class ModalShortcutsCache():
             serialized_shortcuts_groups.append(x.serialize())
         result = json.dumps(serialized_shortcuts_groups)
         return result
+
 
 # Utils {{{
 @functools.lru_cache
@@ -328,7 +329,7 @@ def deserialize_shortcuts_cache(serialized_shortcuts_groups):
         raise TypeError
 
     groups = []
-    for x in deserialized_shortcuts_cache:
+    for x in deserialized_shortcuts_groups:
         shortcuts = []
         for y in x['shortcuts']:
             elements = {}
@@ -340,13 +341,14 @@ def deserialize_shortcuts_cache(serialized_shortcuts_groups):
         groups.append(ModalShortcutsGroup(name, shortcuts))
     return groups
 
+
 @functools.lru_cache
 def check_deserialized_shortcuts_group(group: dict):
     if type(group) is dict:
-        if type(group['name']) not str:
+        if type(group['name']) is not str:
             raise TypeError
         if type(group['shortcuts']) is list:
-            for shortcut in shortcuts:
+            for shortcut in group['shortcuts']:
                 if type(shortcut) is dict:
                     if 'value' not in shortcut:
                         raise TypeError
