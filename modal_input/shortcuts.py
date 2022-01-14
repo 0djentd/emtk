@@ -124,12 +124,22 @@ class ModalShortcut():  # {{{
         self._description = d
     # }}}
 
-    @functools.lru_cache
     def compare(self, obj):
         """Compare with bpy.types.event or another ModalShortcut."""
-        for x in _MAPPING:
-            if getattr(self, x) != getattr(obj, x):
-                return
+        return self.__compare_mappings(obj.letter,
+                                       obj.shift,
+                                       obj.ctrl,
+                                       obj.alt)
+
+    def _compare_mappings(self, letter, shift, ctrl, alt):
+        if letter != self.letter:
+            return
+        if shift != self.letter:
+            return
+        if ctrl != self.letter:
+            return
+        if alt != self.alt:
+            return
         return self.value
 
     def __str__(self):
@@ -141,7 +151,7 @@ class ModalShortcut():  # {{{
         return line
 
     def clear_cache(self):
-        self.compare.clear_cache()
+        self._compare_mappings.clear_cache()
 # }}}
 
 
@@ -243,42 +253,37 @@ class ModalShortcutsGroup():  # {{{
                 raise TypeError(f'Expected bool, got {type(x)}')
 
         for x in self.shortcuts:
-            if x.letter != letter:
-                continue
-            if x.shift != shift:
-                continue
-            if x.ctrl != ctrl:
-                continue
-            if x.alt != alt:
-                continue
-            return x
-
-    @staticmethod
-    @functools.lru_cache
-    def find_duplicates(shortcuts):
-        duplicates = []
-        for x in shortcuts:
-            for y in shortcuts:
-                if x.compare(y) and y not in duplicates:
-                    duplicates.append(x)
-        return duplicates
-
-    @functools.lru_cache
-    def fix_duplicates(self, shortcuts):
-        shortcuts = shortcuts[:]
-        for x in self.find_duplicates(shortcuts):
-            shortcuts.remove(x)
-        return shortcuts
+            y = x.compare(letter, shift, ctrl, alt)
+            if y:
+                return y
 
     def __str__(self):
         line = f'Group {self.name}, {len(self.shortcuts)} shortcuts.'
         return line
 
     def clear_cache(self):
-        self.fix_duplicates.clear_cache()
-        self.find_duplicates.clear_cache()
+        fix_duplicates.clear_cache()
+        find_duplicates.clear_cache()
         self.find_shortcut_by_mapping.clear_cache()
         self.find_shortcut_by_value.clear_cache()
+
+
+@functools.lru_cache
+def find_duplicates(shortcuts):
+    duplicates = []
+    for x in shortcuts:
+        for y in shortcuts:
+            if x.compare(y) and y not in duplicates:
+                duplicates.append(x)
+    return duplicates
+
+
+@functools.lru_cache
+def fix_duplicates(shortcuts):
+    shortcuts = shortcuts[:]
+    for x in find_duplicates(shortcuts):
+        shortcuts.remove(x)
+    return shortcuts
 # }}}
 
 
