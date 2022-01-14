@@ -45,16 +45,6 @@ class FirstLayerClustersListTrait():
     clusters or modifiers of the same object.
     """
 
-    def find_cluster_by_name(self, name: str):
-        for x in self.get_full_list():
-            if x.name == name:
-                return x
-
-    def find_modifier_by_name(self, name: str):
-        for x in self.get_full_actual_modifiers_list():
-            if x.name == name:
-                return x
-
     def __init__(self, *args,
                  no_default_actions=None,
                  no_parse=None, **kwargs):

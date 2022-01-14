@@ -55,15 +55,6 @@ class ModifiersCluster(
                 raise ValueError
         return cluster
 
-    def find_cluster_by_name(self, name: str):
-        if name == self.name:
-            return self
-
-    def find_modifier_by_name(self, name: str):
-        for x in self.get_full_actual_modifiers_list():
-            if x.name == name:
-                return x
-
     @property
     def modifiers(self):
         return copy.copy(self._modifiers_list)
