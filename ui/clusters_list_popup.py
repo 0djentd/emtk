@@ -88,10 +88,7 @@ class BMTOOLS_OT_clusters_list_popup(
         box = layout.box()
 
         if USE_PROFILER and cls.iteration in {1, 10, 100}:
-            c = 'self._BMTOOLS_OT_clusters_list_popup__draw_clusters_list(\
-                    box, cls.m_list)'
-            # TODO: this doesnt work
-            c = re.sub('\n\s*\t*', '', c)
+            c = 'self._BMTOOLS_OT_clusters_list_popup__draw_clusters_list(box, cls.m_list)'
             print('Profiler stats for clusters list popup ')
             print(c)
             cProfile.runctx(c, globals(), locals())
