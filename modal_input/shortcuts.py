@@ -117,13 +117,13 @@ class ModalShortcut():  # {{{
 
     def compare(self, obj):
         """Compare with bpy.types.event or another ModalShortcut."""
-        return self._compare_mappings(obj.letter,
-                                      obj.shift,
-                                      obj.ctrl,
-                                      obj.alt)
+        return self.compare_mappings(obj.letter,
+                                     obj.shift,
+                                     obj.ctrl,
+                                     obj.alt)
 
     @functools.lru_cache
-    def _compare_mappings(self, letter, shift, ctrl, alt):
+    def compare_mappings(self, letter, shift, ctrl, alt):
         if letter != self.letter:
             return
         if shift != self.letter:
@@ -143,7 +143,7 @@ class ModalShortcut():  # {{{
         return line
 
     def clear_cache(self):
-        self._compare_mappings.cache_clear()
+        self.compare_mappings.cache_clear()
 
     def serialize(self):
         result = {'value': self.value,
@@ -281,8 +281,6 @@ class ModalShortcutsCache():  # {{{
     """Object that represents modal shortcuts groups."""
 
     def __init__(self, serialized_shortcuts_groups):
-        if serialized_shortcuts_groups != '':
-            serialized_shortcuts_groups = '[]'
         self.shortcuts_groups = deserialize_shortcuts_cache(
                 serialized_shortcuts_groups)
 
@@ -298,13 +296,42 @@ class ModalShortcutsCache():  # {{{
             if not isinstance(ModalShortcutsGroup):
                 raise TypeError
         self._shortcuts_groups = val
+        self.cache_clear()
+
+    def update_shortcuts_group(self, group):
+        if not isinstance(group, ModalShortcutsGroup):
+            raise TypeError
+        self.remove_shortcuts_group(group)
+        self._shortcuts_groups.append(group)
+        self.cache_clear()
+
+    def remove_shortcuts_group(self, group):
+        if type(group) is int:
+            self._shortcuts_groups.pop(group)
+        elif type(group) is str:
+            self._shortcuts_groups.remove(
+                    self.find_shortcuts_group_by_name(group))
+        elif isinstance(group, ModalShortcutsGroup)\
+                and group in self._shortcuts_groups:
+            self._shortcuts_groups.remove(group)
+        else:
+            raise TypeError
+        self.cache_clear()
+
+    @functools.lru_cache
+    def find_shortcuts_group_by_name(self, name):
+        for x in self.shortcuts_groups:
+            if name == x.name:
+                return x
 
     def serialize(self):
         serialized_shortcuts_groups = []
         for x in self.shortcuts_groups:
             serialized_shortcuts_groups.append(x.serialize())
-        result = json.dumps(serialized_shortcuts_groups)
-        return result
+        return json.dumps(serialized_shortcuts_groups)
+
+    def cache_clear(self):
+        self.find_shortcuts_group_by_name.cache_clear()
 # }}}
 
 

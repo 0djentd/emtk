@@ -27,6 +27,7 @@ from bpy.props import (
                        StringProperty,
                        EnumProperty,
                        )
+
 from .shortcuts import (
                         serialize_kbs,
                         deserialize_kbs,
@@ -41,26 +42,19 @@ from .shortcuts import (
 
 
 class ModalShortcutsPreferences():
-    """
-    Mix-in class for AddonPreferences.
+    """Mix-in class for bpy.types.AddonPreferences.
 
-    It provides methods for displaying editing modal operator shortcuts.
+    It provides methods for displaying and editing modal operator shortcuts.
     """
 
     __need_modal_operators_shortcuts_cache_refresh = True
     __modal_operator_shortcuts_cache = None
     __last_bmtools_str_search = None
 
-    # Serialized shortcuts. {{{
-    """
-    Serialized keyboard shortcuts to be used in adaptive modifiers
-    editor.
-    """
     bmtool_modal_operators_serialized_shortcuts: StringProperty(
             name='Modal operators serialized shortcuts.',
             default=''
             )
-    # }}}
 
     # Currently edited shortcut props {{{
     # Shortcut and group that is being edited
