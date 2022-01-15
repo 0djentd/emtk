@@ -208,6 +208,29 @@ class ModalShortcutsGroup():  # {{{
         self._shortcuts = shortcuts
     # }}}
 
+    # List methods {{{
+    def __getitem__(self, index):
+        return self._shortcuts.__getitem__(index)
+
+    def __contains__(self, obj):
+        return obj in self._shortcuts
+
+    def __iter__(self):
+        return iter(self._shortcuts)
+
+    def __next__(self):
+        return next(self._shortcuts)
+
+    def __len__(self):
+        return self._shortcuts.__len__()
+
+    def remove(self, obj):
+        return self._shortcuts.remove(obj)
+
+    def index(self, obj):
+        return self._shortcuts.index(obj)
+    # }}}
+
     @refresh_cache
     def update_shortcut(self, shortcut):
         index = self.remove_shortcut(shortcut)
@@ -321,6 +344,29 @@ class ModalShortcutsCache():  # {{{
             self.shortcuts_groups = []
         else:
             raise TypeError
+
+    # List methods {{{
+    def __getitem__(self, index):
+        return self._shortcuts_groups.__getitem__(index)
+
+    def __contains__(self, obj):
+        return obj in self._shortcuts_groups
+
+    def __iter__(self):
+        return iter(self._shortcuts_groups)
+
+    def __next__(self):
+        return next(self._shortcuts_groups)
+
+    def __len__(self):
+        return self._shortcuts_groups.__len__()
+
+    def remove(self, obj):
+        return self._shortcuts_groups.remove(obj)
+
+    def index(self, obj):
+        return self._shortcuts_groups.index(obj)
+    # }}}
 
     @property
     def shortcuts_groups(self):

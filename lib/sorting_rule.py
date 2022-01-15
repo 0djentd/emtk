@@ -144,3 +144,51 @@ class SortingRule():
                 if x == y:
                     return False
         return True
+
+
+class RelativePosition(SortingRule):
+    def __init__(self, *args,
+                 after, before, attribute_to_check='name',
+                 **kwargs):
+        super().__init__(*args, **kwargs)
+        self.after = after
+        self.attribute_to_check = attribute_to_check
+
+    @property
+    def value(self):
+        return self._after
+
+    @value.setter
+    def value(self, val):
+        if type(val) is not str:
+            raise TypeError(f'Expected str, got {type(val)}')
+        self._after = val
+
+    @property
+    def direction(self):
+        return self._after
+
+    @direction.setter
+    def direction(self, val):
+        if val not in {'AFTER', 'BEFORE'}:
+            raise ValueError(
+                f'Expected direction in {"AFTER", "BEFORE"}, got {val}')
+        self._after = val
+
+    @property
+    def attribute_to_check(self):
+        return self._attribute_to_check
+
+    @attribute_to_check.setter
+    def attribute_to_check(self, val):
+        if type(val) is not str:
+            raise TypeError(f'Expected str, got {type(val)}')
+        # TODO: remove this
+        if val not in {'name', 'type'}:
+            raise ValueError
+        self._attribute_to_check = val
+
+
+class AbsolutePosition(SortingRule):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
