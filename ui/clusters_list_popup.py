@@ -52,7 +52,6 @@ class BMTOOLS_OT_clusters_list_popup(
                             globals(), locals())
         else:
             cls.create_objects_modifiers_lists(cls)
-        cls.cluster_type = 'sdfgsdfgdfg'
         print('Operator initialized')
 
     @classmethod
