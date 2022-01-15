@@ -20,22 +20,23 @@
 # import re
 import json
 import string
-# import math
 import functools
 import logging
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+_LOG = logger.isEnabledFor(logging.DEBUG)
 
 _MAPPING = ('letter', 'shift', 'ctrl', 'alt')
 
 
 def refresh_cache(func):
-    """Decorator forr methods that require cache refresh."""
+    """Decorator for methods that require cache refresh."""
     def wrapper_refresh_cache(self, *args, **kwargs):
         result = func(self, *args, **kwargs)
-        logger.debug(f'Refreshing lru cache for {func}')
+        if _LOG:
+            logger.debug(f'Refreshing lru cache for {func}')
         self.cache_clear()
         return result
     return wrapper_refresh_cache
@@ -150,11 +151,11 @@ class ModalShortcut():  # {{{
         return self.value
 
     def __str__(self):
-        line = self.letter
+        line = self.value + ': '
+        line = line + self.letter
         for x in _MAPPING[1:]:
             if getattr(self, x):
                 line = line + f' + {x}'
-        line = line + ': ' + self.value
         return line
 
     def cache_clear(self):
@@ -197,6 +198,7 @@ class ModalShortcutsGroup():  # {{{
     def shortcuts(self):
         return self._shortcuts[:]
 
+    @refresh_cache
     @shortcuts.setter
     def shortcuts(self, shortcuts):
         for x in shortcuts:
@@ -205,15 +207,14 @@ class ModalShortcutsGroup():  # {{{
         if len(find_duplicates(shortcuts)) != 0:
             raise ValueError
         self._shortcuts = shortcuts
-        self.cache_clear()
     # }}}
 
+    @refresh_cache
     def update_shortcut(self, shortcut):
         index = self.remove_shortcut(shortcut)
         if index is not None:
             self._shortcuts.insert(index, shortcut)
         self._shortcuts.append(shortcut)
-        self.cache_clear()
 
     def remove_shortcut(self, shortcut):
         if not isinstance(shortcut, ModalShortcut):
@@ -326,6 +327,7 @@ class ModalShortcutsCache():  # {{{
     def shortcuts_groups(self):
         return self._shortcuts_groups
 
+    @refresh_cache
     @shortcuts_groups.setter
     def shortcuts_groups(self, val):
         if type(val) is not list:
@@ -334,15 +336,15 @@ class ModalShortcutsCache():  # {{{
             if not isinstance(x, ModalShortcutsGroup):
                 raise TypeError
         self._shortcuts_groups = val
-        self.cache_clear()
 
+    @refresh_cache
     def update_shortcuts_group(self, group):
         if not isinstance(group, ModalShortcutsGroup):
             raise TypeError
         self.remove_shortcuts_group(group)
         self._shortcuts_groups.append(group)
-        self.cache_clear()
 
+    @refresh_cache
     def remove_shortcuts_group(self, group):
         if type(group) is int:
             self._shortcuts_groups.pop(group)
@@ -354,7 +356,6 @@ class ModalShortcutsCache():  # {{{
             self._shortcuts_groups.remove(group)
         else:
             raise TypeError
-        self.cache_clear()
 
     @functools.lru_cache
     def find_shortcuts_group_by_name(self, name):
