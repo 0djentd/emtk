@@ -86,21 +86,25 @@ class ModifiersList():
             for x in default_actions:
                 self.add_action_answer(x(self))
 
+    @check_if_removed
     def __getitem__(self, index):
         return self._modifiers_list.__getitem__(index)
 
+    @check_if_removed
     def __setitem__(self, index, val):
         return self._modifiers_list.__setitem__(index, val)
 
+    @check_if_removed
     def __delitem__(self, index):
         return self._modifiers_list.__delitem__(index)
 
+    @check_if_removed
     def __len__(self):
         return self._modifiers_list.__len__()
 
     # This method is different in clusters.
     def _check_if_cluster_removed(self):
-        pass
+        return
 
     # This method is different in clusters.
     def has_clusters(self):
@@ -508,20 +512,13 @@ class ModifiersList():
         modifier of m_type type wrt mod
         Returns None if not found any
         """
-
-        # Offset for iterating over list
-        x = 1
-        m_list_len = len(self._modifiers_list) 
-        while x < m_list_len + 1:
-
-            # y = index of modifier that should be returned
-            # created on every iteration
-            y = self.get_index(mod) - x
-            if y < 0:
+        for i, x in enumerate(len(self._modifiers_list) + 2):
+            if i == 0:
+                continue
+            elif self._modifiers_list(mod) - i < 0:
                 return None
-            elif self.get_by_index(y).type == m_type:
-                return self.get_by_index(y)
-            x += 1
+            elif x.type == m_type:
+                return x
 
     @check_if_removed
     def find_next(self, mod, m_type):
@@ -533,16 +530,15 @@ class ModifiersList():
         Returns index of next modifier of m_type type wrt mod.
         Returns None if not found any.
         """
-
         # Offset for iterating over list
         x = 1
-        m_list_len = len(self._modifiers_list)
-        while x < m_list_len + 1:
-            y = self.get_index(mod) + x
-            if y >= m_list_len:
+        m = len(self._modifiers_list)
+        while x < m + 1:
+            y = self._modifiers_list.index(mod) + x
+            if y >= m:
                 return None
             elif self._modifiers_list[y].type == m_type:
-                return self.get_by_index(y)
+                return self._modifiers_list.index(y)
             x += 1
 
     @check_if_removed
@@ -554,15 +550,12 @@ class ModifiersList():
         """
         Returns any previous modifier wrt mod
         """
-
-        x = self.get_index(mod)
-        y = len(self._modifiers_list)
-
-        if y > 0:
-            if x > 0:
-                return self.get_by_index(x - 1)
+        i = self._modifiers_list.index(mod)
+        if len(self._modifiers_list) != 0:
+            if i > 0:
+                return self._modifiers_list.index(i - 1)
             else:
-                return self.get_by_index(0)
+                return self._modifiers_list.index(0)
 
     @check_if_removed
     def find_next_any(self, mod):
@@ -574,10 +567,8 @@ class ModifiersList():
         Returns any next modifier
         wrt mod
         """
-
-        x = self.get_index(mod)
+        x = self._modifiers_list.index(mod)
         y = len(self._modifiers_list)
-
         if x < (y - 1):
             return self.get_by_index(x+1)
         else:
