@@ -163,7 +163,7 @@ class ActionDefaultRemove(ActionDefaultTemplate):
         i = self.cluster._modifiers_list.index(action.subject)
         removing_active = False
 
-        if self.cluster.active_modifier_get() == action.subject:
+        if self.cluster.active == action.subject:
             removing_active = True
 
         if isinstance(action.subject, modifiers_type):
@@ -183,9 +183,9 @@ class ActionDefaultRemove(ActionDefaultTemplate):
             self.cluster._modifiers_list.remove(action.subject)
 
         if removing_active and len(self.cluster._modifiers_list) > (i + 1):
-            self.cluster.active_modifier_set_by_index(i)
+            self.cluster.active = i
         elif removing_active and len(self.cluster._modifiers_list) == (i + 1):
-            self.cluster.active_modifier_set_by_index(i - 1)
+            self.cluster.active = i - 1
 
 
 class ActionDefaultApply(ActionDefaultTemplate):
@@ -201,7 +201,7 @@ class ActionDefaultApply(ActionDefaultTemplate):
         i = self.cluster._modifiers_list.index(action.subject)
         removing_active = False
 
-        if self.cluster.active_modifier_get() == action.subject:
+        if self.cluster.active == action.subject:
             removing_active = True
 
         if isinstance(action.subject, modifiers_type):
@@ -221,7 +221,7 @@ class ActionDefaultApply(ActionDefaultTemplate):
             self.cluster._modifiers_list.remove(action.subject)
 
         if removing_active and len(self.cluster._modifiers_list) > 0:
-            self.cluster.active_modifier_set_by_index(i)
+            self.cluster.active = i
 
 
 class ActionDefaultDeconstuct(ActionDefaultTemplate):
@@ -235,7 +235,7 @@ class ActionDefaultDeconstuct(ActionDefaultTemplate):
 
         removing_active = False
 
-        if self.cluster.active_modifier_get() == action.subject:
+        if self.cluster.active == action.subject:
             removing_active = True
 
         if action.subject.has_clusters():
@@ -252,7 +252,7 @@ class ActionDefaultDeconstuct(ActionDefaultTemplate):
                 self.cluster._modifiers_list.insert(i, x)
 
         if removing_active:
-            self.cluster.active_modifier_set_by_index(i)
+            self.cluster.active == i
 
 
 # Moving clusters invokes two commands, one has 'dry' clusters actions

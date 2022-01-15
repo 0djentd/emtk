@@ -17,6 +17,8 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+from ...utils import check_if_removed, check_obj_ref
+
 
 class ActiveModifierTrait():
     """
@@ -25,6 +27,7 @@ class ActiveModifierTrait():
 
     # Active_modifier doesnt neccessary means that this is an actual modifier.
     # It mostly used for clusters, as every modifier is a cluster anyways.
+    # TODO: add modifiers selection
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -32,33 +35,20 @@ class ActiveModifierTrait():
         # Active modifier
         self._mod = None
 
-    # ===============
-    # Active modifier
-    # ===============
-    # TODO: this methods should be renamed
     @property
-    def active_modifier(self):
-        return self.active_modifiers_get()
-
-    @active_modifier.setter
-    def active_modifier(self, mod):
-        return self.active_modifier_set(mod)
-
-    def active_modifier_get(self):
-        """Returns active modifier"""
+    @check_if_removed
+    def active(self):
+        if self._mod is None:
+            if len(self._modifiers_list) != 0:
+                return self._modifiers_list[0]
         return self._mod
 
-    def active_modifier_set_by_index(self, i):
-        """Set active modifier by index"""
-        self._mod = self._modifiers_list[i]
-
-    def active_modifier_set(self, modifier):
-        """
-        Set active modifier by reference
-        Returns True if successfully found modifier.
-        Returns False if modifier is not in list.
-        """
-        if modifier in self.get_list():
-            self._mod = modifier
-            return True
-        return False
+    @active.setter
+    @check_if_removed
+    def active(self, mod):
+        if type(mod) is int:
+            self._mod = self._modifiers_list[mod]
+        else:
+            if mod not in self._modifiers_list:
+                raise ValueError
+            self._mod = mod

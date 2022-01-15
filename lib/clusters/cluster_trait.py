@@ -380,10 +380,8 @@ class ClusterTrait():
             if x == custom_tag:
                 y.append(x)
                 result = True
-
         for x in y:
             self.variables['tags'].remove(x)
-
         return result
     # }}}
 

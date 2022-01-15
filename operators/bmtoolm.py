@@ -38,25 +38,20 @@ class BMTOOL_OT_bmtoolm(BMToolUi, ModalClustersOperator, Operator):
     bl_label = "BMToolM"
     bl_description = "Edit modifiers on selected objects"
 
-    # List of all editors
-    # _BMTOOL_OT_bmtoolm_editors[]
-
-    # List of possible editors for currently selected modifier
-    # _BMTOOL_OT_bmtoolm_possible_editors[]
-
-    # Active editor
-    # _BMTOOL_OT_bmtoolm_active_editor
-
     def __init__(self):
         """Creates list of all editors."""
 
+        # List of all editors
         self.__editors = []
+        # List of possible editors for currently selected modifier
         self.__possible_editors = []
+        # Active editor
         self.__active_editor = None
 
         self.__editors.append(AdaptiveModalEditor())
 
     # BMToolMod methods {{{
+    # TODO: rename this methods
     def bmtool_modal_pre(self, context, event):
         """Modal method 1, before bmtoolmod"""
         editor = self.get_editor()

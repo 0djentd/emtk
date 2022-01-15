@@ -60,14 +60,10 @@ class ClustersListTrait():
                 self.add_action_answer(x(self))
 
     def _check_if_cluster_removed(self):
-        pass
+        return
 
     def has_clusters(self):
         return True
-
-    @property
-    def clusters(self):
-        return copy.copy(self._modifiers_list)
 
     def _check_cluster_or_modifier(self, cluster):
         if type(cluster) is str:

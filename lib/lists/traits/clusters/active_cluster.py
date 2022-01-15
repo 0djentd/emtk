@@ -20,6 +20,8 @@
 import copy
 import logging
 
+from ...utils import check_if_removed, check_obj_ref
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -50,7 +52,7 @@ class ActiveClusterTrait():
         This method should only be used if creating some kind of user
         interface that uses ExtendedModifiersList.
         """
-        cluster = self.active_modifier_get()
+        cluster = self.active
         if cluster.has_clusters():
             if cluster.variables['collapsed'] is True:
                 return cluster
@@ -71,43 +73,24 @@ class ActiveClusterTrait():
                 self.get_cluster())
     # }}}
 
-    # Active modifier {{{
-    # TODO: rename all this methods to active.
     @property
-    def active_modifier(self):
+    @check_if_removed
+    def active(self):
         """Returns active modifier or None, if no modifiers."""
         if len(self._modifiers_list) > 0:
-            return self.active_modifier_get()
+            return self._mod
         else:
             return None
 
-    @active_modifier.setter
-    def active_modifier(self, mod):
+    @active.setter
+    @check_if_removed
+    def active(self, mod):
         if isinstance(mod, int):
-            return self.active_modifier_set_by_index(mod)
+            self._mod = self._modifiers_list[mod]
         else:
-            return self.active_modifier_set(mod)
-
-    def active_modifier_get(self):
-        """Returns active modifier"""
-        return self._mod
-
-    def active_modifier_set_by_index(self, i):
-        """Set active modifier by index"""
-        self._mod = self._modifiers_list[i]
-
-    def active_modifier_set(self, modifier):
-        """
-        Set active modifier by reference
-
-        Returns True if successfully found modifier.
-        Returns False if modifier is not in list.
-        """
-        if modifier in self.get_list():
-            self._mod = modifier
-            return True
-        return False
-    # }}}
+            if mod not in self._modifiers_list:
+                raise ValueError
+            self._mod = mod
 
     # SELECTION {{{
     def add_to_selection(self, cluster):
@@ -193,19 +176,7 @@ class ActiveClusterTrait():
         for x in clusters:
             self.deconstruct(x)
 
-    def move_up_selection(self):
-        """
-        Moves up selected clusters on this layer.
-        """
-        self._move_selection('UP')
-
-    def move_down_selection(self):
-        """
-        Moves down selected clusters on this layer.
-        """
-        self._move_selection('DOWN')
-
-    def _move_selection(self, direction):
+    def move_selection(self, direction):
         """
         Deconstructs selected clusters on this layer.
         """
@@ -291,5 +262,4 @@ class ActiveClusterTrait():
             self.active_modifier_set_by_index(clusters_index)
 
         return True
-
     # }}}

@@ -24,7 +24,6 @@ import cProfile
 
 from lib.lists.extended_modifiers_list import ExtendedModifiersList
 from lib.dummy_modifiers import DummyBlenderObj
-from lib.clusters.cluster_trait import ClusterTrait
 from lib.clusters.modifiers_cluster import ModifiersCluster
 from lib.clusters.clusters_layer import ClustersLayer
 
