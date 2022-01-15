@@ -38,6 +38,8 @@ from .utils import check_if_removed, check_obj_ref
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+_NO_EMPTY_LISTS = False
+
 """
 =============================
 MODIFIERS LIST METHODS NAMING
@@ -104,9 +106,10 @@ class ModifiersList():
 
     # This method is different in clusters.
     def _check_if_cluster_removed(self):
-        return
+        if len(self) == 0 and _NO_EMPTY_LISTS:
+            raise ValueError
 
-    # This method is different in clusters.
+    # This method is different in clusters list.
     def has_clusters(self):
         return False
 
@@ -495,175 +498,62 @@ class ModifiersList():
         return False
     # }}}
 
-    # Finding modifiers {{{
-    # ------------------------------------
-    # 'find' methods that looking for modifiers relatively
-    # to modifiers.
-    # ------------------------------------
+    # Iterating over list {{{
+    def previous(self, mod, m_type=None, loop=True):
+        return self.find_next_or_previous(mod, m_type, 'UP', loop)
 
-    @check_if_removed
-    def find_previous(self, mod, m_type):
-        return self.find_previous_modifier(mod, m_type)
+    def next(self, mod, m_type=None, loop=True):
+        return self.find_next_or_previous(mod, m_type, 'DOWN', loop)
 
+    # @check_obj_ref
     @check_if_removed
-    def find_previous_modifier(self, mod, m_type):
-        """
-        Returns index of previous
-        modifier of m_type type wrt mod
-        Returns None if not found any
-        """
-        for i, x in enumerate(len(self._modifiers_list) + 2):
-            if i == 0:
-                continue
-            elif self._modifiers_list(mod) - i < 0:
-                return None
-            elif x.type == m_type:
-                return x
+    def iterate(self, mod, direction, m_type=None, loop=True):
+        if type(mod) is int:
+            i = mod
+        else:
+            mod = self._check_cluster_or_modifier(mod)
+            i = self._modifiers_list.index(mod)
+        if direction == 'ANY':
+            direction = None
 
-    @check_if_removed
-    def find_next(self, mod, m_type):
-        return self.find_next_modifier(mod, m_type)
-
-    @check_if_removed
-    def find_next_modifier(self, mod, m_type):
-        """
-        Returns index of next modifier of m_type type wrt mod.
-        Returns None if not found any.
-        """
-        # Offset for iterating over list
-        x = 1
-        m = len(self._modifiers_list)
-        while x < m + 1:
-            y = self._modifiers_list.index(mod) + x
-            if y >= m:
-                return None
-            elif self._modifiers_list[y].type == m_type:
-                return self._modifiers_list.index(y)
-            x += 1
-
-    @check_if_removed
-    def find_previous_any(self, mod):
-        return self.find_previous_modifier_any(mod)
-
-    @check_if_removed
-    def find_previous_modifier_any(self, mod):
-        """
-        Returns any previous modifier wrt mod
-        """
-        i = self._modifiers_list.index(mod)
-        if len(self._modifiers_list) != 0:
-            if i > 0:
-                return self._modifiers_list.index(i - 1)
+        # Any type.
+        if m_type is None:
+            if direction == 'UP':
+                if not loop and i == 0:
+                    return self._modifiers_list[0]
+                return self._modifiers_list[i - 1]
+            elif direction == 'DOWN':
+                if not loop and i == len(self._modifiers_list) - 1:
+                    return self._modifiers_list[-1]
+                if i + 1 > len(self._modifiers_list) - 1:
+                    return self._modifiers_list[i + 1 - len(
+                        self._modifiers_list)]
+                return self._modifiers_list[i + 1]
             else:
-                return self._modifiers_list.index(0)
+                raise ValueError
 
-    @check_if_removed
-    def find_next_any(self, mod):
-        return self.find_next_modifier_any(mod)
-
-    @check_if_removed
-    def find_next_modifier_any(self, mod):
-        """
-        Returns any next modifier
-        wrt mod
-        """
-        x = self._modifiers_list.index(mod)
-        y = len(self._modifiers_list)
-        if x < (y - 1):
-            return self.get_by_index(x+1)
+        # Specified type.
+        # This will return None if there is no modifier or cluster
+        # with specified type.
         else:
-            return self.get_by_index(y-1)
-    # }}}
-
-    # Methods that are looping around list {{{
-    @check_if_removed
-    def find_previous_loop(self, mod, m_type):
-        return self.find_previous_modifier_loop(mod, m_type)
-
-    @check_if_removed
-    def find_previous_modifier_loop(self, mod, m_type):
-        """
-        Returns previous
-        modifier of m_type type
-        wrt mod
-        Loops around m_list
-        Returns None if not found any
-        """
-
-        # Offset for iterating over list
-        x = 1
-        m_list_len = len(self._modifiers_list)
-        while x < m_list_len + 1:
-            y = self.get_index(mod) - x
-            if y < 0:
-                y = y + m_list_len
-            if self._modifiers_list[y].type == m_type:
-                return self.get_by_index(y)
-            x += 1
-
-    @check_if_removed
-    def find_next_loop(self, mod, m_type):
-        return self.find_next_modifier_loop(mod, m_type)
-
-    @check_if_removed
-    def find_next_modifier_loop(self, mod, m_type):
-        """
-        Returns next
-        modifier of m_type type
-        wrt mod
-        Loops around m_list
-        Returns None if not found any
-        """
-
-        # Offset for iterating over list
-        x = 1
-        m_list_len = len(self._modifiers_list)
-        while x < m_list_len + 1:
-            # y = index of modifier that should be returned
-            # created on every iteration
-            # TODO: changed index_get to get_index
-            y = self.get_index(mod) + x
-            if y >= m_list_len:
-                y = y - m_list_len
-            if self._modifiers_list[y].type == m_type:
-                return self._modifiers_list[y]
-            x += 1
-
-    @check_if_removed
-    def find_previous_any_loop(self, mod):
-        return self.find_previous_modifier_any_loop(mod)
-
-    @check_if_removed
-    def find_previous_modifier_any_loop(self, mod):
-        """
-        Returns any previous modifier
-        wrt mod
-        Loops around m_list
-        """
-
-        x = self._modifiers_list.index(mod)
-        y = len(self._modifiers_list)
-        if x > 0:
-            return self._modifiers_list[x-1]
-        else:
-            return self._modifiers_list[y-1]
-
-    @check_if_removed
-    def find_next_any_loop(self, mod):
-        return self.find_next_modifier_any_loop(mod)
-
-    @check_if_removed
-    def find_next_modifier_any_loop(self, mod):
-        """
-        Returns any next modifier
-        wrt mod
-        Loops around m_list
-        """
-
-        x = self._modifiers_list.index(mod)
-        y = len(self._modifiers_list)
-        if x < (y - 1):
-            return self._modifiers_list[x + 1]
-        else:
-            return self._modifiers_list[0]
+            result = None
+            for x in range(len(self._modifiers_list) + 1):
+                if x == 0:
+                    continue
+                # TODO: does it works tho
+                if not loop:
+                    if i + x == len(self._modifiers_list) + 1:
+                        return result
+                if direction == 'UP':
+                    e = self._modifiers_list[i - x]
+                elif direction == 'DOWN':
+                    if i + x > len(self._modifiers_list) - 1:
+                        e = self._modifiers_list[i + x - len(
+                            self._modifiers_list)]
+                    else:
+                        e = self._modifiers_list[i + x]
+                if e.type == m_type:
+                    if loop:
+                        return e
+                    result = e
     # }}}

@@ -431,8 +431,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                         x = layer.get_list_by_type(self._DEFAULT_M_TYPE)
                         layer.active_modifier_set(x[0])
                     else:
-                        x = layer.get_list()
-                        layer.active_modifier_set(x[0])
+                        layer.active_modifier_set(layer[0])
 
                 # Previous modifier.
                 else:
@@ -442,7 +441,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                                 cluster, self._DEFAULT_M_TYPE))
                     else:
                         layer.active_modifier_set(
-                            layer.find_previous_any_loop(cluster))
+                            layer.iterate(cluster, 'UP', loop=True))
 
             # Trigger active modifier change.
             self.bmtool_modifier_update(context)  # }}}
@@ -459,8 +458,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                         x = layer.get_list_by_type(self._DEFAULT_M_TYPE)
                         layer.active_modifier_set(x[-1])
                     else:
-                        x = layer.get_list()
-                        layer.active_modifier_set(x[-1])
+                        layer.active_modifier_set(layer[-1])
 
                 # Next modifier.
                 else:
@@ -470,7 +468,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                                 cluster, self._DEFAULT_M_TYPE))
                     else:
                         layer.active_modifier_set(
-                            layer.find_next_any_loop(cluster))
+                            layer.iterate(cluster, 'DOWN', loop=True))
 
                 # Trigger active modifier change.
                 self.bmtool_modifier_update(context)  # }}}
