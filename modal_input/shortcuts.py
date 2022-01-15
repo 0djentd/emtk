@@ -30,6 +30,17 @@ _LOG = logger.isEnabledFor(logging.DEBUG)
 _MAPPING = ('letter', 'shift', 'ctrl', 'alt')
 
 
+def refresh_cache(func):
+    """Decorator for methods that require cache refresh."""
+    def wrapper_refresh_cache(self, *args, **kwargs):
+        result = func(self, *args, **kwargs)
+        if _LOG:
+            logger.debug(f'Refreshing lru cache for {func}')
+        self.cache_clear()
+        return result
+    return wrapper_refresh_cache
+
+
 class ModalShortcut():  # {{{
     """This object represents keyboard shortcut for modal operators."""
 
@@ -376,17 +387,6 @@ class ModalShortcutsCache():  # {{{
 
 
 # Utils {{{
-def refresh_cache(func):
-    """Decorator for methods that require cache refresh."""
-    def wrapper_refresh_cache(self, *args, **kwargs):
-        result = func(self, *args, **kwargs)
-        if _LOG:
-            logger.debug(f'Refreshing lru cache for {func}')
-        self.cache_clear()
-        return result
-    return wrapper_refresh_cache
-
-
 @functools.lru_cache
 def _check_letter_type(val):
     if type(val) is str:
