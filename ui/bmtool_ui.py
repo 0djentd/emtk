@@ -190,7 +190,7 @@ class BMToolUi:  # {{{
         ui_t.append("=============================")
         for x in m_list.get_list():
             ui_t += self._bmtool_ui_get_cluster_ui(
-                    x, layer.selected, m_list, m_name, m_type)
+                    x, layer.get_selection(), m_list, m_name, m_type)
         ui_t.append("=============================")
         return ui_t
 

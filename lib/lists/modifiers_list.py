@@ -109,16 +109,9 @@ class ModifiersList():
     def selection(self):
         return self._selection
 
-    @property
     @check_if_removed
-    def selected(self):
-        self.selection.get()
-
-    @selected.setter
-    @check_if_removed
-    def selected(self, val):
-        self.selection.clear()
-        self.selection.add(val)
+    def get_selection(self):
+        return self.selection.get()
     # }}}
 
     # List methods {{{

@@ -119,6 +119,10 @@ class Selection():
         self._cluster_to_select_from = None
 
     @property
+    def main_selection(self):
+        return self.get()
+
+    @property
     def additional_selection(self):
         return self._additional_selection[:]
 
@@ -126,24 +130,6 @@ class Selection():
     def additional_selection(self, val):
         self._additional_selection = []
         self.add(val)
-
-    # List methods {{{
-    def __getitem__(self, index):
-        return self._selection.__getitem__(index)
-
-    @unwrap_obj_ref
-    def __contains__(self, obj):
-        return obj in self._selection
-
-    def __iter__(self):
-        return iter(self._selection)
-
-    def __next__(self):
-        return next(self._selection)
-
-    def __len__(self):
-        return self._selection.__len__()
-    # }}}
 
     @unwrap_obj_ref_allow_no_value
     def start(self, obj):
@@ -165,11 +151,11 @@ class Selection():
         if self._cluster_to_select_from is not None:
             result.extend(m[m.index(self._cluster_to_select_from):m.active])
         result.extend(self._additional_selection)
-        if add_active and m.active not in result:
-            result.append(m.active)
+        if add_active:
+            if m.active not in result:
+                result.append(m.active)
         return result
 
-    # Additional selection {{{
     @unwrap_obj_ref_seq
     def add(self, val):
         """Add cluster/clusters to additional selection."""
@@ -186,7 +172,6 @@ class Selection():
             self._additional_selection.pop(-1)
         for x in obj:
             self._additional_selection.remove(x)
-    # }}}
 
     def clear(self):
         """Stop selecting and clear 'additional selection' list."""
