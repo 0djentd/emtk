@@ -34,6 +34,7 @@ from ..controller.answers import (
                                   )
 
 from .utils import check_if_removed, check_obj_ref
+from .selection import Selection
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -70,7 +71,7 @@ doesnt have anything to do with modifiers and operate on list in general.
 class ModifiersList():
     """Base class for cluster_trait and first_layer_clusters_list."""
 
-    def __init__(self, obj=None, *args, no_obj=None,
+    def __init__(self, obj=None, *args, no_obj=None,  # {{{
                  no_default_actions=False,
                  **kwargs):
         super().__init__()
@@ -80,52 +81,39 @@ class ModifiersList():
                 raise ValueError
 
         self._object = obj
-        # Active modifier
-        self._mod = None
-        # Selection
-        self._selection = []
-
-        # Cluster or modifier that selection started from
-        self._cluster_to_select_from = None
-
         self._modifiers_list = []
         self._actions = {}
+        self._selection = Selection(self)
         if not no_default_actions:
             default_actions = [ActionDefaultRemove, ActionDefaultApply,
                                ActionDefaultMove, ActionDefaultDeconstuct]
             for x in default_actions:
                 self.add_action_answer(x(self))
+    # }}}
 
-    # SELECTION {{{
+    # Selection {{{
     @property
     @check_if_removed
     def active(self):
-        if self._mod is None:
-            if len(self._modifiers_list) != 0:
-                return self._modifiers_list[0]
-        return self._mod
+        return self.selection.active
 
     @active.setter
     @check_if_removed
     def active(self, mod):
-        if type(mod) is int:
-            self._mod = self._modifiers_list[mod]
-        else:
-            if mod not in self._modifiers_list:
-                raise ValueError
-            self._mod = mod
+        self.selection.active = mod
 
     @property
     @check_if_removed
     def selection(self):
-        return self._selection[:]
+        return self._selection
 
     @selection.setter
     @check_if_removed
     def selection(self, val):
-        self._selection = val
+        self._selection.selection = val
     # }}}
 
+    # List methods {{{
     @check_if_removed
     def __getitem__(self, index):
         return self._modifiers_list.__getitem__(index)
@@ -139,8 +127,31 @@ class ModifiersList():
         return self._modifiers_list.__delitem__(index)
 
     @check_if_removed
+    def __contains__(self, obj):
+        return obj in self._modifiers_list
+
+    @check_if_removed
+    def __iter__(self):
+        return iter(self._modifiers_list)
+
+    @check_if_removed
+    def __next__(self):
+        return next(self._modifiers_list)
+
+    @check_if_removed
     def __len__(self):
         return self._modifiers_list.__len__()
+
+    @check_if_removed
+    def index(self, obj):
+        return self._modifiers_list.index(obj)
+
+    # remove(obj) is defined in 'Clusters actions' section.
+
+    # TODO:
+    # add(obj) is defined in 'Clusters actions' section.
+
+    # }}}
 
     # This method is different in clusters.
     def _check_if_cluster_removed(self):
@@ -546,13 +557,21 @@ class ModifiersList():
     # @check_obj_ref
     @check_if_removed
     def iterate(self, mod, direction, m_type=None, loop=True):
+        """Iterate over clusters or modifiers starting from mod.
+
+        Direction should be a str in {'UP', 'DOWN'}
+        If m_type is specified, only use objects with obj.m_type.
+        If loop is False, will stop at the end or beginning of the list.
+
+        Returns object from this list.
+        Can return None, if m_type is not None.
+        Can return None, if loop is False.
+        """
         if type(mod) is int:
             i = mod
         else:
             mod = self._check_cluster_or_modifier(mod)
             i = self._modifiers_list.index(mod)
-        if direction == 'ANY':
-            direction = None
 
         # Any type.
         if m_type is None:
