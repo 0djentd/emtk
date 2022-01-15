@@ -260,9 +260,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
 
     def editor_modal(  # {{{
             self, context, event, *args, **kwargs):
-
         logger.debug(f'Event {event.type}, {event.value}')
-
         if self.mode == self.__DEFAULT_MODE:
             self.__default_mode(event)
         elif self.mode in self.__kbs_modal:
@@ -283,7 +281,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
 
         Returns True if event was interpreted.
         """
-        logger.debug('Default')
+        logger.debug('Default mode')
 
         if self.modal_input_mode != 'NONE':
             raise ValueError
@@ -347,12 +345,12 @@ class AdaptiveModalEditor(ModalClustersEditor):
 
         Returns True if event was interpreted.
         """
+        logger.debug(f'Modal {self.modal_input_mode}')
+
         if self.modal_input_mode == 'NONE':
             raise TypeError
 
         if self.modal_input_mode == 'DELTA':
-            logger.debug('Modal delta')
-
             if self.__check_event_is_simple(event):
                 if self.__check_if_should_switch_mode(event):
                     return True
@@ -363,8 +361,6 @@ class AdaptiveModalEditor(ModalClustersEditor):
                     return True
 
         elif self.modal_input_mode == 'DIGITS':
-            logger.debug('Modal digits')
-
             if self.__check_event_is_simple(event):
                 if self.__check_if_stop_modal_digits(event):
                     return True
@@ -374,8 +370,6 @@ class AdaptiveModalEditor(ModalClustersEditor):
                 return
 
         elif self.modal_input_mode == 'LETTERS':
-            logger.debug('Modal letters')
-
             if self.__check_event_is_simple(event):
                 if self.__check_if_stop_modal_letters(event):
                     return True
