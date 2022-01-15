@@ -19,12 +19,14 @@
 
 import unittest
 import copy
+import time
 
 from ..shortcuts import ModalShortcut
 from ..shortcuts import ModalShortcutsGroup
 from ..shortcuts import ModalShortcutsCache
 from ..shortcuts import generate_new_shortcut
 from ..shortcuts import _get_next_letter_in_shortcut_name
+from ..shortcuts import method_cache
 
 
 class UtilsTests(unittest.TestCase):
@@ -119,7 +121,7 @@ class ShortcutsTests(unittest.TestCase):
 
 
 class Event():
-    letter = 'A'
+    type = 'A'
     shift = True
     ctrl = False
     alt = False
@@ -184,3 +186,16 @@ class ShortcutsCacheTests(unittest.TestCase):
         for x in self.groups:
             self.cache.update(x)
         self.assertEqual(self.cache.shortcuts_groups, self.groups)
+
+
+class MethodsCacheTests(unittest.TestCase):
+
+    @method_cache
+    def funct(self, val):
+        pow(val, val)
+
+    def test_iter_err(self):
+        with self.assertRaises(ValueError):
+            for x in range(10):
+                for x in range(150):
+                    self.funct(x)

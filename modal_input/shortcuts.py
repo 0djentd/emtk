@@ -35,14 +35,43 @@ _LOG = logger.isEnabledFor(logging.DEBUG)
 
 _MAPPING = ('letter', 'shift', 'ctrl', 'alt')
 
+"""This module provides classes for modal operator shortcuts,
+shortcuts groups, cache and some utility functions.
+"""
+
 
 # Decorators {{{
+def method_cache(func):
+    def wrapper_method_cache(self, *args, **kwargs):
+        if len(kwargs) != 0:
+            raise TypeError
+        cache_name = '_' + func.__name__ + '_cache'
+
+        try:
+            cache = getattr(self, cache_name)
+        except AttributeError:
+            cache = {}
+            try:
+                self._cache_variables.add(cache_name)
+            except AttributeError:
+                setattr(self, '_cache_variables', set(cache_name))
+            setattr(self, cache_name, cache)
+
+        try:
+            result = cache[(args)]
+        except KeyError:
+            result = func(self, *args, **kwargs)
+            cache.update({tuple(args): result})
+        if len(cache) > 100:
+            raise ValueError
+        return result
+    return wrapper_method_cache
+
+
 def refresh_cache(func):
     """Decorator for methods that require cache refresh."""
     def wrapper_refresh_cache(self, *args, **kwargs):
         result = func(self, *args, **kwargs)
-        if _LOG:
-            logger.debug(f'Refreshing lru cache for {func}')
         self.cache_clear()
         return result
     return wrapper_refresh_cache
@@ -177,15 +206,15 @@ class ModalShortcut():  # {{{
                                      obj.ctrl,
                                      obj.alt)
 
-    @functools.lru_cache
+    @method_cache
     def compare_mappings(self, letter, shift, ctrl, alt):
         if letter != self.letter:
             return
-        if shift != self.shift:
+        if shift is not self.shift:
             return
-        if ctrl != self.ctrl:
+        if ctrl is not self.ctrl:
             return
-        if alt != self.alt:
+        if alt is not self.alt:
             return
         return self
 
@@ -201,9 +230,9 @@ class ModalShortcut():  # {{{
         return line
 
     def cache_clear(self):
-        self.compare_mappings.cache_clear()
         self.tag_refresh = True
 
+    @method_cache
     def serialize(self):
         result = {'value': self.value,
                   'description': self.description}
@@ -219,6 +248,7 @@ class ModalShortcutsGroup():  # {{{
     def __init__(self, value, shortcuts=None):
         if shortcuts is None:
             shortcuts = []
+        self._cache_variables = set()
         self._value = None
         self.shortcuts = shortcuts
         self.value = value
@@ -309,19 +339,15 @@ class ModalShortcutsGroup():  # {{{
         for x in remove:
             self._data.remove(x)
 
-        d = self.find_by_mapping(
-                                          shortcut.letter,
-                                          shortcut.shift,
-                                          shortcut.ctrl,
-                                          shortcut.alt,
-                                          )
+        d = self.find_by_mapping(shortcut.letter,
+                                 shortcut.shift,
+                                 shortcut.ctrl,
+                                 shortcut.alt)
         if d:
             index = self._data.index(d)
             self._data.remove(d)
 
-        d = self.find_by_value(
-                                        shortcut.value,
-                                        )
+        d = self.find_by_value(shortcut.value)
         if d:
             index = self._data.index(d)
             self._data.remove(d)
@@ -330,8 +356,8 @@ class ModalShortcutsGroup():  # {{{
             self.cache_clear()
         # return index
 
-    @functools.lru_cache
     @check_refresh
+    @method_cache
     def find_by_value(self, value):
         if type(value) is not str:
             raise TypeError
@@ -339,54 +365,37 @@ class ModalShortcutsGroup():  # {{{
             if x.value == value:
                 return x
 
-    @functools.lru_cache
     @check_refresh
+    @method_cache
     def find_by_mapping(self, letter, shift, ctrl, alt):
-        c = _check_letter_type(letter)
-        if c:
-            raise TypeError(c)
-
-        m = [shift, ctrl, alt]
-        for x in m:
-            if type(x) is not bool:
-                raise TypeError(f'Expected bool, got {type(x)}')
-
         for x in self:
-            y = x.compare_mappings(letter, shift, ctrl, alt)
-            if y:
-                return y
+            result = x.compare_mappings(letter, shift, ctrl, alt)
+            if result:
+                return result
 
     def find_by_event(self, event):
-        if not _WITH_BPY:
-            try:
-                t = event.letter
-            except AttributeError:
-                t = event.type
-        else:
-            t = event.type
-
-        return self.find_by_mapping(t,
+        return self.find_by_mapping(event.type,
                                     event.shift,
                                     event.ctrl,
                                     event.alt)
 
-    @functools.lru_cache
     @check_refresh
-    def search_by_value(self, shortcut_name):
+    @method_cache
+    def search_by_value(self, value):
         result = []
         for x in self:
-            if shortcut_name in x.value:
+            if value in x.value:
                 result.append(x)
         return result
 
+    @method_cache
     def __str__(self):
         line = f'Group {self.name}, {len(self.shortcuts)} shortcuts.'
         return line
 
     def cache_clear(self):
-        self.search_by_value.cache_clear()
-        self.find_by_mapping.cache_clear()
-        self.find_by_value.cache_clear()
+        for x in self._cache_variables:
+            setattr(self, x, {})
         self.tag_refresh = True
 
     def serialize(self):
@@ -402,14 +411,15 @@ class ModalShortcutsGroup():  # {{{
 class ModalShortcutsCache():  # {{{
     """Object that represents modal shortcuts groups."""
 
-    def __init__(self, shortcuts_groups=None):
+    def __init__(self, groups=None):
         self._data = None
-        if type(shortcuts_groups) is str:
+        self._cache_variables = set()
+        if type(groups) is str:
             self.shortcuts_groups = deserialize_shortcuts_cache(
-                    shortcuts_groups)
-        elif type(shortcuts_groups) is list:
-            self.shortcuts_groups = shortcuts_groups
-        elif shortcuts_groups is None:
+                    groups)
+        elif type(groups) is list:
+            self.shortcuts_groups = groups
+        elif groups is None:
             self.shortcuts_groups = []
         else:
             raise TypeError(
@@ -465,8 +475,8 @@ class ModalShortcutsCache():  # {{{
     def shortcuts_groups(self):
         return self._data
 
-    @refresh_cache
     @shortcuts_groups.setter
+    @refresh_cache
     def shortcuts_groups(self, val):
         if type(val) is not list:
             raise TypeError
@@ -475,14 +485,14 @@ class ModalShortcutsCache():  # {{{
                 raise TypeError
         self._data = val
 
-    @functools.lru_cache
+    @method_cache
     def find_by_value(self, value):
         for x in self.shortcuts_groups:
             if value == x.value:
                 return x
 
-    @functools.lru_cache
     @check_refresh
+    @method_cache
     def search_by_value(self, shortcuts_group_value, shortcut_value):
         result = []
         for x in self.shortcuts_groups:
@@ -500,8 +510,8 @@ class ModalShortcutsCache():  # {{{
         return json.dumps(serialized_shortcuts_groups)
 
     def cache_clear(self):
-        self.search_by_value.cache_clear()
-        self.find_by_value.cache_clear()
+        for x in self._cache_variables:
+            setattr(self, x, {})
 # }}}
 
 
@@ -510,27 +520,28 @@ class ModalShortcutsCache():  # {{{
 def _check_letter_type(val):
     if type(val) is str:
         if len(val) == 1:
-            if val not in string.ascii_lowercase:
+            if val not in string.ascii_uppercase:
                 val = val.upper()
+                if val not in string.ascii_lowercase:
+                    return 'Expected letter in [A-Z], got {val}'
         else:
             return f'Expected str with length == 1, got {val}'
     else:
         return f'Expected str, got {type(val)}'
 
 
-# @functools.lru_cache
 def find_duplicates(shortcuts):
     duplicates = []
     for x in shortcuts:
         for y in shortcuts:
             if x.compare(y) is not None\
                     and x is not y\
-                    and y not in duplicates:
+                    and y not in duplicates\
+                    and x not in duplicates:
                 duplicates.append(x)
     return duplicates
 
 
-# @functools.lru_cache
 def fix_duplicates(shortcuts):
     shortcuts = shortcuts[:]
     for x in find_duplicates(shortcuts):
@@ -632,8 +643,7 @@ def generate_new_shortcut(shortcut_value: str,  # {{{
                              shortcut_elements['letter'],
                              shortcut_elements['shift'],
                              shortcut_elements['ctrl'],
-                             shortcut_elements['alt'],
-                             )
+                             shortcut_elements['alt'])
 
     iteration = 0
     checking = True

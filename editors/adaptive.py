@@ -211,7 +211,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
         mod = mods[0]
         self.__mods = mods
         prefs = bpy.context.preferences.addons['bmtools'].preferences
-        s = prefs.modal_shortcuts.find_shortcuts_group_by_name(mod.type)
+        s = prefs.modal_shortcuts.find_by_value(mod.type)
         self.modal_shortcuts = s
 
         props = get_props_filtered_by_types(mods[0])
@@ -529,7 +529,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
         logger.debug(f'Look up kbs for {event.type}')
         if len(event.type) != 1:
             return
-        s = self.modal_shortcuts.find_shortcut_by_event(event)
+        s = self.modal_shortcuts.find_by_event(event)
         if s:
             return s.value
 
