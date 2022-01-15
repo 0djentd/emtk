@@ -216,7 +216,7 @@ class ModalShortcut():  # {{{
             return
         if alt is not self.alt:
             return
-        return self
+        return True
 
     def __repr__(self):
         return self.__str__()
@@ -283,7 +283,8 @@ class ModalShortcutsGroup():  # {{{
                 raise TypeError
         duplicates = find_duplicates(shortcuts)
         if len(duplicates) != 0:
-            raise ValueError(f'Duplicates in shortcuts: {duplicates}')
+            logger.error('Removing duplicates.')
+            shortcuts = fix_duplicates(shortcuts)
         self._data = shortcuts
     # }}}
 
@@ -319,7 +320,7 @@ class ModalShortcutsGroup():  # {{{
 
     @refresh_cache
     def update(self, shortcut):
-        index = self.remove_shortcut(shortcut)
+        index = self.remove_similar_shortcut(shortcut)
         if index is not None:
             self._data.insert(index, shortcut)
         self._data.append(shortcut)
@@ -328,16 +329,11 @@ class ModalShortcutsGroup():  # {{{
     def remove_similar_shortcut(self, shortcut):
         if not isinstance(shortcut, ModalShortcut):
             raise TypeError
+
         index = None
-
-        remove = []
-        for i, x in enumerate(self._data):
-            if x == shortcut:
-                index = i
-                remove.append(x)
-
-        for x in remove:
-            self._data.remove(x)
+        if shortcut in self._data:
+            index = self._data.index(shortcut)
+            self._data.remove(shortcut)
 
         d = self.find_by_mapping(shortcut.letter,
                                  shortcut.shift,
@@ -354,7 +350,7 @@ class ModalShortcutsGroup():  # {{{
 
         if index is not None:
             self.cache_clear()
-        # return index
+        return index
 
     @check_refresh
     @method_cache
@@ -369,9 +365,8 @@ class ModalShortcutsGroup():  # {{{
     @method_cache
     def find_by_mapping(self, letter, shift, ctrl, alt):
         for x in self:
-            result = x.compare_mappings(letter, shift, ctrl, alt)
-            if result:
-                return result
+            if x.compare_mappings(letter, shift, ctrl, alt):
+                return x
 
     def find_by_event(self, event):
         return self.find_by_mapping(event.type,
@@ -402,7 +397,7 @@ class ModalShortcutsGroup():  # {{{
         serialized_shortcuts = []
         for x in self:
             serialized_shortcuts.append(x.serialize())
-        result = {'name': self.name,
+        result = {'name': self.value,
                   'shortcuts': serialized_shortcuts}
         return json.dumps(result)
 # }}}
@@ -533,11 +528,12 @@ def _check_letter_type(val):
 def find_duplicates(shortcuts):
     duplicates = []
     for x in shortcuts:
+        if x in duplicates:
+            continue
         for y in shortcuts:
-            if x.compare(y) is not None\
-                    and x is not y\
-                    and y not in duplicates\
-                    and x not in duplicates:
+            if y in duplicates or y is x:
+                continue
+            if x.compare(y):
                 duplicates.append(x)
     return duplicates
 

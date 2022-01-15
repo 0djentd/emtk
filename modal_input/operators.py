@@ -69,9 +69,9 @@ class BMTOOLS_OT_start_editing_modal_shortcut(bpy.types.Operator):  # {{{
             prefs.bmtool_editing_modal_shortcut_group\
                 = self.shortcut_group
 
-            group = prefs.modal_shortcuts.find_shortcuts_group_by_name(
+            group = prefs.modal_shortcuts.find_by_value(
                 self.shortcut_group)
-            shortcut = group.find_shortcut_by_value(self.shortcut_name)
+            shortcut = group.find_by_value(self.shortcut_name)
 
             prefs.edited_shortcut_letter = shortcut.letter
             prefs.edited_shortcut_shift = shortcut.shift
@@ -130,16 +130,15 @@ class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):  # {{{
 
     def execute(self, context):
         prefs = context.preferences.addons['bmtools'].preferences
-        group = prefs.modal_shortcuts.find_shortcuts_group_by_name(
+        group = prefs.modal_shortcuts.find_by_value(
                 self.shortcut_group)
         shortcut = ModalShortcut(self.shortcut_name,
                                  self.shortcut_letter,
                                  self.shortcut_shift,
                                  self.shortcut_ctrl,
-                                 self.shortcut_alt,
-                                 )
+                                 self.shortcut_alt)
 
-        group.update_shortcut(shortcut)
+        group.update(shortcut)
         prefs.save_modal_shortcuts_cache()
         prefs.bmtool_editing_modal_shortcut_value = ""
         prefs.bmtool_editing_modal_shortcut_group = ""
@@ -178,7 +177,6 @@ class BMTOOL_OT_reparse_default_modifiers_props_kbs(  # {{{
                 modifiers.append(mod)
 
         prefs = bpy.context.preferences.addons['bmtools'].preferences
-
         replace = self.replace_kbs
 
         groups = []
@@ -188,7 +186,7 @@ class BMTOOL_OT_reparse_default_modifiers_props_kbs(  # {{{
             if replace:
                 shortcuts = []
             else:
-                shortcuts = prefs.modal_shortcuts.find_shortcuts_group_by_name(
+                shortcuts = prefs.modal_shortcuts.find_by_value(
                         x.type).shortcuts
 
             shortcuts = []

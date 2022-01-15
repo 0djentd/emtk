@@ -93,7 +93,7 @@ class ModalShortcutsPreferences():
 
         self.__refresh_modal_opertors_shortcuts_cache()
 
-        result = self.modal_shortcuts.search_by_name(
+        result = self.modal_shortcuts.search_by_value(
                 self.shortcuts_groups_search_str, self.shortcuts_search_str)
 
         if not result:
@@ -103,15 +103,15 @@ class ModalShortcutsPreferences():
             return
 
         for x in result:
-            self.layout.label(text=x.name)
+            self.layout.label(text=x.value)
             box = layout.box()
-            for y in x.search_by_name(self.shortcuts_search_str):
-                if x.name == self.bmtool_editing_modal_shortcut_group\
+            for y in x.search_by_value(self.shortcuts_search_str):
+                if x.value == self.bmtool_editing_modal_shortcut_group\
                         and y.value\
                         == self.bmtool_editing_modal_shortcut_value:
-                    self.__draw_shortcut_editor(box.box(), x.name, y.value, y)
+                    self.__draw_shortcut_editor(box.box(), x.value, y.value, y)
                 else:
-                    self.__draw_shortcut(box.box(), x.name, y.value, y)
+                    self.__draw_shortcut(box.box(), x.value, y.value, y)
     # }}}
 
     # Draw shortcut {{{
@@ -130,7 +130,6 @@ class ModalShortcutsPreferences():
 
         b = layout.operator("bmtools.start_editing_modal_shortcut",
                             text=f'{shortcut}')
-
         b.shortcut_name = shortcut_name
         b.shortcut_group = shortcuts_group_name
 
@@ -151,12 +150,8 @@ class ModalShortcutsPreferences():
         col.prop(self, "edited_shortcut_alt")
 
         a = layout.operator("bmtools.add_or_update_modal_shortcut")
-
-        a.shortcut_name\
-            = self.bmtool_editing_modal_shortcut_value
-        a.shortcut_group\
-            = self.bmtool_editing_modal_shortcut_group
-
+        a.shortcut_name = shortcuts_group_name
+        a.shortcut_group = shortcut_name
         a.shortcut_letter = self.edited_shortcut_letter
         a.shortcut_shift = self.edited_shortcut_shift
         a.shortcut_ctrl = self.edited_shortcut_ctrl
