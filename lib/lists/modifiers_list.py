@@ -80,6 +80,14 @@ class ModifiersList():
                 raise ValueError
 
         self._object = obj
+        # Active modifier
+        self._mod = None
+        # Selection
+        self._selection = []
+
+        # Cluster or modifier that selection started from
+        self._cluster_to_select_from = None
+
         self._modifiers_list = []
         self._actions = {}
         if not no_default_actions:
@@ -87,6 +95,36 @@ class ModifiersList():
                                ActionDefaultMove, ActionDefaultDeconstuct]
             for x in default_actions:
                 self.add_action_answer(x(self))
+
+    # SELECTION {{{
+    @property
+    @check_if_removed
+    def active(self):
+        if self._mod is None:
+            if len(self._modifiers_list) != 0:
+                return self._modifiers_list[0]
+        return self._mod
+
+    @active.setter
+    @check_if_removed
+    def active(self, mod):
+        if type(mod) is int:
+            self._mod = self._modifiers_list[mod]
+        else:
+            if mod not in self._modifiers_list:
+                raise ValueError
+            self._mod = mod
+
+    @property
+    @check_if_removed
+    def selection(self):
+        return self._selection[:]
+
+    @selection.setter
+    @check_if_removed
+    def selection(self, val):
+        self._selection = val
+    # }}}
 
     @check_if_removed
     def __getitem__(self, index):
