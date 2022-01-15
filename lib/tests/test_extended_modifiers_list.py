@@ -478,7 +478,7 @@ class LayersTests(
 
     def test_triple_bevel_has_bevel(self):
         self.assertEqual(
-                self.e.get_first().get_first().get_first().type, 'BEVEL')
+                self.e[0][0][0].type, 'BEVEL')
 
     def test_triple_bevel_has_three_modifiers(self):
         self.assertEqual(

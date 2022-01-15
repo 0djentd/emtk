@@ -78,7 +78,6 @@ class ModifiersList():
                 raise ValueError
 
         self._object = obj
-        self.__DUMMY_MODIFIERS = False
         self._modifiers_list = []
         self._actions = {}
         if not no_default_actions:
@@ -87,8 +86,17 @@ class ModifiersList():
             for x in default_actions:
                 self.add_action_answer(x(self))
 
+    def __getitem__(self, index):
+        return self._modifiers_list.__getitem__(index)
+
+    def __setitem__(self, index, val):
+        return self._modifiers_list.__setitem__(index, val)
+
+    def __delitem__(self, index):
+        return self._modifiers_list.__delitem__(index)
+
     def __len__(self):
-        return len(self._modifiers_list)
+        return self._modifiers_list.__len__()
 
     # This method is different in clusters.
     def _check_if_cluster_removed(self):
