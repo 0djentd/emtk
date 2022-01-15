@@ -18,8 +18,11 @@
 # ##### END GPL LICENSE BLOCK #####
 
 import unittest
+import copy
 
 from ..shortcuts import ModalShortcut
+from ..shortcuts import ModalShortcutsGroup
+from ..shortcuts import ModalShortcutsCache
 from ..shortcuts import generate_new_shortcut
 from ..shortcuts import _get_next_letter_in_shortcut_name
 
@@ -71,3 +74,113 @@ class UtilsTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             index, letter = _get_next_letter_in_shortcut_name(
                     shortcut_name, index)
+
+
+example_1_args = ['angle', 'A', True, False, False]
+example_2_args = ['width', 'W', False, True, False]
+
+
+class ShortcutsTests(unittest.TestCase):
+
+    def setUp(self):
+        self.shortcut = ModalShortcut(*example_1_args)
+
+    def tearDown(self):
+        del self.shortcut
+
+    def test_new_shortcut(self):
+        shortcut = self.shortcut
+        result = True
+        if shortcut.value != 'angle':
+            result = False
+        if shortcut.letter != 'A':
+            result = False
+        if shortcut.shift is not True:
+            result = False
+        if shortcut.ctrl is True:
+            result = False
+        if shortcut.alt is True:
+            result = False
+        self.assertEqual(result, True)
+
+    def test_new_shortcut_fail(self):
+        args = ['angle', 'A', True, False, False]
+        values = [123, 123.456, {}, []]
+        for i, x in enumerate(args):
+            with self.subTest():
+                for y in values:
+                    new_args = copy.copy(args)
+                    new_args[i] = y
+                    with self.assertRaises(TypeError):
+                        ModalShortcut(*new_args)
+
+    def test_cache_clear(self):
+        self.assertEqual(self.shortcut.cache_clear(), None)
+
+
+class Event():
+    letter = 'A'
+    shift = True
+    ctrl = False
+    alt = False
+
+
+class ShortcutsGroupTest(unittest.TestCase):
+    def setUp(self):
+        self.shortcuts = [ModalShortcut(*example_1_args),
+                          ModalShortcut(*example_2_args)]
+        self.group = ModalShortcutsGroup('BEVEL', self.shortcuts)
+
+    def tearDown(self):
+        del self.shortcuts
+        del self.group
+
+    def test_new_shortcuts_group_length(self):
+        self.assertEqual(len(self.group), 2)
+
+    def test_new_shortcuts_group_value(self):
+        self.assertEqual(self.group.value, 'BEVEL')
+
+    def test_new_shortcuts_group_refresh_is_false(self):
+        self.assertEqual(self.group.tag_refresh, False)
+
+    def test_new_shortcuts_group_shortcuts_equals(self):
+        for i, x in enumerate(self.shortcuts):
+            with self.subTest():
+                self.assertEqual(x, self.group[x.value])
+
+    def test_find_by_value(self):
+        self.assertEqual(self.group.find_by_value('angle'),
+                         self.shortcuts[0])
+
+    def test_find_by_mapping(self):
+        self.assertEqual(self.group.find_by_mapping('A', True, False, False),
+                         self.shortcuts[0])
+
+    def test_find_by_event(self):
+        e = Event()
+        self.assertEqual(self.group.find_by_event(e),
+                         self.group['angle'])
+
+    def test_cache_clear(self):
+        self.assertEqual(self.group.cache_clear(), None)
+
+
+class ShortcutsCacheTests(unittest.TestCase):
+
+    def setUp(self):
+        self.cache = ModalShortcutsCache()
+        self.groups = [ModalShortcutsGroup('BEVEL'),
+                       ModalShortcutsGroup('ARRAY')]
+
+    def tearDown(self):
+        del self.cache
+        del self.groups
+
+    def test_new_shortcuts_cache(self):
+        self.assertEqual(len(self.cache.shortcuts_groups), 0)
+
+    def test_new_shortcuts_cache_groups(self):
+        for x in self.groups:
+            self.cache.update(x)
+        self.assertEqual(self.cache.shortcuts_groups, self.groups)

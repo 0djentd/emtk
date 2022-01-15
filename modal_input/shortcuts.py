@@ -22,6 +22,12 @@ import string
 import functools
 import logging
 
+try:
+    import bpy
+    _WITH_BPY = True
+except ModuleNotFoundError:
+    _WITH_BPY = False
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -183,6 +189,9 @@ class ModalShortcut():  # {{{
             return
         return self
 
+    def __repr__(self):
+        return self.__str__()
+
     def __str__(self):
         line = self.value + ': '
         line = line + self.letter
@@ -207,18 +216,18 @@ class ModalShortcut():  # {{{
 class ModalShortcutsGroup():  # {{{
     """This object represents keyboard shortcut group for modal operators."""
 
-    def __init__(self, name, shortcuts=None):
+    def __init__(self, value, shortcuts=None):
         if shortcuts is None:
             shortcuts = []
-        self._name = None
+        self._value = None
         self.shortcuts = shortcuts
-        self.name = name
+        self.value = value
         self.tag_refresh = False
 
     # Properties {{{
     @property
     def value(self):
-        return self._name
+        return self._value
 
     @value.setter
     @refresh_cache
@@ -226,11 +235,11 @@ class ModalShortcutsGroup():  # {{{
         if type(val) is str:
             if len(val) == 0:
                 raise ValueError
-            if self._name is not None:
+            if self._value is not None:
                 raise ValueError
         else:
             raise TypeError
-        self._name = val
+        self._value = val
 
     @property
     def shortcuts(self):
@@ -242,8 +251,9 @@ class ModalShortcutsGroup():  # {{{
         for x in shortcuts:
             if not isinstance(x, ModalShortcut):
                 raise TypeError
-        if len(find_duplicates(shortcuts)) != 0:
-            raise ValueError
+        duplicates = find_duplicates(shortcuts)
+        if len(duplicates) != 0:
+            raise ValueError(f'Duplicates in shortcuts: {duplicates}')
         self._data = shortcuts
     # }}}
 
@@ -347,10 +357,18 @@ class ModalShortcutsGroup():  # {{{
                 return y
 
     def find_by_event(self, event):
-        return self.find_shortcut_by_mapping(event.type,
-                                             event.shift,
-                                             event.ctrl,
-                                             event.alt)
+        if not _WITH_BPY:
+            try:
+                t = event.letter
+            except AttributeError:
+                t = event.type
+        else:
+            t = event.type
+
+        return self.find_by_mapping(t,
+                                    event.shift,
+                                    event.ctrl,
+                                    event.alt)
 
     @functools.lru_cache
     @check_refresh
@@ -385,6 +403,7 @@ class ModalShortcutsCache():  # {{{
     """Object that represents modal shortcuts groups."""
 
     def __init__(self, shortcuts_groups=None):
+        self._data = None
         if type(shortcuts_groups) is str:
             self.shortcuts_groups = deserialize_shortcuts_cache(
                     shortcuts_groups)
@@ -412,7 +431,7 @@ class ModalShortcutsCache():  # {{{
         return obj in self._data
 
     def __iter__(self):
-        return iter(self._data)
+        return self._data.__iter__()
 
     def __next__(self):
         return next(self._data)
@@ -429,7 +448,7 @@ class ModalShortcutsCache():  # {{{
     def add(self, group):
         if not isinstance(group, ModalShortcutsGroup):
             raise TypeError
-        if self.find_shortcuts_group_by_name(group.name):
+        if self.find_by_value(group.value):
             raise ValueError
         self._data.append(group)
 
@@ -437,7 +456,7 @@ class ModalShortcutsCache():  # {{{
     def update(self, group):
         if not isinstance(group, ModalShortcutsGroup):
             raise TypeError
-        if group in self._data:
+        if group in self.shortcuts_groups:
             self.remove(group)
         self.add(group)
     # }}}
@@ -504,7 +523,9 @@ def find_duplicates(shortcuts):
     duplicates = []
     for x in shortcuts:
         for y in shortcuts:
-            if x.compare(y) and y not in duplicates:
+            if x.compare(y) is not None\
+                    and x is not y\
+                    and y not in duplicates:
                 duplicates.append(x)
     return duplicates
 
