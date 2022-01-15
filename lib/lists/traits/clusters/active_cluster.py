@@ -98,6 +98,7 @@ class ActiveClusterTrait():
         Removes selected clusters on this layer.
         """
         clusters = copy.copy(self.get_selection())
+        self.selection.clear()
         for x in clusters:
             self.remove(x)
 
@@ -106,6 +107,7 @@ class ActiveClusterTrait():
         Applies selected clusters on this layer.
         """
         clusters = copy.copy(self.get_selection())
+        self.selection.clear()
         for x in clusters:
             self.apply(x)
 
@@ -114,6 +116,7 @@ class ActiveClusterTrait():
         Deconstructs selected clusters on this layer.
         """
         clusters = copy.copy(self.get_selection())
+        self.selection.clear()
         for x in clusters:
             self.deconstruct(x)
 
@@ -134,6 +137,7 @@ class ActiveClusterTrait():
 
         # Get selection on this layer
         clusters = self.get_selection()
+        self.selection.clear()
         if (clusters is None) or (clusters == []):
             return False
 
@@ -144,7 +148,7 @@ class ActiveClusterTrait():
 
         # Check if removing active cluster
         removing_active = False
-        if self.active_modifier_get() in clusters:
+        if self.active in clusters:
             removing_active = True
             clusters_index = self.get_index(clusters[0])
 
@@ -200,7 +204,7 @@ class ActiveClusterTrait():
             self._modifiers_list.insert(clusters_index, x)
 
         if removing_active:
-            self.active_modifier_set_by_index(clusters_index)
+            self.active = clusters_index
 
         return True
     # }}}

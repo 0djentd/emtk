@@ -140,17 +140,24 @@ class Selection():
     def stop(self):
         """Stop selecting clusters using active cluster
         and add clusters to 'additional selection' list."""
-        m = self._modifiers_list
-        self.add(m[m.index(self._cluster_to_select_from):m.active])
+        self.add(self.get(add_additional_selection=False))
         self._cluster_to_select_from = None
 
-    def get(self, *, add_active=False):
+    def get(self, *, add_main_selection=True,
+            add_additional_selection=True, add_active=False):
         """Get list of all selected clusters."""
         result = []
         m = self._modifiers_list
-        if self._cluster_to_select_from is not None:
-            result.extend(m[m.index(self._cluster_to_select_from):m.active])
-        result.extend(self._additional_selection)
+        if add_main_selection:
+            if self._cluster_to_select_from is not None:
+                start_index = m.index(self._cluster_to_select_from)
+                end_index = m.index(m.active)
+                if start_index < end_index:
+                    result.extend(m[start_index:end_index+1])
+                else:
+                    result.extend(m[end_index:start_index+1])
+        if add_additional_selection:
+            result.extend(self._additional_selection)
         if add_active:
             if m.active not in result:
                 result.append(m.active)
@@ -160,10 +167,10 @@ class Selection():
     def add(self, val):
         """Add cluster/clusters to additional selection."""
         for x in val:
-            selection = self._selection
+            selection = self._additional_selection
             if x in selection:
                 continue
-            self._additional_selection.append(x)
+            selection.append(x)
 
     @unwrap_obj_ref_seq_allow_no_value
     def remove(self, obj):

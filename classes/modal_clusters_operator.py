@@ -276,7 +276,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
             if not self.__BMTOOLM:
                 x = self.m_list.create_modifier(
                         self._DEFAULT_M_NAME, self._DEFAULT_M_TYPE)
-                self.m_list.active_modifier_set(x)
+                self.m_list.active = x
 
                 # TODO: why bmtool_modifier_defaults doesnt need modifier?
                 self.bmtool_modifier_defaults(context)
@@ -429,19 +429,17 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                 if event.ctrl:
                     if not self.__BMTOOLM:
                         x = layer.get_list_by_type(self._DEFAULT_M_TYPE)
-                        layer.active_modifier_set(x[0])
+                        layer.active = x[0]
                     else:
-                        layer.active_modifier_set(layer[0])
+                        layer.active = layer[0]
 
                 # Previous modifier.
                 else:
                     if not self.__BMTOOLM:
-                        layer.active_modifier_set(
-                            layer.find_previous_loop(
-                                cluster, self._DEFAULT_M_TYPE))
+                        layer.active = layer.iterate(
+                                cluster, 'UP', self._DEFAULT_M_TYPE)
                     else:
-                        layer.active_modifier_set(
-                            layer.iterate(cluster, 'UP', loop=True))
+                        layer.active = layer.iterate(cluster, 'UP', loop=True)
 
             # Trigger active modifier change.
             self.bmtool_modifier_update(context)  # }}}
@@ -456,19 +454,17 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                 if event.ctrl:
                     if not self.__BMTOOLM:
                         x = layer.get_list_by_type(self._DEFAULT_M_TYPE)
-                        layer.active_modifier_set(x[-1])
+                        layer.active = x[-1]
                     else:
-                        layer.active_modifier_set(layer[-1])
+                        layer.active = layer[-1]
 
                 # Next modifier.
                 else:
                     if not self.__BMTOOLM:
-                        layer.active_modifier_set(
-                            layer.find_next_loop(
-                                cluster, self._DEFAULT_M_TYPE))
+                        layer.active = layer.iterate(
+                                cluster, 'DOWN', self._DEFAULT_M_TYPE)
                     else:
-                        layer.active_modifier_set(
-                            layer.iterate(cluster, 'DOWN', loop=True))
+                        layer.active = layer.iterate(cluster, 'DOWN', loop=True)
 
                 # Trigger active modifier change.
                 self.bmtool_modifier_update(context)  # }}}
@@ -567,12 +563,12 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
     def __stop_selecting_clusters(self):
         self.__selecting_clusters = False
         layer = self.m_list.get_layer()
-        layer.stop_selecting()
+        layer.selection.clear()
 
     def __start_selecting_clusters(self):
         self.__selecting_clusters = True
         layer = self.m_list.get_layer()
-        layer.start_selecting(self.m_list.get_cluster())
+        layer.selection.start(layer.active)
 
     # TODO: move this to lib
     def __get_clusters(self):
