@@ -22,13 +22,10 @@ import copy
 from .cluster_trait import ClusterTrait
 
 from ..lists.modifiers_list import ModifiersList
-from ..lists.traits.modifiers.active_modifier \
-        import ActiveModifierTrait
 
 
 class ModifiersCluster(
                        ClusterTrait,
-                       ActiveModifierTrait,
                        ModifiersList
                        ):
     """

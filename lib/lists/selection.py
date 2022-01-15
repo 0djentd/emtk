@@ -18,41 +18,44 @@
 # ##### END GPL LICENSE BLOCK #####
 
 import logging
-import functools
+# import functools
 
-from .utils import check_if_removed, check_obj_ref
+# from .utils import check_if_removed, check_obj_ref
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-def _check_obj_type(self, obj):
-    if obj in self._ModifiersList_obj:
+# Decorators {{{
+def _check_obj_type(self, obj, allow_no_value):
+    if obj in self._modifiers_list:
         return obj
     if isinstance(obj, int):
-        return self._ModifiersList_obj[obj]
+        return self._modifiers_list[obj]
     if isinstance(obj, str):
-        for x in self._ModifiersList_obj:
+        for x in self._modifiers_list:
             if x.name == obj:
                 return x
         raise ValueError(
-                f'No object with name "{obj}" in {self._ModifiersList_obj}')
+                f'No object with name "{obj}" in {self._modifiers_list}')
+    if obj is None and allow_no_value:
+        return None
     raise TypeError(
             f'Expected cluster, modifier, int or str, got {type(obj)}.')
 
 
-def _check_if_obj_is_list(self, obj):
+def _check_if_obj_is_list(self, obj, allow_no_value):
     if type(obj) is not list:
-        return _check_obj_type(self, obj)
+        return _check_obj_type(self, obj, allow_no_value)
     obj_2 = []
     for x in obj:
-        obj_2.append(_check_obj_type(self, x))
+        obj_2.append(_check_obj_type(self, x, allow_no_value))
     return obj_2
 
 
-def unwrap_obj_ref_seq(func):
-    """
-    Unwrapper for ModifiersList methods parameters.
+def unwrap_obj_ref_seq(func, allow_no_value=False):
+    """Unwrapper for ModifiersList methods parameters.
+
     Supported obj types: ClusterTrait, int, str.
     Also works with lists of variables of this types.
 
@@ -66,16 +69,20 @@ def unwrap_obj_ref_seq(func):
     Provides new list with modifiers list elements references.
     """
     def wrapper_unwrap_obj_ref_seq(self, obj, *args, **kwargs):
-        obj = _check_if_obj_is_list(self, obj)
+        obj = _check_if_obj_is_list(self, obj, allow_no_value)
         return func(self, obj, *args, **kwargs)
-    return wrapper_unwrap_obj_ref
+    return wrapper_unwrap_obj_ref_seq
 
 
-def unwrap_obj_ref(func):
-    """
-    Unwrapper for ModifiersList methods parameters.
+def unwrap_obj_ref_seq_allow_no_value(func):
+    """Same as unwrap_obj_ref_seq, but allows obj to be None."""
+    return unwrap_obj_ref_seq(func, allow_no_value=True)
+
+
+def unwrap_obj_ref(func, allow_no_value=False):
+    """Unwrapper for ModifiersList methods parameters.
+
     Supported obj types: ClusterTrait, int, str.
-
     Check if obj is in the modifiers list;
     If obj is index of modifiers list element;
     If obj is 'name' attribute of modifiers list element;
@@ -84,85 +91,45 @@ def unwrap_obj_ref(func):
     """
 
     def wrapper_unwrap_obj_ref(self, obj, *args, **kwargs):
-        obj = _check_obj_type(self, obj)
+        obj = _check_obj_type(self, obj, allow_no_value)
         return func(self, obj, *args, **kwargs)
     return wrapper_unwrap_obj_ref
 
 
+def unwrap_obj_ref_allow_no_value(func):
+    """Same as unwrap_obj_ref, but allows obj to be None."""
+    return unwrap_obj_ref(func, allow_no_value=True)
+# }}}
+
+
 class Selection():
+    """
+    Selection is sum of two lists:
+    clusters between 'cluster_to_select_from' and active cluster
+    (methods that operate on it is 'start' and 'stop'), and
+    'additional selection', that is not being affected
+    by active cluster ('add', 'remove')
+    """
     def __init__(self, modifiers_list):
         # ModifiersList subclass object.
-        self._ModifiersList_obj = modifiers_list
-
-        # Active modifier
-        self._mod = None
+        self._modifiers_list = modifiers_list
         # Selection
         self._additional_selection = []
         # Cluster or modifier that selection started from
         self._cluster_to_select_from = None
 
     @property
-    def active(self):
-        if self._mod is None:
-            if len(self._ModifiersList_obj) != 0:
-                return self._ModifiersList_obj[0]
-        return self._mod
+    def additional_selection(self):
+        return self._additional_selection[:]
 
-    @active.setter
-    @unwrap_obj_ref
-    def active(self, mod):
-        if isinstance(mod, int):
-            self._mod = self._ModifiersList_obj[mod]
-        else:
-            if mod not in self._ModifiersList_obj:
-                raise ValueError
-            self._mod = mod
-
-    @property
-    def _selection(self):
-        return self.get_selection()
-
-    @_selection.setter
-    def _selection(self, val):
-        self.clear()
+    @additional_selection.setter
+    def additional_selection(self, val):
+        self._additional_selection = []
         self.add(val)
 
-    @unwrap_obj_ref_seq
-    def add(self, val):
-        self._additional_selection.extend(val)
-
-    @unwrap_obj_ref
-    def start(self, obj):
-        self._cluster_to_select_from = self._ModifiersList_obj.index(obj)
-
-    def stop(self):
-        """Stop selecting selecting clusters."""
-        self.add(self._ModifiersList_obj[
-            self._cluster_to_select_from:self.active]
-        self._cluster_to_select_from = None
-
-    def get(self):
-        if self._cluster_to_select_from is not None:
-        
-        return []
-
-    def clear(self):
-        self._selected_clusters = None
-
-    def pop(self):
-        selection = self.get()
-        self.clear()
-        return selection
-
+    # List methods {{{
     def __getitem__(self, index):
         return self._selection.__getitem__(index)
-
-    # TODO: modify decorator for this?
-    def __setitem__(self, index, val):
-        return self._selection.__setitem__(index, val)
-
-    def __delitem__(self, index):
-        return self._selection.__delitem__(index)
 
     @unwrap_obj_ref
     def __contains__(self, obj):
@@ -176,3 +143,52 @@ class Selection():
 
     def __len__(self):
         return self._selection.__len__()
+    # }}}
+
+    @unwrap_obj_ref_allow_no_value
+    def start(self, obj):
+        if obj is None:
+            obj = self._modifiers_list.active
+        self._cluster_to_select_from = obj
+
+    def stop(self):
+        """Stop selecting clusters using active cluster
+        and add clusters to 'additional selection' list."""
+        m = self._modifiers_list
+        self.add(m[m.index(self._cluster_to_select_from):m.active])
+        self._cluster_to_select_from = None
+
+    def get(self, *, add_active=False):
+        """Get list of all selected clusters."""
+        result = []
+        m = self._modifiers_list
+        if self._cluster_to_select_from is not None:
+            result.extend(m[m.index(self._cluster_to_select_from):m.active])
+        result.extend(self._additional_selection)
+        if add_active and m.active not in result:
+            result.append(m.active)
+        return result
+
+    # Additional selection {{{
+    @unwrap_obj_ref_seq
+    def add(self, val):
+        """Add cluster/clusters to additional selection."""
+        for x in val:
+            selection = self._selection
+            if x in selection:
+                continue
+            self._additional_selection.append(x)
+
+    @unwrap_obj_ref_seq_allow_no_value
+    def remove(self, obj):
+        """Remove cluster from additional selection."""
+        if obj is None:
+            self._additional_selection.pop(-1)
+        for x in obj:
+            self._additional_selection.remove(x)
+    # }}}
+
+    def clear(self):
+        """Stop selecting and clear 'additional selection' list."""
+        self.stop()
+        self._selected_clusters = []

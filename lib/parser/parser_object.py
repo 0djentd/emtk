@@ -30,7 +30,6 @@ except ModuleNotFoundError:
 from ..clusters.cluster_trait import ClusterTrait
 from ..clusters.default_modifier_cluster import DefaultModifierCluster
 from ..lists.traits.clusters.active_cluster import ActiveClusterTrait
-from ..lists.traits.modifiers.active_modifier import ActiveModifierTrait
 from ..utils import EMTK_VERSION
 
 CLUSTERS_PARSER_VERSION = (0, 1, 0)
@@ -1309,11 +1308,7 @@ class ClustersParser():
             return False
 
         x[1]._object = self._object
-
-        # Layer-specific.
-        if isinstance(x[1], ActiveModifierTrait)\
-                or isinstance(x[1], ActiveClusterTrait):
-            x[1]._mod = x[1].get_first()
+        x[1]._mod = x[1].get_first()
 
         # Set cluster name.
         x[1] = cluster_number_format(

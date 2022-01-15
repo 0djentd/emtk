@@ -92,65 +92,6 @@ class ActiveClusterTrait():
                 raise ValueError
             self._mod = mod
 
-    # SELECTION {{{
-    def add_to_selection(self, cluster):
-        """Adds cluster to selection on this layer."""
-        if self.has_cluster(cluster):
-            if self._selected_clusters is None:
-                self._selected_clusters = []
-                self._selected_clusters.append(cluster)
-            elif cluster not in self._selected_clusters:
-                self._selected_clusters.append(cluster)
-        else:
-            raise ValueError
-
-    def start_selecting(self, cluster=None):
-        """
-        Sets cluster that selection should start from on this layer.
-        """
-        if cluster is None:
-            cluster = self.active_modifier_get()
-        elif self.has_cluster(cluster):
-            self._cluster_to_select_from = self.active_modifier_get()
-        else:
-            raise ValueError
-
-    def stop_selecting(self):
-        """Clear all selected clusters."""
-        self._cluster_to_select_from = None
-        self._selected_clusters = None
-
-    def get_selection(self, *, add_active=True):
-        """
-        Returns list of clusters that were selected on this layer.
-        If add_active, will append active cluster to result, even
-        if no clusters were selected.
-        """
-
-        # Get usual selection.
-        if self._cluster_to_select_from is not None:
-            result = self.get_list_in_range_inclusive(
-                    self._cluster_to_select_from, self._mod)
-        else:
-            result = []
-
-        # Get per-cluster selection.
-        if self._selected_clusters is not None:
-            if result is not None:
-                result += self._selected_clusters
-            else:
-                result = self._selected_clusters
-
-        # Add active cluster
-        if add_active:
-            if self.active_modifier not in result:
-                result.append(self.active_modifier)
-        else:
-            if result is None:
-                result = []
-        return result
-    # }}}
-
     # Operations on selection {{{
     def remove_selection(self):
         """

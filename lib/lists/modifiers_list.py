@@ -34,7 +34,7 @@ from ..controller.answers import (
                                   )
 
 from .utils import check_if_removed, check_obj_ref
-from .selection import Selection
+from .selection import Selection, unwrap_obj_ref
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -83,6 +83,7 @@ class ModifiersList():
         self._object = obj
         self._modifiers_list = []
         self._actions = {}
+        self._mod = None
         self._selection = Selection(self)
         if not no_default_actions:
             default_actions = [ActionDefaultRemove, ActionDefaultApply,
@@ -95,22 +96,29 @@ class ModifiersList():
     @property
     @check_if_removed
     def active(self):
-        return self.selection.active
+        return self._mod
 
     @active.setter
     @check_if_removed
+    @unwrap_obj_ref
     def active(self, mod):
-        self.selection.active = mod
+        self._mod = mod
 
     @property
     @check_if_removed
     def selection(self):
         return self._selection
 
-    @selection.setter
+    @property
     @check_if_removed
-    def selection(self, val):
-        self._selection.selection = val
+    def selected(self):
+        self.selection.get()
+
+    @selected.setter
+    @check_if_removed
+    def selected(self, val):
+        self.selection.clear()
+        self.selection.add(val)
     # }}}
 
     # List methods {{{
