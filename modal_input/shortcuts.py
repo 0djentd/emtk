@@ -22,8 +22,23 @@ import json
 import string
 # import math
 import functools
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
 
 _MAPPING = ('letter', 'shift', 'ctrl', 'alt')
+
+
+def refresh_cache(func):
+    """Decorator forr methods that require cache refresh."""
+    def wrapper_refresh_cache(self, *args, **kwargs):
+        result = func(self, *args, **kwargs)
+        logger.debug(f'Refreshing lru cache for {func}')
+        self.cache_clear()
+        return result
+    return wrapper_refresh_cache
 
 
 class ModalShortcut():  # {{{

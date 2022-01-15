@@ -31,7 +31,8 @@ from ..classes.editor import ModalClustersEditor
 from ..modal_input.shortcuts import generate_new_shortcut
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
+# logger.setLevel(logging.ERROR)
+logger.setLevel(logging.DEBUG)
 
 
 class AdaptiveModalEditor(ModalClustersEditor):
@@ -531,6 +532,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
 
     # Utils {{{
     def __get_shortcut_value(self, event):
+        logger.debug(f'Look up kbs for {event.type}')
         if len(event.type) != 1:
             return
         s = self.modal_shortcuts.find_shortcut_by_event(event)
