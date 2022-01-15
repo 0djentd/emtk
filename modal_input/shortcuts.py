@@ -17,7 +17,6 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-# import re
 import json
 import string
 import functools
@@ -29,17 +28,6 @@ logger.setLevel(logging.DEBUG)
 _LOG = logger.isEnabledFor(logging.DEBUG)
 
 _MAPPING = ('letter', 'shift', 'ctrl', 'alt')
-
-
-def refresh_cache(func):
-    """Decorator for methods that require cache refresh."""
-    def wrapper_refresh_cache(self, *args, **kwargs):
-        result = func(self, *args, **kwargs)
-        if _LOG:
-            logger.debug(f'Refreshing lru cache for {func}')
-        self.cache_clear()
-        return result
-    return wrapper_refresh_cache
 
 
 class ModalShortcut():  # {{{
@@ -142,13 +130,13 @@ class ModalShortcut():  # {{{
     def compare_mappings(self, letter, shift, ctrl, alt):
         if letter != self.letter:
             return
-        if shift != self.letter:
+        if shift != self.shift:
             return
-        if ctrl != self.letter:
+        if ctrl != self.ctrl:
             return
         if alt != self.alt:
             return
-        return self.value
+        return self
 
     def __str__(self):
         line = self.value + ': '
@@ -388,6 +376,17 @@ class ModalShortcutsCache():  # {{{
 
 
 # Utils {{{
+def refresh_cache(func):
+    """Decorator for methods that require cache refresh."""
+    def wrapper_refresh_cache(self, *args, **kwargs):
+        result = func(self, *args, **kwargs)
+        if _LOG:
+            logger.debug(f'Refreshing lru cache for {func}')
+        self.cache_clear()
+        return result
+    return wrapper_refresh_cache
+
+
 @functools.lru_cache
 def _check_letter_type(val):
     if type(val) is str:
@@ -400,6 +399,7 @@ def _check_letter_type(val):
         return f'Expected str, got {type(val)}'
 
 
+# @functools.lru_cache
 def find_duplicates(shortcuts):
     duplicates = []
     for x in shortcuts:
@@ -409,11 +409,20 @@ def find_duplicates(shortcuts):
     return duplicates
 
 
+# @functools.lru_cache
 def fix_duplicates(shortcuts):
     shortcuts = shortcuts[:]
     for x in find_duplicates(shortcuts):
         shortcuts.remove(x)
     return shortcuts
+
+
+def _str_repr_event(event):
+    line = event.type
+    for x in _MAPPING[1:]:
+        if getattr(event, x):
+            line = line + f' + {x}'
+    return line
 # }}}
 
 
@@ -566,8 +575,7 @@ def generate_new_shortcut(shortcut_value: str,  # {{{
                          shortcut_elements['letter'],
                          shortcut_elements['shift'],
                          shortcut_elements['ctrl'],
-                         shortcut_elements['alt'],
-                         )
+                         shortcut_elements['alt'])
 
 
 @functools.lru_cache
