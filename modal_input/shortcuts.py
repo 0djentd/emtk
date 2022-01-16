@@ -25,7 +25,7 @@ import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
-_MAPPING = ('letter', 'shift', 'ctrl', 'alt')
+_MAPPING = ('event_type', 'shift', 'ctrl', 'alt')
 
 """This module provides classes for modal operator shortcuts,
 shortcuts groups, cache and some utility functions like serialization,
@@ -39,11 +39,13 @@ Cache is being cleared every time shortcuts are changed.
 # TODO: check if cache actually working as expected.
 
 # TODO:
-# rename 'value' to 'shortcut_id'.
 # add 'value' as str in {'PRESS', 'RELEASE'}.
 # add 'active' as bool.
 # rename all props except 'shortcut_id' to 'event_{prop_name}'
 # forbid assigning shortcuts props twice.
+
+_PROPS_STR = {'event_type', 'event_value'}
+_PROPS_BOOL = {'shift', 'ctrl', 'alt'}
 
 
 # Decorators {{{
@@ -172,7 +174,8 @@ class HashedList():  # {{{
 class ModalShortcut(CachedObject):  # {{{
     """This object represents keyboard shortcut for modal operators."""
 
-    def __init__(self, shortcut_id, event_type, shift, ctrl, alt, description=None):
+    def __init__(self, shortcut_id, event_type,
+                 shift, ctrl, alt, description=None):
         super().__init__()
         self._shortcut_id = None
         self.tag_refresh = False
@@ -274,10 +277,22 @@ class ModalShortcut(CachedObject):  # {{{
 
     def compare(self, obj):
         """Compare with bpy.types.event or another ModalShortcut."""
-        return self.compare_mappings(obj.event_type,
-                                     obj.shift,
-                                     obj.ctrl,
-                                     obj.alt)
+        if isinstance(obj, ModalShortcut):
+            return self.compare_mappings(obj.event_type,
+                                         obj.shift,
+                                         obj.ctrl,
+                                         obj.alt)
+        else:
+            try:
+                return self.compare_mappings(obj.type,
+                                             obj.shift,
+                                             obj.ctrl,
+                                             obj.alt)
+            except AttributeError:
+                return self.compare_mappings(obj.letter,
+                                             obj.shift,
+                                             obj.ctrl,
+                                             obj.alt)
 
     @method_cache
     def compare_mappings(self, event_type, shift, ctrl, alt):
@@ -494,15 +509,16 @@ class ModalShortcutsCache(CachedObject, HashedList):  # {{{
         self._data = val
 
     @method_cache
-    def find_by_shortcut_id(self, shortcut_id):
-        shortcut_id = shortcuts_groups_name_format(shortcut_id)
+    def find_by_value(self, value):
+        value = shortcuts_groups_name_format(value)
         for x in self.shortcuts_groups:
-            if shortcut_id == x.shortcut_id:
+            if value == x.value:
                 return x
 
     @check_refresh
     @method_cache
-    def search_by_shortcut_id(self, shortcuts_group_shortcut_id, shortcut_shortcut_id):
+    def search_by_shortcut_id(
+            self, shortcuts_group_shortcut_id, shortcut_shortcut_id):
         shortcuts_group_shortcut_id = shortcuts_groups_name_format(
                 shortcuts_group_shortcut_id)
         result = []
@@ -657,7 +673,7 @@ def generate_new_shortcut(shortcut_shortcut_id: str,  # {{{
         shortcut_elements.update({x: False})
     event_type_index = None
     event_type_index, shortcut_elements['event_type']\
-        = _get_next_event_type_in_shortcut_name(
+        = _get_next_letter_in_shortcut_name(
                     shortcut_elements['shortcut_id'], event_type_index)
 
     if len(already_existing_shortcuts) == 0:
@@ -706,7 +722,7 @@ def generate_new_shortcut(shortcut_shortcut_id: str,  # {{{
             # If all boolean elements already True, change event_type.
             if len(e) == 0:
                 event_type_index, shortcut_elements['event_type']\
-                        = _get_next_event_type_in_shortcut_name(
+                        = _get_next_letter_in_shortcut_name(
                                 shortcut_elements['shortcut_id'], event_type_index)
                 for z in k:
                     shortcut_elements.update({z: False})
@@ -732,7 +748,7 @@ def generate_new_shortcut(shortcut_shortcut_id: str,  # {{{
 
 
 @functools.lru_cache
-def _get_next_event_type_in_shortcut_name(shortcut_shortcut_id, index):
+def _get_next_letter_in_shortcut_name(shortcut_shortcut_id, index):
     """
     Example 1:
     >>> get_next_event_type_in_shortcut_name('angle_limit', 4)

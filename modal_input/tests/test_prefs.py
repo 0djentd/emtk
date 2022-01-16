@@ -42,7 +42,7 @@ class UtilsTests(unittest.TestCase):
         result = result[1]
         result_expected = ModalShortcut('array', 'A', True, False, False)
         f = True
-        for x in {'letter', 'shift', 'ctrl', 'alt', 'value'}:
+        for x in {'event_type', 'shift', 'ctrl', 'alt', 'shortcut_id'}:
             if getattr(result, x) != getattr(result_expected, x):
                 f = False
         self.assertTrue(f)
@@ -93,9 +93,9 @@ class ShortcutsTests(unittest.TestCase):
     def test_new_shortcut(self):
         shortcut = self.shortcut
         result = True
-        if shortcut.value != 'angle':
+        if shortcut.shortcut_id != 'angle':
             result = False
-        if shortcut.letter != 'A':
+        if shortcut.event_type != 'A':
             result = False
         if shortcut.shift is not True:
             result = False
@@ -149,10 +149,10 @@ class ShortcutsGroupTest(unittest.TestCase):
     def test_new_shortcuts_group_shortcuts_equals(self):
         for i, x in enumerate(self.shortcuts):
             with self.subTest():
-                self.assertEqual(x, self.group[x.value])
+                self.assertEqual(x, self.group[x.shortcut_id])
 
-    def test_find_by_value(self):
-        self.assertEqual(self.group.find_by_value('angle'),
+    def test_find_by_shortcut_id(self):
+        self.assertEqual(self.group.find_by_shortcut_id('angle'),
                          self.shortcuts[0])
 
     def test_find_by_mapping(self):
