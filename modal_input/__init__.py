@@ -38,3 +38,11 @@ Features:
 TODO Planned features:
     Correct UI property value display.
 """
+
+from .shortcuts import (ModalShortcut,
+                        ModalShortcutsGroup,
+                        ModalShortcutsCache)
+
+from .shortcuts import (deserialize_shortcut,
+                        deserialize_shortcuts_group,
+                        deserialize_shortcuts_cache)

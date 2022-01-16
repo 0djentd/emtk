@@ -49,6 +49,26 @@ def convert_mapping(func):
     return wrapper_convert_mapping
 
 
+def unwrap_str_to_obj(func):
+    """Check if obj is str, find item with item.value == obj."""
+    def wrapper_unwrap_str_to_obj(self, group, *args, **kwargs):
+        if type(group) is str:
+            group = self[group]
+        return func(self, group, *args, **kwargs)
+    return wrapper_unwrap_str_to_obj
+# }}}
+
+
+# Cache {{{
+class CachedObject():
+    def __init__(self, *args, **kwargs):
+        self._cache_variables = set()
+
+    def __cache_clear(self):
+        for x in self._cache_variables:
+            setattr(self, x, {})
+
+
 def method_cache(func):
     """Creates cache for instance method. Instance should
     implement 'cache_clear' method and invoke it
@@ -100,22 +120,14 @@ def check_refresh(func):
             self.cache_clear()
         return func(self, *args, **kwargs)
     return wrapper_check_refresh
-
-
-def unwrap_str_to_obj(func):
-    """Check if obj is str, find item with item.value == obj."""
-    def wrapper_unwrap_str_to_obj(self, group, *args, **kwargs):
-        if type(group) is str:
-            group = self[group]
-        return func(self, group, *args, **kwargs)
-    return wrapper_unwrap_str_to_obj
 # }}}
 
 
-class ModalShortcut():  # {{{
+class ModalShortcut(CachedObject):  # {{{
     """This object represents keyboard shortcut for modal operators."""
 
     def __init__(self, value, letter, shift, ctrl, alt, description=None):
+        super().__init__()
         self._value = None
         self.tag_refresh = False
         self.value = value
@@ -129,6 +141,7 @@ class ModalShortcut():  # {{{
     # Mapping {{{
     @property
     def letter(self):
+        """Letter to use in mapping."""
         return self._letter
 
     @letter.setter
@@ -142,6 +155,7 @@ class ModalShortcut():  # {{{
 
     @property
     def shift(self):
+        """Shift value to use in mapping."""
         return self._shift
 
     @shift.setter
@@ -154,6 +168,7 @@ class ModalShortcut():  # {{{
 
     @property
     def ctrl(self):
+        """Ctrl value to use in mapping."""
         return self._ctrl
 
     @ctrl.setter
@@ -166,6 +181,7 @@ class ModalShortcut():  # {{{
 
     @property
     def alt(self):
+        """Alt value to use in mapping."""
         return self._alt
 
     @alt.setter
@@ -241,6 +257,7 @@ class ModalShortcut():  # {{{
         return line
 
     def cache_clear(self):
+        self._CachedObject__cache_clear()
         self.tag_refresh = True
 
     @method_cache
@@ -253,13 +270,13 @@ class ModalShortcut():  # {{{
 # }}}
 
 
-class ModalShortcutsGroup():  # {{{
+class ModalShortcutsGroup(CachedObject):  # {{{
     """This object represents keyboard shortcut group for modal operators."""
 
     def __init__(self, value, shortcuts=None):
+        super().__init__()
         if shortcuts is None:
             shortcuts = []
-        self._cache_variables = set()
         self._value = None
         self.shortcuts = shortcuts
         self.value = value
@@ -345,7 +362,10 @@ class ModalShortcutsGroup():  # {{{
             raise ValueError
         if self.find_by_mapping(shortcut):
             raise ValueError
-        
+        if index is None:
+            self._data.append(shortcut)
+        else:
+            self._data.insert(index, shortcut)
     # }}}
 
     @check_refresh
@@ -386,8 +406,7 @@ class ModalShortcutsGroup():  # {{{
         return line
 
     def cache_clear(self):
-        for x in self._cache_variables:
-            setattr(self, x, {})
+        self._CachedObject__cache_clear()
         self.tag_refresh = True
 
     def serialize(self):
@@ -400,12 +419,12 @@ class ModalShortcutsGroup():  # {{{
 # }}}
 
 
-class ModalShortcutsCache():  # {{{
+class ModalShortcutsCache(CachedObject):  # {{{
     """Object that represents modal shortcuts groups."""
 
     def __init__(self, groups=None):
+        super().__init__()
         self._data = None
-        self._cache_variables = set()
         if type(groups) is str:
             self.shortcuts_groups = deserialize_shortcuts_cache(
                     groups)
@@ -499,14 +518,13 @@ class ModalShortcutsCache():  # {{{
         return result
 
     def serialize(self):
-        serialized_shortcuts_groups = []
+        obj = []
         for x in self.shortcuts_groups:
-            serialized_shortcuts_groups.append(x.serialize())
-        return json.dumps(serialized_shortcuts_groups)
+            obj.append(x.serialize())
+        return json.dumps(obj)
 
     def cache_clear(self):
-        for x in self._cache_variables:
-            setattr(self, x, {})
+        self._CachedObject__cache_clear()
 # }}}
 
 
@@ -566,45 +584,45 @@ def _str_repr_event(event):
 
 # Deserialization {{{
 @functools.lru_cache
-def deserialize_shortcuts_cache(serialized_shortcuts_groups):
-    if type(serialized_shortcuts_groups) is not str:
-        raise TypeError(type(serialized_shortcuts_groups))
+def deserialize_shortcuts_cache(obj):
+    if type(obj) is not str:
+        raise TypeError(type(obj))
 
-    serialized_shortcuts_groups = json.loads(serialized_shortcuts_groups)
-    if type(serialized_shortcuts_groups) is not list:
+    obj = json.loads(obj)
+    if type(obj) is not list:
         raise TypeError
 
     shortcuts_groups = []
-    for x in serialized_shortcuts_groups:
+    for x in obj:
         shortcuts_groups.append(deserialize_shortcuts_group(x))
     return shortcuts_groups
 
 
 @functools.lru_cache
-def deserialize_shortcuts_group(serialized_shortcuts_group):
-    if type(serialized_shortcuts_group) is not str:
-        raise TypeError(type(serialized_shortcuts_group))
+def deserialize_shortcuts_group(obj):
+    if type(obj) is not str:
+        raise TypeError(type(obj))
 
-    serialized_shortcuts_group_2 = json.loads(serialized_shortcuts_group)
-    if type(serialized_shortcuts_group_2) is not dict:
+    obj_2 = json.loads(obj)
+    if type(obj_2) is not dict:
         raise TypeError
     for x in {'name', 'shortcuts'}:
-        if x not in serialized_shortcuts_group_2:
+        if x not in obj_2:
             raise ValueError
 
     shortcuts = []
-    for x in serialized_shortcuts_group_2['shortcuts']:
+    for x in obj_2['shortcuts']:
         shortcuts.append(deserialize_shortcut(x))
-    return ModalShortcutsGroup(serialized_shortcuts_group_2['name'],
+    return ModalShortcutsGroup(obj_2['name'],
                                shortcuts)
 
 
 @functools.lru_cache
-def deserialize_shortcut(serialized_shortcut):
-    if type(serialized_shortcut) is not str:
-        raise TypeError(type(serialized_shortcut))
+def deserialize_shortcut(obj):
+    if type(obj) is not str:
+        raise TypeError(type(obj))
 
-    s = json.loads(serialized_shortcut)
+    s = json.loads(obj)
     return ModalShortcut(s['value'],
                          s['letter'],
                          s['shift'],
