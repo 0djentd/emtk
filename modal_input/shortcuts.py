@@ -365,7 +365,7 @@ class ModalShortcutsGroup(CachedObject, HashedList):  # {{{
     # List methods {{{
     @refresh_cache
     def update(self, shortcut):
-        e = self.find_by_value(shortcut.value)
+        e = self.find_by_shortcut_id(shortcut.shortcut_id)
         m = self.find_by_mapping(shortcut.event_type,
                                  shortcut.shift,
                                  shortcut.ctrl,
@@ -381,7 +381,7 @@ class ModalShortcutsGroup(CachedObject, HashedList):  # {{{
 
     @refresh_cache
     def add(self, shortcut, index=None):
-        if self.find_by_value(shortcut):
+        if self.find_by_shortcut_id(shortcut):
             raise ValueError('Shortcut already exists.')
         if self.find_by_mapping(shortcut):
             raise ValueError('Shortcut with this mapping already exists.')
@@ -393,11 +393,11 @@ class ModalShortcutsGroup(CachedObject, HashedList):  # {{{
 
     @check_refresh
     @method_cache
-    def find_by_value(self, value):
-        if type(value) is not str:
-            raise TypeError(f'Expected str, got {type(value)}')
+    def find_by_shortcut_id(self, shortcut_id):
+        if type(shortcut_id) is not str:
+            raise TypeError(f'Expected str, got {type(shortcut_id)}')
         for x in self:
-            if x.value == value:
+            if x.shortcut_id == shortcut_id:
                 return x
 
     @check_refresh
