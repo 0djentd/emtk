@@ -29,6 +29,9 @@ _MAPPING = ('letter', 'shift', 'ctrl', 'alt')
 
 """This module provides classes for modal operator shortcuts,
 shortcuts groups, cache and some utility functions.
+
+Some of methods are cached.
+Cache is being cleared every time shortcuts are changed.
 """
 
 # TODO: create base class for shortcuts cache and shortcuts group
@@ -120,6 +123,41 @@ def check_refresh(func):
             self.cache_clear()
         return func(self, *args, **kwargs)
     return wrapper_check_refresh
+# }}}
+
+
+class HashedList():  # {{{
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def __getitem__(self, key):
+        if type(key) is str:
+            result = self.find_by_value(key)
+            if result:
+                return result
+            else:
+                raise KeyError
+        else:
+            TypeError(f'Expected str, got {type(key)}')
+
+    @unwrap_str_to_obj
+    def __contains__(self, obj):
+        return obj in self._data
+
+    def __iter__(self):
+        return iter(self._data)
+
+    def __next__(self):
+        return next(self._data)
+
+    def __len__(self):
+        return self._data.__len__()
+
+    @refresh_cache
+    @unwrap_str_to_obj
+    def remove(self, obj):
+        return self._data.remove(obj)
+
 # }}}
 
 
@@ -270,7 +308,7 @@ class ModalShortcut(CachedObject):  # {{{
 # }}}
 
 
-class ModalShortcutsGroup(CachedObject):  # {{{
+class ModalShortcutsGroup(CachedObject, HashedList):  # {{{
     """This object represents keyboard shortcut group for modal operators."""
 
     def __init__(self, value, shortcuts=None):
@@ -317,38 +355,15 @@ class ModalShortcutsGroup(CachedObject):  # {{{
     # }}}
 
     # List methods {{{
-    def __getitem__(self, key):
-        if type(key) is str:
-            result = self.find_by_value(key)
-            if result:
-                return result
-            else:
-                raise KeyError
-        else:
-            TypeError(f'Expected str, got {type(key)}')
-
-    @unwrap_str_to_obj
-    def __contains__(self, obj):
-        return obj in self._data
-
-    def __iter__(self):
-        return iter(self._data)
-
-    def __next__(self):
-        return next(self._data)
-
-    def __len__(self):
-        return self._data.__len__()
-
-    @refresh_cache
-    def remove(self, obj):
-        if type(obj) is str:
-            obj = self[obj]
-        return self._data.remove(obj)
-
     @refresh_cache
     def update(self, shortcut):
         e = self.find_by_value(shortcut.value)
+        m = self.find_by_mapping(shortcut.letter,
+                                 shortcut.shift,
+                                 shortcut.ctrl,
+                                 shortcut.alt)
+        if m not in {None, e}:
+            raise ValueError('Shortcut with this mapping already exists.')
         if e is not None:
             i = self._data.index(e)
             self._data.remove(e)
@@ -359,9 +374,9 @@ class ModalShortcutsGroup(CachedObject):  # {{{
     @refresh_cache
     def add(self, shortcut, index=None):
         if self.find_by_value(shortcut):
-            raise ValueError
+            raise ValueError('Shortcut already exists.')
         if self.find_by_mapping(shortcut):
-            raise ValueError
+            raise ValueError('Shortcut with this mapping already exists.')
         if index is None:
             self._data.append(shortcut)
         else:
@@ -372,7 +387,7 @@ class ModalShortcutsGroup(CachedObject):  # {{{
     @method_cache
     def find_by_value(self, value):
         if type(value) is not str:
-            raise TypeError
+            raise TypeError(f'Expected str, got {type(value)}')
         for x in self:
             if x.value == value:
                 return x
@@ -409,6 +424,7 @@ class ModalShortcutsGroup(CachedObject):  # {{{
         self._CachedObject__cache_clear()
         self.tag_refresh = True
 
+    @method_cache
     def serialize(self):
         serialized_shortcuts = []
         for x in self:
@@ -419,7 +435,7 @@ class ModalShortcutsGroup(CachedObject):  # {{{
 # }}}
 
 
-class ModalShortcutsCache(CachedObject):  # {{{
+class ModalShortcutsCache(CachedObject, HashedList):  # {{{
     """Object that represents modal shortcuts groups."""
 
     def __init__(self, groups=None):
@@ -437,34 +453,6 @@ class ModalShortcutsCache(CachedObject):  # {{{
                     'Expected str, list of ModalShortcutsGroups or None.')
 
     # List methods {{{
-    def __getitem__(self, key):
-        if type(key) is str:
-            result = self.find_by_value(key)
-            if result:
-                return result
-            else:
-                raise KeyError
-        else:
-            TypeError(f'Expected str, got {type(key)}')
-
-    @unwrap_str_to_obj
-    def __contains__(self, obj):
-        return obj in self._data
-
-    def __iter__(self):
-        return self._data.__iter__()
-
-    def __next__(self):
-        return next(self._data)
-
-    def __len__(self):
-        return self._data.__len__()
-
-    @refresh_cache
-    @unwrap_str_to_obj
-    def remove(self, group):
-        self._data.remove(group)
-
     @refresh_cache
     def add(self, group):
         if not isinstance(group, ModalShortcutsGroup):
@@ -477,9 +465,10 @@ class ModalShortcutsCache(CachedObject):  # {{{
     def update(self, group):
         if not isinstance(group, ModalShortcutsGroup):
             raise TypeError
-        if group in self.shortcuts_groups:
-            self.remove(group)
-        self.add(group)
+        e = self.find_by_value(group.value)
+        if e:
+            self._data.remove(e)
+        self._data.append(group)
     # }}}
 
     @property
@@ -517,6 +506,7 @@ class ModalShortcutsCache(CachedObject):  # {{{
                 result.append(x)
         return result
 
+    @method_cache
     def serialize(self):
         obj = []
         for x in self.shortcuts_groups:
