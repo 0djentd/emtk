@@ -44,7 +44,6 @@ class ActiveClusterTrait():
         # Active modifier
         self._mod = None
 
-    # Shortcuts {{{
     def get_cluster(self):
         """
         Returns active cluster on deepest non-collapsed layer.
@@ -71,26 +70,6 @@ class ActiveClusterTrait():
         """
         return self.get_cluster_or_layer(
                 self.get_cluster())
-    # }}}
-
-    @property
-    @check_if_removed
-    def active(self):
-        """Returns active modifier or None, if no modifiers."""
-        if len(self._modifiers_list) > 0:
-            return self._mod
-        else:
-            return None
-
-    @active.setter
-    @check_if_removed
-    def active(self, mod):
-        if isinstance(mod, int):
-            self._mod = self._modifiers_list[mod]
-        else:
-            if mod not in self._modifiers_list:
-                raise ValueError
-            self._mod = mod
 
     # Operations on selection {{{
     def remove_selection(self):
