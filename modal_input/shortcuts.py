@@ -518,12 +518,12 @@ class ModalShortcutsCache(CachedObject, HashedList):  # {{{
     @check_refresh
     @method_cache
     def search_by_shortcut_id(
-            self, shortcuts_group_shortcut_id, shortcut_shortcut_id):
-        shortcuts_group_shortcut_id = shortcuts_groups_name_format(
-                shortcuts_group_shortcut_id)
+            self, shortcuts_group_value, shortcut_shortcut_id):
+        shortcuts_group_value = shortcuts_groups_name_format(
+                shortcuts_group_value)
         result = []
         for x in self.shortcuts_groups:
-            if shortcuts_group_shortcut_id not in x.shortcut_id:
+            if shortcuts_group_value not in x.value:
                 continue
             shortcuts = x.search_by_shortcut_id(shortcut_shortcut_id)
             if len(shortcuts) != 0:

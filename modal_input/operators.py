@@ -77,9 +77,9 @@ class BMTOOLS_OT_start_editing_modal_shortcut(bpy.types.Operator):  # {{{
 
             group = prefs.modal_shortcuts.find_by_value(
                 self.shortcut_group)
-            shortcut = group.find_by_value(self.shortcut_name)
+            shortcut = group.find_by_shortcut_id(self.shortcut_name)
 
-            prefs.edited_shortcut_letter = shortcut.letter
+            prefs.edited_shortcut_event_type = shortcut.event_type
             prefs.edited_shortcut_shift = shortcut.shift
             prefs.edited_shortcut_ctrl = shortcut.ctrl
             prefs.edited_shortcut_alt = shortcut.alt
@@ -94,7 +94,7 @@ class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):  # {{{
 
     # shortcut_name
     # shortcut_group
-    # shortcut_letter
+    # shortcut_event_type
     # shortcut_shift
     # shortcut_ctrl
     # shortcut_alt
@@ -112,7 +112,7 @@ class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):  # {{{
     # }}}
 
     # Shortcut attrs {{{
-    shortcut_letter: StringProperty(
+    shortcut_event_type: StringProperty(
             name="Shortcut mapping",
             maxlen=1,
             default="",
@@ -139,7 +139,7 @@ class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):  # {{{
         group = prefs.modal_shortcuts.find_by_value(
                 self.shortcut_group)
         shortcut = ModalShortcut(self.shortcut_name,
-                                 self.shortcut_letter,
+                                 self.shortcut_event_type,
                                  self.shortcut_shift,
                                  self.shortcut_ctrl,
                                  self.shortcut_alt)

@@ -531,7 +531,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
             return
         s = self.modal_shortcuts.find_by_event(event)
         if s:
-            return s.value
+            return s.shortcut_id
 
     def __check_event_is_simple(self, event):
         """Checks if event should not be passed to modal input base class."""
@@ -583,7 +583,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
         result = []
         for x in self.modal_shortcuts.shortcuts:
             result.append(str(x) + ' ' + self.__get_props_val_format(
-                getattr(self.__mods[0], x.value), x.value))
+                getattr(self.__mods[0], x.shortcut_id), x.shortcut_id))
 
         for x in result:
             if not isinstance(x, str):

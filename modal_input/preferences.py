@@ -65,7 +65,7 @@ class ModalShortcutsPreferences():
     bmtool_editing_modal_shortcut_group: StringProperty("")
 
     # Its properties
-    edited_shortcut_letter: StringProperty(name="Letter", maxlen=1, default="")
+    edited_shortcut_event_type: StringProperty(name="Letter", maxlen=1, default="")
     edited_shortcut_shift: BoolProperty(name="Shift", default=False)
     edited_shortcut_ctrl: BoolProperty(name="Ctrl", default=False)
     edited_shortcut_alt: BoolProperty(name="Alt", default=False)
@@ -93,7 +93,7 @@ class ModalShortcutsPreferences():
 
         self.__refresh_modal_opertors_shortcuts_cache()
 
-        result = self.modal_shortcuts.search_by_value(
+        result = self.modal_shortcuts.search_by_shortcut_id(
                 self.shortcuts_groups_search_str, self.shortcuts_search_str)
 
         if not result:
@@ -105,13 +105,14 @@ class ModalShortcutsPreferences():
         for x in result:
             self.layout.label(text=x.value)
             box = layout.box()
-            for y in x.search_by_value(self.shortcuts_search_str):
+            for y in x.search_by_shortcut_id(self.shortcuts_search_str):
                 if x.value == self.bmtool_editing_modal_shortcut_group\
-                        and y.value\
+                        and y.shortcut_id\
                         == self.bmtool_editing_modal_shortcut_value:
-                    self.__draw_shortcut_editor(box.box(), x.value, y.value, y)
+                    self.__draw_shortcut_editor(
+                            box.box(), x.value, y.shortcut_id, y)
                 else:
-                    self.__draw_shortcut(box.box(), x.value, y.value, y)
+                    self.__draw_shortcut(box.box(), x.value, y.shortcut_id, y)
     # }}}
 
     # Draw shortcut {{{
@@ -141,7 +142,7 @@ class ModalShortcutsPreferences():
 
         row = layout.row()
         col = row.column()
-        col.prop(self, "edited_shortcut_letter")
+        col.prop(self, "edited_shortcut_event_type")
         col = row.column()
         col.prop(self, "edited_shortcut_shift")
         col = row.column()
@@ -152,7 +153,7 @@ class ModalShortcutsPreferences():
         a = layout.operator("bmtools.add_or_update_modal_shortcut")
         a.shortcut_name = shortcut_name
         a.shortcut_group = shortcuts_group_name
-        a.shortcut_letter = self.edited_shortcut_letter
+        a.shortcut_event_type = self.edited_shortcut_event_type
         a.shortcut_shift = self.edited_shortcut_shift
         a.shortcut_ctrl = self.edited_shortcut_ctrl
         a.shortcut_alt = self.edited_shortcut_alt
