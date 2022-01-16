@@ -39,49 +39,40 @@ Cache is being cleared every time shortcuts are changed.
 # TODO: check if cache actually working as expected.
 
 # TODO:
-# add 'value' as str in {'PRESS', 'RELEASE'}.
-# add 'active' as bool.
-# rename all props except 'shortcut_id' to 'event_{prop_name}'
-# forbid assigning shortcuts props twice.
+# Add 'value' as str in {'PRESS', 'RELEASE'}.
+# Rename all props except 'shortcut_id' to 'event_{prop_name}'
+# Forbid assigning shortcuts props twice.
+# Add dictionary 'variables' to ModalShortcut class.
 
 # _PROPS_STR = {'event_type', 'event_value'}
 # _PROPS_BOOL = {'shift', 'ctrl', 'alt'}
 
-MODIFIERS = {'LEFT_CTRL', 'LEFT_ALT', 'LEFT_SHIFT',
-             'RIGHT_CTRL', 'RIGHT_ALT', 'RIGHT_SHIFT',
-             'OSKEY', 'APP', 'ESC', 'TAB', 'RET', 'SPACE',
-             )
+# MODIFIERS = {'LEFT_CTRL', 'LEFT_ALT', 'LEFT_SHIFT',
+#              'RIGHT_CTRL', 'RIGHT_ALT', 'RIGHT_SHIFT',
+#              'OSKEY', 'APP', 'ESC', 'TAB', 'RET', 'SPACE',)
 
 # This is mapping for en_US.UTF-8 layout.
-MAPPING = {
-           'WHEELUPMOUSE': 'WHEELUPMOUSE',
-           'WHEELDOWNMOUSE': 'WHEELDOWNMOUSE',
-           'WHEELINMOUSE': 'WHEELINMOUSE',
-           'WHEELOUTMOUSE': 'WHEELOUTMOUSE',
-           'ZERO': '0',
-           'ONE': '1',
-           'TWO': '2',
-           'THREE': '3',
-           'FOUR': '4',
-           'FIVE': '5',
-           'SIX': '6',
-           'SEVEN': '7',
-           'EIGHT': '8',
-           'NINE': '9',
-           'MINUS': '-',
-           'EQUAL': '=',
-           'BACK_SLASH': '\\',
-           'LEFT_BRACKET': '[',
-           'RIGHT_BRACKET': ']',
-           'SEMI_COLON': ';',
-           'ACCENT_GRAVE': '\'',
-           'COMMA': ',',
-           'PERIOD': '.',
-           }
-
-
-for x in string.ascii_uppercase:
-    MAPPING.update({x}: x)
+LETTERS_MAPPING = {
+                   'ZERO': '0',
+                   'ONE': '1',
+                   'TWO': '2',
+                   'THREE': '3',
+                   'FOUR': '4',
+                   'FIVE': '5',
+                   'SIX': '6',
+                   'SEVEN': '7',
+                   'EIGHT': '8',
+                   'NINE': '9',
+                   'MINUS': '-',
+                   'EQUAL': '=',
+                   'BACK_SLASH': '\\',
+                   'LEFT_BRACKET': '[',
+                   'RIGHT_BRACKET': ']',
+                   'SEMI_COLON': ';',
+                   'ACCENT_GRAVE': '\'',
+                   'COMMA': ',',
+                   'PERIOD': '.',
+                   }
 
 # Decorators {{{
 def convert_mapping(func):
@@ -584,8 +575,9 @@ def _check_event_type_type(val):
         if len(val) == 1:
             if val not in string.ascii_uppercase:
                 val = val.upper()
-                if val not in string.ascii_lowercase:
-                    return 'Expected event_type in [A-Z], got {val}'
+                if val not in string.ascii_lowercase\
+                    and val not in LETTERS_MAPPING:
+                        return 'Expected event_type in [A-Z], got {val}'
         else:
             return f'Expected str with length == 1, got {val}'
     else:
