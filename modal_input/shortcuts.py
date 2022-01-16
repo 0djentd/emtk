@@ -54,7 +54,7 @@ def convert_mapping(func):
     """
     def wrapper_convert_mapping(self, obj, *args, **kwargs):
         if isinstance(obj, ModalShortcut):
-            return func(self, obj.letter, obj.shift,
+            return func(self, obj.event_type, obj.shift,
                         obj.ctrl, obj.alt, *args, **kwargs)
         else:
             return func(self, obj, *args, **kwargs)
@@ -173,12 +173,12 @@ class HashedList():  # {{{
 class ModalShortcut(CachedObject):  # {{{
     """This object represents keyboard shortcut for modal operators."""
 
-    def __init__(self, value, letter, shift, ctrl, alt, description=None):
+    def __init__(self, value, event_type, shift, ctrl, alt, description=None):
         super().__init__()
         self._value = None
         self.tag_refresh = False
         self.value = value
-        self.letter = letter
+        self.event_type = event_type
         self.shift = shift
         self.ctrl = ctrl
         self.alt = alt
@@ -187,17 +187,17 @@ class ModalShortcut(CachedObject):  # {{{
     # Properties {{{
     # Mapping {{{
     @property
-    def letter(self):
+    def event_type(self):
         """Letter to use in mapping."""
-        return self._letter
+        return self._event_type
 
-    @letter.setter
+    @event_type.setter
     @refresh_cache
-    def letter(self, val):
-        c = _check_letter_type(val)
+    def event_type(self, val):
+        c = _check_event_type_type(val)
         if c:
             raise TypeError(c)
-        self._letter = val
+        self._event_type = val
         self.cache_clear()
 
     @property
@@ -275,14 +275,14 @@ class ModalShortcut(CachedObject):  # {{{
 
     def compare(self, obj):
         """Compare with bpy.types.event or another ModalShortcut."""
-        return self.compare_mappings(obj.letter,
+        return self.compare_mappings(obj.event_type,
                                      obj.shift,
                                      obj.ctrl,
                                      obj.alt)
 
     @method_cache
-    def compare_mappings(self, letter, shift, ctrl, alt):
-        if letter != self.letter:
+    def compare_mappings(self, event_type, shift, ctrl, alt):
+        if event_type != self.event_type:
             return
         if shift is not self.shift:
             return
@@ -297,7 +297,7 @@ class ModalShortcut(CachedObject):  # {{{
 
     def __str__(self):
         line = self.value + ': '
-        line = line + self.letter
+        line = line + self.event_type
         for x in _MAPPING[1:]:
             if getattr(self, x):
                 line = line + f' + {x}'
@@ -367,7 +367,7 @@ class ModalShortcutsGroup(CachedObject, HashedList):  # {{{
     @refresh_cache
     def update(self, shortcut):
         e = self.find_by_value(shortcut.value)
-        m = self.find_by_mapping(shortcut.letter,
+        m = self.find_by_mapping(shortcut.event_type,
                                  shortcut.shift,
                                  shortcut.ctrl,
                                  shortcut.alt)
@@ -404,9 +404,9 @@ class ModalShortcutsGroup(CachedObject, HashedList):  # {{{
     @check_refresh
     @convert_mapping
     @method_cache
-    def find_by_mapping(self, letter, shift, ctrl, alt):
+    def find_by_mapping(self, event_type, shift, ctrl, alt):
         for x in self:
-            if x.compare_mappings(letter, shift, ctrl, alt):
+            if x.compare_mappings(event_type, shift, ctrl, alt):
                 return x
 
     def find_by_event(self, event):
@@ -529,13 +529,13 @@ class ModalShortcutsCache(CachedObject, HashedList):  # {{{
 
 # Utils {{{
 @functools.lru_cache
-def _check_letter_type(val):
+def _check_event_type_type(val):
     if type(val) is str:
         if len(val) == 1:
             if val not in string.ascii_uppercase:
                 val = val.upper()
                 if val not in string.ascii_lowercase:
-                    return 'Expected letter in [A-Z], got {val}'
+                    return 'Expected event_type in [A-Z], got {val}'
         else:
             return f'Expected str with length == 1, got {val}'
     else:
@@ -623,7 +623,7 @@ def deserialize_shortcut(obj):
 
     s = json.loads(obj)
     return ModalShortcut(s['value'],
-                         s['letter'],
+                         s['event_type'],
                          s['shift'],
                          s['ctrl'],
                          s['alt'])
@@ -656,14 +656,14 @@ def generate_new_shortcut(shortcut_value: str,  # {{{
     k = ['shift', 'ctrl', 'alt']
     for x in k:
         shortcut_elements.update({x: False})
-    letter_index = None
-    letter_index, shortcut_elements['letter']\
-        = _get_next_letter_in_shortcut_name(
-                    shortcut_elements['value'], letter_index)
+    event_type_index = None
+    event_type_index, shortcut_elements['event_type']\
+        = _get_next_event_type_in_shortcut_name(
+                    shortcut_elements['value'], event_type_index)
 
     if len(already_existing_shortcuts) == 0:
         return ModalShortcut(shortcut_elements['value'],
-                             shortcut_elements['letter'],
+                             shortcut_elements['event_type'],
                              shortcut_elements['shift'],
                              shortcut_elements['ctrl'],
                              shortcut_elements['alt'])
@@ -704,11 +704,11 @@ def generate_new_shortcut(shortcut_value: str,  # {{{
                         and shortcut_elements[z] is False:
                     e.append(z)
 
-            # If all boolean elements already True, change letter.
+            # If all boolean elements already True, change event_type.
             if len(e) == 0:
-                letter_index, shortcut_elements['letter']\
-                        = _get_next_letter_in_shortcut_name(
-                                shortcut_elements['value'], letter_index)
+                event_type_index, shortcut_elements['event_type']\
+                        = _get_next_event_type_in_shortcut_name(
+                                shortcut_elements['value'], event_type_index)
                 for z in k:
                     shortcut_elements.update({z: False})
                 reparse = True
@@ -726,21 +726,21 @@ def generate_new_shortcut(shortcut_value: str,  # {{{
             checking = False
 
     return ModalShortcut(shortcut_elements['value'],
-                         shortcut_elements['letter'],
+                         shortcut_elements['event_type'],
                          shortcut_elements['shift'],
                          shortcut_elements['ctrl'],
                          shortcut_elements['alt'])
 
 
 @functools.lru_cache
-def _get_next_letter_in_shortcut_name(shortcut_value, index):
+def _get_next_event_type_in_shortcut_name(shortcut_value, index):
     """
     Example 1:
-    >>> get_next_letter_in_shortcut_name('angle_limit', 4)
+    >>> get_next_event_type_in_shortcut_name('angle_limit', 4)
     <<< 6, L
 
     Example 2:
-    >>> get_next_letter_in_shortcut_name('angle_limit', None)
+    >>> get_next_event_type_in_shortcut_name('angle_limit', None)
     <<< 0, A
     """
     if not isinstance(shortcut_value, str):
@@ -750,7 +750,7 @@ def _get_next_letter_in_shortcut_name(shortcut_value, index):
         for i, x in enumerate(shortcut_value):
             if x in string.ascii_letters:
                 new_index = i
-                letter = x.upper()
+                event_type = x.upper()
                 break
 
     elif type(index) is int:
@@ -761,10 +761,10 @@ def _get_next_letter_in_shortcut_name(shortcut_value, index):
                 continue
             if x in string.ascii_letters:
                 new_index = i
-                letter = x.upper()
+                event_type = x.upper()
                 break
         new_index = index + new_index
     else:
         raise TypeError
-    return new_index, letter
+    return new_index, event_type
 # }}}
