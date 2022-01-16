@@ -150,8 +150,8 @@ class ModalShortcutsPreferences():
         col.prop(self, "edited_shortcut_alt")
 
         a = layout.operator("bmtools.add_or_update_modal_shortcut")
-        a.shortcut_name = shortcuts_group_name
-        a.shortcut_group = shortcut_name
+        a.shortcut_name = shortcut_name
+        a.shortcut_group = shortcuts_group_name
         a.shortcut_letter = self.edited_shortcut_letter
         a.shortcut_shift = self.edited_shortcut_shift
         a.shortcut_ctrl = self.edited_shortcut_ctrl

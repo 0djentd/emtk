@@ -22,16 +22,8 @@ import string
 import functools
 import logging
 
-try:
-    import bpy
-    _WITH_BPY = True
-except ModuleNotFoundError:
-    _WITH_BPY = False
-
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
-
-_LOG = logger.isEnabledFor(logging.DEBUG)
 
 _MAPPING = ('letter', 'shift', 'ctrl', 'alt')
 
@@ -320,37 +312,22 @@ class ModalShortcutsGroup():  # {{{
 
     @refresh_cache
     def update(self, shortcut):
-        index = self.remove_similar_shortcut(shortcut)
-        if index is not None:
-            self._data.insert(index, shortcut)
-        self._data.append(shortcut)
+        e = self.find_by_value(shortcut.value)
+        if e is not None:
+            i = self._data.index(e)
+            self._data.remove(e)
+            self._data.insert(i, shortcut)
+        else:
+            self._data.append(shortcut)
+
+    @refresh_cache
+    def add(self, shortcut, index=None):
+        if self.find_by_value(shortcut):
+            raise ValueError
+        if self.find_by_mapping(shortcut):
+            raise ValueError
+        
     # }}}
-
-    def remove_similar_shortcut(self, shortcut):
-        if not isinstance(shortcut, ModalShortcut):
-            raise TypeError
-
-        index = None
-        if shortcut in self._data:
-            index = self._data.index(shortcut)
-            self._data.remove(shortcut)
-
-        d = self.find_by_mapping(shortcut.letter,
-                                 shortcut.shift,
-                                 shortcut.ctrl,
-                                 shortcut.alt)
-        if d:
-            index = self._data.index(d)
-            self._data.remove(d)
-
-        d = self.find_by_value(shortcut.value)
-        if d:
-            index = self._data.index(d)
-            self._data.remove(d)
-
-        if index is not None:
-            self.cache_clear()
-        return index
 
     @check_refresh
     @method_cache
@@ -361,7 +338,17 @@ class ModalShortcutsGroup():  # {{{
             if x.value == value:
                 return x
 
+    def convert_mapping(func):
+        def wrapper_convert_mapping(self, obj, *args, **kwargs):
+            if isinstance(obj, ModalShortcut):
+                return func(self, obj.letter, obj.shift,
+                            obj.ctrl, obj.alt, *args, **kwargs)
+            else:
+                return func(self, obj, *args, **kwargs)
+        return wrapper_convert_mapping
+
     @check_refresh
+    @convert_mapping
     @method_cache
     def find_by_mapping(self, letter, shift, ctrl, alt):
         for x in self:
@@ -482,6 +469,7 @@ class ModalShortcutsCache():  # {{{
 
     @method_cache
     def find_by_value(self, value):
+        value = shortcuts_groups_name_format(value)
         for x in self.shortcuts_groups:
             if value == x.value:
                 return x
@@ -489,6 +477,8 @@ class ModalShortcutsCache():  # {{{
     @check_refresh
     @method_cache
     def search_by_value(self, shortcuts_group_value, shortcut_value):
+        shortcuts_group_value = shortcuts_groups_name_format(
+                shortcuts_group_value)
         result = []
         for x in self.shortcuts_groups:
             if shortcuts_group_value not in x.value:
@@ -543,6 +533,16 @@ def fix_duplicates(shortcuts):
     for x in find_duplicates(shortcuts):
         shortcuts.remove(x)
     return shortcuts
+
+
+@functools.lru_cache
+def shortcuts_groups_name_format(value):
+    if type(value) is not str:
+        value = str(value)
+    value.strip()
+    value.upper()
+    value.replace(' ', '_')
+    return value
 
 
 def _str_repr_event(event):

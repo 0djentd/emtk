@@ -18,6 +18,8 @@
 # ##### END GPL LICENSE BLOCK #####
 
 import bpy
+import re
+import logging
 
 from bpy.props import (
                        BoolProperty,
@@ -32,6 +34,10 @@ from ..lib.utils.modifier_prop_types import MODIFIER_TYPES
 
 from .shortcuts import generate_new_shortcut
 from .shortcuts import ModalShortcutsGroup, ModalShortcutsCache, ModalShortcut
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
 
 
 class BMTOOLS_OT_start_editing_modal_shortcut(bpy.types.Operator):  # {{{
