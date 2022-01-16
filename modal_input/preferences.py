@@ -49,7 +49,7 @@ class ModalShortcutsPreferences():
 
     @property
     def modal_shortcuts(self):
-        self.__refresh_modal_opertors_shortcuts_cache()
+        self._check_cache_refresh()
         return self._modal_shortcuts
 
     @modal_shortcuts.setter
@@ -91,7 +91,7 @@ class ModalShortcutsPreferences():
         layout.prop(self, "shortcuts_groups_search_str")
         layout.prop(self, "shortcuts_search_str")
 
-        self.__refresh_modal_opertors_shortcuts_cache()
+        self._check_cache_refresh()
 
         result = self.modal_shortcuts.search_by_shortcut_id(
                 self.shortcuts_groups_search_str, self.shortcuts_search_str)
@@ -159,13 +159,14 @@ class ModalShortcutsPreferences():
         a.shortcut_alt = self.edited_shortcut_alt
     # }}}
 
-    # TODO: remove this
-    def __refresh_modal_opertors_shortcuts_cache(self):
-        if self._modal_shortcuts is None:
-            self._modal_shortcuts = ModalShortcutsCache(
-                    self.bmtool_modal_operators_serialized_shortcuts)
-
-    # TODO: remove this
-    def save_modal_shortcuts_cache(self):
+    def save_cache(self):
         self.bmtool_modal_operators_serialized_shortcuts\
-            = self.modal_shortcuts.serialize()
+                = self.modal_shortcuts.serialize()
+
+    def refresh_cache(self):
+        self._modal_shortcuts = ModalShortcutsCache(
+                self.bmtool_modal_operators_serialized_shortcuts)
+
+    def _check_cache_refresh(self):
+        if self._modal_shortcuts is None:
+            self.refresh_cache()

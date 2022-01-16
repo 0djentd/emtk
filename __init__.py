@@ -139,6 +139,8 @@ def register():
             logger.info(f'Adding property group {line} for {x}')
             prop = bpy.props.PointerProperty(type=UIClassVariablesEditorCache)
             setattr(bpy.types.Scene, line, prop)
+    prefs = bpy.context.preferences.addons['bmtools'].preferences
+    prefs.refresh_cache()
     logger.info('Finished registering BMTools and EMTK')
 
 

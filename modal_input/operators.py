@@ -145,7 +145,7 @@ class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):  # {{{
                                  self.shortcut_alt)
 
         group.update(shortcut)
-        prefs.save_modal_shortcuts_cache()
+        prefs.save_cache()
         prefs.bmtool_editing_modal_shortcut_value = ""
         prefs.bmtool_editing_modal_shortcut_group = ""
         return {'FINISHED'}
