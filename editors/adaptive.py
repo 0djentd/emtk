@@ -31,8 +31,10 @@ from ..classes.editor import ModalClustersEditor
 from ..modal_input.shortcuts import generate_new_shortcut
 
 logger = logging.getLogger(__name__)
-# logger.setLevel(logging.ERROR)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.ERROR)
+# logger.setLevel(logging.DEBUG)
+
+# TODO: add modifiers types switcher.
 
 
 class AdaptiveModalEditor(ModalClustersEditor):
@@ -210,10 +212,13 @@ class AdaptiveModalEditor(ModalClustersEditor):
         mods = self.__get_all_clusters_modifiers(clusters)
         mod = mods[0]
         self.__mods = mods
+
+        # Get existing shortcuts
         prefs = bpy.context.preferences.addons['bmtools'].preferences
         s = prefs.modal_shortcuts.find_by_value(mod.type)
         self.modal_shortcuts = s
 
+        # Filter properties.
         props = get_props_filtered_by_types(mods[0])
         for x in props:
             if x in self.__MODAL_INPUT_PROP_TYPES:
@@ -224,6 +229,15 @@ class AdaptiveModalEditor(ModalClustersEditor):
                     self.__kbs_no_modal.add(y)
             else:
                 raise TypeError
+
+        # Generate missing shortcuts.
+        new_props = []
+        for x in props:
+            for y in props[x]:
+                if not s.find_by_shortcut_id(y):
+                    new_props.append(x)
+        for x in new_props:
+            s.add(generate_new_shortcut(x, s.shortcuts))
 
         logger.debug('Editor switched to.')
         logger.debug('Modal props mappings')
@@ -346,9 +360,6 @@ class AdaptiveModalEditor(ModalClustersEditor):
         Returns True if event was interpreted.
         """
         logger.debug(f'Modal {self.modal_input_mode}')
-
-        if self.modal_input_mode == 'NONE':
-            raise TypeError
 
         if self.modal_input_mode == 'DELTA':
             if self.__check_event_is_simple(event):
@@ -558,8 +569,6 @@ class AdaptiveModalEditor(ModalClustersEditor):
         return mods
 
     def __switch_to_mode(self, mode_name):
-        if not isinstance(mode_name, str):
-            raise TypeError
         if mode_name == self.__DEFAULT_MODE:
             return self.__switch_to_default()
 
@@ -584,12 +593,6 @@ class AdaptiveModalEditor(ModalClustersEditor):
         for x in self.modal_shortcuts.shortcuts:
             result.append(str(x) + ' ' + self.__get_props_val_format(
                 getattr(self.__mods[0], x.shortcut_id), x.shortcut_id))
-
-        for x in result:
-            if not isinstance(x, str):
-                raise TypeError
-            if len(x) == 0:
-                raise ValueError
         return result
 
     def __get_props_val_format(self,
