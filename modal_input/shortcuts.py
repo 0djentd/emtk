@@ -31,14 +31,33 @@ _MAPPING = ('letter', 'shift', 'ctrl', 'alt')
 shortcuts groups, cache and some utility functions.
 """
 
+# TODO: create base class for shortcuts cache and shortcuts group
+# TODO: check if cache actually working as expected
+
 
 # Decorators {{{
+def convert_mapping(func):
+    """Converts object (expecting ModalShortcut
+    or bpy.types.event) to mapping.
+    """
+    def wrapper_convert_mapping(self, obj, *args, **kwargs):
+        if isinstance(obj, ModalShortcut):
+            return func(self, obj.letter, obj.shift,
+                        obj.ctrl, obj.alt, *args, **kwargs)
+        else:
+            return func(self, obj, *args, **kwargs)
+    return wrapper_convert_mapping
+
+
 def method_cache(func):
+    """Creates cache for instance method. Instance should
+    implement 'cache_clear' method and invoke it
+    after attributes are changed.
+    """
     def wrapper_method_cache(self, *args, **kwargs):
         if len(kwargs) != 0:
             raise TypeError
         cache_name = '_' + func.__name__ + '_cache'
-
         try:
             cache = getattr(self, cache_name)
         except AttributeError:
@@ -61,7 +80,7 @@ def method_cache(func):
 
 
 def refresh_cache(func):
-    """Decorator for methods that require cache refresh."""
+    """Decorator for methods that require cache refresh afterwards."""
     def wrapper_refresh_cache(self, *args, **kwargs):
         result = func(self, *args, **kwargs)
         self.cache_clear()
@@ -70,7 +89,7 @@ def refresh_cache(func):
 
 
 def check_refresh(func):
-    """Refresh cache if any of objects require it."""
+    """Refresh cache before using method if any of objects require it."""
     def wrapper_check_refresh(self, *args, **kwargs):
         refresh = False
         for x in self._data:
@@ -337,15 +356,6 @@ class ModalShortcutsGroup():  # {{{
         for x in self:
             if x.value == value:
                 return x
-
-    def convert_mapping(func):
-        def wrapper_convert_mapping(self, obj, *args, **kwargs):
-            if isinstance(obj, ModalShortcut):
-                return func(self, obj.letter, obj.shift,
-                            obj.ctrl, obj.alt, *args, **kwargs)
-            else:
-                return func(self, obj, *args, **kwargs)
-        return wrapper_convert_mapping
 
     @check_refresh
     @convert_mapping
