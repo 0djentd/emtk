@@ -28,14 +28,23 @@ logger.setLevel(logging.DEBUG)
 _MAPPING = ('letter', 'shift', 'ctrl', 'alt')
 
 """This module provides classes for modal operator shortcuts,
-shortcuts groups, cache and some utility functions.
+shortcuts groups, cache and some utility functions like serialization,
+deserialization, converters for event type and search.
 
 Some of methods are cached.
 Cache is being cleared every time shortcuts are changed.
 """
 
-# TODO: create base class for shortcuts cache and shortcuts group
-# TODO: check if cache actually working as expected
+# TODO: create base class for shortcuts cache and shortcuts group.
+# TODO: check if cache actually working as expected.
+
+# TODO:
+# rename 'letter' to 'type'.
+# rename 'value' to 'shortcut_id'.
+# add 'value' as str in {'PRESS', 'RELEASE'}.
+# add 'active' as bool.
+# rename all props except 'shortcut_id' to 'event_{prop_name}'
+# forbid assigning shortcuts props twice.
 
 
 # Decorators {{{
