@@ -44,9 +44,44 @@ Cache is being cleared every time shortcuts are changed.
 # rename all props except 'shortcut_id' to 'event_{prop_name}'
 # forbid assigning shortcuts props twice.
 
-_PROPS_STR = {'event_type', 'event_value'}
-_PROPS_BOOL = {'shift', 'ctrl', 'alt'}
+# _PROPS_STR = {'event_type', 'event_value'}
+# _PROPS_BOOL = {'shift', 'ctrl', 'alt'}
 
+MODIFIERS = {'LEFT_CTRL', 'LEFT_ALT', 'LEFT_SHIFT',
+             'RIGHT_CTRL', 'RIGHT_ALT', 'RIGHT_SHIFT',
+             'OSKEY', 'APP', 'ESC', 'TAB', 'RET', 'SPACE',
+             )
+
+# This is mapping for en_US.UTF-8 layout.
+MAPPING = {
+           'WHEELUPMOUSE': 'WHEELUPMOUSE',
+           'WHEELDOWNMOUSE': 'WHEELDOWNMOUSE',
+           'WHEELINMOUSE': 'WHEELINMOUSE',
+           'WHEELOUTMOUSE': 'WHEELOUTMOUSE',
+           'ZERO': '0',
+           'ONE': '1',
+           'TWO': '2',
+           'THREE': '3',
+           'FOUR': '4',
+           'FIVE': '5',
+           'SIX': '6',
+           'SEVEN': '7',
+           'EIGHT': '8',
+           'NINE': '9',
+           'MINUS': '-',
+           'EQUAL': '=',
+           'BACK_SLASH': '\\',
+           'LEFT_BRACKET': '[',
+           'RIGHT_BRACKET': ']',
+           'SEMI_COLON': ';',
+           'ACCENT_GRAVE': '\'',
+           'COMMA': ',',
+           'PERIOD': '.',
+           }
+
+
+for x in string.ascii_uppercase:
+    MAPPING.update({x}: x)
 
 # Decorators {{{
 def convert_mapping(func):
