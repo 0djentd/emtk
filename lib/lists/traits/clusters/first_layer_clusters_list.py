@@ -32,6 +32,7 @@ from ....parser import ClustersParser
 from ....controller.clusters_controller import ClustersController
 from ....controller.answers import ActionDefaultRemove
 from ....utils.modifiers import get_modifier_state, restore_modifier_state
+from ....modifier_state import ModifierState
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
@@ -382,7 +383,8 @@ class FirstLayerClustersListTrait():
         """Returns current object actual modifiers info."""
         result = []
         for x in self._object.modifiers:
-            result.append(get_modifier_state(x))
+            e = ModifierState(x)
+            result.append(e.serialize())
         return result
 
     def save_modifiers_state(self, prop_name=None):
@@ -426,12 +428,15 @@ class FirstLayerClustersListTrait():
 
         try:
             if _WITH_BPY:
-                previous_modifiers = self._object[name]
+                previous_modifiers_state = self._object[name]
             elif not _WITH_BPY:
-                previous_modifiers = self._object.props[name]
+                previous_modifiers_state = self._object.props[name]
+            result = []
+            for x in previous_modifiers_state:
+                result.append(ModifierState(x))
         except KeyError:
-            previous_modifiers = False
-        return previous_modifiers
+            result = False
+        return result
 
     def check_modifiers_state_change(self):
         """
@@ -453,10 +458,10 @@ class FirstLayerClustersListTrait():
         # compare list elements.
         if len(x) != len(y):
             return True
-
-        if x == y:
-            return False
-        return True
+        for a, b in x, y:
+            if not a.compare(b):
+                return True
+        return False
     # }}}
 
     # Utility {{{

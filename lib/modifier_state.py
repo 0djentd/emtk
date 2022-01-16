@@ -30,6 +30,7 @@ except ModuleNotFoundError:
     Modifier = DummyBlenderModifier
 
 from .utils.modifier_prop_types import MODIFIER_TYPES as ALL_MODIFIER_TYPES
+from .utils.modifier_prop_types import get_all_editable_props
 
 logger = logging.getLogger(__name__)
 # logger.setLevel(logging.ERROR)
@@ -48,15 +49,17 @@ class ModifierState():
         self._tags = set()
         if isinstance(obj, Modifier):
             if modifier_type is not None:
-                raise TypeError(f'Modifier type should not be specified.')
+                raise TypeError('Modifier type should not be specified.')
             if name is None:
                 self.name = obj.name + ' stored state'
             self.type = obj.type
             if tags is not None:
                 self.tags = tags
-            for x in get_all_modifier_props(obj):
-                self.data.update({x, getattr(obj, x)})
+            for x in get_all_editable_props(obj):
+                val = getattr(obj, x)
+                self._data.update({x: val})
         elif isinstance(obj, str):
+            logger.debug(f'Deserializing {self}')
             state = json.deserialize(obj)
             self.data = state['data']
             self.name = state['name']
@@ -100,7 +103,25 @@ class ModifierState():
 
     def __next__(self):
         return self.data.__next__()
+
     # }}}
+
+    def compare(self, obj):
+        if type(obj) is type(self):
+            logger.debug(f'Comparing {self} and {obj}')
+            for x, y in self.data.items():
+                if obj.data[x] != y:
+                    return False
+            if self.type != obj.type:
+                return False
+            if self.tags != obj.tags:
+                return False
+            if self.name != obj.name:
+                return False
+            logger.debug('Objects eq.')
+            return True
+        else:
+            raise TypeError
 
     # Properties {{{
     @property
@@ -116,7 +137,7 @@ class ModifierState():
                     raise TypeError
                 if len(x) == 0:
                     raise ValueError
-                if type(y) is not in {bool, int, float, str}:
+                if type(y) not in {bool, int, float, str}:
                     raise TypeError
             self._data = obj
         else:
@@ -142,7 +163,7 @@ class ModifierState():
 
     @name.setter
     def name(self, modifier_state_name):
-        if not isinstance(modifier_type, str):
+        if not isinstance(modifier_state_name, str):
             raise TypeError
         self._name = modifier_state_name
 
@@ -155,14 +176,15 @@ class ModifierState():
 
     @tags.setter
     def tags(self, obj):
-        if type(obj) is not in {set, list, tuple}:
+        if type(obj) not in {set, list, tuple}:
             raise TypeError
         self._tags = set(obj)
     # }}}
 
     def serialize(self):
+        logger.debug(f'Serializing {self}')
         state = {'data': self.data,
                  'name': self.name,
-                 'tags': self.tags,
+                 'tags': list(self.tags),
                  'type': self.type}
         return json.dumps(state)
