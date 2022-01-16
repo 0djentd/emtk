@@ -56,6 +56,24 @@ _ModifiersOperator_ is a mix-in class for Operator class.
 It has methods for manipulating multiple
 ExtendedModifiersList instances.
 
+_ClustersCommand_ is implementation of command pattern for
+some of frequently used operations.
+
+It consists of _ClustersAction_, basic elements that have minimal information
+about side effects of command.
+Examble:
+ClustersAction('MOVE', 'Bevel.123', {'direction': 'UP'})
+This action does not included information about position of 'Bevel.123' and
+other detail required to interpret action as a part of command.
+
+ClusterCommands use _ClustersCommandsSolver_ to ask clusters for additional commands.
+Example:
+(using previous example)
+ClustersLayer will add ClustersAction('MOVE', 'Bevel.321', {'direction': 'DOWN'}),
+if 'Bevel.321' will change its index after moving 'Bevel.123'.
+Then ClustersCommandsSolver will ask 'Bevel.321' if it should do something else
+after moving it.
+
 # Currently supported features # 
 All basic editing, like moving, applying, removing,
 duplication and switching visibility of clusters.
