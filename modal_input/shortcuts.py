@@ -571,17 +571,15 @@ class ModalShortcutsCache(CachedObject, HashedList):  # {{{
 # Utils {{{
 @functools.lru_cache
 def _check_event_type_type(val):
-    if type(val) is str:
-        if len(val) == 1:
-            if val not in string.ascii_uppercase:
-                val = val.upper()
-                if val not in string.ascii_lowercase\
-                    and val not in LETTERS_MAPPING:
-                        return 'Expected event_type in [A-Z], got {val}'
-        else:
-            return f'Expected str with length == 1, got {val}'
-    else:
+    if type(val) is not str:
         return f'Expected str, got {type(val)}'
+    if len(val) != 1:
+        return f'Expected str with length == 1, got {val}'
+    if val not in string.ascii_uppercase:
+        val = val.upper()
+        if val not in string.ascii_lowercase\
+                and val not in LETTERS_MAPPING:
+            return 'Expected event_type in [A-Z], got {val}'
 
 
 def find_duplicates(shortcuts):
@@ -624,7 +622,7 @@ def _str_repr_event(event):
 
 
 # Deserialization {{{
-@functools.lru_cache
+@functools.lru_cache(maxsize=8)
 def deserialize_shortcuts_cache(obj):
     if type(obj) is not str:
         raise TypeError(type(obj))
@@ -639,7 +637,7 @@ def deserialize_shortcuts_cache(obj):
     return shortcuts_groups
 
 
-@functools.lru_cache
+@functools.lru_cache(maxsize=32)
 def deserialize_shortcuts_group(obj):
     if type(obj) is not str:
         raise TypeError(type(obj))
@@ -658,7 +656,7 @@ def deserialize_shortcuts_group(obj):
                                shortcuts)
 
 
-@functools.lru_cache
+@functools.lru_cache(maxsize=128)
 def deserialize_shortcut(obj):
     if type(obj) is not str:
         raise TypeError(type(obj))
@@ -723,11 +721,10 @@ def generate_new_shortcut(shortcut_shortcut_id: str,  # {{{
 
             # Check if shortcut already exists.
             if x.shortcut_id == shortcut_elements['shortcut_id']:
-                if not ignore_duplicates:
-                    raise ValueError(
-                            f'{shortcut_elements["shortcut_id"]} already exists.')
-                else:
+                if ignore_duplicates:
                     continue
+                raise ValueError(
+                        f'{shortcut_elements["shortcut_id"]} already exists.')
 
             # Props that are same.
             same = []
@@ -750,7 +747,8 @@ def generate_new_shortcut(shortcut_shortcut_id: str,  # {{{
             if len(e) == 0:
                 event_type_index, shortcut_elements['event_type']\
                         = _get_next_letter_in_shortcut_name(
-                                shortcut_elements['shortcut_id'], event_type_index)
+                        shortcut_elements['shortcut_id'],
+                        event_type_index)
                 for z in k:
                     shortcut_elements.update({z: False})
                 reparse = True
@@ -761,7 +759,6 @@ def generate_new_shortcut(shortcut_shortcut_id: str,  # {{{
                 reparse = True
                 break
 
-        # Start new iteratiion
         if reparse:
             iteration += 1
         else:
