@@ -35,11 +35,6 @@ except ModuleNotFoundError:
 from .utils.modifier_prop_types import MODIFIER_TYPES as ALL_MODIFIER_TYPES
 from .utils.modifier_prop_types import get_all_editable_props
 
-# Objects
-from .clusters.modifiers_cluster import ModifiersCluster
-from .clusters.clusters_layer import ClustersLayer
-from .lists.extended_modifiers_list import ExtendedModifiersList
-
 logger = logging.getLogger(__name__)
 # logger.setLevel(logging.ERROR)
 logger.setLevel(logging.DEBUG)
@@ -96,15 +91,19 @@ type in {types}""".replace('\n', ' ')
     return result
 
 
+# remove this
 def _serialize(obj, *, extra=False):
     if isinstance(obj, Modifier):
         state = ModifierState(obj, extra=extra)
-    elif isinstance(obj, ModifiersCluster):
-        state = ModifiersClusterState(obj, extra=extra)
-    elif isinstance(obj, ClustersLayer):
-        state = ClustersLayerState(obj, extra=extra)
     else:
-        raise TypeError
+        try:
+            has_clusters = obj.has_clusters()
+        except AttributeError:
+            raise TypeError(f"""Expected bpy.types.Modifier, ClusterTrait or ExtendedModifiersList, got {type(obj)}""".replace('\n', ' '))
+        if has_clusters:
+            state = ClustersLayerState(obj, extra)
+        else:
+            state = ModifiersClusterState(obj, extra)
     return state.serialize()
 # }}}
 
@@ -289,21 +288,3 @@ class ModifierState(ObjectState):
             val = getattr(obj, x)
             data.update({x: val})
         return data
-
-
-class ModifiersClusterState(ListObjectState):
-    """Object representing stored cluster state."""
-    _object_type = ModifiersCluster
-
-
-class ClustersLayerState(ListObjectState):
-    """Object representing stored cluster state."""
-    _object_type = ClustersLayer
-
-
-class ClustersListState(ListObjectState):
-    """Object representing stored clusters list state."""
-    _object_type = ExtendedModifiersList
-
-    def _get_data(self, obj):
-        return {}

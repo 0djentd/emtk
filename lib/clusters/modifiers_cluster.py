@@ -17,11 +17,9 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-import copy
-
 from .cluster_trait import ClusterTrait
-
 from ..lists.modifiers_list import ModifiersList
+from ..clusters_list_object_state import ListObjectState
 
 
 class ModifiersCluster(
@@ -54,7 +52,7 @@ class ModifiersCluster(
 
     @property
     def modifiers(self):
-        return copy.copy(self._modifiers_list)
+        return self._modifiers_list.copy()
 
     def get_modifiers_for_instantiation(self):
         """
@@ -72,3 +70,8 @@ class ModifiersCluster(
                 return None
             modifiers.append(x, y)
         return modifiers
+
+
+class ModifiersClusterState(ListObjectState):
+    """Object representing stored cluster state."""
+    _object_type = ModifiersCluster

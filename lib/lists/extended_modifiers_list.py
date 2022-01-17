@@ -23,6 +23,7 @@ from .traits.clusters.sortable_clusters_list import SortableClustersListTrait
 from .traits.clusters.active_cluster import ActiveClusterTrait
 from .traits.clusters.first_layer_clusters_list \
         import FirstLayerClustersListTrait
+from ..clusters_list_object_state import ListObjectState
 
 
 class ExtendedModifiersList(
@@ -40,3 +41,11 @@ class ExtendedModifiersList(
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+
+
+class ClustersListState(ListObjectState):
+    """Object representing stored clusters list state."""
+    _object_type = ExtendedModifiersList
+
+    def _get_data(self, obj):
+        return {}
