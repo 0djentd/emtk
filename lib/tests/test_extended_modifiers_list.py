@@ -54,7 +54,7 @@ class ExtendedModifiersListTests():
     def test_all_clusters_have_modifiers(self):
         result = True
         for x in self.e.get_full_list():
-            if len(x._modifiers_list) == 0:
+            if len(x._data) == 0:
                 if not isinstance(result, list):
                     result = []
                 result.append(x)
@@ -199,9 +199,9 @@ class ExtendedModifiersListTests():
         self.assertEqual(new_l, old_l-length)
 
     def test_remove_cluster(self):
-        old_l = len(self.e._modifiers_list)
+        old_l = len(self.e._data)
         self.e.remove(self.e.get_first())
-        new_l = len(self.e._modifiers_list)
+        new_l = len(self.e._data)
         self.assertEqual(new_l, old_l-1)
 
     def test_remove_modifiers(self):
@@ -213,11 +213,11 @@ class ExtendedModifiersListTests():
         self.assertEqual(new_l, old_l-length)
 
     def test_remove_cluster_last(self):
-        old_l = len(self.e._modifiers_list)
+        old_l = len(self.e._data)
         c = self.e.get_last()
         length = len(c.get_full_actual_modifiers_list())
         self.e.remove(c)
-        new_l = len(self.e._modifiers_list)
+        new_l = len(self.e._data)
         self.assertEqual(new_l, old_l-length)
 
     def test_remove_modifiers_last(self):
@@ -236,9 +236,9 @@ class ExtendedModifiersListTests():
         self.assertEqual(new_l, old_l-length)
 
     def test_apply_cluster(self):
-        old_l = len(self.e._modifiers_list)
+        old_l = len(self.e._data)
         self.e.apply(self.e.get_first())
-        new_l = len(self.e._modifiers_list)
+        new_l = len(self.e._data)
         self.assertEqual(new_l, old_l-1)
 
     def test_apply_modifiers(self):
@@ -250,11 +250,11 @@ class ExtendedModifiersListTests():
         self.assertEqual(new_l, old_l-length)
 
     def test_apply_cluster_last(self):
-        old_l = len(self.e._modifiers_list)
+        old_l = len(self.e._data)
         c = self.e.get_last()
         length = len(c.get_full_actual_modifiers_list())
         self.e.apply(c)
-        new_l = len(self.e._modifiers_list)
+        new_l = len(self.e._data)
         self.assertEqual(new_l, old_l-length)
 
     def test_apply_modifiers_last(self):

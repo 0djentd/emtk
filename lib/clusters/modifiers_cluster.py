@@ -20,6 +20,7 @@
 from .cluster_trait import ClusterTrait
 from ..lists.modifiers_list import ModifiersList
 from ..clusters_list_object_state import ListObjectState
+import copy
 
 
 class ModifiersCluster(
@@ -52,7 +53,7 @@ class ModifiersCluster(
 
     @property
     def modifiers(self):
-        return self._modifiers_list.copy()
+        return copy.copy(self._data)
 
     def get_modifiers_for_instantiation(self):
         """

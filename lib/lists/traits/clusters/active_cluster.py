@@ -147,7 +147,7 @@ class ActiveClusterTrait():
         # TODO: parser should be able to exclude parsed clusters
         # from name check list.
         for x in clusters:
-            self._modifiers_list.remove(x)
+            self._data.remove(x)
 
         # If there is, reparse modifiers
         if parse_modifiers:
@@ -171,7 +171,7 @@ class ActiveClusterTrait():
             logger.error("Reparsing clusters failed.")
             logger.debug(f"Reverting changes to {clusters}")
             for x in reversed(clusters):
-                self._modifiers_list.insert(clusters_index, x)
+                self._data.insert(clusters_index, x)
             return False
 
         # Info
@@ -180,7 +180,7 @@ class ActiveClusterTrait():
 
         # Insert clusters.
         for x in reversed(result):
-            self._modifiers_list.insert(clusters_index, x)
+            self._data.insert(clusters_index, x)
 
         if removing_active:
             self.active = clusters_index

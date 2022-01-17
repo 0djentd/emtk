@@ -354,7 +354,7 @@ class ClustersListTrait():
             raise TypeError(
                     'First layer of ExtendedModifiersList is not a cluster.')
 
-        if obj in self._modifiers_list:
+        if obj in self._data:
             return self
 
         g = self.get_full_list()

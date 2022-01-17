@@ -99,7 +99,7 @@ class ClusterTrait():
         self.variables['show_props_expanded'] = False
 
         # Modifiers list.
-        self._modifiers_list = []
+        self._data = []
 
         # Sorting rules.
         self._sorting_rules = []
@@ -410,15 +410,15 @@ class ClusterTrait():
 
         # If havent set modifiers already
         if self.variables['initialized'] is False:
-            self._modifiers_list = modifiers
+            self._data = modifiers
             self.variables['initialized'] = True
-            self._mod = self._modifiers_list[0]
+            self._mod = self._data[0]
             return True
 
         # Or allowed to reset modifiers
         elif self.parser_variables['dynamic']:
-            self._modifiers_list = modifiers
-            self._mod = self._modifiers_list[0]
+            self._data = modifiers
+            self._mod = self._data[0]
             return True
 
         else:

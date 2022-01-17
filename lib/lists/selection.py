@@ -28,16 +28,16 @@ logger.setLevel(logging.DEBUG)
 
 # Decorators {{{
 def _check_obj_type(self, obj, allow_no_value):
-    if obj in self._modifiers_list:
+    if obj in self._data:
         return obj
     if isinstance(obj, int):
-        return self._modifiers_list[obj]
+        return self._data[obj]
     if isinstance(obj, str):
-        for x in self._modifiers_list:
+        for x in self._data:
             if x.name == obj:
                 return x
         raise ValueError(
-                f'No object with name "{obj}" in {self._modifiers_list}')
+                f'No object with name "{obj}" in {self._data}')
     if obj is None and allow_no_value:
         return None
     raise TypeError(
@@ -112,7 +112,7 @@ class Selection():
     """
     def __init__(self, modifiers_list):
         # ModifiersList subclass object.
-        self._modifiers_list = modifiers_list
+        self._data = modifiers_list
         # Selection
         self._additional_selection = []
         # Cluster or modifier that selection started from
@@ -134,7 +134,7 @@ class Selection():
     @unwrap_obj_ref_allow_no_value
     def start(self, obj):
         if obj is None:
-            obj = self._modifiers_list.active
+            obj = self._data.active
         self._cluster_to_select_from = obj
 
     def stop(self):
@@ -147,7 +147,7 @@ class Selection():
             add_additional_selection=True, add_active=False):
         """Get list of all selected clusters."""
         result = []
-        m = self._modifiers_list
+        m = self._data
         if add_main_selection:
             if self._cluster_to_select_from is not None:
                 start_index = m.index(self._cluster_to_select_from)
