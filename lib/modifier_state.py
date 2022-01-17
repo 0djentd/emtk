@@ -20,6 +20,7 @@
 import logging
 import json
 import collections
+import copy
 
 try:
     import bpy
@@ -30,55 +31,72 @@ except ModuleNotFoundError:
     from .dummy_modifiers import DummyBlenderModifier
     Modifier = DummyBlenderModifier
 
+# TODO: move this functions to this module
 from .utils.modifier_prop_types import MODIFIER_TYPES as ALL_MODIFIER_TYPES
 from .utils.modifier_prop_types import get_all_editable_props
+from .lib.clusters.modifiers_cluster import ModifiersCluster
+from .lib.clusters.clusters_layer import ClustersLayer
 
 logger = logging.getLogger(__name__)
 # logger.setLevel(logging.ERROR)
 logger.setLevel(logging.DEBUG)
 
 
-class ModifierState(collections.UserDict):
-    """Object representing stored modifier state."""
+class ObjectState(collections.UserDict):
+    def _get_data(self, obj):
+        raise NotImplementedError
+
+    _object_type = None
+    _object_type_name = None
 
     def __init__(self, obj, name=None,  # {{{
-                 tags=None, modifier_type=None):
+                 tags=None, obj_subtype=None):
         self._name = ''
         self._type = ''
         self._tags = []
-        if isinstance(obj, Modifier):
-            if modifier_type is not None:
+        if isinstance(obj, self._object_type):
+            if obj_subtype is not None:
                 raise TypeError('Modifier type should not be specified.')
+            self.type = obj.type
             if name is None:
                 self.name = obj.name + ' stored state'
-            self.type = obj.type
             if tags is not None:
                 self.tags = tags
-            data = {}
-            for x in get_all_editable_props(obj):
-                val = getattr(obj, x)
-                data.update({x: val})
-            self.data = data
+            self.data = self._get_data(obj)
+
         elif isinstance(obj, str):
             logger.debug(f'Deserializing {self}')
-            state = json.deserialize(obj)
+            state = json.loads(obj)
             self.data = state['data']
-            self.name = state['name']
-            self.type = state['type']
-            self.tags = state['tags']
-        elif isinstance(obj, dict):
-            if name is None or modifier_type is None:
-                raise TypeError
-            for x, y in obj.items():
-                if type(x) is not str:
-                    raise TypeError
-                if type(y) not in {bool, int, float, str}:
-                    raise TypeError
-            self.data = obj
-            self.name = name
-            self.type = modifier_type
-            if tags is not None:
+
+            if name is None:
+                self.name = name
+            else:
+                self.name = state['name']
+
+            if obj_subtype is None:
+                self.type = state['type']
+            else:
+                self.type = obj_subtype
+
+            if tags is None:
+                self.tags = state['tags']
+            else:
                 self.tags = tags
+
+        # elif isinstance(obj, dict):
+        #     if name is None or obj_subtype is None:
+        #         raise TypeError
+        #     for x, y in obj.items():
+        #         if type(x) is not str:
+        #             raise TypeError
+        #         if type(y) not in {bool, int, float, str}:
+        #             raise TypeError
+        #     self.data = obj
+        #     self.name = name
+        #     self.type = obj_subtype
+        #     if tags is not None:
+        #         self.tags = tags
         else:
             raise TypeError
     # }}}
@@ -99,20 +117,20 @@ class ModifierState(collections.UserDict):
     # Properties {{{
     @property
     def type(self):
-        """Modifier type that this data can be used for."""
+        """Type that this stored state can be used with."""
         return self._type
 
     @type.setter
-    def type(self, modifier_type):
-        if not isinstance(modifier_type, str):
+    def type(self, obj_subtype):
+        if not isinstance(obj_subtype, str):
             raise TypeError
-        if modifier_type not in ALL_MODIFIER_TYPES:
+        if obj_subtype not in ALL_MODIFIER_TYPES:
             raise ValueError
-        self._type = modifier_type
+        self._type = obj_subtype
 
     @property
     def name(self):
-        """Name of modifier state used in UI."""
+        """Name of stored state used in UI."""
         return self._name
 
     @name.setter
@@ -139,7 +157,7 @@ class ModifierState(collections.UserDict):
         return str(self)
 
     def __str__(self):
-        return f"""Modifier state: {self.name}, {self.type}, 
+        return f"""{self._object_type_name} state: {self.name}, {self.type}, 
 {self.tags}, {len(self.data)} elements.""".replace('\n', ' ')
 
     def serialize(self):
@@ -149,3 +167,55 @@ class ModifierState(collections.UserDict):
                  'tags': list(self.tags),
                  'type': str(self.type)}
         return json.dumps(state)
+
+
+class ModifierState(ObjectState):
+    """Object representing stored modifier state."""
+
+    _object_type = Modifier
+    _object_type_name = 'Modifier'
+
+    def _get_data(self, obj):
+        data = {}
+        for x in get_all_editable_props(obj):
+            val = getattr(obj, x)
+            data.update({x: val})
+        return data
+
+
+class ModifiersClusterState(ObjectState):
+    """Object representing stored cluster state."""
+
+    _object_type = ModifiersCluster
+    _object_type_name = 'ModifiersCluster'
+
+    def _get_data(self, obj):
+        result = copy.copy(obj.variables)
+        elements = []
+        for x, y in obj.items():
+            elements.append(y.name)
+        # TODO: this doesnt work
+        result.update({'by_name': elements})
+
+        elements = []
+        for x, y in obj.items():
+            elements.append(ModifierState(y).serialize())
+        # TODO: this doesnt work
+        result.update({'modifiers_state': elements})
+        return result
+
+
+class ClustersLayerState(ObjectState):
+    """Object representing stored cluster state."""
+
+    _object_type = ClustersLayer
+    _object_type_name = 'ClustersLayer'
+
+    def _get_data(self, obj):
+        result = copy.copy(obj.variables)
+        elements = []
+        for x, y in obj.items():
+            elements.append(y.name)
+        # TODO: this doesnt work
+        result.update({'by_name': elements})
+        return result
