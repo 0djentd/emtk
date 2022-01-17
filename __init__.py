@@ -18,14 +18,12 @@
 # ##### END GPL LICENSE BLOCK #####
 
 import re
-import string
 import logging
 
 import bpy
 
 # Modal operators
 from . operators.bmtoolm import BMTOOL_OT_bmtoolm
-from . operators.bmtoolm_lite import BMTOOL_OT_bmtoolm_2
 from . operators.bmtoole2 import BMTOOL_OT_bmtoole2
 
 # Operators
@@ -39,7 +37,7 @@ from . modal_input.operators import\
         BMTOOL_OT_reparse_default_modifiers_props_kbs
 
 # UI
-from . ui.bmtools_pie import VIEW3D_MT_PIE_bmtools_pie_1
+from . ui.pie_menus import VIEW3D_MT_PIE_bmtools_pie_1
 from . ui.bmtool_panel import VIEW3D_PT_bmtool_panel
 from . ui.utils.operators import BMTOOLS_OT_bmtool_invoke_operator_func
 from . ui.clusters_list_popup import BMTOOLS_OT_clusters_list_popup
@@ -73,7 +71,6 @@ classes = [
     # modal operators
     BMTOOL_OT_bmtoolm,
     BMTOOL_OT_bmtoole2,
-    BMTOOL_OT_bmtoolm_2,
 
     # EMTK operators
     BMTOOL_OT_add_cluster_type_object,
