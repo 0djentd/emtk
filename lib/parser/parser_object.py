@@ -430,48 +430,21 @@ class ClustersParser():
         else:
             max_iterations = layers_to_create
 
-        new_clusters_names = []
-
         # Parse clusters a lot.
         while parsing:
-            # Get a copy of old parse result.
             old_parse_result = copy.copy(parse_result)
-
-            # Parse again.
             parse_result = self._parse_clusters(parse_result,
                                                 additional_types,
                                                 no_available_types,
                                                 clusters_names)
-
-            # If parser doesnt work.
-            if parse_result is False or None:
-                logger.error("Error while parsing clusters")
-                return False
-
-            new_clusters_names += _get_clusters_names(parse_result)
-
-            # Old clusters.
-            old_cluster_types = []
-            for x in old_parse_result:
-                old_cluster_types.append(x.get_this_cluster_type())
-
-            # New clusters.
-            new_cluster_types = []
-            for x in parse_result:
-                new_cluster_types.append(x.get_this_cluster_type())
-
             # Compare previous iteration with this one,
             # and stop parsing if no changes.
-            # TODO: remove this
             if old_parse_result == parse_result:
-                parsing = False
-            elif old_cluster_types == new_cluster_types:
                 parsing = False
             elif parsing_iteration >= (max_iterations-1):
                 parsing = False
             else:
                 parsing_iteration += 1
-
         return parse_result
     # }}}
 
@@ -489,6 +462,7 @@ class ClustersParser():
         passed modifiers list.
         Returns None, if doesnt work correctly.
         """
+        e = copy.copy(modifiers_to_parse)
         cluster_types = []
         if not no_available_types:
             cluster_types += self._get_modifiers_clusters_types()
@@ -500,7 +474,6 @@ class ClustersParser():
             cluster_types += compatible_additional
 
         simple_clusters = []
-        e = copy.copy(modifiers_to_parse)
         for x in cluster_types:
             if x.get_this_cluster_possible_length() == 1:
                 # TODO: probably no need to do that
@@ -872,6 +845,7 @@ class ClustersParser():
                             logger.debug(f"{y} is already in possible types")
                             k = True
                     if k is False:
+                        # TODO: this is slow
                         new_cluster = copy.deepcopy(y)
                         possible_cluster_types.append(new_cluster)
                         logger.debug(f"Adding {y} to possible types")
@@ -969,7 +943,9 @@ class ClustersParser():
                     parsed_modifiers.clear()
                     logger.debug("Cleared parsed modifiers list")
 
-                new_cluster = copy.deepcopy(cluster_to_add)
+                # TODO: this is slow
+                # new_cluster = copy.deepcopy(cluster_to_add)
+                new_cluster = cluster_to_add
 
                 # Clear possible clusters list
                 possible_clusters_confirmed.clear()
@@ -1014,7 +990,6 @@ class ClustersParser():
 
             # Decide if should continue parsing
             if len(modifiers_to_parse) == 0:
-                # Stop parsing
                 need_another_modifier = False
                 parsing_modifiers = False
             else:
@@ -1158,23 +1133,16 @@ class ClustersParser():
         Returns parse result filtered by parser decision.
         Returns False, if any errors in parse result.
         """
-
         unwrap = []
-
-        # Check if parse result is a list.
-        if not isinstance(parse_result, list):
+        if type(parse_result) is not list:
             return False
-
         for x in parse_result:
-
             # Check if element is a list.
-            if not isinstance(x, list):
+            if type(x) is not list:
                 return False
-
             # Check if it has parser decision already
-            if not isinstance(x[0], str):
+            if type(x[0]) is not str:
                 return False
-
             if x[0] in tags:
                 unwrap.append(x)
         return unwrap
@@ -1196,28 +1164,23 @@ class ClustersParser():
         # Clusters list that will be returned.
         clusters = []
 
-        # Check if parse result is a list.
-        if not isinstance(parse_result, list):
-            return False
-
+        if type(parse_result) is not list:
+            raise TypeError
         # Check if no clusters were parsed.
         if len(parse_result) == 0:
             return clusters
 
         new_clusters_names = copy.copy(clusters_names)
-
         for x in parse_result:
             logger.debug(f"Initializing {x}")
 
             # Check if element is a list.
-            if not isinstance(x, list):
-                return False
+            if type(x) is not list:
+                raise TypeError
 
             # If parser skipped this cluster, just skip it as well.
             if x[0] == 'SKIP':
                 logger.debug("Skipped cluster")
-
-                # Add to result
                 clusters.append(x[1])
 
             # If parsed successfully.
@@ -1227,7 +1190,6 @@ class ClustersParser():
                 # Initialize cluster
                 cluster = self._initialize_cluster(
                         x, new_clusters_names)
-
                 if cluster is False:
                     return False
 
@@ -1244,29 +1206,19 @@ class ClustersParser():
 
     def _initialize_cluster(
             self, parse_result_element, clusters_names=None):
+        logger.debug("Initializing cluster")
+        x = parse_result_element
 
         if clusters_names is None:
             clusters_names = []
 
-        x = parse_result_element
-
-        logger.debug("Initializing cluster")
-
-        # Set its modifiers.
         if not x[1].set_this_cluster_modifiers(x[2]):
-            return False
-
+            raise ValueError
         x[1]._object = self._object
-        x[1]._mod = x[1].get_first()
-
-        # Set cluster name.
-        x[1] = cluster_number_format(
-                x[1], clusters_names)
-
-        # Set controller and parser.
+        x[1]._mod = x[1][0]
+        cluster_number_format(x[1], clusters_names)
         x[1]._controller = self._controller
         x[1]._clusters_parser = self
-
         return x
     # }}}
 
@@ -1324,9 +1276,7 @@ def cluster_number_format(
     if y <= 10:
         e += "0"
     e += f"{y}"
-
     cluster.set_this_cluster_custom_name(e)
-
     return cluster
 
 
