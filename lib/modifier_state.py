@@ -19,6 +19,7 @@
 
 import logging
 import json
+import collections
 
 try:
     import bpy
@@ -37,16 +38,14 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-class ModifierState():
+class ModifierState(collections.UserDict):
     """Object representing stored modifier state."""
 
     def __init__(self, obj, name=None,  # {{{
                  tags=None, modifier_type=None):
-        self.data = {}
-        self._data = {}
         self._name = ''
         self._type = ''
-        self._tags = set()
+        self._tags = []
         if isinstance(obj, Modifier):
             if modifier_type is not None:
                 raise TypeError('Modifier type should not be specified.')
@@ -55,19 +54,26 @@ class ModifierState():
             self.type = obj.type
             if tags is not None:
                 self.tags = tags
+            data = {}
             for x in get_all_editable_props(obj):
                 val = getattr(obj, x)
-                self._data.update({x: val})
+                data.update({x: val})
+            self.data = data
         elif isinstance(obj, str):
             logger.debug(f'Deserializing {self}')
             state = json.deserialize(obj)
             self.data = state['data']
             self.name = state['name']
             self.type = state['type']
-            self.tags = set(state['tags'])
+            self.tags = state['tags']
         elif isinstance(obj, dict):
             if name is None or modifier_type is None:
                 raise TypeError
+            for x, y in obj.items():
+                if type(x) is not str:
+                    raise TypeError
+                if type(y) not in {bool, int, float, str}:
+                    raise TypeError
             self.data = obj
             self.name = name
             self.type = modifier_type
@@ -77,46 +83,13 @@ class ModifierState():
             raise TypeError
     # }}}
 
-    # Dict methods {{{
-    def __getitem__(self, val):
-        if not isinstance(val, str):
-            raise TypeError
-        return self.data.__getitem__(val)
-
-    def __setitem__(self, val, val_2):
-        if not isinstance(val, str):
-            raise TypeError
-        return self.data.__setitem__(val, val_2)
-
-    def __delitem__(self, val):
-        if not isinstance(val, str):
-            raise TypeError
-        return self.data.__delitem__(val)
-
-    def __contains__(self, val):
-        if not isinstance(val, str):
-            raise TypeError
-        return self.data.__contains__(val)
-
-    def __iter__(self):
-        return self.data.__iter__()
-
-    def __next__(self):
-        return self.data.__next__()
-
-    # }}}
-
     def compare(self, obj):
         if type(obj) is type(self):
             logger.debug(f'Comparing {self} and {obj}')
-            for x, y in self.data.items():
-                if obj.data[x] != y:
-                    return False
-            if self.type != obj.type:
-                return False
-            if self.tags != obj.tags:
-                return False
-            if self.name != obj.name:
+            if self.data != obj.data\
+                    or self.type != obj.type\
+                    or self.tags != obj.tags\
+                    or self.name != obj.name:
                 return False
             logger.debug('Objects eq.')
             return True
@@ -124,25 +97,6 @@ class ModifierState():
             raise TypeError
 
     # Properties {{{
-    @property
-    def data(self):
-        """Modifier properties names paired with values."""
-        return self._data
-
-    @data.setter
-    def data(self, obj):
-        if type(obj) is dict:
-            for x, y in obj:
-                if type(x) is not str:
-                    raise TypeError
-                if len(x) == 0:
-                    raise ValueError
-                if type(y) not in {bool, int, float, str}:
-                    raise TypeError
-            self._data = obj
-        else:
-            raise TypeError(f'Expected dict, got {type(obj)}')
-
     @property
     def type(self):
         """Modifier type that this data can be used for."""
@@ -176,15 +130,22 @@ class ModifierState():
 
     @tags.setter
     def tags(self, obj):
-        if type(obj) not in {set, list, tuple}:
+        if type(obj) is not list:
             raise TypeError
-        self._tags = set(obj)
+        self._tags = obj
     # }}}
+
+    def __repr__(self):
+        return str(self)
+
+    def __str__(self):
+        return f"""Modifier state: {self.name}, {self.type}, 
+{self.tags}, {len(self.data)} elements.""".replace('\n', ' ')
 
     def serialize(self):
         logger.debug(f'Serializing {self}')
-        state = {'data': self.data,
-                 'name': self.name,
+        state = {'data': dict(self.data),
+                 'name': str(self.name),
                  'tags': list(self.tags),
-                 'type': self.type}
+                 'type': str(self.type)}
         return json.dumps(state)
