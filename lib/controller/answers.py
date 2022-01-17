@@ -132,7 +132,7 @@ class ActionDefaultTemplate(ClusterActionAnswer):
                             'DECONSTRUCT', self.cluster)))
 
         # If removing modifier and it is last modifier.
-        elif len(self.cluster._modifiers_list) == 1:
+        elif len(self.cluster._data) == 1:
             actions.append(ClustersAction('REMOVE', self.cluster))
             actions.append(
                     ClustersCommand(
@@ -160,7 +160,7 @@ class ActionDefaultRemove(ActionDefaultTemplate):
         else:
             modifiers_type = DummyBlenderModifier
 
-        i = self.cluster._modifiers_list.index(action.subject)
+        i = self.cluster._data.index(action.subject)
         removing_active = False
 
         if self.cluster.active == action.subject:
@@ -169,22 +169,22 @@ class ActionDefaultRemove(ActionDefaultTemplate):
         if isinstance(action.subject, modifiers_type):
             if _WITH_BPY:
                 mod_name = action.subject.name
-                self.cluster._modifiers_list.remove(action.subject)
+                self.cluster._data.remove(action.subject)
                 new_context = bpy.context.copy()
                 new_context['selected_objects'] = [self.cluster._object]
                 new_context['active_object'] = self.cluster._object
                 bpy.ops.object.modifier_remove(new_context, modifier=mod_name)
             else:
                 mod_name = action.subject.name
-                self.cluster._modifiers_list.remove(action.subject)
+                self.cluster._data.remove(action.subject)
                 self.cluster._object.modifier_remove(modifier=mod_name)
         else:
             action.subject._cluster_removed = True
-            self.cluster._modifiers_list.remove(action.subject)
+            self.cluster._data.remove(action.subject)
 
-        if removing_active and len(self.cluster._modifiers_list) > (i + 1):
+        if removing_active and len(self.cluster._data) > (i + 1):
             self.cluster.active = i
-        elif removing_active and len(self.cluster._modifiers_list) == (i + 1):
+        elif removing_active and len(self.cluster._data) == (i + 1):
             self.cluster.active = i - 1
 
 
@@ -198,7 +198,7 @@ class ActionDefaultApply(ActionDefaultTemplate):
         else:
             modifiers_type = DummyBlenderModifier
 
-        i = self.cluster._modifiers_list.index(action.subject)
+        i = self.cluster._data.index(action.subject)
         removing_active = False
 
         if self.cluster.active == action.subject:
@@ -207,20 +207,20 @@ class ActionDefaultApply(ActionDefaultTemplate):
         if isinstance(action.subject, modifiers_type):
             if _WITH_BPY:
                 mod_name = action.subject.name
-                self.cluster._modifiers_list.remove(action.subject)
+                self.cluster._data.remove(action.subject)
                 new_context = bpy.context.copy()
                 new_context['selected_objects'] = [self.cluster._object]
                 new_context['active_object'] = self.cluster._object
                 bpy.ops.object.modifier_apply(new_context, modifier=mod_name)
             else:
                 mod_name = action.subject.name
-                self.cluster._modifiers_list.remove(action.subject)
+                self.cluster._data.remove(action.subject)
                 self.cluster._object.modifier_apply(modifier=mod_name)
         else:
             action.subject._cluster_removed = True
-            self.cluster._modifiers_list.remove(action.subject)
+            self.cluster._data.remove(action.subject)
 
-        if removing_active and len(self.cluster._modifiers_list) > 0:
+        if removing_active and len(self.cluster._data) > 0:
             self.cluster.active = i
 
 
@@ -229,7 +229,7 @@ class ActionDefaultDeconstuct(ActionDefaultTemplate):
         super().__init__(action_type='DECONSTRUCT', *args, **kwargs)
 
     def _interpret_case_list(self, action):
-        i = self.cluster._modifiers_list.index(action.subject)
+        i = self.cluster._data.index(action.subject)
 
         y = action.subject.get_list()
 
@@ -239,17 +239,17 @@ class ActionDefaultDeconstuct(ActionDefaultTemplate):
             removing_active = True
 
         if action.subject.has_clusters():
-            self.cluster._modifiers_list.remove(action.subject)
+            self.cluster._data.remove(action.subject)
             action.subject._cluster_removed = True
             for x in reversed(y):
-                self.cluster._modifiers_list.insert(i, x)
+                self.cluster._data.insert(i, x)
         else:
             parser = self.cluster._clusters_parser
             parse_result = parser._parse_modifiers_for_simple_clusters(y)
-            self.cluster._modifiers_list.remove(action.subject)
+            self.cluster._data.remove(action.subject)
             action.subject._cluster_removed = True
             for x in reversed(parse_result):
-                self.cluster._modifiers_list.insert(i, x)
+                self.cluster._data.insert(i, x)
 
         if removing_active:
             self.cluster.active == i
@@ -266,13 +266,13 @@ class ActionDefaultMove(ClusterActionAnswer):
 
     def _answer_case_list(self, action):
         actions = []
-        i = self.cluster._modifiers_list.index(action.subject)
+        i = self.cluster._data.index(action.subject)
         if action.props['direction'] == 'UP':
             if i == 0:
                 actions.append(ClustersCommand(
                     ClustersAction('DECONSTRUCT', self.cluster)))
         elif action.props['direction'] == 'DOWN':
-            if i == len(self.cluster._modifiers_list) - 1:
+            if i == len(self.cluster._data) - 1:
                 actions.append(ClustersCommand(
                     ClustersAction('DECONSTRUCT', self.cluster)))
         else:
@@ -304,7 +304,7 @@ class ActionDefaultMove(ClusterActionAnswer):
                         self.cluster._object.modifier_move_up(
                                 modifier=mod_name)
                     # TODO: this is for moving modifiers in modifiers cluster.
-                    # self.cluster._modifiers_list.insert(i+1, mod)
+                    # self.cluster._data.insert(i+1, mod)
             elif action.props['direction'] == 'DOWN':
                 for x in range(action.props['length']):
                     if _WITH_BPY:
@@ -313,14 +313,14 @@ class ActionDefaultMove(ClusterActionAnswer):
                     else:
                         self.cluster._object.modifier_move_down(
                                 modifier=mod_name)
-                    # self.cluster._modifiers_list.insert(i-1, mod)
+                    # self.cluster._data.insert(i-1, mod)
         else:
-            i = self.cluster._modifiers_list.index(action.subject)
-            mod = self.cluster._modifiers_list.pop(i)
+            i = self.cluster._data.index(action.subject)
+            mod = self.cluster._data.pop(i)
             if action.props['direction'] == 'UP':
-                self.cluster._modifiers_list.insert(i-1, mod)
+                self.cluster._data.insert(i-1, mod)
             elif action.props['direction'] == 'DOWN':
-                self.cluster._modifiers_list.insert(i+1, mod)
+                self.cluster._data.insert(i+1, mod)
 
     def _no_action_answer(self, action):
         return

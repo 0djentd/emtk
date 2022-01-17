@@ -79,7 +79,7 @@ class FirstLayerClustersListTrait():
         self._modifiers_sorted = False
 
         # some methods reqire it.
-        self._modifiers_list_obj_list = True
+        self._data_obj_list = True
 
         # Was create_modifiers_list able to find any modifiers?
         modified = False
@@ -126,8 +126,8 @@ class FirstLayerClustersListTrait():
                             "Error while parsing. Cant create modifiers list.")
                     raise ValueError
                 logger.info("Setting parse result as a modifiers list.")
-                self._modifiers_list = parse_result
-                self._mod = self._modifiers_list[0]
+                self._data = parse_result
+                self._mod = self._data[0]
                 modified = True
 
         # Restore clusters state.
@@ -145,8 +145,8 @@ class FirstLayerClustersListTrait():
                     raise ValueError
                 logger.info("Parse result ")
                 logger.info(parse_result)
-                self._modifiers_list = parse_result
-                self._mod = self._modifiers_list[0]
+                self._data = parse_result
+                self._mod = self._data[0]
                 modified = True
 
         logger.info("Finished creating modifiers list")
@@ -207,7 +207,7 @@ class FirstLayerClustersListTrait():
 
         logger.info(f"Created modifier {x}")
         logger.debug(f"parse result is {result}")
-        self._modifiers_list += result
+        self._data += result
 
         logger.info("Finished adding modifier to modifiers list.")
         return x
@@ -231,7 +231,7 @@ class FirstLayerClustersListTrait():
         clusters_names = self.get_full_list_of_cluster_names()
         self._clusters_parser._initialize_cluster(
                 cluster, modifiers, clusters_names)
-        self._modifiers_list.append(cluster)
+        self._data.append(cluster)
         return True
 
     def duplicate(self, cluster):
@@ -251,7 +251,7 @@ class FirstLayerClustersListTrait():
                         self._object.modifier_add(x.name, x.type))
             restore_modifier_state(modifiers[-1], modifier_props)
         result = self._clusters_parser.parse_recursively(modifiers)
-        self._modifiers_list.extend(result)
+        self._data.extend(result)
     # }}}
 
     # Storing clusters state {{{

@@ -54,7 +54,7 @@ class ModifiersCluster(
 
     @property
     def modifiers(self):
-        return copy.copy(self._modifiers_list)
+        return copy.copy(self._data)
 
     def get_modifiers_for_instantiation(self):
         """

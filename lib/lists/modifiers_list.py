@@ -81,7 +81,7 @@ class ModifiersList():
                 raise ValueError
 
         self._object = obj
-        self._modifiers_list = []
+        self._data = []
         self._actions = {}
         self._mod = None
         self._selection = Selection(self)
@@ -117,35 +117,35 @@ class ModifiersList():
     # List methods {{{
     @check_if_removed
     def __getitem__(self, index):
-        return self._modifiers_list.__getitem__(index)
+        return self._data.__getitem__(index)
 
     @check_if_removed
     def __setitem__(self, index, val):
-        return self._modifiers_list.__setitem__(index, val)
+        return self._data.__setitem__(index, val)
 
     @check_if_removed
     def __delitem__(self, index):
-        return self._modifiers_list.__delitem__(index)
+        return self._data.__delitem__(index)
 
     @check_if_removed
     def __contains__(self, obj):
-        return obj in self._modifiers_list
+        return obj in self._data
 
     @check_if_removed
     def __iter__(self):
-        return iter(self._modifiers_list)
+        return iter(self._data)
 
     @check_if_removed
     def __next__(self):
-        return next(self._modifiers_list)
+        return next(self._data)
 
     @check_if_removed
     def __len__(self):
-        return self._modifiers_list.__len__()
+        return self._data.__len__()
 
     @check_if_removed
     def index(self, obj):
-        return self._modifiers_list.index(obj)
+        return self._data.index(obj)
 
     # remove(obj) is defined in 'Clusters actions' section.
 
@@ -237,24 +237,24 @@ class ModifiersList():
         """
         logger.info(f'Moving {obj} on layer {self}')
         logger.debug(f'Direction is {direction} allow_deconstruct={self}')
-        if len(self._modifiers_list) < 2:
+        if len(self._data) < 2:
             logger.info('Not enough modifiers.')
             return False
 
-        i = self._modifiers_list.index(obj)
+        i = self._data.index(obj)
 
         if direction == 'UP':
             if i == 0 and not allow_deconstruct:
                 logger.info('Already first in the list.')
                 return False
-            cluster_to_move_through = self._modifiers_list[i-1]
+            cluster_to_move_through = self._data[i-1]
             direction_2 = 'DOWN'
         elif direction == 'DOWN':
-            if i == len(self._modifiers_list) - 1\
+            if i == len(self._data) - 1\
                     and not allow_deconstruct:
                 logger.info('Already last in the list.')
                 return False
-            cluster_to_move_through = self._modifiers_list[i+1]
+            cluster_to_move_through = self._data[i+1]
             direction_2 = 'UP'
         else:
             raise ValueError(
@@ -303,7 +303,7 @@ class ModifiersList():
     def move_to_index(self, obj, i):
         """Moves cluster to index. Returns True if moved modifier."""
         # TODO: not tested
-        if i < len(self._modifiers_list):
+        if i < len(self._data):
             m_i = self.get_index(obj)
             d_i = i - m_i
             x = 0
@@ -359,7 +359,7 @@ class ModifiersList():
     @check_if_removed
     def do_action(self, action):
         logger.debug(f'Cluster {self}, action is {action}')
-        if action.subject not in self._modifiers_list:
+        if action.subject not in self._data:
             layer = self.get_cluster_or_layer(action.subject)
             layer.do_action(action)
         else:
@@ -422,7 +422,7 @@ class ModifiersList():
     @check_if_removed
     def get_list(self):
         """Returns list of objects"""
-        return self._modifiers_list
+        return self._data
 
     # This methods are different in clusters list.
     def get_full_actual_modifiers_list(self):
@@ -459,7 +459,7 @@ class ModifiersList():
             y -= 1
             x += 1
 
-        return self._modifiers_list[x:y+1]
+        return self._data[x:y+1]
 
     @check_if_removed
     def get_list_in_range_inclusive(self, mod1, mod2):
@@ -478,24 +478,24 @@ class ModifiersList():
         y = self.get_index(mod2)
 
         if x > y:
-            return self._modifiers_list[y:x+1]
+            return self._data[y:x+1]
         elif x < y:
-            return self._modifiers_list[x:y+1]
+            return self._data[x:y+1]
         elif x == y:
             e = []
-            e.append(self._modifiers_list[x])
+            e.append(self._data[x])
             return e
 
     @check_if_removed
     def get_list_length(self):
         """Returns length of list of objects."""
-        return len(self._modifiers_list)
+        return len(self._data)
 
     @check_if_removed
     def get_list_by_type(self, m_type):
         """Returns list of m_type objects."""
         y = []
-        for x in self._modifiers_list:
+        for x in self._data:
             if x.type == m_type:
                 y.append(x)
         return y
@@ -503,22 +503,22 @@ class ModifiersList():
     @check_if_removed
     def get_by_index(self, i):
         """Returns object by index."""
-        return self._modifiers_list[i]
+        return self._data[i]
 
     @check_if_removed
     def get_index(self, mod):
         """Returns index of object."""
-        return self._modifiers_list.index(mod)
+        return self._data.index(mod)
 
     @check_if_removed
     def get_first(self):
         """Returns first object."""
-        return self._modifiers_list[0]
+        return self._data[0]
 
     @check_if_removed
     def get_last(self):
         """Returns last object."""
-        return self._modifiers_list[-1]
+        return self._data[-1]
 
     # ===============
     # INFO ABOUT LIST
@@ -534,7 +534,7 @@ class ModifiersList():
     @check_if_removed
     def has_modifier_by_type(self, m_type):
         """Returns True if found any mod of m_type."""
-        for mod in self._modifiers_list:
+        for mod in self._data:
             if mod.type == m_type:
                 return True
         return False
@@ -542,7 +542,7 @@ class ModifiersList():
     @check_if_removed
     def has_modifier_by_name(self, m_name):
         """Returns True if found any objects with m_name."""
-        for mod in self._modifiers_list:
+        for mod in self._data:
             if mod.name == m_name:
                 return True
         return False
@@ -572,21 +572,21 @@ class ModifiersList():
             i = mod
         else:
             mod = self._check_cluster_or_modifier(mod)
-            i = self._modifiers_list.index(mod)
+            i = self._data.index(mod)
 
         # Any type.
         if m_type is None:
             if direction == 'UP':
                 if not loop and i == 0:
-                    return self._modifiers_list[0]
-                return self._modifiers_list[i - 1]
+                    return self._data[0]
+                return self._data[i - 1]
             elif direction == 'DOWN':
-                if not loop and i == len(self._modifiers_list) - 1:
-                    return self._modifiers_list[-1]
-                if i + 1 > len(self._modifiers_list) - 1:
-                    return self._modifiers_list[i + 1 - len(
-                        self._modifiers_list)]
-                return self._modifiers_list[i + 1]
+                if not loop and i == len(self._data) - 1:
+                    return self._data[-1]
+                if i + 1 > len(self._data) - 1:
+                    return self._data[i + 1 - len(
+                        self._data)]
+                return self._data[i + 1]
             else:
                 raise ValueError
 
@@ -595,21 +595,21 @@ class ModifiersList():
         # with specified type.
         else:
             result = None
-            for x in range(len(self._modifiers_list) + 1):
+            for x in range(len(self._data) + 1):
                 if x == 0:
                     continue
                 # TODO: does it works tho
                 if not loop:
-                    if i + x == len(self._modifiers_list) + 1:
+                    if i + x == len(self._data) + 1:
                         return result
                 if direction == 'UP':
-                    e = self._modifiers_list[i - x]
+                    e = self._data[i - x]
                 elif direction == 'DOWN':
-                    if i + x > len(self._modifiers_list) - 1:
-                        e = self._modifiers_list[i + x - len(
-                            self._modifiers_list)]
+                    if i + x > len(self._data) - 1:
+                        e = self._data[i + x - len(
+                            self._data)]
                     else:
-                        e = self._modifiers_list[i + x]
+                        e = self._data[i + x]
                 if e.type == m_type:
                     if loop:
                         return e

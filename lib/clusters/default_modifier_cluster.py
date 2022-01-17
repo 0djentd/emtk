@@ -51,18 +51,18 @@ class DefaultModifierCluster(
 
     def get_this_cluster_name(self):
         if not self.variables['initialized']\
-                or len(self._modifiers_list) == 0:
+                or len(self._data) == 0:
             return self.get_this_cluster_default_name()
         else:
-            # return self._modifiers_list[0].name
-            return f'{self._modifiers_list[0].name}_CLUSTER'
+            # return self._data[0].name
+            return f'{self._data[0].name}_CLUSTER'
 
     def get_this_cluster_type(self):
         if not self.variables['initialized']\
-                or len(self._modifiers_list) == 0:
+                or len(self._data) == 0:
             return self.parser_variables['type']
         else:
-            return f'{self._modifiers_list[0].type}_CLUSTER'
+            return f'{self._data[0].type}_CLUSTER'
 
     # Check if passed argument are actually Blender modifier
     def modcluster_extra_availability_check(self, mod):
@@ -105,13 +105,13 @@ class DefaultModifierCluster(
 
         # If havent set modifiers already
         if self.variables['initialized'] is False:
-            self._modifiers_list = modifiers
+            self._data = modifiers
             self.variables['initialized'] = True
             return True
 
         # If allowed to reset modifiers
         elif self.parser_variables['dynamic']:
-            self._modifiers_list = modifiers
+            self._data = modifiers
             return True
         else:
             raise ValueError('Cant change modifiers, cluster is not dynamic')
