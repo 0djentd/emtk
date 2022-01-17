@@ -24,6 +24,12 @@ from lib.clusters.cluster_trait import ClusterTrait
 from lib.clusters.modifiers_cluster import ModifiersCluster
 from lib.clusters.clusters_layer import ClustersLayer
 
+try:
+    import bpy
+    _WITH_BPY = True
+except ModuleNotFoundError:
+    _WITH_BPY = False
+
 
 class ExtendedModifiersListTests():
     def setUp(self):
@@ -284,100 +290,86 @@ class DifferentModifiersTests(
         self.e = ExtendedModifiersList(self.o)
 
 
-class LoadClustersTests(
-        ExtendedModifiersListTests, unittest.TestCase):
-    """
-    Saving and loading clusters.
-    """
+if _WITH_BPY:
+    class LoadClustersTests(
+            ExtendedModifiersListTests, unittest.TestCase):
+        """
+        Saving and loading clusters.
+        """
 
-    def setUp(self):
-        self.o = DummyBlenderObj()
-        mods = []
-        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
-        mods.append(self.o.modifier_add('Array', 'ARRAY'))
-        mods.append(self.o.modifier_add('TopBevel', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel2', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
-        mods.append(self.o.modifier_add('WeightedNormal', 'WEIGHTED_NORMAL'))
-        self.e = ExtendedModifiersList(self.o)
-        self.e.save_modifiers_state()
-        self.e.save_clusters_state()
+        def setUp(self):
+            self.o = DummyBlenderObj()
+            mods = []
+            mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
+            mods.append(self.o.modifier_add('Array', 'ARRAY'))
+            mods.append(self.o.modifier_add('TopBevel', 'BEVEL'))
+            mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
+            mods.append(self.o.modifier_add('Bevel2', 'BEVEL'))
+            mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
+            mods.append(self.o.modifier_add(
+                'WeightedNormal', 'WEIGHTED_NORMAL'))
+            self.e = ExtendedModifiersList(self.o)
+            self.e.save_modifiers_state()
+            self.e.save_clusters_state()
+            self.old_clusters_state = self.e.get_clusters_state()
+            del(self.e)
+            self.e = ExtendedModifiersList(self.o)
+            self.old_clusters_state_2 = self.e.get_clusters_state()
+            del(self.e)
+            self.e = ExtendedModifiersList(self.o)
 
-        self.old_clusters_state = self.e.get_clusters_state()
+        def test_number_of_clusters(self):
+            self.assertEqual(self.e.get_list_length(), 7)
 
-        del(self.e)
+        def test_check_clusters_state_eq(self):
+            self.assertEqual(
+                    self.old_clusters_state, self.e.get_clusters_state())
 
-        self.e = ExtendedModifiersList(self.o)
+        def test_check_clusters_state_eq_2(self):
+            self.assertEqual(
+                    self.old_clusters_state_2, self.e.get_clusters_state())
 
-        self.old_clusters_state_2 = self.e.get_clusters_state()
+    class ProgressiveLoadClustersTests(
+            ExtendedModifiersListTests, unittest.TestCase):
+        """
+        Saving and loading clusters.
+        """
 
-        del(self.e)
+        def setUp(self):
+            self.o = DummyBlenderObj()
+            mods = []
+            mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
+            mods.append(self.o.modifier_add('Array', 'ARRAY'))
+            mods.append(self.o.modifier_add('TopBevel', 'BEVEL'))
+            mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
+            mods.append(self.o.modifier_add('Bevel2', 'BEVEL'))
+            mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
+            mods.append(self.o.modifier_add(
+                'WeightedNormal', 'WEIGHTED_NORMAL'))
+            self.e = ExtendedModifiersList(self.o)
+            self.e.save_modifiers_state()
+            self.e.save_clusters_state()
+            self.old_clusters_state = self.e.get_clusters_state()
+            del(self.e)
+            self.e = ExtendedModifiersList(self.o)
+            self.old_clusters_state_2 = self.e.get_clusters_state()
+            del(self.e)
+            self.e = ExtendedModifiersList(self.o)
+            del(self.e)
+            self.e = ExtendedModifiersList(self.o)
+            del(self.e)
+            self.e = ExtendedModifiersList(self.o)
 
-        self.e = ExtendedModifiersList(self.o)
+        def test_number_of_clusters(self):
+            self.assertEqual(self.e.get_list_length(), 7)
 
-    def test_number_of_clusters(self):
-        self.assertEqual(self.e.get_list_length(), 7)
+        def test_check_clusters_state_eq(self):
+            self.assertEqual(
+                    self.old_clusters_state, self.e.get_clusters_state())
 
-    def test_check_clusters_state_eq(self):
-        self.assertEqual(
-                self.old_clusters_state, self.e.get_clusters_state())
-
-    def test_check_clusters_state_eq_2(self):
-        self.assertEqual(
-                self.old_clusters_state_2, self.e.get_clusters_state())
-
-
-class ProgressiveLoadClustersTests(
-        ExtendedModifiersListTests, unittest.TestCase):
-    """
-    Saving and loading clusters.
-    """
-
-    def setUp(self):
-        self.o = DummyBlenderObj()
-        mods = []
-        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
-        mods.append(self.o.modifier_add('Array', 'ARRAY'))
-        mods.append(self.o.modifier_add('TopBevel', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel2', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
-        mods.append(self.o.modifier_add('WeightedNormal', 'WEIGHTED_NORMAL'))
-        self.e = ExtendedModifiersList(self.o)
-        self.e.save_modifiers_state()
-        self.e.save_clusters_state()
-
-        self.old_clusters_state = self.e.get_clusters_state()
-
-        del(self.e)
-
-        self.e = ExtendedModifiersList(self.o)
-
-        self.old_clusters_state_2 = self.e.get_clusters_state()
-
-        del(self.e)
-
-        self.e = ExtendedModifiersList(self.o)
-
-        del(self.e)
-
-        self.e = ExtendedModifiersList(self.o)
-
-        del(self.e)
-
-        self.e = ExtendedModifiersList(self.o)
-
-    def test_number_of_clusters(self):
-        self.assertEqual(self.e.get_list_length(), 7)
-
-    def test_check_clusters_state_eq(self):
-        self.assertEqual(
-                self.old_clusters_state, self.e.get_clusters_state())
-
-    def test_check_clusters_state_eq_2(self):
-        self.assertEqual(
-                self.old_clusters_state_2, self.e.get_clusters_state())
+        def test_check_clusters_state_eq_2(self):
+            self.assertEqual(
+                    self.old_clusters_state_2, self.e.get_clusters_state())
 
 
 class LayersTests(

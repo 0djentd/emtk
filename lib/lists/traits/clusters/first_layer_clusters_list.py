@@ -32,7 +32,7 @@ from ....parser import ClustersParser
 from ....controller.clusters_controller import ClustersController
 from ....controller.answers import ActionDefaultRemove
 from ....utils.modifiers import get_modifier_state, restore_modifier_state
-from ....modifier_state import ModifierState
+from ....clusters_list_object_state import ModifierState
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
