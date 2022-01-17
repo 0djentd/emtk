@@ -36,9 +36,9 @@ from .utils.modifier_prop_types import MODIFIER_TYPES as ALL_MODIFIER_TYPES
 from .utils.modifier_prop_types import get_all_editable_props
 
 # Objects
-from .lib.clusters.modifiers_cluster import ModifiersCluster
-from .lib.clusters.clusters_layer import ClustersLayer
-from .lib.lists.extended_modifiers_list import ExtendedModifiersList
+from .clusters.modifiers_cluster import ModifiersCluster
+from .clusters.clusters_layer import ClustersLayer
+from .lists.extended_modifiers_list import ExtendedModifiersList
 
 logger = logging.getLogger(__name__)
 # logger.setLevel(logging.ERROR)
@@ -48,8 +48,17 @@ logger.setLevel(logging.DEBUG)
 # This set can be edited in runtime.
 types = {bool, int, float, str, list, dict, set, tuple}
 
+"""
+Constructors parameters:
 
-# This two functions only used when serializing/deserializing object state.
+extra: bool         When true, constructor will add all info required
+                    to create new object in ExtendedModifiersList.
+                    When False, will only add info required
+                    to reparse clusters.
+"""
+
+
+# functions used when serializing/deserializing object state.  {{{
 def _add_type_name_to_dict(obj):
     """Add info about element type to dictionary.
 
@@ -87,12 +96,24 @@ type in {types}""".replace('\n', ' ')
     return result
 
 
-class ObjectState(collections.UserDict):
+def _serialize(obj, *, extra=False):
+    if isinstance(obj, Modifier):
+        state = ModifierState(obj, extra=extra)
+    elif isinstance(obj, ModifiersCluster):
+        state = ModifiersClusterState(obj, extra=extra)
+    elif isinstance(obj, ClustersLayer):
+        state = ClustersLayerState(obj, extra=extra)
+    else:
+        raise TypeError
+    return state.serialize()
+# }}}
+
+
+class ObjectState(collections.UserDict):  # {{{
     def _get_data(self, obj):
         raise NotImplementedError
 
     _object_type = None
-    _object_type_name = None
 
     """
     Properties:
@@ -157,7 +178,7 @@ class ObjectState(collections.UserDict):
     # Properties {{{
     @property
     def type(self):
-        f"""{self._object_type_name} type that this
+        f"""{self._object_type.__name__} type that this
 stored state can be used with.""".replace('\n', ' ')
         return self._type
 
@@ -198,7 +219,7 @@ stored state can be used with.""".replace('\n', ' ')
         return str(self)
 
     def __str__(self):
-        return f"""{self._object_type_name} state: {self.name}, {self.type},
+        return f"""{self._object_type.__name__} state: {self.name}, {self.type},
 {self.tags}, {len(self.data)} elements.""".replace('\n', ' ')
 
     def serialize(self):
@@ -208,13 +229,59 @@ stored state can be used with.""".replace('\n', ' ')
                  'tags': list(self.tags),
                  'type': str(self.type)}
         return json.dumps(state)
+# }}}
+
+
+class ListObjectState(ObjectState):  # {{{
+    def __init__(self, obj, extra=False, *args, **kwargs):
+        super().__init__(obj, *args, **kwargs)
+        by_name = []
+        by_type = []
+        if extra:
+            objects_state = []
+        for x, y in obj.items():
+            by_name.append(y.name)
+            by_type.append(y.type)
+            if extra:
+                objects_state.append(_serialize(y, extra=extra))
+
+        reparse_data = {'by_name': by_name,
+                        'by_type': by_type}
+        if extra:
+            reparse_data.update({'objects_state': objects_state})
+        self.reparse_data = reparse_data
+
+    @property
+    def reparse_data(self):
+        return self._reparse_data
+
+    @reparse_data.setter
+    def reparse_data(self, reparse_data):
+        if type(reparse_data) is not dict:
+            raise TypeError
+        for x in {'by_name', 'by_type', 'objects_state'}:
+            if x not in reparse_data.keys():
+                raise KeyError
+        self._reparse_data = reparse_data
+
+    def _get_data(self, obj):
+        result = copy.copy(obj.variables)
+        return result
+
+    def serialize(self):
+        logger.debug(f'Serializing {self}')
+        state = {'data': dict(_add_type_name_to_dict(self.data)),
+                 'reparse_data': dict(self.reparse_data),
+                 'name': str(self.name),
+                 'tags': list(self.tags),
+                 'type': str(self.type)}
+        return json.dumps(state)
+# }}}
 
 
 class ModifierState(ObjectState):
     """Object representing stored modifier state."""
-
     _object_type = Modifier
-    _object_type_name = 'Modifier'
 
     def _get_data(self, obj):
         data = {}
@@ -224,56 +291,19 @@ class ModifierState(ObjectState):
         return data
 
 
-class ModifiersClusterState(ObjectState):
+class ModifiersClusterState(ListObjectState):
     """Object representing stored cluster state."""
-
     _object_type = ModifiersCluster
-    _object_type_name = 'ModifiersCluster'
-
-    def _get_data(self, obj):
-        result = copy.copy(obj.variables)
-        elements = []
-        for x, y in obj.items():
-            elements.append(y.name)
-        # TODO: this doesnt work
-        result.update({'by_name': elements})
-
-        elements = []
-        for x, y in obj.items():
-            elements.append(ModifierState(y).serialize())
-        # TODO: this doesnt work
-        result.update({'modifiers_state': elements})
-        return result
 
 
-class ClustersLayerState(ObjectState):
+class ClustersLayerState(ListObjectState):
     """Object representing stored cluster state."""
-
     _object_type = ClustersLayer
-    _object_type_name = 'ClustersLayer'
-
-    def _get_data(self, obj):
-        result = copy.copy(obj.variables)
-
-        elements = []
-        for x, y in obj.items():
-            elements.append(y.name)
-        # TODO: this doesnt work
-        result.update({'by_name': elements})
-        return result
 
 
-class ClustersListState(ObjectState):
+class ClustersListState(ListObjectState):
     """Object representing stored clusters list state."""
-
     _object_type = ExtendedModifiersList
-    _object_type_name = 'ExtendedModifiersList'
 
     def _get_data(self, obj):
-        result = {}
-        elements = []
-        for x, y in obj.items():
-            elements.append(y.name)
-        # TODO: this doesnt work
-        result.update({'by_name': elements})
-        return result
+        return {}

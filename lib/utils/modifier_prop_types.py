@@ -141,8 +141,8 @@ def get_all_editable_props(modifier, no_ignore=False):  # {{{
     Returns list of names of all modifier props that
     can be edited in modal operator.
     """
-    if not isinstance(modifier, bpy.types.Modifier):
-        raise TypeError
+    # if not isinstance(modifier, bpy.types.Modifier):
+    #     raise TypeError
 
     result = []
     props = modifier.rna_type.properties
@@ -171,10 +171,10 @@ def get_all_editable_props(modifier, no_ignore=False):  # {{{
 # }}}
 
 
-def get_props_filtered_by_types(modifier: bpy.types.Modifier) -> dict:  # {{{
+def get_props_filtered_by_types(modifier) -> dict:  # {{{
     """Returns dict with modifier props."""
-    if not isinstance(modifier, bpy.types.Modifier):
-        raise TypeError
+    # if not isinstance(modifier, bpy.types.Modifier):
+    #     raise TypeError
 
     result = {}
     props = get_all_editable_props(modifier)
@@ -201,8 +201,8 @@ def get_props_filtered_by_types(modifier: bpy.types.Modifier) -> dict:  # {{{
 def filter_props_by_type(modifier, props,  # {{{
                          props_type, props_subtype=None):
     """Returns new list of modifier props filtered by props_type"""
-    if not isinstance(modifier, bpy.types.Modifier):
-        raise TypeError
+    # if not isinstance(modifier, bpy.types.Modifier):
+    #     raise TypeError
     if not isinstance(props_type, str):
         raise TypeError
     if not isinstance(props, list):
