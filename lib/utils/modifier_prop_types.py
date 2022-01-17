@@ -19,7 +19,11 @@
 
 import logging
 
-import bpy
+try:
+    import bpy
+    _WITH_BPY = True
+except ModuleNotFoundError:
+    _WITH_BPY = False
 
 logger = logging.getLogger(__package__)
 logger.setLevel(logging.DEBUG)

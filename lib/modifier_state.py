@@ -34,12 +34,57 @@ except ModuleNotFoundError:
 # TODO: move this functions to this module
 from .utils.modifier_prop_types import MODIFIER_TYPES as ALL_MODIFIER_TYPES
 from .utils.modifier_prop_types import get_all_editable_props
+
+# Objects
 from .lib.clusters.modifiers_cluster import ModifiersCluster
 from .lib.clusters.clusters_layer import ClustersLayer
+from .lib.lists.extended_modifiers_list import ExtendedModifiersList
 
 logger = logging.getLogger(__name__)
 # logger.setLevel(logging.ERROR)
 logger.setLevel(logging.DEBUG)
+
+# Types to use in serialization/deserialization.
+# This set can be edited in runtime.
+types = {bool, int, float, str, list, dict, set, tuple}
+
+
+# This two functions only used when serializing/deserializing object state.
+def _add_type_name_to_dict(obj):
+    """Add info about element type to dictionary.
+
+    This required for correct deserialization.
+    Does not works with nested not-serializeable objects though.
+    """
+    if not isinstance(obj, dict):
+        raise TypeError
+    result = {}
+    for x, y in obj.items():
+        element_type_name = type(y).__name__
+        result.update({x: {'data': y, 'type': element_type_name}})
+    return result
+
+
+def _remove_type_name_from_dict(obj, strict=True):
+    if not isinstance(obj, dict):
+        raise TypeError
+    result = {}
+    for x, y in obj.items():
+        t = None
+        for x in types:
+            if y['type'] == x.__name__:
+                t = x
+                break
+        if t is not None:
+            result.update({x: t(y['data'])})
+        else:
+            line = f"""Unsupported type in stored object state "{y[type]}", expected
+type in {types}""".replace('\n', ' ')
+            if strict:
+                raise TypeError(line)
+            logger.error(line)
+            result.update({x: y['data']})
+    return result
 
 
 class ObjectState(collections.UserDict):
@@ -49,12 +94,22 @@ class ObjectState(collections.UserDict):
     _object_type = None
     _object_type_name = None
 
+    """
+    Properties:
+    type: str       Object subtype (example: bpy.types.Modifier.type)
+    data: dict      Data required to deserialize object.
+    name: str       Name of object state used in ui.
+    tags: set       Object state's tags, used for sorting in ui.
+    """
+
     def __init__(self, obj, name=None,  # {{{
-                 tags=None, obj_subtype=None):
+                 tags=None, obj_subtype=None, types=None):
         self._name = ''
         self._type = ''
         self._tags = []
+        logger.info('Creating ObjectState.')
         if isinstance(obj, self._object_type):
+            logger.debug(f'Trying to get {obj} attributes.')
             if obj_subtype is not None:
                 raise TypeError('Modifier type should not be specified.')
             self.type = obj.type
@@ -65,10 +120,9 @@ class ObjectState(collections.UserDict):
             self.data = self._get_data(obj)
 
         elif isinstance(obj, str):
-            logger.debug(f'Deserializing {self}')
+            logger.debug('Deserializing str.')
             state = json.loads(obj)
-            self.data = state['data']
-
+            self.data = _remove_type_name_from_dict(state['data'])
             if name is None:
                 self.name = name
             else:
@@ -83,20 +137,6 @@ class ObjectState(collections.UserDict):
                 self.tags = state['tags']
             else:
                 self.tags = tags
-
-        # elif isinstance(obj, dict):
-        #     if name is None or obj_subtype is None:
-        #         raise TypeError
-        #     for x, y in obj.items():
-        #         if type(x) is not str:
-        #             raise TypeError
-        #         if type(y) not in {bool, int, float, str}:
-        #             raise TypeError
-        #     self.data = obj
-        #     self.name = name
-        #     self.type = obj_subtype
-        #     if tags is not None:
-        #         self.tags = tags
         else:
             raise TypeError
     # }}}
@@ -117,7 +157,8 @@ class ObjectState(collections.UserDict):
     # Properties {{{
     @property
     def type(self):
-        """Type that this stored state can be used with."""
+        f"""{self._object_type_name} type that this
+stored state can be used with.""".replace('\n', ' ')
         return self._type
 
     @type.setter
@@ -157,12 +198,12 @@ class ObjectState(collections.UserDict):
         return str(self)
 
     def __str__(self):
-        return f"""{self._object_type_name} state: {self.name}, {self.type}, 
+        return f"""{self._object_type_name} state: {self.name}, {self.type},
 {self.tags}, {len(self.data)} elements.""".replace('\n', ' ')
 
     def serialize(self):
         logger.debug(f'Serializing {self}')
-        state = {'data': dict(self.data),
+        state = {'data': dict(_add_type_name_to_dict(self.data)),
                  'name': str(self.name),
                  'tags': list(self.tags),
                  'type': str(self.type)}
@@ -213,6 +254,23 @@ class ClustersLayerState(ObjectState):
 
     def _get_data(self, obj):
         result = copy.copy(obj.variables)
+
+        elements = []
+        for x, y in obj.items():
+            elements.append(y.name)
+        # TODO: this doesnt work
+        result.update({'by_name': elements})
+        return result
+
+
+class ClustersListState(ObjectState):
+    """Object representing stored clusters list state."""
+
+    _object_type = ExtendedModifiersList
+    _object_type_name = 'ExtendedModifiersList'
+
+    def _get_data(self, obj):
+        result = {}
         elements = []
         for x, y in obj.items():
             elements.append(y.name)
