@@ -85,6 +85,38 @@ Pros and cons:
     ClustersLayer can have both ModifiersClusters and ClustersLayers in it.
 """
 
+"""
+Properties:
+    This data is used in reparse/deserialization:
+        class: str              Object class name (type(obj).__name__)
+        data: dict              Object data (cluster name)
+        This data only used in ListObjectState:
+        objects_data: list      ObjectsState subclass instances.
+
+    This data is used in UI only:
+        name: str       Name of object state used in ui.
+        tags: set       Object state's tags, used for sorting in ui.
+"""
+
+"""
+After this rework, cluster_trait will have following attrs:
+Properties:
+    default_state: ObjectState      ObjectState that is defined on cluster creation.
+    reparse_state: ObjectState      Previous ObjectState.
+
+    # TODO: should this be named instance_data? no.
+    instance_data: dict     Variables used anywhere else. Example: cluster name, ui state,
+                            tags and sorting rules.
+                            They are stored in ObjectState.
+
+    # TODO: should this be in instance_data? yes.
+    sorting_rules: list     Sorting rules applied to this cluster.
+
+    # TODO: should this be in instance_data? yes.
+    # TODO: should this be named data? no.
+    data: list              Clusters instances.
+"""
+
 # functions used when serializing/deserializing object state.  {{{
 def _add_type_name_to_dict(obj):
     """Add info about element type to dictionary.
@@ -240,17 +272,6 @@ stored state can be used with.""".replace('\n', ' ')
 
 
 class ListObjectState(ObjectState):  # {{{
-    """
-    Properties:
-        This data is used in reparse/deserialization
-        class: str              Object class name (type(obj).__name__)
-        data: dict              Object data (cluster name)
-        objects_data: list      ObjectsState subclass instances.
-
-        This data is used in UI only.
-        name: str       Name of object state used in ui.
-        tags: set       Object state's tags, used for sorting in ui.
-    """
     def __init__(self, obj, extra=False, *args, **kwargs):
         super().__init__(obj, *args, **kwargs)
 
