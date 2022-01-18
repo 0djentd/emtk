@@ -24,12 +24,12 @@ import copy
 
 try:
     import bpy
-    _WITH_BPY = True
     Modifier = bpy.types.Modifier
+    _WITH_BPY = True
 except ModuleNotFoundError:
-    _WITH_BPY = False
     from .dummy_modifiers import DummyBlenderModifier
     Modifier = DummyBlenderModifier
+    _WITH_BPY = False
 
 # TODO: move this functions to this module
 from .utils.modifier_prop_types import MODIFIER_TYPES as ALL_MODIFIER_TYPES
