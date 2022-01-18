@@ -163,6 +163,9 @@ class ModifiersList():
     def has_clusters(self):
         return False
 
+    def serialize(obj):
+        raise NotImplementedError
+
     # Clusters actions {{{
     """
     This methods create a new command and pass it to

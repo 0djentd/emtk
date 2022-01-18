@@ -43,15 +43,47 @@ logger.setLevel(logging.DEBUG)
 # This set can be edited in runtime.
 types = {bool, int, float, str, list, dict, set, tuple}
 
+# TODO: this explaination of reparse is not too good.
 """
-Constructors parameters:
+How serialization/deserialization/reparse/parse works:
 
-extra: bool         When true, constructor will add all info required
-                    to create new object in ExtendedModifiersList.
-                    When False, will only add info required
-                    to reparse clusters.
+    When cluster is first created (for example when new modifier is added)
+    it is being parsed. On this stage, it has no ObjectState instance.
+    ObjectState is being created when clusters list is removed (for example when
+    operator returns {'FINISHED'}). This is required to later reparse clusters.
+
+    Reparsing clusters is a process of instantiating clusters with same
+    modifiers and clusters in them. It requires at least some of
+    list's objects variables to be stored in ObjectState associated with
+    cluster.
+    Reparsing clusters is required to associate stored cluster variables with
+    actual modifiers.
+
+    Example: ModifiersClusterState that has information about
+    names of modifiers in it and some of their properties.
+
+    ReparseConfig is an object that defines how stored variables should be
+    compared with existing ones.
+    
+    Example: reparse_config.Delta can be used to allow successfully
+    reparsing objects with their int/float variables slightly different.
+
+    After finishing reparsing clusters, ObjectState objects are no longer used
+    and would be created again on operator finish.
+    When serialized ObjectState already exists at this stage, it is copied
+    to backup property of object.
+
+Pros and cons:
+    Whole thing uses json instead of bpy.type.Property. Editing variables in UI
+    can be done using ui_class_variables_editor module.
+    Why whole thing uses json then?
+    Because blender collections does not support more than one object type.
+    Implementing everything through pointer properties and collections will
+    be much harder and probably will require using a lot 
+    of usual variables anyway.
+    Example:
+    ClustersLayer can have both ModifiersClusters and ClustersLayers in it.
 """
-
 
 # functions used when serializing/deserializing object state.  {{{
 def _add_type_name_to_dict(obj):
@@ -89,22 +121,6 @@ type in {types}""".replace('\n', ' ')
             logger.error(line)
             result.update({x: y['data']})
     return result
-
-
-# remove this
-def _serialize(obj, *, extra=False):
-    if isinstance(obj, Modifier):
-        state = ModifierState(obj, extra=extra)
-    else:
-        try:
-            has_clusters = obj.has_clusters()
-        except AttributeError:
-            raise TypeError(f"""Expected bpy.types.Modifier, ClusterTrait or ExtendedModifiersList, got {type(obj)}""".replace('\n', ' '))
-        if has_clusters:
-            state = ClustersLayerState(obj, extra)
-        else:
-            state = ModifiersClusterState(obj, extra)
-    return state.serialize()
 # }}}
 
 
@@ -113,14 +129,6 @@ class ObjectState(collections.UserDict):  # {{{
         raise NotImplementedError
 
     _object_type = None
-
-    """
-    Properties:
-    type: str       Object subtype (example: bpy.types.Modifier.type)
-    data: dict      Data required to deserialize object.
-    name: str       Name of object state used in ui.
-    tags: set       Object state's tags, used for sorting in ui.
-    """
 
     def __init__(self, obj, name=None,  # {{{
                  tags=None, obj_subtype=None, types=None):
@@ -232,36 +240,27 @@ stored state can be used with.""".replace('\n', ' ')
 
 
 class ListObjectState(ObjectState):  # {{{
+    """
+    Properties:
+        This data is used in reparse/deserialization
+        class: str              Object class name (type(obj).__name__)
+        data: dict              Object data (cluster name)
+        objects_data: list      ObjectsState subclass instances.
+
+        This data is used in UI only.
+        name: str       Name of object state used in ui.
+        tags: set       Object state's tags, used for sorting in ui.
+    """
     def __init__(self, obj, extra=False, *args, **kwargs):
         super().__init__(obj, *args, **kwargs)
-        by_name = []
-        by_type = []
-        if extra:
-            objects_state = []
-        for x, y in obj.items():
-            by_name.append(y.name)
-            by_type.append(y.type)
-            if extra:
-                objects_state.append(_serialize(y, extra=extra))
-
-        reparse_data = {'by_name': by_name,
-                        'by_type': by_type}
-        if extra:
-            reparse_data.update({'objects_state': objects_state})
-        self.reparse_data = reparse_data
 
     @property
-    def reparse_data(self):
+    def objects_data(self):
         return self._reparse_data
 
-    @reparse_data.setter
-    def reparse_data(self, reparse_data):
-        if type(reparse_data) is not dict:
-            raise TypeError
-        for x in {'by_name', 'by_type', 'objects_state'}:
-            if x not in reparse_data.keys():
-                raise KeyError
-        self._reparse_data = reparse_data
+    @objects_data.setter
+    def objects_data(self, objects_data):
+        self._reparse_data = dict(objects_data)
 
     def _get_data(self, obj):
         result = copy.copy(obj.variables)
@@ -270,7 +269,7 @@ class ListObjectState(ObjectState):  # {{{
     def serialize(self):
         logger.debug(f'Serializing {self}')
         state = {'data': dict(_add_type_name_to_dict(self.data)),
-                 'reparse_data': dict(self.reparse_data),
+                 'objects_data': dict(self.objects_data),
                  'name': str(self.name),
                  'tags': list(self.tags),
                  'type': str(self.type)}
@@ -280,6 +279,7 @@ class ListObjectState(ObjectState):  # {{{
 
 class ModifierState(ObjectState):
     """Object representing stored modifier state."""
+
     _object_type = Modifier
 
     def _get_data(self, obj):
