@@ -28,6 +28,16 @@ import collections
 import json
 from .utils.modifier_prop_types import get_all_editable_props
 
+try:
+    import bpy
+    Modifier = bpy.types.Modifier
+    _WITH_BPY = True
+except ModuleNotFoundError:
+    from ..dummy_modifiers import DummyBlenderModifier
+    Modifier = DummyBlenderModifier
+    _WITH_BPY = False
+
+
 logger = logging.getLogger(__package__)
 logger.setLevel(logging.DEBUG)
 
@@ -42,8 +52,6 @@ class ReparserConfig(collections.UserDict):
                     subclasses of PropertyReparserConfig as items.
     """
     def __init__(self, obj=None):
-        # TODO: remove this
-        Modifier = dict
         if type(obj) is str:
             self.data = _deserialize_config(obj, self._CONFIG_CLASSES)
         elif type(obj) is Modifier:
