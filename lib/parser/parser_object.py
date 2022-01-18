@@ -29,7 +29,6 @@ except ModuleNotFoundError:
 
 from ..clusters.cluster_trait import ClusterTrait
 from ..clusters.default_modifier_cluster import DefaultModifierCluster
-from ..lists.traits.clusters.active_cluster import ActiveClusterTrait
 from ..utils import EMTK_VERSION
 
 CLUSTERS_PARSER_VERSION = (0, 1, 0)
