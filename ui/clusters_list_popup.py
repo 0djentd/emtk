@@ -248,20 +248,31 @@ class BMTOOLS_OT_clusters_list_popup(
                     or cluster.variables['show_definition_expanded']:
 
                 box = layout.box()
+                z = self.prefs.clusters_list_popup_width//150
 
                 if cluster.variables['show_definition_expanded']:
                     box_2 = box.box()
-                    for x, y in zip(cluster.parser_variables,
-                                    cluster.parser_variables.values()):
+                    i = 0
+                    variables = cluster.parser_variables
+                    for x, y in zip(variables, variables.values()):
+                        if i % z == 0:
+                            row = box_2.row()
+                        col = row.column()
                         line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').parser_variables[\'{x}\']'
-                        self.draw_var_editor(box_2, line, fast=True)
+                        self.draw_var_editor(col, line, fast=True)
+                        i += 1
 
                 if cluster.variables['show_props_expanded']:
                     box_2 = box.box()
-                    for x, y in zip(cluster.variables,
-                                    cluster.variables.values()):
+                    i = 0
+                    variables = cluster.variables
+                    for x, y in zip(variables, variables.values()):
+                        if i % z == 0:
+                            row = box_2.row()
+                        col = row.column()
                         line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').variables[\'{x}\']'
-                        self.draw_var_editor(box_2, line, fast=True)
+                        self.draw_var_editor(col, line, fast=True)
+                        i += 1
 
             if cluster.has_clusters():
                 self.__draw_clusters_list(layout, cluster)
@@ -393,7 +404,7 @@ class BMTOOLS_OT_clusters_list_popup(
         print('Operator invoked')
         for x in context.object.modifiers:
             x.show_expanded = False
-        prefs = context.preferences.addons['bmtools'].preferences
+        self.prefs = context.preferences.addons['bmtools'].preferences
         context.window_manager.invoke_popup(
-                self, width=prefs.clusters_list_popup_width)
+                self, width=self.prefs.clusters_list_popup_width)
         return {'RUNNING_MODAL'}
