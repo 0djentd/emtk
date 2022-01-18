@@ -39,8 +39,6 @@ class ClustersListTrait():
     """
 
     def find_cluster_by_name(self, name: str):
-        if name == self.name:
-            return self
         for x in self.get_full_list():
             if x.name == name:
                 return x

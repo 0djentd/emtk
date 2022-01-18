@@ -59,7 +59,7 @@ class ModalShortcutsPreferences():
         else:
             raise TypeError
 
-    # Currently edited shortcut props {{{
+    # Currently edited shortcut properties {{{
     # Shortcut and group that is being edited
     bmtool_editing_modal_shortcut_value: StringProperty("")
     bmtool_editing_modal_shortcut_group: StringProperty("")
@@ -105,14 +105,18 @@ class ModalShortcutsPreferences():
         for x in result:
             self.layout.label(text=x.value)
             box = layout.box()
-            for y in x.search_by_shortcut_id(self.shortcuts_search_str):
+            for i, y in enumerate(x.search_by_shortcut_id(
+                    self.shortcuts_search_str)):
+                if i % 3 == 0:
+                    row = box.row()
+                col = row.column()
                 if x.value == self.bmtool_editing_modal_shortcut_group\
                         and y.shortcut_id\
                         == self.bmtool_editing_modal_shortcut_value:
                     self.__draw_shortcut_editor(
-                            box.box(), x.value, y.shortcut_id, y)
+                            col, x.value, y.shortcut_id, y)
                 else:
-                    self.__draw_shortcut(box.box(), x.value, y.shortcut_id, y)
+                    self.__draw_shortcut(col, x.value, y.shortcut_id, y)
     # }}}
 
     # Draw shortcut {{{

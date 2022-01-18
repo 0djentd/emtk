@@ -34,6 +34,30 @@ class ClusterTrait():
     """This ModifiersList trait should be in every
     cluster used in ClustersList.
     """
+    """
+    # List of clusters or modifiers. This list is used for __getitem__.
+    data = []
+
+    # Variables that can be changed in cluster instance.
+    # They can be stored in ClusterState and serialized/deserialized.
+    instance_data = {}
+
+    # Variables (constants) that are defined in constructor and
+    # should not be changed.
+    # They stored in ClusterDefinition.
+    # If you need to somehow change this variables (for example, change type
+    # of modifier),
+    # its better to create new cluster, reparse modifiers,
+    # and copy other variables.
+    cluster_definition_data = {}
+
+    # Variables required to successfully restore ClusterState with same or
+    # similar clusters and modifiers.
+    # They stored in ClusterState and serialized/deserialized.
+    # Warning: this dict is created only when deserializing ClusterState
+    # and removed after reparse.
+    reparse_data = {}
+    """
 
     def __init__(self,  # {{{
                  *args,
