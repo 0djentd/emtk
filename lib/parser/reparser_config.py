@@ -58,8 +58,10 @@ class ReparserConfig(collections.UserDict):
             self.data = {}
             for x in get_all_editable_props(obj):
                 self.data.update({x: getattr(obj, x)})
-        else:
+        elif obj is None:
             self.data = {}
+        else:
+            raise TypeError
 
     def serialize(self):
         result = {}
