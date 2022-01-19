@@ -166,42 +166,6 @@ class _ObjectState(collections.UserDict):  # {{{
 
 
 @dataclasses.dataclass(kw_only=True)
-class ClustersListState():  # {{{
-    data: list
-
-    def serialize(self):
-        """Serialize object to str."""
-        state = {}
-        data = _add_type_name_to_dict(self.data)
-        for y in data.items():
-            y = y.serialize()
-        state.update({'data': data})
-        return json.dumps(state)
-
-    @classmethod
-    def deserialize(cls, obj):
-        """Deserialize str to object."""
-        state = json.loads(obj)
-        return cls(**state)
-
-    @classmethod
-    def get_data_from_obj(cls, obj):
-        if 'ModifiersList' not in obj.mro():
-            raise TypeError(f'Expected cluster, got {type(obj)}')
-        data = {}
-        data.update({'data': cls._get_items_data(obj)})
-        return cls(**data)
-
-    @staticmethod
-    def _get_items_data(obj):
-        result = []
-        for x in obj:
-            result.append(_get_object_state_subclass(x).get_data_from_obj(x))
-        return result
-# }}}
-
-
-@dataclasses.dataclass(kw_only=True)
 class ListObjectState(_ObjectState):  # {{{
     items_data: list
 
@@ -310,3 +274,9 @@ class ModifierConfig():
 class ListObjectConfig():
     state: ListObjectState
     config: ListReparseConfig
+
+
+class ExtendedModifiersListState(ListObjectState):
+    @staticmethod
+    def _get_data(obj):
+        return {}
