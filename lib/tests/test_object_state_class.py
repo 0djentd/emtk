@@ -32,7 +32,7 @@ except ModuleNotFoundError:
 class ModifierStateClassTests(unittest.TestCase):
     def setUp(self):
         self.obj = ModifierState(
-                name='modifier preset', subtype='BEVEL',
+                name='modifier preset',
                 data={'angle_limit': 123}, tags=['STORED'])
 
     def tearDown(self):
@@ -43,9 +43,6 @@ class ModifierStateClassTests(unittest.TestCase):
 
     def test_object_name(self):
         self.assertEqual(self.obj.name, 'modifier preset')
-
-    def test_object_subtype(self):
-        self.assertEqual(self.obj.subtype, 'BEVEL')
 
     def test_object_tags(self):
         self.assertEqual(self.obj.tags, ['STORED'])

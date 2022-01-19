@@ -26,7 +26,7 @@ ones used before serialization.
 import logging
 import collections
 import json
-from .utils.modifier_prop_types import get_all_editable_props
+import dataclasses
 
 try:
     import bpy
@@ -36,6 +36,8 @@ except ModuleNotFoundError:
     from ..dummy_modifiers import DummyBlenderModifier
     Modifier = DummyBlenderModifier
     _WITH_BPY = False
+
+from ..utils.modifier_prop_types import get_all_editable_props
 
 
 logger = logging.getLogger(__package__)
@@ -72,6 +74,19 @@ class ReparseConfig(collections.UserDict):
         return json.dumps(result)
 
 
+class ListReparseConfig(ReparseConfig):
+    def __init__(self, obj):
+        self.items_data = []
+        for x in obj.data:
+            try:
+                if obj.has_clusters():
+                    logger.debug('ClustersLayer.')
+                self.items_data.append(ListReparseConfig(x))
+            except AttributeError:
+                self.items_data.append(ReparseConfig(x))
+        return
+
+
 def _deserialize_config(obj, classes):
     data = json.loads(obj)
     result = {}
@@ -81,42 +96,36 @@ def _deserialize_config(obj, classes):
     return result
 
 
+@dataclasses.dataclass(kw_only=True)
 class _ReparseConfigElement():
-    def __init__(self, status=False):
-        self.status = status
-
-    @property
-    def status(self):
-        raise NotImplementedError
-
-    @status.setter
-    def status(self, val):
-        raise NotImplementedError
+    status: bool
 
     @staticmethod
     def deserialize(obj):
-        raise NotImplementedError
+        if type(obj) is str:
+            data = json.loads(obj)
+        elif type(obj) is dict:
+            data = obj
+        return Basic(data)
 
     def serialize(self):
-        raise NotImplementedError
+        data = {}
+        for x, y in self.__dataclass_fields__.items():
+            data.update({x: getattr(self, x)})
+        return json.dumps(data)
 
 
+@dataclasses.dataclass(kw_only=True)
 class Basic(_ReparseConfigElement):
     """Simple reparse config.
 
     Attributes:
         status: bool    If False, property will not be used.
     """
-
-    @staticmethod
-    def deserialize(obj):
-        data = json.loads(obj)
-        return Basic(data['status'])
-
-    def serialize(self):
-        return json.dumps({'status': self.status})
+    status: bool
 
 
+@dataclasses.dataclass(kw_only=True)
 class Delta(_ReparseConfigElement):
     """Reparse config for int and float properties.
 
@@ -125,29 +134,7 @@ class Delta(_ReparseConfigElement):
         delta: int or float     Range in which property can be changed without
                                 considering modifier as different.
     """
-    def __init__(self, *args, delta, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.delta = delta
-
-    @property
-    def delta(self):
-        return self._delta
-
-    @delta.setter
-    def delta(self, val):
-        if type(val) in {int, float}:
-            self._delta = val
-        else:
-            raise TypeError(f'Expected int or float, got {type(val)}')
-
-    @staticmethod
-    def deserialize(obj):
-        data = json.loads(obj)
-        return Delta(data['status'], data['delta'])
-
-    def serialize(self):
-        return json.dumps({'status': self.status,
-                           'delta': self.delta})
+    delta: float
 
 
 _CONFIG_CLASSES.update({'Delta': Delta})

@@ -35,6 +35,7 @@ except ModuleNotFoundError:
 # TODO: move this functions to this module
 from .utils.modifier_prop_types import MODIFIER_TYPES as ALL_MODIFIER_TYPES
 from .utils.modifier_prop_types import get_all_editable_props
+from .parser.reparser_config import ReparseConfig, ListReparseConfig
 
 logger = logging.getLogger(__name__)
 # logger.setLevel(logging.ERROR)
@@ -44,14 +45,8 @@ logger.setLevel(logging.DEBUG)
 # This set can be edited in runtime.
 types = {bool, int, float, str, list, dict, set, tuple}
 
-# This list is populated at runtime because of type check
-# in _serialize_object and _deserialize_object.
-# This type check is used to allow nested objects of different type.
-obj_state_classes = []
-
 # TODO: rename ObjectState to ObjectStateData.
 # TODO: ObjectConfig is ObjectStateData and ReparseConfig.
-
 
 
 # functions used when serializing/deserializing object state.  {{{
@@ -303,3 +298,15 @@ class ModifierState(_ObjectState):  # {{{
             data.update({x: val})
         return data
 # }}}
+
+
+@dataclasses.dataclass(kw_only=True)
+class ModifierConfig():
+    state: ModifierState
+    config: ReparseConfig
+
+
+@dataclasses.dataclass(kw_only=True)
+class ListObjectConfig():
+    state: ListObjectState
+    config: ListReparseConfig
