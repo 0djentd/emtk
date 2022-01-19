@@ -172,6 +172,16 @@ when modifiers were changed outside of clusters list.
 
 Modal input.
 """
+"""
+Data that can be used in reparse and should be configurable
+through reparse config class:
+    Cluster default data.
+    Cluster instance data.
+    Cluster items.
+
+Data that should never be used:
+    Cluster state.
+"""
 # }}}
 
 
