@@ -45,6 +45,40 @@ types = {bool, int, float, str, list, dict, set, tuple}
 
 # TODO: this explaination of reparse is not too good.
 """
+Design.
+
+What features required to be implemented?
+
+Modifier presets.
+
+Clusters.
+Clusters presets.
+Different cluster subtypes support.
+
+UI for presets.
+UI for clusters.
+UI for default cluster settings (a.k.a. cluster_type,
+cluster_definition, parser_variables ...)
+
+Full modal input support.
+Full View3D support.
+
+What this means?
+Basically, all modifiers and clusters editing should be
+possible in View3D, with minimum of menus, panels and as
+fast as using built-in modal operators.
+This should not limit customization of toolkit in any way
+and can be ignored when some feature is too complex to customize
+through single modal operator or popup.
+Example:
+    Cluster subtypes editing should not be implemented using
+    modal operator, because it will not be possible to
+    visualize changes made to cluster subtype using
+    current clusters library implementation.
+
+Support for storing cluster subtypes in preferences, scene and object.
+"""
+"""
 How serialization/deserialization/reparse/parse works:
 
     When cluster is first created (for example when new modifier is added)
@@ -84,7 +118,6 @@ Pros and cons:
     Example:
     ClustersLayer can have both ModifiersClusters and ClustersLayers in it.
 """
-
 """
 Properties:
     This data is used in reparse/deserialization:
@@ -97,16 +130,16 @@ Properties:
         name: str       Name of object state used in ui.
         tags: set       Object state's tags, used for sorting in ui.
 """
-
 """
 After this rework, cluster_trait will have following attrs:
 Properties:
-    default_state: ObjectState      ObjectState that is defined on cluster creation.
+    default_state: ObjectState      ObjectState that is defined on
+                                    cluster creation.
     reparse_state: ObjectState      Previous ObjectState.
 
     # TODO: should this be named instance_data? no.
-    instance_data: dict     Variables used anywhere else. Example: cluster name, ui state,
-                            tags and sorting rules.
+    instance_data: dict     Variables used anywhere else. Example: cluster
+                            name, ui state, tags and sorting rules.
                             They are stored in ObjectState.
 
     # TODO: should this be in instance_data? yes.
@@ -116,6 +149,22 @@ Properties:
     # TODO: should this be named data? no.
     data: list              Clusters instances.
 """
+"""
+TODO: rework.
+Default cluster settings is basically presets.
+Default cluster settings and presets are the same thing.
+
+Initial cluster settings is what 'default cluster settings' should
+be called instead.
+
+Presets can be 'layered' on initial cluster settings.
+Presets are used to modify objects.
+Initial cluster settings are to parse cluster when it is created and
+when modifiers were changed outside of clusters list.
+
+Modal input.
+"""
+
 
 # functions used when serializing/deserializing object state.  {{{
 def _add_type_name_to_dict(obj):
