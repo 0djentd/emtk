@@ -56,28 +56,6 @@ class ClusterTrait():
     default_data: dict
     """
 
-    # Design.
-    """
-    What is default_data?
-    Well, basically, this is ClusterState that is reused in multiple
-    cluster instances and can be stored in settings and scene as well
-    as in object props.
-
-    So what is cluster state?
-    This is dump of modifiers and clusters properties. It can include
-    as many items as needed by ReparseConfig. It can include multiple
-    layers as well.
-
-    What is ReparseConfig?
-    This is parser config that describes how parser should
-    compare ClusterState and existing objects.
-
-    So where is ReparseConfig should be stored?
-    It should be stored with default_data in ClusterTypePreset.
-    Cluster instance can also have its own ReparseConfig,
-    that is stored with ClusterState.
-    """
-
     def __init__(self,  # {{{
                  *args,
                  cluster_name=None,
