@@ -836,18 +836,13 @@ class ClustersParser():
                 if result == 'CONTINUE':
                     logger.debug(f"Parsing, {y} need another modifier")
 
-                    # Dont append possible_cluster_types
-                    # if cluster is already there.
-                    k = False
-                    for x in possible_cluster_types:
-                        if y.modcluster_index == x.modcluster_index:
-                            logger.debug(f"{y} is already in possible types")
-                            k = True
-                    if k is False:
+                    if y not in possible_cluster_types:
                         # TODO: this is slow
                         new_cluster = copy.deepcopy(y)
                         possible_cluster_types.append(new_cluster)
                         logger.debug(f"Adding {y} to possible types")
+                    else:
+                        logger.debug(f"{y} is already in possible types")
 
                     need_another_modifier = True
 
