@@ -44,7 +44,7 @@ logger.setLevel(logging.DEBUG)
 _CONFIG_CLASSES = {}
 
 
-class ReparserConfig(collections.UserDict):
+class ReparseConfig(collections.UserDict):
     """Configuration to use when reparsing stored ClusterState.
 
     Attributes:

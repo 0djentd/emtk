@@ -49,6 +49,9 @@ types = {bool, int, float, str, list, dict, set, tuple}
 # This type check is used to allow nested objects of different type.
 obj_state_classes = []
 
+# TODO: rename ObjectState to ObjectStateData.
+# TODO: ObjectConfig is ObjectStateData and ReparseConfig.
+
 
 
 # functions used when serializing/deserializing object state.  {{{
