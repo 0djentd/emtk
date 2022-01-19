@@ -35,6 +35,7 @@ class ClusterTrait():
     """This ModifiersList trait should be in every
     cluster used in ClustersList.
     """
+
     """
     data: list[modifier]    ->  ClusterState 2
     default_data: dict      ->  ClusterState 1
