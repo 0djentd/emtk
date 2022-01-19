@@ -51,13 +51,6 @@ class ClusterTrait():
     # its better to create new cluster, reparse modifiers,
     # and copy other variables.
     cluster_definition_data = {}
-
-    # Variables required to successfully restore ClusterState with same or
-    # similar clusters and modifiers.
-    # They stored in ClusterState and serialized/deserialized.
-    # Warning: this dict is created only when deserializing ClusterState
-    # and removed after reparse.
-    reparse_data = {}
     """
 
     def __init__(self,  # {{{

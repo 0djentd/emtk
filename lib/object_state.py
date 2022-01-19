@@ -143,7 +143,6 @@ After this rework, cluster_trait will have following attrs:
 Properties:
     default_state: ObjectState      ObjectState that is defined on
                                     cluster creation.
-    reparse_state: ObjectState      Previous ObjectState.
 
     # TODO: should this be named instance_data? no.
     instance_data: dict     Variables used anywhere else. Example: cluster
@@ -181,6 +180,16 @@ through reparse config class:
 
 Data that should never be used:
     Cluster state.
+"""
+"""
+How cluster can be created using constructor?
+items = ModifierState(data={'angle_limit': 30, 'type'='BEVEL'},
+                      name='')
+reparse = ReparseConfig(data={'type': reparse_config.Basic(True)})
+state = ListObjectState(data={'type': 'BEVEL_CLUSTER'}, name='Bevel',
+                        items_data=items)
+config = ClusterConfig(reparse, state)
+cluster = ModifiersCluster(config)
 """
 # }}}
 
@@ -276,7 +285,6 @@ class _ObjectState(collections.UserDict):  # {{{
 
     data: dict
     name: str
-    subtype: str
     tags: list
 
     def serialize(self):
@@ -382,7 +390,6 @@ class ListObjectState(_ObjectState):  # {{{
             raise TypeError(f'Expected cluster, got {type(obj)}')
         data = {}
         data.update({'name': ''})
-        data.update({'subtype': obj.type})
         data.update({'tags': []})
         data.update({'data': cls._get_data(obj)})
         data.update({'items_data': cls._get_items_data(obj)})
@@ -424,7 +431,6 @@ class ModifierState(_ObjectState):  # {{{
         if type(obj) is not cls._object_type:
             raise TypeError(f'Expected {cls._object_type}, got {type(obj)}')
         data = {'name': '',
-                'subtype': obj.type,
                 'tags': [],
                 'data': cls._get_data(obj)}
         return cls(**data)
