@@ -111,7 +111,7 @@ class BMTOOLS_OT_clusters_list_popup(
         # Cluster name {{{
         val = not cluster.instance_data['collapsed']
         line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').\
-               .instance_data[\'collapsed\'] = {val}'
+                instance_data[\'collapsed\'] = {val}'
         line = re.sub('self', self.get_class_line(), line)
         if not cluster.instance_data['collapsed']:
             icon = 'DOWNARROW_HLT'
@@ -218,7 +218,7 @@ class BMTOOLS_OT_clusters_list_popup(
             col = row.column()
             val = not cluster.instance_data['show_definition_expanded']
             line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').\
-                   .instance_data[\'show_definition_expanded\'] = {val}'
+                    instance_data[\'show_definition_expanded\'] = {val}'
             line = re.sub('self', self.get_class_line(), line)
             if cluster.instance_data['show_definition_expanded']:
                 icon = 'DOWNARROW_HLT'
@@ -233,7 +233,7 @@ class BMTOOLS_OT_clusters_list_popup(
             col = row.column()
             val = not cluster.instance_data['show_props_expanded']
             line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').\
-                   .instance_data[\'show_props_expanded\'] = {val}'
+                    instance_data[\'show_props_expanded\'] = {val}'
             line = re.sub('self', self.get_class_line(), line)
             if cluster.instance_data['show_props_expanded']:
                 icon = 'DOWNARROW_HLT'
@@ -253,7 +253,7 @@ class BMTOOLS_OT_clusters_list_popup(
                 if cluster.instance_data['show_definition_expanded']:
                     box_2 = box.box()
                     i = 0
-                   .instance_data = cluster.default_data
+                    instance_data = cluster.default_data
                     for x, y in zip.instance_data,.instance_data.values()):
                         if i % z == 0:
                             row = box_2.row()
@@ -265,7 +265,7 @@ class BMTOOLS_OT_clusters_list_popup(
                 if cluster.instance_data['show_props_expanded']:
                     box_2 = box.box()
                     i = 0
-                   .instance_data = cluster.instance_data
+                    instance_data = cluster.instance_data
                     for x, y in zip.instance_data,.instance_data.values()):
                         if i % z == 0:
                             row = box_2.row()
