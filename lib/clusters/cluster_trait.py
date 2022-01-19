@@ -27,6 +27,7 @@ except ModuleNotFoundError:
     from ..dummy_modifiers import DummyBlenderModifier
     _WITH_BPY = False
 
+from ..object_state import ListObjectState
 from ..lists.utils import check_if_removed
 
 

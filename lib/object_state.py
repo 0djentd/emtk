@@ -49,6 +49,7 @@ types = {bool, int, float, str, list, dict, set, tuple}
 # This type check is used to allow nested objects of different type.
 obj_state_classes = []
 
+# INFO {{{
 # TODO: this explaination of reparse is not too good.
 """
 Design.
@@ -89,8 +90,9 @@ How serialization/deserialization/reparse/parse works:
 
     When cluster is first created (for example when new modifier is added)
     it is being parsed. On this stage, it has no ObjectState instance.
-    ObjectState is being created when clusters list is removed (for example when
-    operator returns {'FINISHED'}). This is required to later reparse clusters.
+    ObjectState is being created when clusters list is removed (for example
+    when operator returns {'FINISHED'}).
+    This is required to later reparse clusters.
 
     Reparsing clusters is a process of instantiating clusters with same
     modifiers and clusters in them. It requires at least some of
@@ -104,7 +106,7 @@ How serialization/deserialization/reparse/parse works:
 
     ReparseConfig is an object that defines how stored variables should be
     compared with existing ones.
-    
+
     Example: reparse_config.Delta can be used to allow successfully
     reparsing objects with their int/float variables slightly different.
 
@@ -119,7 +121,7 @@ Pros and cons:
     Why whole thing uses json then?
     Because blender collections does not support more than one object type.
     Implementing everything through pointer properties and collections will
-    be much harder and probably will require using a lot 
+    be much harder and probably will require using a lot
     of usual variables anyway.
     Example:
     ClustersLayer can have both ModifiersClusters and ClustersLayers in it.
@@ -170,6 +172,7 @@ when modifiers were changed outside of clusters list.
 
 Modal input.
 """
+# }}}
 
 
 # functions used when serializing/deserializing object state.  {{{
@@ -284,13 +287,13 @@ class _ObjectState(collections.UserDict):  # {{{
     def _check_type(obj):
         """Check if types of dataclass variables are correct."""
         for x, y in obj.__dataclass_fields__.items():
-            if type(getattr(obj, x)) != y['type']:
+            if type(getattr(obj, x)) != y.type:
                 raise TypeError
 # }}}
 
 
 @dataclasses.dataclass(kw_only=True)
-def ClustersListState():  # {{{
+class ClustersListState():  # {{{
     data: list
 
     def serialize(self):
@@ -316,6 +319,7 @@ def ClustersListState():  # {{{
         data.update({'data': cls._get_items_data(obj)})
         return cls(**data)
 
+    @staticmethod
     def _get_items_data(obj):
         result = []
         for x in obj:
@@ -374,6 +378,7 @@ class ListObjectState(_ObjectState):  # {{{
         data.update({'items_data': cls._get_items_data(obj)})
         return cls(**data)
 
+    @staticmethod
     def _get_items_data(obj):
         result = []
         for x in obj:

@@ -23,7 +23,6 @@ from ..lists.traits.clusters.sortable_clusters_list\
         import SortableClustersListTrait
 from ..lists.traits.clusters.active_cluster import ActiveClusterTrait
 from .cluster_trait import ClusterTrait
-from ..clusters_list_object_state import ListObjectState
 
 
 class ClustersLayer(
@@ -57,8 +56,3 @@ class ClustersLayer(
                 return None
             clusters.append(x, y)
         return clusters
-
-
-class ClustersLayerState(ListObjectState):
-    """Object representing stored cluster state."""
-    _object_type = ClustersLayer

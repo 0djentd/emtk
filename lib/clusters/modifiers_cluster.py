@@ -19,7 +19,6 @@
 
 from .cluster_trait import ClusterTrait
 from ..lists.modifiers_list import ModifiersList
-from ..object_state import ListObjectState
 import copy
 
 
@@ -71,16 +70,3 @@ class ModifiersCluster(
                 return None
             modifiers.append(x, y)
         return modifiers
-
-    def get_object_state(self):
-        return ModifiersClusterState(self)
-
-
-class ModifiersClusterState(ListObjectState):
-    """Object representing stored modifiers cluster state."""
-    def __init__(self, obj, extra=False, *args, **kwargs):
-        super().__init__(obj, *args, **kwargs)
-        result = []
-        for x in obj._data:
-            result.append(ModifierState)
-        self.objects_data = result

@@ -355,10 +355,6 @@ if _WITH_BPY:
             self.old_clusters_state_2 = self.e.get_clusters_state()
             del(self.e)
             self.e = ExtendedModifiersList(self.o)
-            del(self.e)
-            self.e = ExtendedModifiersList(self.o)
-            del(self.e)
-            self.e = ExtendedModifiersList(self.o)
 
         def test_number_of_clusters(self):
             self.assertEqual(self.e.get_list_length(), 7)
