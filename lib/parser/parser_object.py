@@ -258,7 +258,7 @@ class ClustersParser():
                 no_available_layer_types=True,
                 clusters_names=clusters_names)
 
-        # Clean some variables in created clusters.
+        # Clean some.instance_data in created clusters.
         _clean_restored_clusters(parse_result)
 
         logger.debug(f"result is {parse_result}")
@@ -587,24 +587,24 @@ class ClustersParser():
             cluster_type = copy.deepcopy(default_cluster_type)
 
             # Clear custom modifiers names, if any.
-            cluster_type.variables['by_name'] = []
+            cluster_type.instance_data['by_name'] = []
 
             # Add custom modifier names to make sure correct modifier
             # will be used in parse.
             for mod in x[1]:
                 modifier_names = []
                 modifier_names.append(mod[3])
-                cluster_type.variables['by_name'].append(
+                cluster_type.instance_data['by_name'].append(
                         modifier_names)
 
             # Check if length is correct
-            if len(cluster_type.variables['by_name']) \
+            if len(cluster_type.instance_data['by_name']) \
                     != cluster_type.get_this_cluster_possible_length():
                 logger.debug(
                         "Specified names list length is wrong.")
                 raise ValueError
 
-            cluster_names = cluster_type.variables['by_name']
+            cluster_names = cluster_type.instance_data['by_name']
             logger.debug(f"Modifiers names {cluster_names}")
 
             # Set custom cluster name.
@@ -694,17 +694,17 @@ class ClustersParser():
             for x in available_to_parser_cluster_types:
                 logger.debug("-------")
                 logger.debug(
-                        f"{x.parser_variables['type']}")
+                        f"{x.default_data['type']}")
                 logger.debug(
                         f"{x.get_this_cluster_tags()}")
                 logger.debug(
-                        f"{x}, {len(x.parser_variables['by_name'])} mods")
+                        f"{x}, {len(x.default_data['by_name'])} mods")
                 logger.debug(
-                        f"{x.parser_variables['by_type']}")
+                        f"{x.default_data['by_type']}")
                 logger.debug(
-                        f"{x.parser_variables['by_name']}")
+                        f"{x.default_data['by_name']}")
                 logger.debug(
-                        f"priority is {x.parser_variables['priority']}")
+                        f"priority is {x.default_data['priority']}")
                 logger.debug(" ")
         # }}}
 
@@ -822,7 +822,7 @@ class ClustersParser():
                 possible_seq_len = len(modifiers_to_parse)\
                         + len(parsed_modifiers)
 
-                cluster_len = len(y.parser_variables['by_type'])
+                cluster_len = len(y.default_data['by_type'])
 
                 # Check if cluster is too long.
                 if possible_seq_len < cluster_len:
@@ -1279,6 +1279,6 @@ def _clean_restored_clusters(clusters):
     only required during parse."""
     for x in clusters:
         x.remove_tag_from_this_cluster('RESTORED')
-        x.variables['by_name'] = []
+        x.instance_data['by_name'] = []
     return clusters
 # }}}

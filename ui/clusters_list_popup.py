@@ -109,11 +109,11 @@ class BMTOOLS_OT_clusters_list_popup(
         row = layout.row()
 
         # Cluster name {{{
-        val = not cluster.variables['collapsed']
+        val = not cluster.instance_data['collapsed']
         line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').\
-                variables[\'collapsed\'] = {val}'
+               .instance_data[\'collapsed\'] = {val}'
         line = re.sub('self', self.get_class_line(), line)
-        if not cluster.variables['collapsed']:
+        if not cluster.instance_data['collapsed']:
             icon = 'DOWNARROW_HLT'
         else:
             icon = 'RIGHTARROW'
@@ -211,16 +211,16 @@ class BMTOOLS_OT_clusters_list_popup(
         op.func = line
         # }}}
 
-        if not cluster.variables['collapsed']:
+        if not cluster.instance_data['collapsed']:
             row = layout.row()
 
             # Cluster definition {{{
             col = row.column()
-            val = not cluster.variables['show_definition_expanded']
+            val = not cluster.instance_data['show_definition_expanded']
             line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').\
-                    variables[\'show_definition_expanded\'] = {val}'
+                   .instance_data[\'show_definition_expanded\'] = {val}'
             line = re.sub('self', self.get_class_line(), line)
-            if cluster.variables['show_definition_expanded']:
+            if cluster.instance_data['show_definition_expanded']:
                 icon = 'DOWNARROW_HLT'
             else:
                 icon = 'RIGHTARROW'
@@ -231,11 +231,11 @@ class BMTOOLS_OT_clusters_list_popup(
 
             # Cluster props {{{
             col = row.column()
-            val = not cluster.variables['show_props_expanded']
+            val = not cluster.instance_data['show_props_expanded']
             line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').\
-                    variables[\'show_props_expanded\'] = {val}'
+                   .instance_data[\'show_props_expanded\'] = {val}'
             line = re.sub('self', self.get_class_line(), line)
-            if cluster.variables['show_props_expanded']:
+            if cluster.instance_data['show_props_expanded']:
                 icon = 'DOWNARROW_HLT'
             else:
                 icon = 'RIGHTARROW'
@@ -244,33 +244,33 @@ class BMTOOLS_OT_clusters_list_popup(
             op.func = line
             # }}}
 
-            if cluster.variables['show_props_expanded']\
-                    or cluster.variables['show_definition_expanded']:
+            if cluster.instance_data['show_props_expanded']\
+                    or cluster.instance_data['show_definition_expanded']:
 
                 box = layout.box()
                 z = self.prefs.clusters_list_popup_width//150
 
-                if cluster.variables['show_definition_expanded']:
+                if cluster.instance_data['show_definition_expanded']:
                     box_2 = box.box()
                     i = 0
-                    variables = cluster.parser_variables
-                    for x, y in zip(variables, variables.values()):
+                   .instance_data = cluster.default_data
+                    for x, y in zip.instance_data,.instance_data.values()):
                         if i % z == 0:
                             row = box_2.row()
                         col = row.column()
-                        line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').parser_variables[\'{x}\']'
+                        line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').default_data[\'{x}\']'
                         self.draw_var_editor(col, line, fast=True)
                         i += 1
 
-                if cluster.variables['show_props_expanded']:
+                if cluster.instance_data['show_props_expanded']:
                     box_2 = box.box()
                     i = 0
-                    variables = cluster.variables
-                    for x, y in zip(variables, variables.values()):
+                   .instance_data = cluster.instance_data
+                    for x, y in zip.instance_data,.instance_data.values()):
                         if i % z == 0:
                             row = box_2.row()
                         col = row.column()
-                        line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').variables[\'{x}\']'
+                        line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').instance_data[\'{x}\']'
                         self.draw_var_editor(col, line, fast=True)
                         i += 1
 

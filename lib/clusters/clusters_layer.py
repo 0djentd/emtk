@@ -46,12 +46,12 @@ class ClustersLayer(
         layers that are required to create this layer.
         Returns None, if cluster cant be created.
         """
-        if not self.parser_variables['createable']:
+        if not self.default_data['createable']:
             return None
 
         clusters = []
-        for x, y in zip(self.parser_variables['by_name'],
-                        self.parser_variables['by_type']):
+        for x, y in zip(self.default_data['by_name'],
+                        self.default_data['by_type']):
             if x != 'ANY' or y == 'ANY':
                 return None
             clusters.append(x, y)

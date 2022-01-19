@@ -260,7 +260,7 @@ class FirstLayerClustersListTrait():
         """
         Returns list with info about current clusters state.
         """
-        # TODO: use cluster.parser_variables dict
+        # TODO: use cluster.default_data dict
         # Example of cluster
         # [[0, Triple_Bevel, BEVEL_CLUSTER, triple_bevel.005],
         # [[0, TripleBevel, DOUBLE_BEVEL], [1, TripleBevel.001, DOUBLE_BEVEL]],

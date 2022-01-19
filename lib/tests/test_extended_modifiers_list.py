@@ -45,7 +45,7 @@ class ExtendedModifiersListTests():
     def test_all_clusters_initialized(self):
         result = True
         for x in self.e.get_full_list():
-            if not x.variables['initialized']:
+            if not x.instance_data['initialized']:
                 if not isinstance(result, list):
                     result = []
                 result.append(x)

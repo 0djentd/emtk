@@ -51,10 +51,10 @@ class ClusterTrait():
     # Variables (constants) that are defined in constructor and
     # should not be changed.
     # They stored in ClusterDefinition.
-    # If you need to somehow change this variables (for example, change type
+    # If you need to somehow change this.instance_data (for example, change type
     # of modifier),
     # its better to create new cluster, reparse modifiers,
-    # and copy other variables.
+    # and copy other.instance_data.
     default_data: dict
     """
 
@@ -94,32 +94,32 @@ class ClusterTrait():
              }
 
         # Check dict.
-        self.parser_variables\
+        self.default_data\
             = self._check_cluster_definition(d)
 
-        self.variables = {}
+        self.instance_data = {}
 
         # Modifiers names that can be sometimes used
         # instead of default ones.
-        self.variables['by_name'] = []
+        self.instance_data['by_name'] = []
 
         # Custom name that can be changed in runtime.
-        self.variables['name'] = None
+        self.instance_data['name'] = None
 
         # Custom tags that can be changed in runtime.
-        self.variables['tags'] = []
+        self.instance_data['tags'] = []
 
         # Initialized.
         # TODO: remove this
-        self.variables['initialized'] = False
+        self.instance_data['initialized'] = False
 
         # Collapsed.
-        self.variables['collapsed'] = True
+        self.instance_data['collapsed'] = True
 
         # Show expanded
-        self.variables['show_expanded'] = False
-        self.variables['show_definition_expanded'] = False
-        self.variables['show_props_expanded'] = False
+        self.instance_data['show_expanded'] = False
+        self.instance_data['show_definition_expanded'] = False
+        self.instance_data['show_props_expanded'] = False
 
         # Modifiers list.
         self._data = []
@@ -129,7 +129,7 @@ class ClusterTrait():
 
         # Check cluster sanity.
         if not dont_define_cluster\
-                and not self.parser_variables['sane']\
+                and not self.default_data['sane']\
                 and not self.check_this_cluster_sanity():
             raise ValueError('This cluster cant be used.')
 
@@ -229,24 +229,24 @@ class ClusterTrait():
         """
         Returns this ModifiersCluster's custom name, or default name.
         """
-        if self.variables['name'] is not None:
-            return self.variables['name']
+        if self.instance_data['name'] is not None:
+            return self.instance_data['name']
         else:
-            return self.parser_variables['name']
+            return self.default_data['name']
 
     @check_if_removed
     def get_this_cluster_custom_name(self):
         """
         Returns this ModifiersCluster's custom name.
         """
-        return self.variables['name']
+        return self.instance_data['name']
 
     @check_if_removed
     def get_this_cluster_default_name(self):
         """
         Returns this ModifiersCluster's default name.
         """
-        return self.parser_variables['name']
+        return self.default_data['name']
 
     @check_if_removed
     def set_this_cluster_custom_name(self, cluster_name):
@@ -255,7 +255,7 @@ class ClusterTrait():
         Returns True or False, if cluster is not editable.
         """
         if isinstance(cluster_name, str):
-            self.variables['name'] = cluster_name
+            self.instance_data['name'] = cluster_name
         else:
             raise TypeError
     # }}}
@@ -269,7 +269,7 @@ class ClusterTrait():
         """
         Returns this ModifiersCluster's type
         """
-        return self.parser_variables['type']
+        return self.default_data['type']
     # }}}
     # }}}
 
@@ -371,7 +371,7 @@ class ClusterTrait():
         """
         Returns this ModifiersCluster's custom tags, or default tags.
         """
-        return self.parser_variables['tags'] + self.variables['tags']
+        return self.default_data['tags'] + self.instance_data['tags']
 
     @check_if_removed
     def add_tag_to_this_cluster(self, custom_tag):
@@ -381,8 +381,8 @@ class ClusterTrait():
         Returns True if successfully added tag.
         """
         if isinstance(custom_tag, str):
-            if custom_tag not in self.variables['tags']:
-                self.variables['tags'].append(custom_tag)
+            if custom_tag not in self.instance_data['tags']:
+                self.instance_data['tags'].append(custom_tag)
                 return True
             else:
                 return False
@@ -399,12 +399,12 @@ class ClusterTrait():
         """
         y = []
         result = False
-        for x in self.variables['tags']:
+        for x in self.instance_data['tags']:
             if x == custom_tag:
                 y.append(x)
                 result = True
         for x in y:
-            self.variables['tags'].remove(x)
+            self.instance_data['tags'].remove(x)
         return result
     # }}}
 
@@ -432,14 +432,14 @@ class ClusterTrait():
                     raise TypeError
 
         # If havent set modifiers already
-        if self.variables['initialized'] is False:
+        if self.instance_data['initialized'] is False:
             self._data = modifiers
-            self.variables['initialized'] = True
+            self.instance_data['initialized'] = True
             self._mod = self._data[0]
             return True
 
         # Or allowed to reset modifiers
-        elif self.parser_variables['dynamic']:
+        elif self.default_data['dynamic']:
             self._data = modifiers
             self._mod = self._data[0]
             return True
@@ -501,11 +501,11 @@ class ClusterTrait():
     # Parsing {{{
     def get_this_cluster_possible_length(self):
         """Returns maximum possible modifiers sequence length."""
-        return len(self.parser_variables['by_type'])
+        return len(self.default_data['by_type'])
 
     def get_this_cluster_priority(self):
         """Returns priority for this cluster in parsing."""
-        return self.parser_variables['priority']
+        return self.default_data['priority']
 
     def check_availability(self, modifiers):
         """
@@ -531,12 +531,12 @@ class ClusterTrait():
                 raise TypeError(f'{mod} is not a modifier or cluster.')
 
         # How many modifiers should be correct?
-        x2 = len(self.parser_variables['by_type'])
+        x2 = len(self.default_data['by_type'])
 
         # Iterate over provided modifiers sequence
         for y, mod in enumerate(modifiers):
 
-            modifiers_by_type = self.parser_variables['by_type']
+            modifiers_by_type = self.default_data['by_type']
 
             # Check modifiers by types
             if modifiers_by_type[y] != ['ANY']\
@@ -551,12 +551,12 @@ class ClusterTrait():
                         return 'WRONG ACTUAL MODIFIER TYPE'
 
             # Use specific names list, if there is one
-            if len(self.variables['by_name']) != 0:
+            if len(self.instance_data['by_name']) != 0:
                 modifiers_by_names\
-                        = self.variables['by_name']
+                        = self.instance_data['by_name']
             else:
                 modifiers_by_names\
-                        = self.parser_variables['by_name']
+                        = self.default_data['by_name']
 
             # Check name
             if modifiers_by_names[y] != ['ANY']\
@@ -706,17 +706,17 @@ class ClusterTrait():
         if not self.check_this_cluster_sanity_custom():
             raise ValueError
 
-        if self.parser_variables['sane']:
+        if self.default_data['sane']:
             return True
 
-        l_1 = self.parser_variables['by_type']
+        l_1 = self.default_data['by_type']
         len_1 = len(l_1)
 
-        l_2 = self.parser_variables['by_name']
+        l_2 = self.default_data['by_name']
         len_2 = len(l_2)
 
-        if len(self.variables['by_name']) > 0:
-            if len_2 != len(self.variables['by_name']):
+        if len(self.instance_data['by_name']) > 0:
+            if len_2 != len(self.instance_data['by_name']):
                 raise ValueError(
                         'Length of specified modifiers names is wrong.')
         if len_1 != len_2:
@@ -725,14 +725,14 @@ class ClusterTrait():
         if len_1 == 0:
             raise ValueError(
                     'Length of modifiers types cant be 0.')
-        if self.parser_variables['by_type'][0] == ['ANY']:
+        if self.default_data['by_type'][0] == ['ANY']:
             raise ValueError(
                     'First modifier cant be any, specify modifier type.')
-        for mod_types in self.parser_variables['by_type']:
+        for mod_types in self.default_data['by_type']:
             if isinstance(mod_types, list):
                 if len(mod_types) == 0:
                     raise ValueError('Modifier types length is 0.')
-        for mod_names in self.parser_variables['by_name']:
+        for mod_names in self.default_data['by_name']:
             if isinstance(mod_names, list):
                 if len(mod_names) == 0:
                     raise ValueError('Modifier names length is 0.')
@@ -744,7 +744,7 @@ class ClusterTrait():
 
     # TODO: what is that
     def get_this_cluster_parser_variables(self):
-        x = copy.copy(self.parser_variables)
+        x = copy.copy(self.default_data)
 
         # TODO: use some attribute instead
         if self.has_clusters():
@@ -760,18 +760,18 @@ class ClusterTrait():
         removed cluster.
         """
         if self._cluster_removed:
-            name = self.parser_variables["name"]
+            name = self.default_data["name"]
             raise ValueError(f'Cluster {name} at {id(self)} already removed.')
 
     def __repr__(self):
         return self.__str__()
 
     def __str__(self):
-        if not self._cluster_removed and self.variables['initialized']:
+        if not self._cluster_removed and self.instance_data['initialized']:
             name = self.get_this_cluster_name()
             result = f"Cluster {name}, {self.get_this_cluster_type()}"
         else:
             result\
-                = f"Already removed cluster {self.parser_variables['name']}"
+                = f"Already removed cluster {self.default_data['name']}"
         return result
     # }}}

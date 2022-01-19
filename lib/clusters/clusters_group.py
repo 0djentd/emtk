@@ -45,7 +45,7 @@ class ClustersGroup(
         """
         if not self.recursive_has_cluster(cluster):
             if self._modcluster_initialized\
-                    and self.parser_variables['dynamic'] is True:
+                    and self.default_data['dynamic'] is True:
                 if direction == 'DOWN':
                     self._data.append(cluster)
                 elif direction == 'UP':
