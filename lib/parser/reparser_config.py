@@ -94,7 +94,7 @@ class _ReparseConfigElement():
         raise NotImplementedError
 
     @staticmethod
-    def derialize(obj):
+    def deserialize(obj):
         raise NotImplementedError
 
     def serialize(self):
@@ -109,7 +109,7 @@ class Basic(_ReparseConfigElement):
     """
 
     @staticmethod
-    def derialize(obj):
+    def deserialize(obj):
         data = json.loads(obj)
         return Basic(data['status'])
 
@@ -141,7 +141,7 @@ class Delta(_ReparseConfigElement):
             raise TypeError(f'Expected int or float, got {type(val)}')
 
     @staticmethod
-    def derialize(obj):
+    def deserialize(obj):
         data = json.loads(obj)
         return Delta(data['status'], data['delta'])
 
