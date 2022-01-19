@@ -20,6 +20,7 @@
 import logging
 import json
 import collections
+import dataclasses
 import copy
 
 try:
@@ -42,6 +43,11 @@ logger.setLevel(logging.DEBUG)
 # Types to use in serialization/deserialization.
 # This set can be edited in runtime.
 types = {bool, int, float, str, list, dict, set, tuple}
+
+# This list is populated at runtime because of type check
+# in _serialize_object and _deserialize_object.
+# This type check is used to allow nested objects of different type.
+obj_state_classes = []
 
 # TODO: this explaination of reparse is not too good.
 """
@@ -167,6 +173,7 @@ Modal input.
 
 
 # functions used when serializing/deserializing object state.  {{{
+# This is workaround for serializing tuples and sets
 def _add_type_name_to_dict(obj):
     """Add info about element type to dictionary.
 
@@ -205,154 +212,131 @@ type in {types}""".replace('\n', ' ')
 # }}}
 
 
+@dataclasses.dataclass(kw_only=True)
 class ObjectState(collections.UserDict):  # {{{
+    data: dict
+    name: str
+    subtype: str
+    tags: list
+
     def _get_data(self, obj):
         raise NotImplementedError
 
     _object_type = None
 
-    def __init__(self, obj, name=None,  # {{{
-                 tags=None, obj_subtype=None, types=None):
-        self._name = ''
-        self._type = ''
-        self._tags = []
-        logger.info('Creating ObjectState.')
-        if isinstance(obj, self._object_type):
-            logger.debug(f'Trying to get {obj} attributes.')
-            if obj_subtype is not None:
-                raise TypeError('Modifier type should not be specified.')
-            self.type = obj.type
-            if name is None:
-                self.name = obj.name + ' stored state'
-            if tags is not None:
-                self.tags = tags
-            self.data = self._get_data(obj)
-
-        elif isinstance(obj, str):
-            logger.debug('Deserializing str.')
-            state = json.loads(obj)
-            self.data = _remove_type_name_from_dict(state['data'])
-            if name is None:
-                self.name = name
+    def serialize(self):
+        logger.debug(f'Serializing {self}')
+        self._check_type(self)
+        state = {}
+        for x, y in self.__dataclass_fields__.items():
+            if x == 'items_data':
+                items_data = _add_type_name_to_dict(self.items_data)
+                for y in items_data['data'].items():
+                    y = y.serialize()
+                state.update({x: items_data})
             else:
-                self.name = state['name']
+                state.update({x: getattr(self, x)})
+        return json.dumps(state)
 
-            if obj_subtype is None:
-                self.type = state['type']
+    @classmethod
+    def deserialize(cls, obj):
+        state = json.loads(obj)
+        data = {}
+        for x in cls.__dataclass_fields__:
+            if x == 'items_data':
+                items_data = []
+                for y in state[x]:
+                    items_data.append(_get_object_state_subclass(y).deserialize(y))
+                data.update({x: items_data})
             else:
-                self.type = obj_subtype
+                data.update({x: state[x]})
+        return cls(**data)
 
-            if tags is None:
-                self.tags = state['tags']
-            else:
-                self.tags = tags
-        else:
-            raise TypeError
-    # }}}
+    @classmethod
+    def get_data_from_obj(cls, obj):
+        raise NotImplementedError
 
-    def compare(self, obj):
-        if type(obj) is type(self):
-            logger.debug(f'Comparing {self} and {obj}')
-            if self.data != obj.data\
-                    or self.type != obj.type\
-                    or self.tags != obj.tags\
-                    or self.name != obj.name:
-                return False
-            logger.debug('Objects eq.')
-            return True
-        else:
-            raise TypeError
-
-    # Properties {{{
-    @property
-    def type(self):
-        f"""{self._object_type.__name__} type that this
-stored state can be used with.""".replace('\n', ' ')
-        return self._type
-
-    @type.setter
-    def type(self, obj_subtype):
-        if not isinstance(obj_subtype, str):
-            raise TypeError
-        if obj_subtype not in ALL_MODIFIER_TYPES:
-            raise ValueError
-        self._type = obj_subtype
-
-    @property
-    def name(self):
-        """Name of stored state used in UI."""
-        return self._name
-
-    @name.setter
-    def name(self, modifier_state_name):
-        if not isinstance(modifier_state_name, str):
-            raise TypeError
-        self._name = modifier_state_name
-
-    @property
-    def tags(self):
-        for x in self._tags:
-            if type(x) is not str:
+    @staticmethod
+    def _check_type(obj):
+        for x, y in obj.__dataclass_fields__.items():
+            if type(getattr(obj, x)) is not y['type']:
                 raise TypeError
-        return self._tags
-
-    @tags.setter
-    def tags(self, obj):
-        if type(obj) is not list:
-            raise TypeError
-        self._tags = obj
-    # }}}
-
-    def __repr__(self):
-        return str(self)
-
-    def __str__(self):
-        return f"""{self._object_type.__name__} state: {self.name}, {self.type},
-{self.tags}, {len(self.data)} elements.""".replace('\n', ' ')
-
-    def serialize(self):
-        logger.debug(f'Serializing {self}')
-        state = {'data': dict(_add_type_name_to_dict(self.data)),
-                 'name': str(self.name),
-                 'tags': list(self.tags),
-                 'type': str(self.type)}
-        return json.dumps(state)
 # }}}
 
 
+@dataclasses.dataclass(kw_only=True)
 class ListObjectState(ObjectState):  # {{{
-    def __init__(self, obj, extra=False, *args, **kwargs):
-        super().__init__(obj, *args, **kwargs)
+    items_data: list
 
-    @property
-    def objects_data(self):
-        return self._reparse_data
+    @classmethod
+    def get_data_from_obj(cls, obj):
+        if 'ModifiersList' not in obj.mro():
+            raise TypeError
+        data = {}
+        data.update({'name': ''})
+        data.update({'subtype': obj.type})
+        data.update({'tags': []})
+        data.update({'data': cls._get_data(obj)})
+        data.update({'items_data': cls._get_items_data(obj)})
+        return cls(**data)
 
-    @objects_data.setter
-    def objects_data(self, objects_data):
-        self._reparse_data = dict(objects_data)
+    @staticmethod
+    def _get_data(obj):
+        return obj.instance_data
 
-    def _get_data(self, obj):
-        result = copy.copy(obj.variables)
-        return result
-
-    def serialize(self):
-        logger.debug(f'Serializing {self}')
-        state = {'data': dict(_add_type_name_to_dict(self.data)),
-                 'objects_data': dict(self.objects_data),
-                 'name': str(self.name),
-                 'tags': list(self.tags),
-                 'type': str(self.type)}
-        return json.dumps(state)
+    @staticmethod
+    def _get_items_data(obj):
+        data = []
+        for x in obj:
+            data.append(get_object_data(x))
+        return data
 # }}}
 
 
+def _get_class_names(object_instance):
+    names = []
+    for x in object_instance.mro():
+        names.append(x.__name__)
+    return names
+
+
+def _get_object_state_subclass(name):
+    if name == 'ListObjectState':
+        return ListObjectState
+    elif name == 'ModifierState':
+        return ModifierState
+
+def deserialize_object_state(obj):
+
+
+
+def get_object_data(obj):
+    """Returns ListObjectState or ModifierState."""
+    if 'ModifiersList' in _get_class_names(obj):
+        return ListObjectState.get_data_from_obj(obj)
+    elif isinstance(obj, Modifier):
+        return ModifierState.get_data_from_obj(obj)
+    else:
+        raise TypeError
+
+
+@dataclasses.dataclass(kw_only=True)
 class ModifierState(ObjectState):
     """Object representing stored modifier state."""
 
     _object_type = Modifier
 
-    def _get_data(self, obj):
+    @classmethod
+    def get_data_from_obj(cls, obj):
+        data = {}
+        data.update({'name': ''})
+        data.update({'subtype': obj.type})
+        data.update({'tags': []})
+        data.update({'data': cls._get_data(obj)})
+        return cls(**data)
+
+    @staticmethod
+    def _get_data(obj):
         data = {}
         for x in get_all_editable_props(obj):
             val = getattr(obj, x)
