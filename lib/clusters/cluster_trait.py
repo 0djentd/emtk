@@ -27,7 +27,7 @@ except ModuleNotFoundError:
     from ..dummy_modifiers import DummyBlenderModifier
     _WITH_BPY = False
 
-from ..object_state import ListObjectState
+# from ..object_state import ListObjectState
 from ..lists.utils import check_if_removed
 
 
@@ -36,8 +36,12 @@ class ClusterTrait():
     cluster used in ClustersList.
     """
     """
+    data: list[modifier]    ->  ClusterState 2
+    default_data: dict      ->  ClusterState 1
+    instance_data: dict     ->  ClusterState 2
+
     # List of clusters or modifiers. This list is used for __getitem__.
-    data = []
+    data
 
     # Variables that can be changed in cluster instance.
     # They can be stored in ClusterState and serialized/deserialized.
@@ -50,7 +54,29 @@ class ClusterTrait():
     # of modifier),
     # its better to create new cluster, reparse modifiers,
     # and copy other variables.
-    cluster_definition_data = {}
+    default_data: dict
+    """
+
+    # Design.
+    """
+    What is default_data?
+    Well, basically, this is ClusterState that is reused in multiple
+    cluster instances and can be stored in settings and scene as well
+    as in object props.
+
+    So what is cluster state?
+    This is dump of modifiers and clusters properties. It can include
+    as many items as needed by ReparseConfig. It can include multiple
+    layers as well.
+
+    What is ReparseConfig?
+    This is parser config that describes how parser should
+    compare ClusterState and existing objects.
+
+    So where is ReparseConfig should be stored?
+    It should be stored with default_data in ClusterTypePreset.
+    Cluster instance can also have its own ReparseConfig,
+    that is stored with ClusterState.
     """
 
     def __init__(self,  # {{{
