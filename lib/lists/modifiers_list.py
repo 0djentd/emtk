@@ -147,6 +147,21 @@ class ModifiersList():
     def index(self, obj):
         return self._data.index(obj)
 
+    def items(self):
+        return self._data
+
+    def names(self):
+        result = []
+        for x in self._data:
+            result.append(x.name)
+        return result
+
+    def types(self):
+        result = []
+        for x in self._data:
+            result.append(x.type)
+        return result
+
     # remove(obj) is defined in 'Clusters actions' section.
 
     # TODO:
