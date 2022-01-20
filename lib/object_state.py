@@ -143,7 +143,7 @@ def get_object_data(obj):
         raise TypeError
 
 
-@dataclasses.dataclass(kw_only=True)
+@dataclasses.dataclass
 class _ObjectState(collections.UserDict):  # {{{
     """
     This classes should not be instantiated using constructor.
@@ -177,7 +177,7 @@ class _ObjectState(collections.UserDict):  # {{{
 # }}}
 
 
-@dataclasses.dataclass(kw_only=True)
+@dataclasses.dataclass
 class ListObjectState(_ObjectState):  # {{{
     items_data: list
 
@@ -235,7 +235,7 @@ class ListObjectState(_ObjectState):  # {{{
 # }}}
 
 
-@dataclasses.dataclass(kw_only=True)
+@dataclasses.dataclass
 class ModifierState(_ObjectState):  # {{{
     """Object representing stored modifier state."""
 
@@ -276,13 +276,13 @@ class ModifierState(_ObjectState):  # {{{
 # }}}
 
 
-@dataclasses.dataclass(kw_only=True)
+@dataclasses.dataclass
 class ModifierConfig():
     state: ModifierState
     config: ReparseConfig
 
 
-@dataclasses.dataclass(kw_only=True)
+@dataclasses.dataclass
 class ListObjectConfig():
     state: ListObjectState
     config: ListReparseConfig

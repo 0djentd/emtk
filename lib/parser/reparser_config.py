@@ -96,7 +96,7 @@ def _deserialize_config(obj, classes):
     return result
 
 
-@dataclasses.dataclass(kw_only=True)
+@dataclasses.dataclass
 class _ReparseConfigElement():
     status: bool
 
@@ -115,7 +115,7 @@ class _ReparseConfigElement():
         return json.dumps(data)
 
 
-@dataclasses.dataclass(kw_only=True)
+@dataclasses.dataclass
 class Basic(_ReparseConfigElement):
     """Simple reparse config.
 
@@ -125,7 +125,7 @@ class Basic(_ReparseConfigElement):
     status: bool
 
 
-@dataclasses.dataclass(kw_only=True)
+@dataclasses.dataclass
 class Delta(_ReparseConfigElement):
     """Reparse config for int and float properties.
 
