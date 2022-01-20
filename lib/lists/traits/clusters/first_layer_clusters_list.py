@@ -193,7 +193,7 @@ class FirstLayerClustersListTrait():
 
         # New cluster index on layer
         if cluster_index is None:
-            cluster_index = layer.get_list_length() - 1
+            cluster_index = len(layer) - 1
 
         logger.info("Adding modifier to modifiers list.")
 

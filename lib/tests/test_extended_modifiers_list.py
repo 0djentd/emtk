@@ -319,7 +319,7 @@ class LoadClustersTests(
         self.e = ExtendedModifiersList(self.o)
 
     def test_number_of_clusters(self):
-        self.assertEqual(self.e.get_list_length(), 7)
+        self.assertEqual(len(self.e), 7)
 
     def test_check_clusters_state_eq(self):
         self.assertEqual(
@@ -359,7 +359,7 @@ class ProgressiveLoadClustersTests(
         self.e = ExtendedModifiersList(self.o)
 
     def test_number_of_clusters(self):
-        self.assertEqual(self.e.get_list_length(), 7)
+        self.assertEqual(len(self.e), 7)
 
     def test_check_clusters_state_eq(self):
         self.assertEqual(
@@ -472,7 +472,7 @@ class LayersTests(
 
     def test_triple_bevel_has_three_modifiers(self):
         self.assertEqual(
-                self.e.get_first().get_first().get_list_length(), 3)
+                len(self.e[0][0]), 3)
 
     def test_trace_cluster(self):
         x = []

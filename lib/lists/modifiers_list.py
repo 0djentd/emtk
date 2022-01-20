@@ -490,20 +490,6 @@ class ModifiersList():
             return e
 
     @check_if_removed
-    def get_list_length(self):
-        """Returns length of list of objects."""
-        return len(self._data)
-
-    @check_if_removed
-    def get_list_by_type(self, m_type):
-        """Returns list of m_type objects."""
-        y = []
-        for x in self._data:
-            if x.type == m_type:
-                y.append(x)
-        return y
-
-    @check_if_removed
     def get_by_index(self, i):
         """Returns object by index."""
         return self._data[i]

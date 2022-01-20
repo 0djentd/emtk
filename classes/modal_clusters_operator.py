@@ -423,12 +423,15 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                 & (event.value == 'PRESS'):
 
             # Only change modifier if there is more than one available.
-            if layer.get_list_length() > 1:
+            if len(layer) > 1:
 
                 # First modifier.
                 if event.ctrl:
                     if not self.__BMTOOLM:
-                        x = layer.get_list_by_type(self._DEFAULT_M_TYPE)
+                        x = []
+                        for y in layer:
+                            if y.type == self._DEFAULT_M_TYPE:
+                                x.append(y)
                         layer.active = x[0]
                     else:
                         layer.active = layer[0]
@@ -449,11 +452,14 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                 & (event.value == 'PRESS'):
 
             # Only change modifier if there is more than one available.
-            if layer.get_list_length() > 1:
+            if len(layer) > 1:
                 # Last modifier.
                 if event.ctrl:
                     if not self.__BMTOOLM:
-                        x = layer.get_list_by_type(self._DEFAULT_M_TYPE)
+                        x = []
+                        for y in layer:
+                            if y.type == self._DEFAULT_M_TYPE:
+                                x.append(y)
                         layer.active = x[-1]
                     else:
                         layer.active = layer[-1]
