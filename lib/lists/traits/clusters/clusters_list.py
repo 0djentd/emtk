@@ -17,6 +17,7 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+import collections
 import copy
 import logging
 
@@ -155,28 +156,6 @@ class ClustersListTrait():
     # ==================
     # Info about this list
     # ==================
-    def has_cluster(self, cluster):
-        """Returns True if passed cluster is in this cluster list."""
-        if cluster in self._data:
-            return True
-        return False
-
-    def has_cluster_by_type(self, m_type):
-        """Returns True if there is cluster of this type in this cluster list.
-        """
-        for x in self._data:
-            if x.get_this_cluster_type() == m_type:
-                return True
-        return False
-
-    def has_cluster_by_name(self, m_name):
-        """Returns True if there is cluster with this name in this cluster list.
-        """
-        for x in self._data:
-            if x.get_this_cluster_name() == m_name:
-                return True
-        return False
-
     def has_cluster_by_tag(self, tag):
         """Returns True if there is cluster with this tag in this cluster list.
         """
@@ -478,3 +457,37 @@ class ClustersListTrait():
                 return True
         else:
             raise ValueError
+
+
+class clusters_list_generated_list(collections.UserList):
+
+    def items(self):
+        return self.data
+
+    def names(self):
+        result = []
+        for x in self.data:
+            result.append(x.name)
+        return result
+
+    def types(self):
+        result = []
+        for x in self.data:
+            result.append(x.type)
+        return result
+
+
+class full_clusters_list(clusters_list_generated_list):
+    pass
+
+
+class full_modifiers_list(clusters_list_generated_list):
+    pass
+
+
+class modifiers_clusters_list(clusters_list_generated_list):
+    pass
+
+
+class clusters_layers_list(clusters_list_generated_list):
+    pass
