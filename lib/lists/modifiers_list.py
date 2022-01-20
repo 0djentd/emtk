@@ -422,11 +422,6 @@ class ModifiersList():
     # This means that they dont differ simple or nested clusters and modifiers
     # ==============================================
 
-    @check_if_removed
-    def get_list(self):
-        """Returns list of objects"""
-        return self._data
-
     # This methods are different in clusters list.
     def get_full_actual_modifiers_list(self):
         return self._data

@@ -66,9 +66,9 @@ class SampleCluster(ModifiersCluster):
         # Increase this cluster's first modifier segments
         # count every time cluster moved up in list.
         if direction == 'UP':
-            self.get_first().segments += 1
+            self._data[0]segments += 1
         elif direction == 'DOWN':
-            self.get_first().segments -= 1
+            self._data[0].segments -= 1
         return True
 
     def cluster_being_deconstructed(self, clusters_list):
@@ -96,7 +96,7 @@ class SampleCluster(ModifiersCluster):
         # This will not allow to remove this cluster, if
         # total amount of segments is more than 40.
         segments = 0
-        for x in self.get_list():
+        for x in self._data:
             segments += x.segments
         if segments > 40:
             return False
@@ -113,7 +113,7 @@ class SampleCluster(ModifiersCluster):
         Returns False if cluster shouldnt be applied.
         """
         # Set bevel segments count to 30 before applying cluster.
-        for x in self.get_list():
+        for x in self._data:
             x.segments = 30
         return True
 

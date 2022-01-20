@@ -31,10 +31,10 @@ class DummyModifiersClustersListTrait():
         super().__init__(*args, **kwargs)
         self._dummy_blender_object = DummyBlenderObj()
         self._dummy_modifiers_list = []
-        self._real_modifiers_list = self._modifiers_list
+        self._real_modifiers_list = self._data
 
     def duplicate_modifiers_list_to_dummy(self, *, replace=False):
-        dummy_clusters_list = copy.deepcopy(self._modifiers_list)
+        dummy_clusters_list = copy.deepcopy(self._data)
         dummy_mods = []
 
         y = []
@@ -48,7 +48,7 @@ class DummyModifiersClustersListTrait():
             x._real_blender_object = x._object
             x._dummy_blender_object = self._dummy_blender_object
 
-            mods = copy.copy(x.get_list())
+            mods = copy.copy(x._data)
             x._real_modifiers_list = x._modifiers_list
             x._dummy_modifiers_list = []
 
