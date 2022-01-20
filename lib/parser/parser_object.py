@@ -165,6 +165,8 @@ class ClustersParser():
             raise TypeError
         if clusters_names is None:
             clusters_names = []
+        if type(clusters_names) is not list:
+            raise TypeError
 
         if _WITH_BPY:
             modifier_type = bpy.types.Modifier
