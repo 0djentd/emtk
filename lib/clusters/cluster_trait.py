@@ -605,7 +605,7 @@ class ClusterTrait():
         y3 = []
         y4 = []
 
-        mods = self.get_full_actual_modifiers_list()
+        mods = self.all_modifiers()
         for mod in mods:
             y1.append(mod.show_render)
             y2.append(mod.show_viewport)
@@ -638,7 +638,7 @@ class ClusterTrait():
 
         y1, y2, y3, y4 = vis_settings
 
-        mods = self.get_full_actual_modifiers_list()
+        mods = self.all_modifiers()
 
         if y1 is not None:
             for mod in mods:

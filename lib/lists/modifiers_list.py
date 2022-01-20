@@ -284,7 +284,7 @@ class ModifiersList():
 
         # This only used when moving actual modifiers with dry=true.
         length = len(
-                cluster_to_move_through.get_full_actual_modifiers_list())
+                cluster_to_move_through.all_modifiers())
 
         x = ClustersAction('MOVE', obj)
         x_2 = ClustersAction('MOVE', cluster_to_move_through)
@@ -442,7 +442,7 @@ class ModifiersList():
     # ==============================================
 
     # This methods are different in clusters list.
-    def get_full_actual_modifiers_list(self):
+    def all_modifiers(self):
         return self._data
 
     def get_actual_full_actual_modifiers_list(self):

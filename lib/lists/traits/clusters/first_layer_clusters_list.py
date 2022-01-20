@@ -242,7 +242,7 @@ class FirstLayerClustersListTrait():
         """
         cluster = self._check_cluster_or_modifier(cluster)
         modifiers = []
-        for x in cluster.get_full_actual_modifiers_list():
+        for x in cluster.all_modifiers():
             modifier_props = get_modifier_state(x)
             if _WITH_BPY:
                 modifiers.append(
@@ -288,7 +288,7 @@ class FirstLayerClustersListTrait():
             e.append(x.get_this_cluster_name())
             m = []
             if not x.has_clusters():
-                modifiers = x.get_full_actual_modifiers_list()
+                modifiers = x.all_modifiers()
                 for mod in modifiers:
                     h = []
                     h.append(actual_modifiers.index(mod))
@@ -480,7 +480,7 @@ class FirstLayerClustersListTrait():
         Returns True or throws an error.
         """
 
-        x = self.get_full_actual_modifiers_list()
+        x = self.all_modifiers()
         y = self._object.modifiers
 
         if len(x) != len(y):

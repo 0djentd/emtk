@@ -557,7 +557,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
             clusters = [clusters]
         mods = []
         for x in clusters:
-            mods.extend(x.get_full_actual_modifiers_list())
+            mods.extend(x.all_modifiers())
 
         # Check that modifiers are of same type.
         t = None

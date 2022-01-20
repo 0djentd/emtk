@@ -45,7 +45,7 @@ class ClustersListTrait():
                 return x
 
     def find_modifier_by_name(self, name: str):
-        for x in self.get_full_actual_modifiers_list():
+        for x in self.all_modifiers():
             if x.name == name:
                 return x
 
@@ -124,7 +124,7 @@ class ClustersListTrait():
         Looks in nested clusters.
         Always return actual modifiers.
         """
-        x = self.get_full_actual_modifiers_list()
+        x = self.all_modifiers()
         return x[i]
 
     def get_actual_modifier_by_name(self, m_name):
@@ -133,7 +133,7 @@ class ClustersListTrait():
         Looks in nested clusters.
         Returns None if not found.
         """
-        for x in self.get_full_actual_modifiers_list():
+        for x in self.all_modifiers():
             if x.name == m_name:
                 return x
         raise ValueError(f'No modifier with name "{m_name}"')
@@ -147,7 +147,7 @@ class ClustersListTrait():
         """
         Returns list of all clusters and modifiers anywhere in this cluster.
         """
-        result = self.get_full_actual_modifiers_list()
+        result = self.all_modifiers()
         result.extend(self.get_full_list())
         return full_list(result)
 
@@ -198,7 +198,7 @@ class ClustersListTrait():
 
     # def all_modifiers(self):
     # def full_modifiers_list(self):
-    def get_full_actual_modifiers_list(self):
+    def all_modifiers(self):
         """
         Returns full list of this layer actual modifiers,
         including nested ones.
@@ -206,7 +206,7 @@ class ClustersListTrait():
         """
         result = []
         for x in self.get_deep_list():
-            for y in x.get_full_actual_modifiers_list():
+            for y in x.all_modifiers():
                 result.append(y)
         return full_modifiers_list(result)
 

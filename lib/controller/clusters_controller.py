@@ -164,11 +164,11 @@ class ClustersController():
         if command.affect_modifiers:
             if not command.reverse_by_layer:
                 modifiers = command.initial_action.\
-                        subject.get_full_actual_modifiers_list()
+                        subject.all_modifiers()
                 modifiers = reversed(modifiers)
             else:
                 modifiers = command.initial_action.\
-                        subject.get_full_actual_modifiers_list()
+                        subject.all_modifiers()
 
             logger.debug(f'Adding modifiers actions for {modifiers}')
             for x in modifiers:
@@ -345,7 +345,7 @@ class ClustersController():
             raise TypeError
 
         if obj_class == 'MODIFIER':
-            obj_list = self.e.get_full_actual_modifiers_list()
+            obj_list = self.e.all_modifiers()
         elif obj_class == 'CLUSTER':
             obj_list = self.e.get_full_list()
         else:

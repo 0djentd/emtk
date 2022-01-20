@@ -89,9 +89,9 @@ class ExtendedModifiersListTests():
     def test_duplicate_modifiers(self):
         result = False
         i = 0
-        for x in self.e.get_full_actual_modifiers_list():
+        for x in self.e.all_modifiers():
             i = 0
-            for y in self.e.get_full_actual_modifiers_list():
+            for y in self.e.all_modifiers():
                 if y is x:
                     i += 1
                     if i != 1:
@@ -137,12 +137,12 @@ class ExtendedModifiersListTests():
         self.assertFalse(result)
 
     def test_actual_modifiers_count(self):
-        self.assertEqual(len(self.e.get_full_actual_modifiers_list()),
+        self.assertEqual(len(self.e.all_modifiers()),
                          len(self.o.modifiers))
 
     def test_actual_modifiers_types(self):
         result = False
-        for x, y in zip(self.e.get_full_actual_modifiers_list(),
+        for x, y in zip(self.e.all_modifiers(),
                         self.o.modifiers):
             if x.type != y.type:
                 if not isinstance(result, list):
@@ -152,7 +152,7 @@ class ExtendedModifiersListTests():
 
     def test_actual_modifiers_names(self):
         result = False
-        for x, y in zip(self.e.get_full_actual_modifiers_list(),
+        for x, y in zip(self.e.all_modifiers(),
                         self.o.modifiers):
             if x.name != y.name:
                 if not isinstance(result, list):
@@ -193,7 +193,7 @@ class ExtendedModifiersListTests():
         old_l = len(self.o.modifiers)
         c = self.e.get_cluster()
         layer = self.e.get_layer()
-        length = len(c.get_full_actual_modifiers_list())
+        length = len(c.all_modifiers())
         layer.remove(c)
         new_l = len(self.o.modifiers)
         self.assertEqual(new_l, old_l-length)
@@ -207,7 +207,7 @@ class ExtendedModifiersListTests():
     def test_remove_modifiers(self):
         old_l = len(self.o.modifiers)
         c = self.e[0]
-        length = len(c.get_full_actual_modifiers_list())
+        length = len(c.all_modifiers())
         self.e.remove(c)
         new_l = len(self.o.modifiers)
         self.assertEqual(new_l, old_l-length)
@@ -215,7 +215,7 @@ class ExtendedModifiersListTests():
     def test_remove_cluster_last(self):
         old_l = len(self.e._data)
         c = self.e[-1]
-        length = len(c.get_full_actual_modifiers_list())
+        length = len(c.all_modifiers())
         self.e.remove(c)
         new_l = len(self.e._data)
         self.assertEqual(new_l, old_l-length)
@@ -230,7 +230,7 @@ class ExtendedModifiersListTests():
         old_l = len(self.o.modifiers)
         c = self.e.get_cluster()
         layer = self.e.get_layer()
-        length = len(c.get_full_actual_modifiers_list())
+        length = len(c.all_modifiers())
         layer.apply(c)
         new_l = len(self.o.modifiers)
         self.assertEqual(new_l, old_l-length)
@@ -244,7 +244,7 @@ class ExtendedModifiersListTests():
     def test_apply_modifiers(self):
         old_l = len(self.o.modifiers)
         c = self.e[0]
-        length = len(c.get_full_actual_modifiers_list())
+        length = len(c.all_modifiers())
         self.e.apply(c)
         new_l = len(self.o.modifiers)
         self.assertEqual(new_l, old_l-length)
@@ -252,7 +252,7 @@ class ExtendedModifiersListTests():
     def test_apply_cluster_last(self):
         old_l = len(self.e._data)
         c = self.e[-1]
-        length = len(c.get_full_actual_modifiers_list())
+        length = len(c.all_modifiers())
         self.e.apply(c)
         new_l = len(self.e._data)
         self.assertEqual(new_l, old_l-length)

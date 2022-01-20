@@ -154,7 +154,7 @@ class ActiveClusterTrait():
             logger.info("Reparsing modifiers.")
             modifiers = []
             for x in clusters:
-                modifiers += x.get_full_actual_modifiers_list()
+                modifiers += x.all_modifiers()
             result = self._clusters_parser.parse_recursively(
                     modifiers,
                     clusters_names=self.get_full_list_of_cluster_names())

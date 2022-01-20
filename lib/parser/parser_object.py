@@ -192,7 +192,7 @@ class ClustersParser():
             for x in modifiers_to_parse:
                 if not isinstance(x, modifier_type):
                     modifiers_to_parse_2.extend(
-                            x.get_full_actual_modifiers_list())
+                            x.all_modifiers())
                 modifiers_to_parse_2.append(x)
 
             # Parse modifiers once.
@@ -726,7 +726,7 @@ class ClustersParser():
         #         if isinstance(x, modifier_type):
         #             old_actual_modifiers.append(x)
         #         else:
-        #             y = copy.copy(x.get_full_actual_modifiers_list())
+        #             y = copy.copy(x.all_modifiers())
         #             old_actual_modifiers.extend(y)
 
         # Returned parse result
@@ -1012,7 +1012,7 @@ class ClustersParser():
             # # Get actual modifiers after parsing for sanity check
             # for x in parse_result:
             #     if x[0] == 'SKIP':
-            #         y2 = x[1].get_full_actual_modifiers_list()
+            #         y2 = x[1].all_modifiers()
             #         y = copy.copy(y2)
             #         new_actual_modifiers.extend(y)
             #     else:

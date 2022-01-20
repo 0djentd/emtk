@@ -300,7 +300,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
             self.__stop_selecting_clusters()
             # Check if it was last actual modifier.
             # If so, finish operator.
-            if len(self.m_list.get_full_actual_modifiers_list()) == 0:
+            if len(self.m_list.all_modifiers()) == 0:
                 self.clear(context)
                 return {'FINISHED'}
 
