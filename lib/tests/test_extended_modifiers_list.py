@@ -290,7 +290,6 @@ class DifferentModifiersTests(
         self.e = ExtendedModifiersList(self.o)
 
 
-@unittest.skip
 class LoadClustersTests(
         ExtendedModifiersListTests, unittest.TestCase):
     """

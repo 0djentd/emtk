@@ -383,7 +383,7 @@ class FirstLayerClustersListTrait():
         """Returns current object actual modifiers info."""
         result = []
         for x in self._object.modifiers:
-            e = ModifierState(x)
+            e = ModifierState.get_data_from_obj(x)
             result.append(e.serialize())
         return result
 

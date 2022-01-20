@@ -141,6 +141,9 @@ def get_all_editable_props(modifier, no_ignore=False):  # {{{
     Returns list of names of all modifier props that
     can be edited in modal operator.
     """
+    if not _WITH_BPY:
+        return ['angle_limit', 'segments']
+
     # if not isinstance(modifier, bpy.types.Modifier):
     #     raise TypeError
 

@@ -32,6 +32,8 @@ class DummyBlenderModifier():
 
         self.name = m_name
         self.m_type = m_type
+        self.angle_limit = 0.123
+        self.segments = 3
 
     def __str__(self):
         return f'{self.name}, {self.type}'
