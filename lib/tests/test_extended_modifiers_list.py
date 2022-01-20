@@ -161,12 +161,12 @@ class ExtendedModifiersListTests():
         self.assertFalse(result)
 
     def test_active_is_in_the_list(self):
-        self.assertTrue(self.e.has_cluster(self.e.active))
+        self.assertTrue(self.e.active in self.e))
 
     def test_clusters_active_is_in_the_list(self):
         result = False
         for x in self.e.get_full_layers_list():
-            if not self.e.has_cluster(self.e.active):
+            if not self.e.active in self.e:
                 if not isinstance(result, list):
                     result = []
                 result.append(x)
