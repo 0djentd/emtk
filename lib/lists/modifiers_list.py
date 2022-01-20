@@ -445,9 +445,6 @@ class ModifiersList():
     def all_modifiers(self):
         return self._data
 
-    def get_actual_full_actual_modifiers_list(self):
-        return self._data
-
     def get_full_list(self):
         return self._data
 
