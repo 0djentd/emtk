@@ -139,7 +139,7 @@ class FirstLayerClustersListTrait():
                 logger.info(clusters_state)
                 parse_result = self._clusters_parser.parse_clusters_state(
                         modifiers_to_parse, clusters_state,
-                        clusters_names=self.get_full_list_of_cluster_names())
+                        clusters_names=self.all_clusters_of_cluster_names())
                 if parse_result is False:
                     logger.error(
                             "Error while parsing. Cant create modifiers list.")
@@ -229,7 +229,7 @@ class FirstLayerClustersListTrait():
                 modifiers.append(
                         self._object.modifier_add(x[0], x[1]))
         cluster = copy.deepcopy(cluster_type)
-        clusters_names = self.get_full_list_of_cluster_names()
+        clusters_names = self.all_clusters_of_cluster_names()
         self._clusters_parser._initialize_cluster(
                 cluster, modifiers, clusters_names)
         self._data.append(cluster)
@@ -279,7 +279,7 @@ class FirstLayerClustersListTrait():
             actual_modifiers.append(x)
 
         # Get list of all clusters.
-        clusters = self.get_full_list()
+        clusters = self.all_clusters()
         for i, x in enumerate(clusters):
             e = []
             e.append(i)
@@ -465,10 +465,10 @@ class FirstLayerClustersListTrait():
     # }}}
 
     # Utility {{{
-    def get_full_list_of_cluster_names(self):
+    def all_clusters_of_cluster_names(self):
         """Returns full list of custom cluster names."""
         result = []
-        for x in self.get_full_list():
+        for x in self.all_clusters():
             result.append(x.get_this_cluster_name())
         return result
 
@@ -496,12 +496,12 @@ class FirstLayerClustersListTrait():
     def __str__(self):
         result = 'Extended Modifiers List, clusters: '
         y = 0
-        for x in self.get_full_list():
+        for x in self.all_clusters():
             if y < 6:
                 y += 1
                 result = result + x.name + ' '
             else:
-                length = len(self.get_full_list())
+                length = len(self.all_clusters())
                 result = result + f'... total clusters number is {length}'
                 break
         return result

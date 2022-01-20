@@ -40,7 +40,7 @@ class ClustersListTrait():
     """
 
     def find_cluster_by_name(self, name: str):
-        for x in self.get_full_list():
+        for x in self.all_clusters():
             if x.name == name:
                 return x
 
@@ -75,7 +75,7 @@ class ClustersListTrait():
         elif cluster is None:
             return None
         else:
-            if cluster not in self.get_full_list()\
+            if cluster not in self.all_clusters()\
                     and cluster is not self:
                 raise ValueError
         return cluster
@@ -148,12 +148,12 @@ class ClustersListTrait():
         Returns list of all clusters and modifiers anywhere in this cluster.
         """
         result = self.get_full_actual_modifiers_list()
-        result.extend(self.get_full_list())
+        result.extend(self.all_clusters())
         return full_list(result)
 
     # def all_clusters(self):
     # def full_clusters_list(self):
-    def get_full_list(self):
+    def all_clusters(self):
         """
         Returns full list of clusters, including nested ones.
         Also returns cluster that have other clusters in them.
@@ -162,7 +162,7 @@ class ClustersListTrait():
         for x in self._data:
             result.append(x)
             if x.has_clusters():
-                for y in x.get_full_list():
+                for y in x.all_clusters():
                     result.append(y)
         return full_list(result)
 
@@ -191,7 +191,7 @@ class ClustersListTrait():
         Returns empty list if no such clusters found.
         """
         result = []
-        for x in self.get_full_list():
+        for x in self.all_clusters():
             if x.has_clusters():
                 result.append(x)
         return full_clusters_layers_list(result)
@@ -232,7 +232,7 @@ class ClustersListTrait():
         if obj in self._data:
             return self
 
-        g = self.get_full_list()
+        g = self.all_clusters()
         for x in g:
             if obj in x:
                 return x
@@ -298,7 +298,7 @@ class ClustersListTrait():
         elif self.recursive_has_cluster(cluster):
             if isinstance(new_cluster_name, str):
                 cluster.set_this_cluster_custom_name(new_cluster_name)
-                self._cluster_number_format(cluster, self.get_full_list())
+                self._cluster_number_format(cluster, self.all_clusters())
                 return True
         else:
             raise ValueError

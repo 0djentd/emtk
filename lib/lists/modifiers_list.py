@@ -448,7 +448,7 @@ class ModifiersList():
     def get_actual_full_actual_modifiers_list(self):
         return self._data
 
-    def get_full_list(self):
+    def all_clusters(self):
         return self._data
 
     def get_all_clusters_and_modifiers(self):

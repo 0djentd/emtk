@@ -157,7 +157,7 @@ class ActiveClusterTrait():
                 modifiers += x.get_full_actual_modifiers_list()
             result = self._clusters_parser.parse_recursively(
                     modifiers,
-                    clusters_names=self.get_full_list_of_cluster_names())
+                    clusters_names=self.all_clusters_of_cluster_names())
 
         # If there is only cluster layers,
         # try to create another layer from them
