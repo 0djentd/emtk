@@ -277,32 +277,6 @@ class ClustersListTrait():
         else:
             return x[-1]
 
-    # ===============================
-    # Renaming objects
-    # ===============================
-    # TODO: remove this
-    @check_if_removed
-    def rename_cluster(self, cluster, new_cluster_name):
-        """
-        Renames cluster.
-        Changes name if duplicates are found.
-
-        Returns True or False.
-        """
-        if not isinstance(cluster, ClusterTrait):
-            raise TypeError
-
-        if not isinstance(new_cluster_name, str):
-            raise TypeError
-
-        elif self.recursive_has_cluster(cluster):
-            if isinstance(new_cluster_name, str):
-                cluster.set_this_cluster_custom_name(new_cluster_name)
-                self._cluster_number_format(cluster, self.get_full_list())
-                return True
-        else:
-            raise ValueError
-
 
 class clusters_list_generated_list(collections.UserList):
 
