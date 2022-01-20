@@ -141,6 +141,18 @@ class ClustersListTrait():
     # ========================
     # LIST GETTERS
     # ========================
+    # def all_elements(self):
+    # def full_list(self):
+    def get_all_clusters_and_modifiers(self):
+        """
+        Returns list of all clusters and modifiers anywhere in this cluster.
+        """
+        result = self.get_full_actual_modifiers_list()
+        result.extend(self.get_full_list())
+        return full_list(result)
+
+    # def all_clusters(self):
+    # def full_clusters_list(self):
     def get_full_list(self):
         """
         Returns full list of clusters, including nested ones.
@@ -154,6 +166,8 @@ class ClustersListTrait():
                     result.append(y)
         return full_list(result)
 
+    # def all_modifiers_clusters(self):
+    # def full_modifiers_clusters_list(self):
     def get_deep_list(self):
         """
         Returns list of this layer clusters including nested ones.
@@ -168,6 +182,8 @@ class ClustersListTrait():
                 result.append(x)
         return full_modifiers_clusters_list(result)
 
+    # def all_layers(self):
+    # def full_clusters_layers_list(self):
     def get_full_layers_list(self):
         """
         Returns list of all of this layer clusters that contain other
@@ -180,6 +196,8 @@ class ClustersListTrait():
                 result.append(x)
         return full_clusters_layers_list(result)
 
+    # def all_modifiers(self):
+    # def full_modifiers_list(self):
     def get_full_actual_modifiers_list(self):
         """
         Returns full list of this layer actual modifiers,
@@ -191,14 +209,6 @@ class ClustersListTrait():
             for y in x.get_full_actual_modifiers_list():
                 result.append(y)
         return full_modifiers_list(result)
-
-    def get_all_clusters_and_modifiers(self):
-        """
-        Returns list of all clusters and modifiers anywhere in this cluster.
-        """
-        result = self.get_full_actual_modifiers_list()
-        result.extend(self.get_full_list())
-        return full_list(result)
 
     # ==============================
     # Methods based on get_cluster_or_layer
@@ -226,7 +236,7 @@ class ClustersListTrait():
         for x in g:
             if obj in x:
                 return x
-        raise ValueError(f'Cluster {obj} is not in this list {self}.')
+        raise ValueError(f'Cluster {obj} is not in {self}.')
 
     @check_if_removed
     def get_trace_to(self, cluster):
