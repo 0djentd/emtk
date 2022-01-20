@@ -485,9 +485,9 @@ class full_modifiers_list(clusters_list_generated_list):
     pass
 
 
-class modifiers_clusters_list(clusters_list_generated_list):
+class full_modifiers_clusters_list(clusters_list_generated_list):
     pass
 
 
-class clusters_layers_list(clusters_list_generated_list):
+class full_clusters_layers_list(clusters_list_generated_list):
     pass
