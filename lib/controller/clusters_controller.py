@@ -264,7 +264,7 @@ class ClustersController():
         result = []
         d = []
         for x in commands:
-            d.append([self.e.get_depth(x.initial_action.subject), x])
+            d.append([len(self.e.get_trace_to(x.initial_action.subject)), x])
         d.sort(key=lambda z: z[0])
         for x in d:
             result.append(x[1])
@@ -279,7 +279,7 @@ class ClustersController():
         result = []
         d = []
         for x in actions:
-            d.append([self.e.get_depth(x.subject), x])
+            d.append([len(self.e.get_trace_to(x.subject)), x])
         d.sort(key=lambda z: z[0])
 
         for x in d:

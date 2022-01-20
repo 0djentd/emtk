@@ -228,6 +228,7 @@ class ClustersListTrait():
                 return x
         raise ValueError(f'Cluster {obj} is not in this list {self}.')
 
+    @check_if_removed
     def get_trace_to(self, cluster):
         """Returns trace to cluster, starting from this layer."""
         result = []
@@ -241,10 +242,6 @@ class ClustersListTrait():
             c = layer
         result.reverse()
         return result
-
-    def get_depth(self, cluster):
-        """Returns cluster depth, starting from 1 for this layer's clusters."""
-        return len(self.get_trace_to(cluster))
 
     # ==================
     # First and last actual cluster's modifier methods.
@@ -273,6 +270,7 @@ class ClustersListTrait():
     # ===============================
     # Renaming objects
     # ===============================
+    # TODO: remove this
     @check_if_removed
     def rename_cluster(self, cluster, new_cluster_name):
         """
@@ -305,21 +303,21 @@ class clusters_list_generated_list(collections.UserList):
         return self.data
 
     def names(self):
-        result = []
+        result = {}
         for x in self.data:
-            result.append(x.name)
+            result.append({x.name: x})
         return result
 
     def types(self):
-        result = []
+        result = {}
         for x in self.data:
-            result.append(x.type)
+            result.append({x.type: x})
         return result
 
     def tags(self):
-        result = []
+        result = {}
         for x in self.data:
-            result.append(x.get_this_cluster_tags())
+            result.append({set(x.get_this_cluster_tags()): x})
         return result
 
 
