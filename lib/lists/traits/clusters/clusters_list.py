@@ -40,7 +40,7 @@ class ClustersListTrait():
     """
 
     def find_cluster_by_name(self, name: str):
-        for x in self.get_full_list():
+        for x in self.all_clusters():
             if x.name == name:
                 return x
 
@@ -75,7 +75,8 @@ class ClustersListTrait():
         elif cluster is None:
             return None
         else:
-            if cluster not in self.get_full_list()\
+            # TODO: this probably doesnt work
+            if cluster not in self.all_clusters()\
                     and cluster is not self:
                 raise ValueError
         return cluster
@@ -138,22 +139,16 @@ class ClustersListTrait():
                 return x
         raise ValueError(f'No modifier with name "{m_name}"')
 
-    # ========================
-    # LIST GETTERS
-    # ========================
-    # def all_elements(self):
-    # def full_list(self):
+    # LIST GETTERS {{{
     def all_elements(self):
         """
         Returns list of all clusters and modifiers anywhere in this cluster.
         """
         result = self.all_modifiers()
-        result.extend(self.get_full_list())
+        result.extend(self.all_clusters())
         return full_list(result)
 
-    # def all_clusters(self):
-    # def full_clusters_list(self):
-    def get_full_list(self):
+    def all_clusters(self):
         """
         Returns full list of clusters, including nested ones.
         Also returns cluster that have other clusters in them.
@@ -162,12 +157,10 @@ class ClustersListTrait():
         for x in self._data:
             result.append(x)
             if x.has_clusters():
-                for y in x.get_full_list():
+                for y in x.all_clusters():
                     result.append(y)
         return full_list(result)
 
-    # def all_modifiers_clusters(self):
-    # def full_modifiers_clusters_list(self):
     def all_modifiers_clusters(self):
         """
         Returns list of this layer clusters including nested ones.
@@ -182,8 +175,6 @@ class ClustersListTrait():
                 result.append(x)
         return full_modifiers_clusters_list(result)
 
-    # def all_layers(self):
-    # def full_clusters_layers_list(self):
     def all_layers(self):
         """
         Returns list of all of this layer clusters that contain other
@@ -191,13 +182,11 @@ class ClustersListTrait():
         Returns empty list if no such clusters found.
         """
         result = []
-        for x in self.get_full_list():
+        for x in self.all_clusters():
             if x.has_clusters():
                 result.append(x)
         return full_clusters_layers_list(result)
 
-    # def all_modifiers(self):
-    # def full_modifiers_list(self):
     def all_modifiers(self):
         """
         Returns full list of this layer actual modifiers,
@@ -209,6 +198,7 @@ class ClustersListTrait():
             for y in x.all_modifiers():
                 result.append(y)
         return full_modifiers_list(result)
+    # }}}
 
     # ==============================
     # Methods based on get_cluster_or_layer
@@ -232,7 +222,7 @@ class ClustersListTrait():
         if obj in self._data:
             return self
 
-        g = self.get_full_list()
+        g = self.all_clusters()
         for x in g:
             if obj in x:
                 return x
@@ -253,10 +243,7 @@ class ClustersListTrait():
         result.reverse()
         return result
 
-    # ==================
-    # First and last actual cluster's modifier methods.
     # Used when moving clusters.
-    # ==================
     @check_if_removed
     def recursive_get_first_actual_modifier(self, cluster):
         """Returns first actual modifier of a cluster."""

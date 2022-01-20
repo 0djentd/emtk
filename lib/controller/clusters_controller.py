@@ -145,10 +145,10 @@ class ClustersController():
                 # Used when moving modifiers.
                 # Later in _sort_actions actions list are being reversed again.
                 if not command.reverse_by_layer:
-                    clusters = command.initial_action.subject.get_full_list()
+                    clusters = command.initial_action.subject.all_clusters()
                     clusters = reversed(clusters)
                 else:
-                    clusters = command.initial_action.subject.get_full_list()
+                    clusters = command.initial_action.subject.all_clusters()
                 logger.debug(f'Adding clusters actions for {clusters}')
                 for x in clusters:
                     a = ClustersAction(command.initial_action.verb, x)
@@ -347,7 +347,7 @@ class ClustersController():
         if obj_class == 'MODIFIER':
             obj_list = self.e.all_modifiers()
         elif obj_class == 'CLUSTER':
-            obj_list = self.e.get_full_list()
+            obj_list = self.e.all_clusters()
         else:
             raise TypeError
 

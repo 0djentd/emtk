@@ -436,16 +436,7 @@ class ModifiersList():
     # }}}
 
     # Modifiers list utils. {{{
-    # ==============================================
-    # This methods work on _modifiers_list
-    # This means that they dont differ simple or nested clusters and modifiers
-    # ==============================================
-
-    # This methods are different in clusters list.
     def all_modifiers(self):
-        return self._data
-
-    def get_full_list(self):
         return self._data
 
     def all_elements(self):

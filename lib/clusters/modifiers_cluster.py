@@ -45,9 +45,9 @@ class ModifiersCluster(
         elif cluster is None:
             cluster = self
         else:
-            if cluster not in self.get_full_list()\
-                    and cluster is not self:
-                raise ValueError
+            if cluster not in self:
+                if cluster is not self:
+                    raise ValueError
         return cluster
 
     @property

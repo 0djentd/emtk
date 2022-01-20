@@ -279,7 +279,7 @@ class FirstLayerClustersListTrait():
             actual_modifiers.append(x)
 
         # Get list of all clusters.
-        clusters = self.get_full_list()
+        clusters = self.all_clusters()
         for i, x in enumerate(clusters):
             e = []
             e.append(i)
@@ -489,12 +489,12 @@ class FirstLayerClustersListTrait():
     def __str__(self):
         result = 'Extended Modifiers List, clusters: '
         y = 0
-        for x in self.get_full_list():
+        for x in self.all_clusters():
             if y < 6:
                 y += 1
                 result = result + x.name + ' '
             else:
-                length = len(self.get_full_list())
+                length = len(self.all_clusters())
                 result = result + f'... total clusters number is {length}'
                 break
         return result
