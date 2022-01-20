@@ -215,9 +215,9 @@ class ClustersListTrait():
         if type(obj) is str:
             raise TypeError
 
-        if obj is self:
-            raise TypeError(
-                    'First layer of ExtendedModifiersList is not a cluster.')
+        # if obj is self:
+        #     raise TypeError(
+        #             'First layer of ExtendedModifiersList is not a cluster.')
 
         if obj in self._data:
             return self
@@ -245,14 +245,6 @@ class ClustersListTrait():
     def get_depth(self, cluster):
         """Returns cluster depth, starting from 1 for this layer's clusters."""
         return len(self.get_trace_to(cluster))
-
-    def get_deep_list_by_tags(self, m_tags):
-        """Returns deep list of clusters by tags, including nested ones."""
-        result = []
-        for x in self.get_deep_list():
-            if m_tags in x.get_this_cluster_tags():
-                result.append(x)
-        return result
 
     # ==================
     # First and last actual cluster's modifier methods.
@@ -322,6 +314,12 @@ class clusters_list_generated_list(collections.UserList):
         result = []
         for x in self.data:
             result.append(x.type)
+        return result
+
+    def tags(self):
+        result = []
+        for x in self.data:
+            result.append(x.get_this_cluster_tags())
         return result
 
 
