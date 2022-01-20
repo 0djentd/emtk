@@ -168,7 +168,7 @@ class ClustersListTrait():
 
     # def all_modifiers_clusters(self):
     # def full_modifiers_clusters_list(self):
-    def get_deep_list(self):
+    def all_modifiers_clusters(self):
         """
         Returns list of this layer clusters including nested ones.
         Only return clusters that contain no other clusters.
@@ -176,7 +176,7 @@ class ClustersListTrait():
         result = []
         for x in self._data:
             if x.has_clusters():
-                for y in x.get_deep_list():
+                for y in x.all_modifiers_clusters():
                     result.append(y)
             else:
                 result.append(x)
@@ -205,7 +205,7 @@ class ClustersListTrait():
         Returns empty list if no actual modifiers found.
         """
         result = []
-        for x in self.get_deep_list():
+        for x in self.all_modifiers_clusters():
             for y in x.all_modifiers():
                 result.append(y)
         return full_modifiers_list(result)
