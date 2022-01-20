@@ -96,12 +96,12 @@ class BMTOOLS_OT_clusters_list_popup(
                     box, self.m_list)
 
     def __draw_clusters_list(self, layout, clusters_list):
-        for x in clusters_list.get_list():
+        for x in clusters_list:
             cluster_box = layout.box()
             self.__draw_cluster(cluster_box, x)
 
     def __draw_modifiers_list(self, layout, modifiers_list):
-        for x in modifiers_list.get_list():
+        for x in modifiers_list:
             self.__draw_modifier(layout, x)
 
     def __draw_cluster(self, layout, cluster):  # {{{

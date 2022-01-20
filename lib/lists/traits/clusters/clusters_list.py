@@ -157,14 +157,14 @@ class ClustersListTrait():
     # ==================
     def has_cluster(self, cluster):
         """Returns True if passed cluster is in this cluster list."""
-        if cluster in self.get_list():
+        if cluster in self._data:
             return True
         return False
 
     def has_cluster_by_type(self, m_type):
         """Returns True if there is cluster of this type in this cluster list.
         """
-        for x in self.get_list():
+        for x in self._data:
             if x.get_this_cluster_type() == m_type:
                 return True
         return False
@@ -172,7 +172,7 @@ class ClustersListTrait():
     def has_cluster_by_name(self, m_name):
         """Returns True if there is cluster with this name in this cluster list.
         """
-        for x in self.get_list():
+        for x in self._data:
             if x.get_this_cluster_name() == m_name:
                 return True
         return False
@@ -180,7 +180,7 @@ class ClustersListTrait():
     def has_cluster_by_tag(self, tag):
         """Returns True if there is cluster with this tag in this cluster list.
         """
-        for x in self.get_list():
+        for x in self._data:
             if tag in x.get_this_cluster_tags():
                 return True
         return False
@@ -253,7 +253,7 @@ class ClustersListTrait():
         Also returns cluster that have other clusters in them.
         """
         result = []
-        for x in self.get_list():
+        for x in self._data:
             result.append(x)
             if x.has_clusters():
                 for y in x.get_full_list():
@@ -266,7 +266,7 @@ class ClustersListTrait():
         Only return clusters that contain no other clusters.
         """
         result = []
-        for x in self.get_list():
+        for x in self._data:
             if x.has_clusters():
                 for y in x.get_deep_list():
                     result.append(y)
@@ -357,7 +357,7 @@ class ClustersListTrait():
 
         g = self.get_full_list()
         for x in g:
-            if obj in x.get_list():
+            if obj in x:
                 return x
         raise ValueError(f'Cluster {obj} is not in this list {self}.')
 

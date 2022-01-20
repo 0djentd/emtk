@@ -58,7 +58,7 @@ class ClusterActionAnswer():
             actions = []
         elif action.subject is self.cluster:
             actions = self._answer_case_self(action)
-        elif action.subject in self.cluster.get_list():
+        elif action.subject in self.cluster:
             actions = self._answer_case_list(action)
         elif action.subject in self.cluster.get_all_clusters_and_modifiers():
             actions = self._answer_case_all(action)
@@ -72,7 +72,7 @@ class ClusterActionAnswer():
         """
         if action.subject is self.cluster:
             self._interpret_case_self(action)
-        elif action.subject in self.cluster.get_list():
+        elif action.subject in self.cluster:
             self._interpret_case_list(action)
         elif action.subject in self.cluster.get_all_clusters_and_modifiers():
             self._interpret_case_all(action)
@@ -231,7 +231,7 @@ class ActionDefaultDeconstuct(ActionDefaultTemplate):
     def _interpret_case_list(self, action):
         i = self.cluster._data.index(action.subject)
 
-        y = action.subject.get_list()
+        y = action.subject
 
         removing_active = False
 

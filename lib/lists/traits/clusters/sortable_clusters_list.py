@@ -38,7 +38,7 @@ class SortableClustersListTrait():
         """
 
         sorting_rules = []
-        for x in self.get_list():
+        for x in self._data:
             for rule in x.get_sorting_rules():
                 sorting_rules.append(x.name, rule)
         return sorting_rules
@@ -73,7 +73,7 @@ class SortableClustersListTrait():
             raise TypeError(f'{sorting_rules} should be a SortingRules list.')
 
         i = 0
-        for x in self.get_list():
+        for x in self._data:
             for y in sorting_rules:
                 x.remove_sorting_rule(y)
                 i += 1
@@ -184,7 +184,7 @@ class SortableClustersListTrait():
         f_2 = False
         i = 0
 
-        for x in self.get_list():
+        for x in self._data:
             if x.name == cluster_1:
                 f_1 = True
                 mod1 = x

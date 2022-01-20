@@ -298,7 +298,7 @@ class FirstLayerClustersListTrait():
                     m.append(h)
                 t = 'CLUSTER'
             else:
-                modifiers = x.get_list()
+                modifiers = x
                 for mod in modifiers:
                     h = []
                     h.append(x.get_index(mod))

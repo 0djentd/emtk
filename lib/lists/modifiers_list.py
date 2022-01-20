@@ -429,16 +429,16 @@ class ModifiersList():
 
     # This methods are different in clusters list.
     def get_full_actual_modifiers_list(self):
-        return self.get_list()
+        return self._data
 
     def get_actual_full_actual_modifiers_list(self):
-        return self.get_list()
+        return self._data
 
     def get_full_list(self):
-        return self.get_list()
+        return self._data
 
     def get_all_clusters_and_modifiers(self):
-        return self.get_list()
+        return self._data
 
     @check_if_removed
     def get_list_in_range_not_inclusive(self, mod1, mod2):
@@ -505,7 +505,7 @@ class ModifiersList():
     @check_if_removed
     def has_modifier(self, mod):
         """Returns True, if found object in list."""
-        if mod in self.get_list():
+        if mod in self._data:
             return True
         return False
 
