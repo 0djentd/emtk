@@ -237,7 +237,7 @@ class ClustersListTrait():
             if x.has_clusters():
                 for y in x.get_full_list():
                     result.append(y)
-        return result
+        return full_list(result)
 
     def get_deep_list(self):
         """
@@ -251,7 +251,7 @@ class ClustersListTrait():
                     result.append(y)
             else:
                 result.append(x)
-        return result
+        return full_modifiers_clusters_list(result)
 
     def get_full_layers_list(self):
         """
@@ -263,7 +263,7 @@ class ClustersListTrait():
         for x in self.get_full_list():
             if x.has_clusters():
                 result.append(x)
-        return result
+        return full_clusters_layers_list(result)
 
     def get_full_actual_modifiers_list(self):
         """
@@ -275,7 +275,7 @@ class ClustersListTrait():
         for x in self.get_deep_list():
             for y in x.get_full_actual_modifiers_list():
                 result.append(y)
-        return result
+        return full_modifiers_list(result)
 
     def get_all_clusters_and_modifiers(self):
         """
@@ -283,34 +283,7 @@ class ClustersListTrait():
         """
         result = self.get_full_actual_modifiers_list()
         result.extend(self.get_full_list())
-        return result
-
-    # ==============================
-    # Methods based on get_full_list
-    # ==============================
-    def get_full_list_by_type(self, m_type):
-        """Returns full list of clusters by type."""
-        result = []
-        for x in self.get_full_list():
-            if m_type == x.get_this_cluster_type():
-                result.append(x)
-        return result
-
-    def get_full_list_by_name(self, m_name):
-        """Returns full list of clusters by name."""
-        result = []
-        for x in self.get_full_list():
-            if m_name in x.get_this_cluster_name():
-                result.append(x)
-        return result
-
-    def get_full_list_by_tags(self, m_tags):
-        """Returns full list of clusters by tags."""
-        result = []
-        for x in self.get_full_list():
-            if m_tags in x.get_this_cluster_tags():
-                result.append(x)
-        return result
+        return full_list(result)
 
     # ==============================
     # Methods based on get_cluster_or_layer
@@ -358,54 +331,11 @@ class ClustersListTrait():
         """Returns cluster depth, starting from 1 for this layer's clusters."""
         return len(self.get_trace_to(cluster))
 
-    # ==============================
-    # Methods based on get_deep_list
-    # ==============================
-    def get_deep_list_by_type(self, m_type):
-        """Returns deep list of clusters by type, including nested ones."""
-        result = []
-        for x in self.get_deep_list():
-            if m_type == x.get_this_cluster_type():
-                result.append(x)
-        return result
-
-    def get_deep_list_by_name(self, m_name):
-        """Returns deep list of clusters by name, including nested ones."""
-        result = []
-        for x in self.get_deep_list():
-            if m_name in x.get_this_cluster_name():
-                result.append(x)
-        return result
-
     def get_deep_list_by_tags(self, m_tags):
         """Returns deep list of clusters by tags, including nested ones."""
         result = []
         for x in self.get_deep_list():
             if m_tags in x.get_this_cluster_tags():
-                result.append(x)
-        return result
-
-    # TODO: this methods not really useful
-    # ==============================
-    # Methods based on get_full_actual_modifiers_list
-    # ==============================
-    @check_if_removed
-    def get_full_actual_modifiers_list_by_type(self, m_type):
-        """Returns full list of actual modifiers by type, including nested ones.
-        """
-        result = []
-        for x in self.get_full_actual_modifiers_list():
-            if x.type == m_type:
-                result.append(x)
-        return result
-
-    @check_if_removed
-    def get_full_actual_modifiers_list_by_name(self, m_name):
-        """Returns full list of actual modifiers by name, including nested ones.
-        """
-        result = []
-        for x in self.get_full_actual_modifiers_list():
-            if m_name in x.name:
                 result.append(x)
         return result
 
@@ -461,6 +391,9 @@ class ClustersListTrait():
 
 class clusters_list_generated_list(collections.UserList):
 
+    def __init__(self, obj, *args, **kwargs):
+        self.data = list(obj)
+
     def items(self):
         return self.data
 
@@ -477,17 +410,26 @@ class clusters_list_generated_list(collections.UserList):
         return result
 
 
+class full_list(clusters_list_generated_list):
+    """List of all modifiers and clusters."""
+    pass
+
+
 class full_clusters_list(clusters_list_generated_list):
+    """List of all clusters."""
     pass
 
 
 class full_modifiers_list(clusters_list_generated_list):
+    """List of all modifiers."""
     pass
 
 
 class full_modifiers_clusters_list(clusters_list_generated_list):
+    """List of all modifiers clusters."""
     pass
 
 
 class full_clusters_layers_list(clusters_list_generated_list):
+    """List of all clusters layers."""
     pass
