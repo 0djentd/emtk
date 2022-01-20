@@ -499,16 +499,6 @@ class ModifiersList():
         """Returns index of object."""
         return self._data.index(mod)
 
-    @check_if_removed
-    def get_first(self):
-        """Returns first object."""
-        return self._data[0]
-
-    @check_if_removed
-    def get_last(self):
-        """Returns last object."""
-        return self._data[-1]
-
     # ===============
     # INFO ABOUT LIST
     # ===============

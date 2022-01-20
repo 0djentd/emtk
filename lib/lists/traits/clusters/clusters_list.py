@@ -437,22 +437,22 @@ class ClustersListTrait():
     @check_if_removed
     def recursive_get_first_actual_modifier(self, cluster):
         """Returns first actual modifier of a cluster."""
-        x = self.get_first().has_clusters()
+        x = self[0].has_clusters()
         if x.has_clusters():
-            y = x.get_first()
+            y = x[0]
             return x.recursive_get_first_actual_modifier(y)
         else:
-            return x.get_first()
+            return x[0]
 
     @check_if_removed
     def recursive_get_last_actual_modifier(self, cluster):
         """Returns last actual modifier of a cluster."""
-        x = self.get_last().has_clusters()
+        x = self[-1].has_clusters()
         if x.has_clusters():
-            y = x.get_last()
+            y = x[-1]
             return x.recursive_get_last_actual_modifier(y)
         else:
-            return x.get_last()
+            return x[-1]
 
     # ===============================
     # Renaming objects

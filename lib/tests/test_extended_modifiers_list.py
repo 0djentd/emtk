@@ -183,7 +183,7 @@ class ExtendedModifiersListTests():
 
     def test_get_cluster(self):
         c = self.e.get_cluster()
-        self.assertEqual(c, self.e.get_first())
+        self.assertEqual(c, self.e[0])
 
     def test_get_layer(self):
         layer = self.e.get_layer()
@@ -200,13 +200,13 @@ class ExtendedModifiersListTests():
 
     def test_remove_cluster(self):
         old_l = len(self.e._data)
-        self.e.remove(self.e.get_first())
+        self.e.remove(self.e[0])
         new_l = len(self.e._data)
         self.assertEqual(new_l, old_l-1)
 
     def test_remove_modifiers(self):
         old_l = len(self.o.modifiers)
-        c = self.e.get_first()
+        c = self.e[0]
         length = len(c.get_full_actual_modifiers_list())
         self.e.remove(c)
         new_l = len(self.o.modifiers)
@@ -214,7 +214,7 @@ class ExtendedModifiersListTests():
 
     def test_remove_cluster_last(self):
         old_l = len(self.e._data)
-        c = self.e.get_last()
+        c = self.e[-1]
         length = len(c.get_full_actual_modifiers_list())
         self.e.remove(c)
         new_l = len(self.e._data)
@@ -222,7 +222,7 @@ class ExtendedModifiersListTests():
 
     def test_remove_modifiers_last(self):
         old_l = len(self.o.modifiers)
-        self.e.remove(self.e.get_last())
+        self.e.remove(self.e[-1])
         new_l = len(self.o.modifiers)
         self.assertEqual(new_l, old_l-1)
 
@@ -237,13 +237,13 @@ class ExtendedModifiersListTests():
 
     def test_apply_cluster(self):
         old_l = len(self.e._data)
-        self.e.apply(self.e.get_first())
+        self.e.apply(self.e[0])
         new_l = len(self.e._data)
         self.assertEqual(new_l, old_l-1)
 
     def test_apply_modifiers(self):
         old_l = len(self.o.modifiers)
-        c = self.e.get_first()
+        c = self.e[0]
         length = len(c.get_full_actual_modifiers_list())
         self.e.apply(c)
         new_l = len(self.o.modifiers)
@@ -251,7 +251,7 @@ class ExtendedModifiersListTests():
 
     def test_apply_cluster_last(self):
         old_l = len(self.e._data)
-        c = self.e.get_last()
+        c = self.e[-1]
         length = len(c.get_full_actual_modifiers_list())
         self.e.apply(c)
         new_l = len(self.e._data)
@@ -259,7 +259,7 @@ class ExtendedModifiersListTests():
 
     def test_apply_modifiers_last(self):
         old_l = len(self.o.modifiers)
-        self.e.apply(self.e.get_last())
+        self.e.apply(self.e[-1])
         new_l = len(self.o.modifiers)
         self.assertEqual(new_l, old_l-1)
 
@@ -460,11 +460,11 @@ class LayersTests(
         self.e = ExtendedModifiersList(self.o, cluster_types=clusters)
 
     def test_first_cluster_is_double_bevel(self):
-        self.assertEqual(self.e.get_first().type, 'BEVEL_CLUSTER')
+        self.assertEqual(self.e[0].type, 'BEVEL_CLUSTER')
 
     def test_first_cluster_has_two_triple_bevels(self):
         self.assertEqual(
-                self.e.get_first().get_first().type, 'TRIPLE_BEVEL')
+                self.e[0][0].type, 'TRIPLE_BEVEL')
 
     def test_triple_bevel_has_bevel(self):
         self.assertEqual(
@@ -477,8 +477,8 @@ class LayersTests(
     def test_trace_cluster(self):
         x = []
         x.append(self.e)
-        x.append(self.e.get_first())
-        x.append(x[1].get_first())
+        x.append(self.e[0])
+        x.append(x[1][0])
         t = self.e.get_trace_to(x[2])
         self.assertEqual(t, x[0: -1])
 

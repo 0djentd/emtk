@@ -48,7 +48,7 @@ class UIClassVariablesEditorCache(PropertyGroup):  # {{{
     var_editor_str: StringProperty(default='')
 
     # Attribute name
-    # Example: m_list.get_first().parser_variables['by_type'][0]
+    # Example: m_list[0].default_data['by_type'][0]
     # 'cls' should be skipped, as
     # var_editor_class is used insead.
     var_editor_currently_edited: StringProperty('')
