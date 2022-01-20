@@ -139,8 +139,7 @@ class FirstLayerClustersListTrait():
                 logger.info(clusters_state)
                 parse_result = self._clusters_parser.parse_clusters_state(
                         modifiers_to_parse, clusters_state,
-                        clusters_names=list(self.all_clusters(
-                            ).names().keys()))
+                        clusters_names=list(self.all_clusters().names()))
                 if parse_result is False:
                     logger.error(
                             "Error while parsing. Cant create modifiers list.")

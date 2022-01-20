@@ -150,16 +150,21 @@ class ModifiersList():
     def items(self):
         return self._data
 
-    def names(self):
-        result = {}
-        for x in self._data:
-            result.update({x.name: x})
+    def names(self, use_dict=False):
+        if use_dict:
+            result = {}
+            for x in self._data:
+                result.update({x.name: x})
+        else:
+            result = []
+            for x in self._data:
+                result.update({x.name: x})
         return result
 
     def types(self):
-        result = {}
+        result = []
         for x in self._data:
-            result.update({x.type: x})
+            result.append(x)
         return result
 
     # remove(obj) is defined in 'Clusters actions' section.

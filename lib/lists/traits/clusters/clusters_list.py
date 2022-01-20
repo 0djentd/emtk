@@ -273,22 +273,27 @@ class clusters_list_generated_list(collections.UserList):
     def items(self):
         return self.data
 
-    def names(self):
-        result = {}
-        for x in self.data:
-            result.update({x.name: x})
+    def names(self, use_dict=False):
+        if use_dict:
+            result = {}
+            for x in self.data:
+                result.update({x.name: x})
+        else:
+            result = []
+            for x in self.data:
+                result.update({x.name: x})
         return result
 
     def types(self):
-        result = {}
+        result = []
         for x in self.data:
-            result.update({x.type: x})
+            result.append(x)
         return result
 
     def tags(self):
-        result = {}
+        result = []
         for x in self.data:
-            result.update({set(x.get_this_cluster_tags()): x})
+            result.append(x.get_this_cluster_tags())
         return result
 
 
