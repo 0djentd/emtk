@@ -259,7 +259,7 @@ class ModifierState(_ObjectState):  # {{{
 
     @classmethod
     def get_data_from_obj(cls, obj):
-        if type(obj) is not cls._object_type:
+        if not isinstance(obj, cls._object_type):
             raise TypeError(f'Expected {cls._object_type}, got {type(obj)}')
         data = {'name': '',
                 'tags': [],
