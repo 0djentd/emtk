@@ -138,21 +138,6 @@ class ClustersListTrait():
                 return x
         raise ValueError(f'No modifier with name "{m_name}"')
 
-    def get_first_actual_modifier(self):
-        """Returns first modifier of first cluster."""
-        x = self.get_full_actual_modifiers_list()
-        return x[0]
-
-    def get_last_actual_modifier(self):
-        """Returns last modifier of last cluster."""
-        x = self.get_full_actual_modifiers_list()
-        return x[-1]
-
-    def get_actual_modifier_index(self, mod):
-        """Returns actual modifier index"""
-        x = self.get_full_actual_modifiers_list()
-        return x.index(mod)
-
     # ========================
     # LIST GETTERS
     # ========================
@@ -340,16 +325,6 @@ class clusters_list_generated_list(collections.UserList):
         return result
 
 
-class full_list(clusters_list_generated_list):
-    """List of all modifiers and clusters."""
-    pass
-
-
-class full_clusters_list(clusters_list_generated_list):
-    """List of all clusters."""
-    pass
-
-
 class full_modifiers_list(clusters_list_generated_list):
     """List of all modifiers."""
     pass
@@ -362,4 +337,14 @@ class full_modifiers_clusters_list(clusters_list_generated_list):
 
 class full_clusters_layers_list(clusters_list_generated_list):
     """List of all clusters layers."""
+    pass
+
+
+class full_clusters_list(clusters_list_generated_list):
+    """List of all clusters."""
+    pass
+
+
+class full_list(clusters_list_generated_list):
+    """List of all modifiers and clusters."""
     pass
