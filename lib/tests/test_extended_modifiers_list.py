@@ -44,7 +44,7 @@ class ExtendedModifiersListTests():
 
     def test_all_clusters_initialized(self):
         result = True
-        for x in self.e.all_clusters():
+        for x in self.e.get_full_list():
             if not x.instance_data['initialized']:
                 if not isinstance(result, list):
                     result = []
@@ -53,7 +53,7 @@ class ExtendedModifiersListTests():
 
     def test_all_clusters_have_modifiers(self):
         result = True
-        for x in self.e.all_clusters():
+        for x in self.e.get_full_list():
             if len(x._data) == 0:
                 if not isinstance(result, list):
                     result = []
@@ -63,7 +63,7 @@ class ExtendedModifiersListTests():
     def test_duplicate_cluster_names(self):
         result = True
         names = []
-        for x in self.e.all_clusters():
+        for x in self.e.get_full_list():
             if x.name not in names:
                 names.append(x.name)
             else:
@@ -75,9 +75,9 @@ class ExtendedModifiersListTests():
     def test_duplicate_clusters(self):
         result = False
         i = 0
-        for x in self.e.all_clusters():
+        for x in self.e.get_full_list():
             i = 0
-            for y in self.e.all_clusters():
+            for y in self.e.get_full_list():
                 if y is x:
                     i += 1
                     if i != 1:
@@ -102,7 +102,7 @@ class ExtendedModifiersListTests():
 
     def test_all_clusters_is_clusters(self):
         result = True
-        for x in self.e.all_clusters():
+        for x in self.e.get_full_list():
             if not isinstance(x, ClusterTrait):
                 if not isinstance(result, list):
                     result = []
@@ -111,7 +111,7 @@ class ExtendedModifiersListTests():
 
     def test_all_clusters_have_object(self):
         result = True
-        for x in self.e.all_clusters():
+        for x in self.e.get_full_list():
             if x._object is None:
                 if not isinstance(result, list):
                     result = []
@@ -129,7 +129,7 @@ class ExtendedModifiersListTests():
 
     def test_all_clusters_are_sane(self):
         result = False
-        for x in self.e.all_clusters():
+        for x in self.e.get_full_list():
             if not x.check_this_cluster_sanity():
                 if not isinstance(result, list):
                     result = []
