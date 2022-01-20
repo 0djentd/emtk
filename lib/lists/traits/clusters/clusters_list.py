@@ -315,19 +315,19 @@ class clusters_list_generated_list(collections.UserList):
     def names(self):
         result = {}
         for x in self.data:
-            result.append({x.name: x})
+            result.update({x.name: x})
         return result
 
     def types(self):
         result = {}
         for x in self.data:
-            result.append({x.type: x})
+            result.update({x.type: x})
         return result
 
     def tags(self):
         result = {}
         for x in self.data:
-            result.append({set(x.get_this_cluster_tags()): x})
+            result.update({set(x.get_this_cluster_tags()): x})
         return result
 
 

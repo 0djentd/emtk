@@ -151,15 +151,15 @@ class ModifiersList():
         return self._data
 
     def names(self):
-        result = []
+        result = {}
         for x in self._data:
-            result.append(x.name)
+            result.update({x.name: x})
         return result
 
     def types(self):
-        result = []
+        result = {}
         for x in self._data:
-            result.append(x.type)
+            result.update({x.type: x})
         return result
 
     # remove(obj) is defined in 'Clusters actions' section.
@@ -179,6 +179,10 @@ class ModifiersList():
         return False
 
     def serialize(obj):
+        raise NotImplementedError
+
+    @classmethod
+    def deserialize(cls, obj):
         raise NotImplementedError
 
     # Clusters actions {{{
@@ -500,7 +504,6 @@ class ModifiersList():
             return e
     # }}}
 
-    # Iterating over list {{{
     def previous(self, mod, m_type=None, loop=True):
         return self.find_next_or_previous(mod, m_type, 'UP', loop)
 
@@ -509,7 +512,7 @@ class ModifiersList():
 
     # @check_obj_ref
     @check_if_removed
-    def iterate(self, mod, direction, m_type=None, loop=True):
+    def iterate(self, mod, direction, m_type=None, loop=True):  # {{{
         """Iterate over clusters or modifiers starting from mod.
 
         Direction should be a str in {'UP', 'DOWN'}
