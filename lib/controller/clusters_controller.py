@@ -251,7 +251,7 @@ class ClustersController():
     def _apply_action(self, action):
         # TODO: this is for dependency commands, that can potentially
         # remove action subject.
-        if action.subject not in self.e.get_all_clusters_and_modifiers():
+        if action.subject not in self.e.all_elements():
             return
 
         layer = self.e.get_cluster_or_layer(action.subject)

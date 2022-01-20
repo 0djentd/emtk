@@ -419,7 +419,7 @@ class ModifiersList():
     def _check_action(self, action):
         if not isinstance(action, ClustersAction):
             raise TypeError
-        for x in self.get_all_clusters_and_modifiers():
+        for x in self.all_elements():
             if x is action.subject:
                 return
         raise ValueError
@@ -451,7 +451,7 @@ class ModifiersList():
     def get_full_list(self):
         return self._data
 
-    def get_all_clusters_and_modifiers(self):
+    def all_elements(self):
         return self._data
 
     @check_if_removed

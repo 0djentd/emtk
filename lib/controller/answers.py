@@ -60,7 +60,7 @@ class ClusterActionAnswer():
             actions = self._answer_case_self(action)
         elif action.subject in self.cluster:
             actions = self._answer_case_list(action)
-        elif action.subject in self.cluster.get_all_clusters_and_modifiers():
+        elif action.subject in self.cluster.all_elements():
             actions = self._answer_case_all(action)
         else:
             raise ValueError('Action cant be interpreted')
@@ -74,7 +74,7 @@ class ClusterActionAnswer():
             self._interpret_case_self(action)
         elif action.subject in self.cluster:
             self._interpret_case_list(action)
-        elif action.subject in self.cluster.get_all_clusters_and_modifiers():
+        elif action.subject in self.cluster.all_elements():
             self._interpret_case_all(action)
         else:
             raise ValueError('Action cant be interpreted')

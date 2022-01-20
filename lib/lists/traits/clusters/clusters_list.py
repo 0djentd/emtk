@@ -143,7 +143,7 @@ class ClustersListTrait():
     # ========================
     # def all_elements(self):
     # def full_list(self):
-    def get_all_clusters_and_modifiers(self):
+    def all_elements(self):
         """
         Returns list of all clusters and modifiers anywhere in this cluster.
         """
