@@ -129,9 +129,9 @@ class ActiveClusterTrait():
         removing_active = False
         if self.active in clusters:
             removing_active = True
-            clusters_index = self.get_index(clusters[0])
+            clusters_index = self.index(clusters[0])
 
-        clusters_index = self.get_index(clusters[0])
+        clusters_index = self.index(clusters[0])
 
         # Check if there is clusters or only clusterlayers
         parse_modifiers = False

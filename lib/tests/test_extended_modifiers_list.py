@@ -571,8 +571,8 @@ class MovingTests(unittest.TestCase):
 
         self.e = ExtendedModifiersList(self.o, cluster_types=clusters)
 
-        self.moved_cluster = self.e.get_by_index(1)
-        self.moved_cluster_2 = self.e.get_by_index(2)
+        self.moved_cluster = self.e[1]
+        self.moved_cluster_2 = self.e[2]
         self.e.move_down(self.moved_cluster)
 
     def tearDown(self):
@@ -582,7 +582,7 @@ class MovingTests(unittest.TestCase):
         del(self.moved_cluster_2)
 
     def test_moved_cluster_up(self):
-        self.assertEqual(self.moved_cluster, self.e.get_by_index(2))
+        self.assertEqual(self.moved_cluster, self.e[2])
 
     def test_moved_cluster_down(self):
-        self.assertEqual(self.moved_cluster_2, self.e.get_by_index(1))
+        self.assertEqual(self.moved_cluster_2, self.e[1])

@@ -301,7 +301,7 @@ class FirstLayerClustersListTrait():
                 modifiers = x
                 for mod in modifiers:
                     h = []
-                    h.append(x.get_index(mod))
+                    h.append(x.index(mod))
                     h.append(mod.get_this_cluster_default_name())
                     h.append(mod.get_this_cluster_type())
                     h.append(mod.get_this_cluster_name())

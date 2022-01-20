@@ -307,7 +307,7 @@ class ModifiersList():
         """Moves cluster to index. Returns True if moved modifier."""
         # TODO: not tested
         if i < len(self._data):
-            m_i = self.get_index(obj)
+            m_i = self.index(obj)
             d_i = i - m_i
             x = 0
             if d_i > 0:
@@ -443,8 +443,8 @@ class ModifiersList():
             raise TypeError
 
         e = []
-        x = self.get_index(mod1)
-        y = self.get_index(mod2)
+        x = self.index(mod1)
+        y = self.index(mod2)
 
         if x > y:
             if (x-y) < 2:
@@ -472,8 +472,8 @@ class ModifiersList():
         if (mod1 is None) or (mod2 is None):
             raise TypeError
 
-        x = self.get_index(mod1)
-        y = self.get_index(mod2)
+        x = self.index(mod1)
+        y = self.index(mod2)
 
         if x > y:
             return self._data[y:x+1]
@@ -483,16 +483,6 @@ class ModifiersList():
             e = []
             e.append(self._data[x])
             return e
-
-    @check_if_removed
-    def get_by_index(self, i):
-        """Returns object by index."""
-        return self._data[i]
-
-    @check_if_removed
-    def get_index(self, mod):
-        """Returns index of object."""
-        return self._data.index(mod)
 
     # ===============
     # INFO ABOUT LIST
