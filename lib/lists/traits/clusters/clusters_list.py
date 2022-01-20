@@ -184,7 +184,7 @@ class ClustersListTrait():
 
     # def all_layers(self):
     # def full_clusters_layers_list(self):
-    def get_full_layers_list(self):
+    def all_layers(self):
         """
         Returns list of all of this layer clusters that contain other
         clusters in it, including nested ones.
