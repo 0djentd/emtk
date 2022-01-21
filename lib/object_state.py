@@ -49,18 +49,6 @@ types = {bool, int, float, str, list, dict, set, tuple}
 # TODO: ObjectConfig is ObjectStateData and ReparseConfig.
 
 
-def prepare_object_for_serialization(obj):
-    return {'type': type(obj).__name__, 'data': obj}
-
-
-def prepare_object_for_deserialization(obj):
-    t = obj['type']
-    for x in types:
-        if t == x.__name__:
-            return x(obj['data'])
-    raise TypeError
-
-
 # functions used when serializing/deserializing object state.  {{{
 # This is workaround for serializing tuples and sets
 def _add_type_name_to_dict(obj):
@@ -78,12 +66,13 @@ def _add_type_name_to_dict(obj):
         for x, y in obj.items():
             element_type_name = type(y).__name__
             result.update({x: {'data': y, 'type': element_type_name}})
-    # TODO: remove this
     elif type(obj) is list:
         result = []
         for y in obj:
-            element_type_name = type(y).__name__
+            element_type_name = str(type(y).__name__)
             result.append({'data': y, 'type': element_type_name})
+    else:
+        return {'type': type(obj).__name__, 'data': obj}
     return result
 
 
@@ -188,9 +177,11 @@ class ListObjectState(_ObjectState):  # {{{
         state = {}
         for x, y in self.__dataclass_fields__.items():
             if x == 'items_data':
-                items_data = _add_type_name_to_dict(self.items_data)
-                for y in items_data['data']:
-                    y = y.serialize()
+                items_data = []
+                for z in getattr(self, x):
+                    element = _add_type_name_to_dict(z)
+                    element['data'] = element['data'].serialize()
+                    items_data.append(element)
                 state.update({x: items_data})
             elif x == 'data':
                 state.update({x: _add_type_name_to_dict(self.data)})
@@ -240,7 +231,10 @@ class ListObjectState(_ObjectState):  # {{{
 
     @staticmethod
     def _get_data(obj):
-        return obj.instance_data
+        try:
+            return obj.instance_data
+        except AttributeError:
+            return {}
 # }}}
 
 
@@ -295,9 +289,3 @@ class ModifierConfig():
 class ListObjectConfig():
     state: ListObjectState
     config: ListReparseConfig
-
-
-class ExtendedModifiersListState(ListObjectState):
-    @staticmethod
-    def _get_data(obj):
-        return {}
