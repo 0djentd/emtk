@@ -117,18 +117,20 @@ type in {types}""".replace('\n', ' ')
 
 def _get_class_names(object_instance):
     names = []
-    for x in object_instance.mro():
+    for x in type(object_instance).mro():
         names.append(x.__name__)
     return names
 
 
-def _get_object_state_subclass(name):
+def _get_object_state_subclass_by_name(name):
+    if not isinstance(name, str):
+        raise TypeError
     if name == 'ListObjectState':
         return ListObjectState
     elif name == 'ModifierState':
         return ModifierState
     else:
-        raise ValueError
+        raise ValueError(type(name), name)
 
 
 # }}}
@@ -206,7 +208,7 @@ class ListObjectState(_ObjectState):  # {{{
                 items_data = []
                 for y in state[x].items():
                     items_data.append(
-                            _get_object_state_subclass(
+                            _get_object_state_subclass_by_name(
                                 y['type']).deserialize(y))
                 data.update({x: items_data})
             elif x == 'data':
@@ -217,8 +219,12 @@ class ListObjectState(_ObjectState):  # {{{
 
     @classmethod
     def get_data_from_obj(cls, obj):
-        if 'ModifiersList' not in obj.mro():
+        names = []
+        for x in type(obj).mro():
+            names.append(x.__name__)
+        if 'ModifiersList' not in names:
             raise TypeError(f'Expected cluster, got {type(obj)}')
+
         data = {}
         data.update({'name': ''})
         data.update({'tags': []})
@@ -230,8 +236,12 @@ class ListObjectState(_ObjectState):  # {{{
     def _get_items_data(obj):
         result = []
         for x in obj:
-            result.append(_get_object_state_subclass(x).get_data_from_obj(x))
+            result.append(get_object_data(x))
         return result
+
+    @staticmethod
+    def _get_data(obj):
+        return obj.instance_data
 # }}}
 
 

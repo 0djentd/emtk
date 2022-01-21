@@ -32,7 +32,7 @@ from ....parser import ClustersParser
 from ....controller.clusters_controller import ClustersController
 from ....controller.answers import ActionDefaultRemove
 from ....utils.modifiers import get_modifier_state, restore_modifier_state
-from ....object_state import ModifierState
+from ....object_state import ModifierState, ExtendedModifiersListState
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
@@ -382,9 +382,7 @@ class FirstLayerClustersListTrait():
     def get_modifiers_state(self):
         """Returns current object actual modifiers info."""
         result = []
-        for x in self._object.modifiers:
-            e = ModifierState.get_data_from_obj(x)
-            result.append(e.serialize())
+        result = ExtendedModifiersListState.get_data_from_obj(self)
         return result
 
     def save_modifiers_state(self, prop_name=None):

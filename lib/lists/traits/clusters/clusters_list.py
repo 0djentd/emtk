@@ -281,7 +281,7 @@ class clusters_list_generated_list(collections.UserList):
         else:
             result = []
             for x in self.data:
-                result.update({x.name: x})
+                result.append(x.name)
         return result
 
     def types(self):
