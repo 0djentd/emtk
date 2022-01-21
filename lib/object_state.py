@@ -73,7 +73,7 @@ def _add_type_name_to_dict(obj):
     >>> _add_type_name_to_dict({'angle_limit': 30})
     <<< {'angle_limit': {'data': 30, 'type': 'int'}}
     """
-    if isinstance(obj, dict):
+    if type(obj) is dict:
         result = {}
         for x, y in obj.items():
             element_type_name = type(y).__name__
@@ -81,7 +81,7 @@ def _add_type_name_to_dict(obj):
     # TODO: remove this
     elif type(obj) is list:
         result = []
-        for x, y in obj.items():
+        for y in obj:
             element_type_name = type(y).__name__
             result.append({'data': y, 'type': element_type_name})
     return result
@@ -131,9 +131,8 @@ def _get_object_state_subclass_by_name(name):
         return ModifierState
     else:
         raise ValueError(type(name), name)
-
-
 # }}}
+
 
 def get_object_data(obj):
     """Returns ListObjectState or ModifierState for object."""
@@ -190,7 +189,7 @@ class ListObjectState(_ObjectState):  # {{{
         for x, y in self.__dataclass_fields__.items():
             if x == 'items_data':
                 items_data = _add_type_name_to_dict(self.items_data)
-                for y in items_data['data'].items():
+                for y in items_data['data']:
                     y = y.serialize()
                 state.update({x: items_data})
             elif x == 'data':

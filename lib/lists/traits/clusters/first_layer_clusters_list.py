@@ -400,7 +400,7 @@ class FirstLayerClustersListTrait():
             raise TypeError
 
         y = self.get_modifiers_state()
-        x = json.dumps(y)
+        x = y.serialize()
 
         if _WITH_BPY:
             self._object[name] = x
