@@ -128,14 +128,14 @@ class ClustersParser():
      ['SKIP', <DOUBLE_BEVEL>, None]]
     """
 
-    def _get_modifiers_clusters_types(self):
+    def _get_modifiers_clusters_types(self) -> list[str]:
         result = []
         for x in self.available_cluster_types:
             if not x.has_clusters():
                 result.append(x)
         return result
 
-    def _get_clusters_layers_types(self):
+    def _get_clusters_layers_types(self) -> list[str]:
         result = []
         for x in self.available_cluster_types:
             if x.has_clusters():
