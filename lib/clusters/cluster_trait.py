@@ -19,16 +19,20 @@
 
 import copy
 import json
+import math
 
 try:
     import bpy
     _WITH_BPY = True
+    Modifier = bpy.types.Modifier
 except ModuleNotFoundError:
     from ..dummy_modifiers import DummyBlenderModifier
     _WITH_BPY = False
+    Modifier = DummyBlenderModifier
 
-# from ..object_state import ListObjectState
 from ..lists.utils import check_if_removed
+from ..object_state import ListObjectState, ModifierState
+from ..parser.reparser_config import Basic, Delta
 
 
 class ClusterTrait():
@@ -507,6 +511,34 @@ class ClusterTrait():
         """Returns priority for this cluster in parsing."""
         return self.default_data['priority']
 
+    def complex_parser(self, items, config=None):
+        for x in items:
+            f = False
+            for y in {Modifier, ClusterTrait}:
+                if isinstance(x, y):
+                    f = True
+            if not f:
+                raise TypeError
+
+        # Config
+        if config is None:
+            config = self.default_config
+        else:
+            if not isinstance(config, ListObjectConfig):
+                raise TypeError
+
+        length = len(config.items_data)
+
+        for i, element in enumerate(items):
+            if not compare_element(
+                    element, config.state[i], config.reparse_config[1]):
+                return False
+        if length < len(items):
+            return 'CONTINUE'
+        if length == len(items):
+            return 'FOUND'
+        raise ValueError
+
     def check_availability(self, modifiers):
         """
         Checks if sequence of modifiers or clusters can be
@@ -775,3 +807,48 @@ class ClusterTrait():
                 = f"Already removed cluster {self.default_data['name']}"
         return result
     # }}}
+
+
+def compare_element(element, state, reparse_config) -> bool:
+    if isinstance(element, Modifier):
+        return compare_modifier(element, state, reparse_config)
+    else:
+        try:
+            clusters = element.has_clusters()
+        except AttributeError:
+            raise TypeError
+        return compare_cluster(element, state, reparse_config)
+
+
+def compare_modifier(modifier, state, reparse_config) -> bool:
+    for x, y in zip(reparse_config.keys(), reparse_config.items()):
+        if not y.status:
+            continue
+        elif isinstance(y, Basic):
+            if getattr(modifier, x) != state[x]:
+                return False
+        elif isinstance(y, Delta):
+            s_1 = getattr(modifier, x[0])
+            s_2 = x[1]
+            delta = y[0].delta
+            if s_1 - s_2 > delta and s_2 - s_1 > delta:
+                return False
+        else:
+            raise TypeError
+
+
+def compare_cluster(cluster, state, reparse_config) -> bool:
+    for x, y in zip(reparse_config.keys(), reparse_config.items()):
+        if not y.status:
+            continue
+        elif isinstance(y, Basic):
+            if getattr(cluster, x) != state[x]:
+                return False
+        elif isinstance(y, Delta):
+            s_1 = getattr(cluster, x[0])
+            s_2 = x[1]
+            delta = y[0].delta
+            if math.sqrt(pow(s_1 - s_2)) > delta:
+                return False
+        else:
+            raise TypeError
