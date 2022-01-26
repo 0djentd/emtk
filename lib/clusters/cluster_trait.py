@@ -774,6 +774,7 @@ class ClusterTrait():
         result = json.dumps(self.get_this_cluster_parser_variables())
         return result
 
+    # TODO: what is that
     def get_this_cluster_parser_variables(self):
         x = copy.copy(self.default_data)
 
@@ -813,11 +814,10 @@ def compare_element(element, state, reparse_config) -> bool:
         return compare_modifier(element, state, reparse_config)
     else:
         try:
-            element.has_clusters()
+            clusters = element.has_clusters()
         except AttributeError:
             raise TypeError
         return compare_cluster(element, state, reparse_config)
-    return True
 
 
 def compare_modifier(modifier, state, reparse_config) -> bool:
@@ -830,9 +830,25 @@ def compare_modifier(modifier, state, reparse_config) -> bool:
         elif isinstance(y, Delta):
             s_1 = getattr(modifier, x[0])
             s_2 = x[1]
-            delta = y.delta
+            delta = y[0].delta
             if s_1 - s_2 > delta and s_2 - s_1 > delta:
                 return False
         else:
             raise TypeError
-    return True
+
+
+def compare_cluster(cluster, state, reparse_config) -> bool:
+    for x, y in zip(reparse_config.keys(), reparse_config.items()):
+        if not y.status:
+            continue
+        elif isinstance(y, Basic):
+            if getattr(cluster, x) != state[x]:
+                return False
+        elif isinstance(y, Delta):
+            s_1 = getattr(cluster, x[0])
+            s_2 = x[1]
+            delta = y[0].delta
+            if math.sqrt(pow(s_1 - s_2)) > delta:
+                return False
+        else:
+            raise TypeError

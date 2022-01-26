@@ -29,8 +29,12 @@ import json
 import dataclasses
 
 try:
+    import bpy
+    Modifier = bpy.types.Modifier
     _WITH_BPY = True
 except ModuleNotFoundError:
+    from ..dummy_modifiers import DummyBlenderModifier
+    Modifier = DummyBlenderModifier
     _WITH_BPY = False
 
 from ..utils.modifier_prop_types import get_all_editable_props
@@ -39,7 +43,7 @@ from ..utils.modifier_prop_types import get_all_editable_props
 logger = logging.getLogger(__package__)
 logger.setLevel(logging.DEBUG)
 
-_CONFIG_CLASSES: dict = {}
+_CONFIG_CLASSES = {}
 
 
 class ReparseConfig(collections.UserDict):
@@ -49,15 +53,17 @@ class ReparseConfig(collections.UserDict):
         data: dict  Dictionary with object properties as keys and
                     subclasses of PropertyReparserConfig as items.
     """
-    def __init__(self, obj=None) -> None:
+    def __init__(self, obj=None):
         if type(obj) is str:
-            self.data = _deserialize_config(obj, _CONFIG_CLASSES)
-        elif obj is None:
-            self.data = {}
-        else:
+            self.data = _deserialize_config(obj, self._CONFIG_CLASSES)
+        elif type(obj) is Modifier:
             self.data = {}
             for x in get_all_editable_props(obj):
                 self.data.update({x: getattr(obj, x)})
+        elif obj is None:
+            self.data = {}
+        else:
+            raise TypeError
 
     def serialize(self):
         result = {}
