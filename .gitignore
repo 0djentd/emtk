@@ -2,5 +2,3 @@ __pycache__/
 .venv/
 profiler_result
 unittest_result
-build/
-.mypy_cache/
