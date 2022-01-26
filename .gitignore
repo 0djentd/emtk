@@ -1,3 +1,6 @@
 __pycache__/
 profiler_result
 unittest_result
+build/
+.mypy_cache/
+.venv/
