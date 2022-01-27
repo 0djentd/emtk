@@ -21,6 +21,7 @@ import json
 import string
 import functools
 import logging
+import typing
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -73,6 +74,7 @@ LETTERS_MAPPING = {
                    'COMMA': ',',
                    'PERIOD': '.',
                    }
+
 
 # Decorators {{{
 def convert_mapping(func):
@@ -303,6 +305,8 @@ class ModalShortcut(CachedObject):  # {{{
 
     def compare(self, obj):
         """Compare with bpy.types.event or another ModalShortcut."""
+
+        # TODO: remove this
         if isinstance(obj, ModalShortcut):
             return self.compare_mappings(obj.event_type,
                                          obj.shift,
@@ -321,15 +325,16 @@ class ModalShortcut(CachedObject):  # {{{
                                              obj.alt)
 
     @method_cache
-    def compare_mappings(self, event_type, shift, ctrl, alt):
+    def compare_mappings(self, event_type: str,
+                         shift: bool, ctrl: bool, alt: bool) -> bool:
         if event_type != self.event_type:
-            return
+            return False
         if shift is not self.shift:
-            return
+            return False
         if ctrl is not self.ctrl:
-            return
+            return False
         if alt is not self.alt:
-            return
+            return False
         return True
 
     def __repr__(self):
@@ -503,7 +508,7 @@ class ModalShortcutsCache(CachedObject, HashedList):  # {{{
 
     # List methods {{{
     @refresh_cache
-    def add(self, group):
+    def add(self, group: ModalShortcutsGroup):
         if not isinstance(group, ModalShortcutsGroup):
             raise TypeError
         if self.find_by_value(group.value):
@@ -511,7 +516,7 @@ class ModalShortcutsCache(CachedObject, HashedList):  # {{{
         self._data.append(group)
 
     @refresh_cache
-    def update(self, group):
+    def update(self, group: ModalShortcutsGroup):
         if not isinstance(group, ModalShortcutsGroup):
             raise TypeError
         e = self.find_by_value(group.value)
@@ -535,18 +540,23 @@ class ModalShortcutsCache(CachedObject, HashedList):  # {{{
         self._data = val
 
     @method_cache
-    def find_by_value(self, value):
+    def find_by_value(self,
+                      value: str) -> typing.Union[ModalShortcutsGroup, None]:
         value = shortcuts_groups_name_format(value)
         for x in self.shortcuts_groups:
             if value == x.value:
                 return x
+        return None
 
     @check_refresh
     @method_cache
     def search_by_shortcut_id(
-            self, shortcuts_group_value, shortcut_shortcut_id):
+            self, shortcuts_group_value: str,
+            shortcut_shortcut_id: str) -> list[ModalShortcutsGroup]:
+
         shortcuts_group_value = shortcuts_groups_name_format(
                 shortcuts_group_value)
+
         result = []
         for x in self.shortcuts_groups:
             if shortcuts_group_value not in x.value:
@@ -557,13 +567,13 @@ class ModalShortcutsCache(CachedObject, HashedList):  # {{{
         return result
 
     @method_cache
-    def serialize(self):
+    def serialize(self) -> str:
         obj = []
         for x in self.shortcuts_groups:
             obj.append(x.serialize())
         return json.dumps(obj)
 
-    def cache_clear(self):
+    def cache_clear(self) -> None:
         self._CachedObject__cache_clear()
 # }}}
 
@@ -582,7 +592,7 @@ def _check_event_type_type(val):
             return 'Expected event_type in [A-Z], got {val}'
 
 
-def find_duplicates(shortcuts):
+def find_duplicates(shortcuts: list[ModalShortcut]) -> list[ModalShortcut]:
     duplicates = []
     for x in shortcuts:
         if x in duplicates:
@@ -595,7 +605,7 @@ def find_duplicates(shortcuts):
     return duplicates
 
 
-def fix_duplicates(shortcuts):
+def fix_duplicates(shortcuts: list[ModalShortcut]) -> list[ModalShortcut]:
     shortcuts = shortcuts[:]
     for x in find_duplicates(shortcuts):
         shortcuts.remove(x)
@@ -603,7 +613,7 @@ def fix_duplicates(shortcuts):
 
 
 @functools.lru_cache
-def shortcuts_groups_name_format(value):
+def shortcuts_groups_name_format(value: str) -> str:
     if type(value) is not str:
         value = str(value)
     value.strip()
@@ -623,14 +633,8 @@ def _str_repr_event(event):
 
 # Deserialization {{{
 @functools.lru_cache(maxsize=8)
-def deserialize_shortcuts_cache(obj):
-    if type(obj) is not str:
-        raise TypeError(type(obj))
-
+def deserialize_shortcuts_cache(obj: str) -> list[ModalShortcutsGroup]:
     obj = json.loads(obj)
-    if type(obj) is not list:
-        raise TypeError
-
     shortcuts_groups = []
     for x in obj:
         shortcuts_groups.append(deserialize_shortcuts_group(x))
@@ -638,17 +642,8 @@ def deserialize_shortcuts_cache(obj):
 
 
 @functools.lru_cache(maxsize=32)
-def deserialize_shortcuts_group(obj):
-    if type(obj) is not str:
-        raise TypeError(type(obj))
-
+def deserialize_shortcuts_group(obj: str) -> ModalShortcutsGroup:
     obj_2 = json.loads(obj)
-    if type(obj_2) is not dict:
-        raise TypeError
-    for x in {'name', 'shortcuts'}:
-        if x not in obj_2:
-            raise ValueError
-
     shortcuts = []
     for x in obj_2['shortcuts']:
         shortcuts.append(deserialize_shortcut(x))
@@ -657,10 +652,7 @@ def deserialize_shortcuts_group(obj):
 
 
 @functools.lru_cache(maxsize=128)
-def deserialize_shortcut(obj):
-    if type(obj) is not str:
-        raise TypeError(type(obj))
-
+def deserialize_shortcut(obj: str) -> ModalShortcut:
     s = json.loads(obj)
     return ModalShortcut(s['shortcut_id'],
                          s['event_type'],
@@ -672,25 +664,20 @@ def deserialize_shortcut(obj):
 
 def generate_new_shortcut(shortcut_shortcut_id: str,  # {{{
                           already_existing_shortcuts: list = [],
-                          max_iterations: int = 512,
-                          ignore_duplicates=False) -> dict:
+                          max_iterations: int = 2048,
+                          ignore_duplicates=False) -> ModalShortcut:
     """Generates new unique modal operator shortcut object."""
 
-    if type(shortcut_shortcut_id) is str:
-        if len(shortcut_shortcut_id) == 0:
+    if not isinstance(shortcut_shortcut_id, str):
+        raise TypeError
+    if len(shortcut_shortcut_id) == 0:
+        raise TypeError
+
+    if not isinstance(already_existing_shortcuts, list):
+        raise TypeError
+    for x in already_existing_shortcuts:
+        if not isinstance(x, ModalShortcut):
             raise TypeError
-    else:
-        raise TypeError
-    if isinstance(already_existing_shortcuts, list):
-        for x in already_existing_shortcuts:
-            if not isinstance(x, ModalShortcut):
-                raise TypeError
-    else:
-        raise TypeError
-    if type(max_iterations) is not int:
-        raise TypeError
-    if type(ignore_duplicates) is not bool:
-        raise TypeError
 
     shortcut_elements = {'shortcut_id': shortcut_shortcut_id}
     k = ['shift', 'ctrl', 'alt']
@@ -772,7 +759,8 @@ def generate_new_shortcut(shortcut_shortcut_id: str,  # {{{
 
 
 @functools.lru_cache
-def _get_next_letter_in_shortcut_name(shortcut_shortcut_id, index):
+def _get_next_letter_in_shortcut_name(
+        shortcut_shortcut_id: str, index: int) -> tuple[int, str]:
     """
     Example 1:
     >>> get_next_event_type_in_shortcut_name('angle_limit', 4)
@@ -782,10 +770,9 @@ def _get_next_letter_in_shortcut_name(shortcut_shortcut_id, index):
     >>> get_next_event_type_in_shortcut_name('angle_limit', None)
     <<< 0, A
     """
-    if not isinstance(shortcut_shortcut_id, str):
-        raise TypeError
-
     if index is None:
+        if len(shortcut_shortcut_id) == 0:
+            raise ValueError
         for i, x in enumerate(shortcut_shortcut_id):
             if x in string.ascii_letters:
                 new_index = i
