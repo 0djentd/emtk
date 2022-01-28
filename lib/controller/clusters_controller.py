@@ -22,9 +22,11 @@ import logging
 
 try:
     import bpy
+    Modifier = bpy.types.Modifier
     _WITH_BPY = True
 except ModuleNotFoundError:
     from ..dummy_modifiers import DummyBlenderModifier
+    Modifier = DummyBlenderModifier
     _WITH_BPY = False
 
 from .actions import (
@@ -126,12 +128,7 @@ class ClustersController():
 
         logger.debug(f'Populating {command}')
 
-        if _WITH_BPY:
-            modifiers_type = bpy.types.Modifier
-        else:
-            modifiers_type = DummyBlenderModifier
-
-        if isinstance(command.initial_action.subject, modifiers_type):
+        if isinstance(command.initial_action.subject, Modifier):
             command.actions = [command.initial_action]
             return command
 
@@ -194,15 +191,10 @@ class ClustersController():
          [initial_command, commands_to_add_2]]
         """
 
-        if _WITH_BPY:
-            modifiers_type = bpy.types.Modifier
-        else:
-            modifiers_type = DummyBlenderModifier
-
         deps = []
 
         for x in command.actions:
-            if not isinstance(x.subject, modifiers_type):
+            if not isinstance(x.subject, Modifier):
                 answer = x.subject.ask(x)
                 if answer is not None:
                     for y in answer.require:
@@ -304,13 +296,7 @@ class ClustersController():
 
     def _serialize_action(self, action):
         result = [action.verb, action.subject.name, action.subject.type]
-
-        if _WITH_BPY:
-            modifiers_type = bpy.types.Modifier
-        else:
-            modifiers_type = DummyBlenderModifier
-
-        if isinstance(action.subject, modifiers_type):
+        if isinstance(action.subject, Modifier):
             result.append('MODIFIER')
         else:
             result.append('CLUSTER')

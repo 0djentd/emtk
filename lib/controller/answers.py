@@ -21,9 +21,11 @@ import logging
 
 try:
     import bpy
+    Modifier = bpy.types.Modifier
     _WITH_BPY = True
 except ModuleNotFoundError:
     from ..dummy_modifiers import DummyBlenderModifier
+    Modifier = DummyBlenderModifier
     _WITH_BPY = False
 
 from .actions import ClustersAction, ClusterRequest, ClustersCommand
@@ -155,18 +157,13 @@ class ActionDefaultRemove(ActionDefaultTemplate):
         super().__init__(action_type='REMOVE', *args, **kwargs)
 
     def _interpret_case_list(self, action):
-        if _WITH_BPY:
-            modifiers_type = bpy.types.Modifier
-        else:
-            modifiers_type = DummyBlenderModifier
-
         i = self.cluster._data.index(action.subject)
         removing_active = False
 
         if self.cluster.active == action.subject:
             removing_active = True
 
-        if isinstance(action.subject, modifiers_type):
+        if isinstance(action.subject, Modifier):
             if _WITH_BPY:
                 mod_name = action.subject.name
                 self.cluster._data.remove(action.subject)
@@ -193,18 +190,13 @@ class ActionDefaultApply(ActionDefaultTemplate):
         super().__init__(action_type='APPLY', *args, **kwargs)
 
     def _interpret_case_list(self, action):
-        if _WITH_BPY:
-            modifiers_type = bpy.types.Modifier
-        else:
-            modifiers_type = DummyBlenderModifier
-
         i = self.cluster._data.index(action.subject)
         removing_active = False
 
         if self.cluster.active == action.subject:
             removing_active = True
 
-        if isinstance(action.subject, modifiers_type):
+        if isinstance(action.subject, Modifier):
             if _WITH_BPY:
                 mod_name = action.subject.name
                 self.cluster._data.remove(action.subject)
@@ -283,12 +275,7 @@ class ActionDefaultMove(ClusterActionAnswer):
         if action.dry:
             return
 
-        if _WITH_BPY:
-            modifiers_type = bpy.types.Modifier
-        else:
-            modifiers_type = DummyBlenderModifier
-
-        if isinstance(action.subject, modifiers_type):
+        if isinstance(action.subject, Modifier):
             mod_name = action.subject.name
             if _WITH_BPY:
                 new_context = bpy.context.copy()

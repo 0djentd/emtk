@@ -21,8 +21,11 @@ import logging
 
 try:
     import bpy
+    Modifier = bpy.types.Modifier
     _WITH_BPY = True
 except ModuleNotFoundError:
+    from ..dummy_modifiers import DummyBlenderModifier
+    Modifier = DummyBlenderModifier
     _WITH_BPY = False
 
 logger = logging.getLogger(__package__)
@@ -144,9 +147,6 @@ def get_all_editable_props(modifier, no_ignore=False):  # {{{
     if not _WITH_BPY:
         return ['angle_limit', 'segments']
 
-    # if not isinstance(modifier, bpy.types.Modifier):
-    #     raise TypeError
-
     result = []
     props = modifier.rna_type.properties
     props_names = modifier.rna_type.properties.keys()
@@ -176,9 +176,6 @@ def get_all_editable_props(modifier, no_ignore=False):  # {{{
 
 def get_props_filtered_by_types(modifier) -> dict:  # {{{
     """Returns dict with modifier props."""
-    # if not isinstance(modifier, bpy.types.Modifier):
-    #     raise TypeError
-
     result = {}
     props = get_all_editable_props(modifier)
     mod_props = modifier.rna_type.properties
@@ -204,8 +201,6 @@ def get_props_filtered_by_types(modifier) -> dict:  # {{{
 def filter_props_by_type(modifier, props,  # {{{
                          props_type, props_subtype=None):
     """Returns new list of modifier props filtered by props_type"""
-    # if not isinstance(modifier, bpy.types.Modifier):
-    #     raise TypeError
     if not isinstance(props_type, str):
         raise TypeError
     if not isinstance(props, list):
@@ -227,28 +222,28 @@ def filter_props_by_type(modifier, props,  # {{{
 # }}}
 
 
-    def filter_props_by_types_subtypes(  # {{{
-            obj, props_names, t=None, s=None):
-        """Returns filtered list of props names"""
-        if not isinstance(t, list) and t is not None:
+def filter_props_by_types_subtypes(  # {{{
+        obj, props_names, t=None, s=None):
+    """Returns filtered list of props names"""
+    if not isinstance(t, list) and t is not None:
+        raise TypeError
+    if not isinstance(s, list) and s is not None:
+        raise TypeError
+    if not isinstance(props_names, list):
+        raise TypeError
+    for x in props_names:
+        if not isinstance(x, str):
             raise TypeError
-        if not isinstance(s, list) and s is not None:
-            raise TypeError
-        if not isinstance(props_names, list):
-            raise TypeError
-        for x in props_names:
-            if not isinstance(x, str):
-                raise TypeError
 
-        result = []
-        for x in props_names:
-            prop = obj.rna_type.properties[x]
-            if t is not None:
-                if prop.type not in t:
-                    continue
-            if s is not None:
-                if prop.subtype not in s:
-                    continue
-            result.append(x)
-        return result
-    # }}}
+    result = []
+    for x in props_names:
+        prop = obj.rna_type.properties[x]
+        if t is not None:
+            if prop.type not in t:
+                continue
+        if s is not None:
+            if prop.subtype not in s:
+                continue
+        result.append(x)
+    return result
+# }}}
