@@ -254,7 +254,7 @@ class BMTOOLS_OT_clusters_list_popup(
                     box_2 = box.box()
                     i = 0
                     instance_data = cluster.default_data
-                    for x, y in instance_data.values():
+                    for x, y in zip(instance_data, instance_data.values()):
                         if i % z == 0:
                             row = box_2.row()
                         col = row.column()
@@ -266,7 +266,7 @@ class BMTOOLS_OT_clusters_list_popup(
                     box_2 = box.box()
                     i = 0
                     instance_data = cluster.instance_data
-                    for x, y in instance_data.values():
+                    for x, y in zip(instance_data, instance_data.values()):
                         if i % z == 0:
                             row = box_2.row()
                         col = row.column()
