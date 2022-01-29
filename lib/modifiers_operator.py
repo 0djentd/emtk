@@ -86,12 +86,12 @@ class ModifiersOperator():
         if len(bpy.context.view_layer.objects.selected) == 0:
             return False
 
-        # # Add some cluster types
-        # default_clusters = self._default_cluster_types()
-        # for x in default_clusters:
-        #     y = x.get_this_cluster_parser_variables()
-        #     if y not in clusters:
-        #         save_cluster_type_definition_to_settings(y, 'bmtools')
+        # Add some cluster types
+        default_clusters = self._default_cluster_types()
+        for x in default_clusters:
+            y = x.get_this_cluster_parser_variables()
+            if y not in clusters:
+                save_cluster_type_definition_to_settings(y, 'bmtools')
 
         if bpy.context.preferences.addons[
                 'bmtools'].preferences.custom_cluster_types is True\
