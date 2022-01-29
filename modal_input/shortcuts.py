@@ -45,13 +45,6 @@ Cache is being cleared every time shortcuts are changed.
 # Forbid assigning shortcuts props twice.
 # Add dictionary 'variables' to ModalShortcut class.
 
-# _PROPS_STR = {'event_type', 'event_value'}
-# _PROPS_BOOL = {'shift', 'ctrl', 'alt'}
-
-# MODIFIERS = {'LEFT_CTRL', 'LEFT_ALT', 'LEFT_SHIFT',
-#              'RIGHT_CTRL', 'RIGHT_ALT', 'RIGHT_SHIFT',
-#              'OSKEY', 'APP', 'ESC', 'TAB', 'RET', 'SPACE',)
-
 # This is mapping for en_US.UTF-8 layout.
 LETTERS_MAPPING = {
                    'ZERO': '0',
