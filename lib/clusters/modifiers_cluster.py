@@ -25,7 +25,7 @@ import logging
 from .cluster_trait import ClusterTrait
 from ..lists.modifiers_list import ModifiersList
 from ..object_state import ObjectState, ModifierState
-from ..parser.reparser_config import Basic, Delta
+# from ..parser.reparser_config import Basic, Delta
 
 try:
     import bpy

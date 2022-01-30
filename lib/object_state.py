@@ -35,7 +35,6 @@ except ModuleNotFoundError:
 # TODO: move this functions to this module
 from .utils.modifier_prop_types import MODIFIER_TYPES as ALL_MODIFIER_TYPES
 from .utils.modifier_prop_types import get_all_editable_props
-from .parser.reparser_config import ReparseConfig, ListReparseConfig
 
 logger = logging.getLogger(__name__)
 # logger.setLevel(logging.ERROR)
@@ -168,7 +167,7 @@ class ObjectState(collections.UserDict):  # {{{
 
 
 @dataclasses.dataclass
-class ListObjectState(_ObjectState):  # {{{
+class ListObjectState(ObjectState):  # {{{
     items_data: list
 
     def serialize(self):
@@ -239,7 +238,7 @@ class ListObjectState(_ObjectState):  # {{{
 
 
 @dataclasses.dataclass
-class ModifierState(_ObjectState):  # {{{
+class ModifierState(ObjectState):  # {{{
     """Object representing stored modifier state."""
 
     _object_type = Modifier
@@ -277,15 +276,3 @@ class ModifierState(_ObjectState):  # {{{
             data.update({x: val})
         return data
 # }}}
-
-
-@dataclasses.dataclass
-class ModifierConfig():
-    state: ModifierState
-    config: ReparseConfig
-
-
-@dataclasses.dataclass
-class ListObjectConfig():
-    state: ListObjectState
-    config: ListReparseConfig
