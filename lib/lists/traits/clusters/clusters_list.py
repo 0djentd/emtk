@@ -25,7 +25,6 @@ import json
 from ....object_state import _get_object_state_subclass_by_name
 from ....object_state import _remove_type_name_from_dict
 from ....object_state import _add_type_name_to_dict
-from ....object_state import get_object_data
 
 from ....controller.answers import ActionDefaultDeconstuct
 from ....controller.actions import (

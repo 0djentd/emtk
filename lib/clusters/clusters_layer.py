@@ -114,20 +114,17 @@ class ClustersLayerState(ObjectState):  # {{{
         data = {}
         data.update({'name': ''})
         data.update({'tags': []})
-        data.update({'data': cls._get_data(obj)})
+        data.update({'data': obj.instance_data})
         items_data = []
-        # TODO: generics
         for x in obj._data:
             if isinstance(x, ClustersLayer):
                 items_data.append(ClustersLayerState(x))
             elif isinstance(x, ModifiersCluster):
                 items_data.append(ModifiersClusterState(x))
-            items_data.append(ModifiersCluster(x))
         data.update({'items_data': items_data})
         return cls(**data)
 
     def compare(self, obj):
-        # TODO: generics
         if not isinstance(obj, ClustersLayer):
             raise TypeError
         for x, y in zip(self.data, self.data.values()):
