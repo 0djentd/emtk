@@ -134,7 +134,7 @@ def get_object_data(obj):
 
 
 @dataclasses.dataclass
-class _ObjectState(collections.UserDict):  # {{{
+class ObjectState(collections.UserDict):  # {{{
     """
     This classes should not be instantiated using constructor.
     Use one of classmethods insead.

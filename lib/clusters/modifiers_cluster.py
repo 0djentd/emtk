@@ -17,9 +17,18 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+import copy
+import json
+import dataclasses
+import logging
+
 from .cluster_trait import ClusterTrait
 from ..lists.modifiers_list import ModifiersList
-import copy
+from ..object_state import ObjectState, ModifierState
+
+logger = logging.getLogger(__name__)
+# logger.setLevel(logging.ERROR)
+logger.setLevel(logging.DEBUG)
 
 
 class ModifiersCluster(
@@ -70,3 +79,49 @@ class ModifiersCluster(
                 return None
             modifiers.append(x, y)
         return modifiers
+
+    def get_state(self):
+        return ModifiersClusterState(self)
+
+
+@dataclasses.dataclass
+class ModifiersClusterState(ObjectState):  # {{{
+    items_data: list
+
+    def serialize(self):
+        logger.debug(f'Serializing {self}')
+        self._check_type(self)
+        state = {}
+        state.update = {
+                        'data': self.data,
+                        'items_data': self.items_data,
+                        }
+        return json.dumps(state)
+
+    @classmethod
+    def deserialize(cls, obj):
+        state = json.loads(obj)
+        data = {}
+        data.update({'data': state['data'],
+                     'items_data': state['items_data'],
+                     })
+        return cls(**data)
+
+    @classmethod
+    def get_data_from_obj(cls, obj):
+        names = []
+        for x in type(obj).mro():
+            names.append(x.__name__)
+        if 'ModifiersList' not in names:
+            raise TypeError(f'Expected cluster, got {type(obj)}')
+
+        data = {}
+        data.update({'name': ''})
+        data.update({'tags': []})
+        data.update({'data': cls._get_data(obj)})
+        items_data = []
+        for x in obj._data:
+            items_data.append(ModifierState(x))
+        data.update({'items_data': items_data})
+        return cls(**data)
+# }}}
