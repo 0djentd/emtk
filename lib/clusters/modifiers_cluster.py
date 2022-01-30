@@ -17,15 +17,14 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-import copy
 import json
 import dataclasses
 import logging
+import copy
 
 from .cluster_trait import ClusterTrait
 from ..lists.modifiers_list import ModifiersList
 from ..object_state import ObjectState, ModifierState
-# from ..parser.reparser_config import Basic, Delta
 
 try:
     import bpy
@@ -41,7 +40,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-class ModifiersCluster(
+class ModifiersCluster(  # {{{
                        ClusterTrait,
                        ModifiersList
                        ):
@@ -92,6 +91,7 @@ class ModifiersCluster(
 
     def get_state(self):
         return ModifiersClusterState(self)
+# }}}
 
 
 @dataclasses.dataclass

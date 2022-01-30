@@ -62,6 +62,9 @@ class ExtendedModifiersList(
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+    def get_state(self):
+        return ExtendedModifiersListState.get_data_from_obj(self)
+
 
 @dataclasses.dataclass
 class ExtendedModifiersListState(ObjectState):  # {{{
