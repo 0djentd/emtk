@@ -17,10 +17,6 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-import math
-# import re
-import json
-
 from bpy.props import (
                        BoolProperty,
                        IntProperty,
@@ -29,8 +25,7 @@ from bpy.props import (
                        EnumProperty,
                        )
 
-# from .shortcuts import generate_new_shortcut
-from .shortcuts import ModalShortcutsCache, ModalShortcut, ModalShortcutsGroup
+from .shortcuts import ModalShortcutsCache, ModalShortcut
 
 
 class ModalShortcutsPreferences():
