@@ -19,7 +19,7 @@
 
 import unittest
 
-from ..object_state import ModifierState, ListObjectState
+from ..object_state import ModifierState
 
 
 try:

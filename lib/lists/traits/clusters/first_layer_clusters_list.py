@@ -392,8 +392,9 @@ class FirstLayerClustersListTrait():
     def get_modifiers_state(self):
         """Returns current object actual modifiers info."""
         result = []
-        result = ListObjectState.get_data_from_obj(self)
-        return result
+        for x in self.all_modifiers():
+            result.append(ModifierState.get_data_from_obj(x).serialize())
+        return json.dumps(result)
 
     def save_modifiers_state(self, prop_name=None):
         """Saves current object actual modifiers info
@@ -409,13 +410,11 @@ class FirstLayerClustersListTrait():
         else:
             raise TypeError
 
-        y = self.get_modifiers_state()
-        x = y.serialize()
-
+        result = self.get_modifiers_state()
         if _WITH_BPY:
-            self._object[name] = x
+            self._object[name] = result
         elif not _WITH_BPY:
-            self._object.props[name] = x
+            self._object.props[name] = result
 
     def load_modifiers_state(self, prop_name=None):
         """
