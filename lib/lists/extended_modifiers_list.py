@@ -66,6 +66,9 @@ class ExtendedModifiersList(
         return ExtendedModifiersListState.get_data_from_obj(self)
 
 
+# TODO: why even bother not considering extended modifiers list aka
+# first layer clusters list as clusters layer?
+# Will be kinda hard to rework everything at this point though.
 @dataclasses.dataclass
 class ExtendedModifiersListState(ObjectState):  # {{{
     items_data: list
