@@ -136,6 +136,5 @@ class Delta(_ReparseConfigElement):
     """
     delta: float
 
-
 _CONFIG_CLASSES.update({'Delta': Delta})
 _CONFIG_CLASSES.update({'Basic': Basic})

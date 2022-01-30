@@ -25,6 +25,16 @@ import logging
 from .cluster_trait import ClusterTrait
 from ..lists.modifiers_list import ModifiersList
 from ..object_state import ObjectState, ModifierState
+from ..parser.reparser_config import Basic, Delta
+
+try:
+    import bpy
+    Modifier = bpy.types.Modifier
+    _WITH_BPY = True
+except ModuleNotFoundError:
+    from ..dummy_modifiers import DummyBlenderModifier
+    Modifier = DummyBlenderModifier
+    _WITH_BPY = False
 
 logger = logging.getLogger(__name__)
 # logger.setLevel(logging.ERROR)
