@@ -275,4 +275,12 @@ class ModifierState(ObjectState):  # {{{
             val = getattr(obj, x)
             data.update({x: val})
         return data
+
+    def compare(self, obj):
+        if not isinstance(obj, Modifier):
+            raise TypeError
+        for x, y in zip(self.data, self.data.values()):
+            if getattr(obj, x) != y:
+                return False
+        return True
 # }}}

@@ -134,4 +134,24 @@ class ModifiersClusterState(ObjectState):  # {{{
             items_data.append(ModifierState(x))
         data.update({'items_data': items_data})
         return cls(**data)
+
+    def compare(self, obj):
+        if not isinstance(obj, ModifiersCluster):
+            raise TypeError
+        for x, y in zip(self.data, self.data.values()):
+            if obj.instance_data[x] != y:
+                return False
+        if not self.compare_items(obj.items_data):
+            return False
+        return True
+
+    def compare_items(self, items):
+        if not isinstance(items, list):
+            raise TypeError
+        if len(self.items_data) != items:
+            return False
+        for i, x in enumerate(self.items_data):
+            if not x.compare(items[i]):
+                return False
+        return True
 # }}}
