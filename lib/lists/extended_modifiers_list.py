@@ -17,8 +17,6 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-
-import copy
 import json
 import dataclasses
 import logging

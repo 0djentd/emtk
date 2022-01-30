@@ -18,6 +18,7 @@
 # ##### END GPL LICENSE BLOCK #####
 
 
+# TODO: Rework whole thing. It should have subclasses.
 class SortingRule():
     """
     Base class for cluster sorting rules.

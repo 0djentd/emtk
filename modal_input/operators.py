@@ -18,7 +18,6 @@
 # ##### END GPL LICENSE BLOCK #####
 
 import bpy
-import re
 import logging
 
 from bpy.props import (
