@@ -23,6 +23,9 @@ It is used to decide which modifiers to consider the
 ones used before serialization.
 """
 
+
+# TODO: dont bother using this thing for now.
+
 import logging
 import collections
 import json

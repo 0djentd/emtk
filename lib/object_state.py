@@ -122,16 +122,6 @@ def _get_object_state_subclass_by_name(name):
 # }}}
 
 
-def get_object_data(obj):
-    """Returns ListObjectState or ModifierState for object."""
-    if 'ModifiersList' in _get_class_names(obj):
-        return ListObjectState.get_data_from_obj(obj)
-    elif isinstance(obj, Modifier):
-        return ModifierState.get_data_from_obj(obj)
-    else:
-        raise TypeError
-
-
 @dataclasses.dataclass
 class ObjectState(collections.UserDict):  # {{{
     """
@@ -163,77 +153,6 @@ class ObjectState(collections.UserDict):  # {{{
         for x, y in obj.__dataclass_fields__.items():
             if type(getattr(obj, x)) != y.type:
                 raise TypeError
-# }}}
-
-
-@dataclasses.dataclass
-class ListObjectState(ObjectState):  # {{{
-    items_data: list
-
-    def serialize(self):
-        logger.debug(f'Serializing {self}')
-        self._check_type(self)
-        state = {}
-        for x, y in self.__dataclass_fields__.items():
-            if x == 'items_data':
-                items_data = []
-                for z in getattr(self, x):
-                    element = _add_type_name_to_dict(z)
-                    element['data'] = element['data'].serialize()
-                    items_data.append(element)
-                state.update({x: items_data})
-            elif x == 'data':
-                state.update({x: _add_type_name_to_dict(self.data)})
-            else:
-                state.update({x: getattr(self, x)})
-        return json.dumps(state)
-
-    @classmethod
-    def deserialize(cls, obj):
-        state = json.loads(obj)
-        data = {}
-        for x in cls.__dataclass_fields__:
-            if x == 'items_data':
-                items_data = []
-                for y in state[x].items():
-                    items_data.append(
-                            _get_object_state_subclass_by_name(
-                                y['type']).deserialize(y))
-                data.update({x: items_data})
-            elif x == 'data':
-                data.update({x: _remove_type_name_from_dict(state[x])})
-            else:
-                data.update({x: state[x]})
-        return cls(**data)
-
-    @classmethod
-    def get_data_from_obj(cls, obj):
-        names = []
-        for x in type(obj).mro():
-            names.append(x.__name__)
-        if 'ModifiersList' not in names:
-            raise TypeError(f'Expected cluster, got {type(obj)}')
-
-        data = {}
-        data.update({'name': ''})
-        data.update({'tags': []})
-        data.update({'data': cls._get_data(obj)})
-        data.update({'items_data': cls._get_items_data(obj)})
-        return cls(**data)
-
-    @staticmethod
-    def _get_items_data(obj):
-        result = []
-        for x in obj:
-            result.append(get_object_data(x))
-        return result
-
-    @staticmethod
-    def _get_data(obj):
-        try:
-            return obj.instance_data
-        except AttributeError:
-            return {}
 # }}}
 
 
