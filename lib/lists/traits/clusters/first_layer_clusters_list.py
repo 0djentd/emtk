@@ -20,23 +20,33 @@
 import copy
 import json
 import logging
+import dataclasses
 
-try:
-    import bpy
-    _WITH_BPY = True
-except ModuleNotFoundError:
-    from ....dummy_modifiers import DummyBlenderModifier
-    _WITH_BPY = False
+from ....object_state import ObjectState
+from ....clusters.modifiers_cluster import ModifiersCluster
 
 from ....parser import ClustersParser
 from ....controller.clusters_controller import ClustersController
 from ....controller.answers import ActionDefaultRemove
 from ....utils.modifiers import get_modifier_state, restore_modifier_state
-from ....object_state import ModifierState, ListObjectState
+from ....object_state import ModifierState
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
 # logger.setLevel(logging.DEBUG)
+
+try:
+    import bpy
+    Modifier = bpy.types.Modifier
+    _WITH_BPY = True
+except ModuleNotFoundError:
+    from ....dummy_modifiers import DummyBlenderModifier
+    Modifier = DummyBlenderModifier
+    _WITH_BPY = False
+
+logger = logging.getLogger(__name__)
+# logger.setLevel(logging.ERROR)
+logger.setLevel(logging.DEBUG)
 
 
 class FirstLayerClustersListTrait():
@@ -500,3 +510,72 @@ class FirstLayerClustersListTrait():
     def __repr__(self):
         return self.__str__()
     # }}}
+
+    def get_state(self):
+        return FirstLayerClustersListState.get_data_from_obj(self)
+
+
+# TODO: why even bother not considering extended modifiers list aka
+# first layer clusters list as clusters layer?
+# Will be kinda hard to rework everything at this point though.
+@dataclasses.dataclass
+class FirstLayerClustersListState(ObjectState):  # {{{
+    items_data: list
+
+    def serialize(self):
+        logger.debug(f'Serializing {self}')
+        self._check_type(self)
+        state = {}
+        state.update = {
+                        'data': self.data,
+                        'items_data': self.items_data,
+                        }
+        return json.dumps(state)
+
+    @classmethod
+    def deserialize(cls, obj):
+        state = json.loads(obj)
+        data = {}
+        data.update({'data': state['data'],
+                     'items_data': state['items_data'],
+                     })
+        return cls(**data)
+
+    @classmethod
+    def get_data_from_obj(cls, obj):
+        names = []
+        for x in type(obj).mro():
+            names.append(x.__name__)
+        if 'ModifiersList' not in names:
+            raise TypeError(f'Expected cluster, got {type(obj)}')
+
+        data = {}
+        data.update({'name': ''})
+        data.update({'tags': []})
+        data.update({'data': cls._get_data(obj)})
+        items_data = []
+        for x in obj._data:
+            items_data.append(ModifierState(x))
+        data.update({'items_data': items_data})
+        return cls(**data)
+
+    def compare(self, obj):
+        if not isinstance(obj, ModifiersCluster):
+            raise TypeError
+        for x, y in zip(self.data, self.data.values()):
+            if obj.instance_data[x] != y:
+                return False
+        if not self.compare_items(obj.items_data):
+            return False
+        return True
+
+    def compare_items(self, items):
+        if not isinstance(items, list):
+            raise TypeError
+        if len(self.items_data) != items:
+            return False
+        for i, x in enumerate(self.items_data):
+            if not x.compare(items[i]):
+                return False
+        return True
+# }}}
