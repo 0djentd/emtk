@@ -18,7 +18,6 @@
 # ##### END GPL LICENSE BLOCK #####
 
 import collections
-import copy
 import logging
 import dataclasses
 import json
@@ -28,13 +27,12 @@ from ....object_state import _remove_type_name_from_dict
 from ....object_state import _add_type_name_to_dict
 from ....object_state import get_object_data
 
-from ....clusters.cluster_trait import ClusterTrait
 from ....controller.answers import ActionDefaultDeconstuct
 from ....controller.actions import (
                                     ClustersAction,
                                     ClustersCommand,
                                     )
-from ...utils import check_if_removed, check_obj_ref
+from ...utils import check_if_removed
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
