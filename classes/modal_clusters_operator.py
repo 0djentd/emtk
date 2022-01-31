@@ -277,10 +277,6 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                 x = self.m_list.create_modifier(
                         self._DEFAULT_M_NAME, self._DEFAULT_M_TYPE)
                 self.m_list.active = x
-
-                # TODO: why bmtool_modifier_defaults doesnt need modifier?
-                self.bmtool_modifier_defaults(context)
-
             else:
                 self.m_list.duplicate(cluster)
 
@@ -311,7 +307,6 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
         elif (event.type == self.__bmtool_kbs['construct_deconstruct'])\
                 & event.shift & (event.value == 'PRESS'):
 
-            # TODO: this probably wouldnt work
             for x in self.__get_clusters():
                 if layer.deconstruct(x):
                     self.report({'INFO'}, "Deconstructed cluster")
