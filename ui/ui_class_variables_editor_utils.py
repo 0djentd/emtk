@@ -24,6 +24,9 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
+# TODO: remove this module
+
+
 def _get_var_editor_prop_name(var_type):
     if var_type is bool:
         prop_name = "var_editor_bool"

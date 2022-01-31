@@ -19,11 +19,15 @@
 
 import math
 import logging
-# import copy
-# import time
-import re
 
-import bpy
+try:
+    import bpy
+    Modifier = bpy.types.Modifier
+    _WITH_BPY = True
+except ModuleNotFoundError:
+    from ..lib.dummy_modifiers import DummyBlenderModifier
+    Modifier = DummyBlenderModifier
+    _WITH_BPY = False
 
 from ..lib.utils.modifier_prop_types import get_props_filtered_by_types
 from ..lib.clusters.cluster_trait import ClusterTrait
@@ -35,6 +39,7 @@ logger.setLevel(logging.ERROR)
 # logger.setLevel(logging.DEBUG)
 
 # TODO: add modifiers types switcher.
+# TODO: remove some constants from AdaptiveModalEditor class.
 
 
 class AdaptiveModalEditor(ModalClustersEditor):
@@ -248,7 +253,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
         logger.debug(self.__kbs_editing)
     # }}}
 
-    def editor_switched_from(self, context, clusters):  # {{{
+    def editor_switched_from(self, context, clusters):
         """Called every time editor is switched from."""
         if not isinstance(clusters, list):
             clusters = [clusters]
@@ -257,22 +262,17 @@ class AdaptiveModalEditor(ModalClustersEditor):
                 raise TypeError
 
         self.__switch_to_default()
-
         self.__mods = []
-
         self.__kbs_modal = set()
         self.__kbs_no_modal = set()
         self.__kbs_editing = set()
-
         logger.debug('Editor switched from.')
-    # }}}
 
-    def editor_modal_pre(  # {{{
+    def editor_modal_pre(
             self, context, event, *args, **kwargs):
         return
-    # }}}
 
-    def editor_modal(  # {{{
+    def editor_modal(
             self, context, event, *args, **kwargs):
         logger.debug(f'Event {event.type}, {event.value}')
         if self.mode == self.__DEFAULT_MODE:
@@ -283,7 +283,6 @@ class AdaptiveModalEditor(ModalClustersEditor):
             raise ValueError
         elif self.mode in self.__kbs_no_modal:
             raise ValueError
-    # }}}
     # }}}
 
     def __default_mode(self, event):  # {{{
@@ -468,7 +467,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
     # }}}
 
     # Complex events {{{
-    def __check_if_delta_prop_changed(self, event):
+    def __check_if_delta_prop_changed(self, event) -> None:
 
         # Use active mode prop name.
         prop_name = self.mode
@@ -536,20 +535,22 @@ class AdaptiveModalEditor(ModalClustersEditor):
     # }}}
 
     # Utils {{{
-    def __get_shortcut_value(self, event):
+    def __get_shortcut_value(self, event: bpy.types.Event) -> str | None:
         logger.debug(f'Look up kbs for {event.type}')
         if len(event.type) != 1:
-            return
+            return None
         s = self.modal_shortcuts.find_by_event(event)
         if s:
             return s.shortcut_id
+        return None
 
-    def __check_event_is_simple(self, event):
+    def __check_event_is_simple(self, event: bpy.types.Event) -> bool:
         """Checks if event should not be passed to modal input base class."""
         if (event.type in self._ModalInputOperator__MODAL_LETTERS_LIST
                 or event.type in {'PERIOD', 'BACK-SPACE', 'RET', 'SPACE'})\
                 and event.value == 'PRESS':
             return True
+        return False
 
     def __get_all_clusters_modifiers(self, clusters):
         """Returns list of modifiers to edit."""
@@ -568,14 +569,13 @@ class AdaptiveModalEditor(ModalClustersEditor):
                 raise TypeError
         return mods
 
-    def __switch_to_mode(self, mode_name):
+    def __switch_to_mode(self, mode_name: str) -> None:
         if mode_name == self.__DEFAULT_MODE:
             return self.__switch_to_default()
-
         self.mode = mode_name
         self.__prop_def = self.__mods[0].rna_type.properties[mode_name]
 
-    def __switch_to_default(self):
+    def __switch_to_default(self) -> None:
         self.mode = self.__DEFAULT_MODE
         self.modal_input_mode = self._ModalInputOperator__DEFAULT_MODE
         self.__prop_def = None
