@@ -123,7 +123,6 @@ class UIClassVariablesEditor():   # {{{
             if x in attr_str:
                 raise ValueError
 
-        # TODO: remove this
         attr_str = re.sub('"', '\"', attr_str)
         attr_str = re.sub("'", "\'", attr_str)
 

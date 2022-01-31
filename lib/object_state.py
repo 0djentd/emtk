@@ -21,7 +21,7 @@ import logging
 import json
 import collections
 import dataclasses
-import copy
+# import copy
 
 try:
     import bpy
