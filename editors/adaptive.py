@@ -19,6 +19,7 @@
 
 import math
 import logging
+import typing
 
 try:
     import bpy
@@ -535,7 +536,8 @@ class AdaptiveModalEditor(ModalClustersEditor):
     # }}}
 
     # Utils {{{
-    def __get_shortcut_value(self, event: bpy.types.Event) -> str | None:
+    def __get_shortcut_value(
+            self, event: bpy.types.Event) -> typing.Union[str, None]:
         logger.debug(f'Look up kbs for {event.type}')
         if len(event.type) != 1:
             return None
