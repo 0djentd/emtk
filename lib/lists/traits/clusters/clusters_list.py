@@ -185,10 +185,7 @@ class ClustersListTrait():
         clusters in it, including nested ones.
         Returns empty list if no such clusters found.
         """
-        result = []
-        for x in self.all_clusters():
-            if x.has_clusters():
-                result.append(x)
+        result = [x for x in self.all_clusters() if x.has_clusters()]
         return full_clusters_layers_list(result)
 
     def all_modifiers(self):
@@ -283,22 +280,14 @@ class clusters_list_generated_list(collections.UserList):
             for x in self.data:
                 result.update({x.name: x})
         else:
-            result = []
-            for x in self.data:
-                result.append(x.name)
+            result = [x.name for x in self.data]
         return result
 
-    def types(self):
-        result = []
-        for x in self.data:
-            result.append(x)
-        return result
+
+class clusters_list_generated_clusters_list(clusters_list_generated_list):
 
     def tags(self):
-        result = []
-        for x in self.data:
-            result.append(x.get_this_cluster_tags())
-        return result
+        return [x.get_this_cluster_tags() for x in self.data]
 
 
 class full_modifiers_list(clusters_list_generated_list):
@@ -306,17 +295,17 @@ class full_modifiers_list(clusters_list_generated_list):
     pass
 
 
-class full_modifiers_clusters_list(clusters_list_generated_list):
+class full_modifiers_clusters_list(clusters_list_generated_clusters_list):
     """List of all modifiers clusters."""
     pass
 
 
-class full_clusters_layers_list(clusters_list_generated_list):
+class full_clusters_layers_list(clusters_list_generated_clusters_list):
     """List of all clusters layers."""
     pass
 
 
-class full_clusters_list(clusters_list_generated_list):
+class full_clusters_list(clusters_list_generated_clusters_list):
     """List of all clusters."""
     pass
 
