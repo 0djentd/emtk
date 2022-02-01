@@ -283,6 +283,15 @@ class clusters_list_generated_list(collections.UserList):
             result = [x.name for x in self.data]
         return result
 
+    def types(self, use_dict=False):
+        if use_dict:
+            result = {}
+            for x in self.data:
+                result.update({x.type: x})
+        else:
+            result = [x.type for x in self.data]
+        return result
+
 
 class clusters_list_generated_clusters_list(clusters_list_generated_list):
 
