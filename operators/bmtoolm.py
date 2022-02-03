@@ -197,8 +197,8 @@ class BMTOOL_OT_bmtoolm(BMToolUi, ModalClustersOperator, Operator):
         remove = []
         for x in self.__editors:
             if editor.props['name'] == x.props['name']\
-                    and editor.props['cluster_types']\
-                    == x.props['cluster_types']:
+                    and editor.props['types']\
+                    == x.props['types']:
                 remove.append(x)
         for x in remove:
             if x is self.__active_editor:
@@ -209,9 +209,9 @@ class BMTOOL_OT_bmtoolm(BMToolUi, ModalClustersOperator, Operator):
         """Returns list of possible editors for cluster."""
         editors_list = []
         for editor in self.__editors:
-            if cluster.type in editor.props['cluster_types']:
+            if cluster.type in editor.props['types']:
                 editors_list.append(editor)
-            elif 'ANY' in editor.props['cluster_types']:
+            elif 'ANY' in editor.props['types']:
                 editors_list.append(editor)
         return editors_list
 

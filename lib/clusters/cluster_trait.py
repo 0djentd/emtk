@@ -144,8 +144,6 @@ class ClusterTrait():
         Returns cluster definition.
         """
         x = cluster_definition
-        if not isinstance(x, dict):
-            raise TypeError
 
         # Check if essential values specified.
         if x['name'] is None\

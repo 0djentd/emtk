@@ -26,7 +26,8 @@ from ..ui.bmtool_ui import bmtool_modifier_ui_draw
 from ..modal_input.object import ModalInputOperator
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.ERROR)
+# logger.setLevel(logging.DEBUG)
 
 
 class ModalClustersOperator(ModalInputOperator, ModifiersOperator):

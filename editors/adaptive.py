@@ -184,7 +184,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
     def __init__(self, *args, allow_cluster=True, **kwargs):
         super().__init__(*args,
                          name='Adaptive_Editor',
-                         cluster_types=['ANY'],
+                         obj_types=['ANY'],
                          **kwargs)
 
         self.mode = self.__DEFAULT_MODE

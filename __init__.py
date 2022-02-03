@@ -56,7 +56,7 @@ from . operators.dev.add_cluster_type import BMTOOL_OT_add_cluster_type_object
 bl_info = {
     "name": "BMTools",
     "author": "Sergey Shapochkin, also known as djentled",
-    "version": (0, 4, 0),
+    "version": (0, 5, 0),
     "blender": (3, 1, 0),
     "description": "Tools for editing modifiers and clusters.",
     "category": "Interface"

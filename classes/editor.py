@@ -29,15 +29,13 @@ class ModalClustersEditor(ModalInputOperator):
     """Editor base class"""
 
     # Constructor {{{
-    # TODO: editor base class can be used with modifiers as well,
-    # so there is no need to use 'clusters' prefix
-    def __init__(self, *args, name, cluster_types, **kwargs):
+    def __init__(self, *args, name, obj_types, **kwargs):
         super().__init__(*args, **kwargs)
         if not isinstance(name, str):
             raise TypeError
-        if not isinstance(cluster_types, list):
-            cluster_types = [cluster_types]
-        for x in cluster_types:
+        if not isinstance(obj_types, list):
+            obj_types = [obj_types]
+        for x in obj_types:
             if not isinstance(x, str):
                 raise TypeError
 
@@ -50,7 +48,7 @@ class ModalClustersEditor(ModalInputOperator):
                       # Example:
                       # ['BEVEL_CLUSTER', 'BEVEL']
                       # Can be 'ANY' as well.
-                      'cluster_types': cluster_types
+                      'types': obj_types
                       }
     # }}}
 
