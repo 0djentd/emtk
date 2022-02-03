@@ -20,7 +20,7 @@
 from bpy.types import Operator
 from bpy.props import FloatProperty, StringProperty
 
-from ...lib.modifiers_operator import ModifiersOperator
+from ...libs.emtk.modifiers_operator import ModifiersOperator
 
 
 class BMTOOL_OT_add_new_cluster(ModifiersOperator, Operator):

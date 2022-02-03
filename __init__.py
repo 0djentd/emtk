@@ -31,21 +31,22 @@ from . operators.dev.add_new_cluster import BMTOOL_OT_add_new_cluster
 
 # Preferences
 from . preferences import BMToolPreferences
-from . modal_input.operators import BMTOOLS_OT_start_editing_modal_shortcut
-from . modal_input.operators import BMTOOLS_OT_add_or_update_modal_shortcut
-from . modal_input.operators import\
-        BMTOOL_OT_reparse_default_modifiers_props_kbs
 
 # UI
 from . ui.pie_menus import VIEW3D_MT_PIE_bmtools_pie_1
 from . ui.bmtool_panel import VIEW3D_PT_bmtool_panel
 from . ui.clusters_list_popup import BMTOOLS_OT_clusters_list_popup
 
+# Modal input
+from . libs.modal_input.operators import BMTOOLS_OT_start_editing_modal_shortcut
+from . libs.modal_input.operators import BMTOOLS_OT_add_or_update_modal_shortcut
+from . libs.modal_input.operators import BMTOOL_OT_reparse_default_modifiers_props_kbs
+
 # Class variables editor
-from . class_var_editor_ui.operators import BMTOOLS_OT_bmtool_invoke_operator_func
-from . class_var_editor_ui.panel import UIClassVariablesEditorCache
-from . class_var_editor_ui.panel import UIClassVariablesEditor
-from . class_var_editor_ui.panel import get_prop_group_name
+from . libs.class_var_editor_ui.operators import BMTOOLS_OT_bmtool_invoke_operator_func
+from . libs.class_var_editor_ui.panel import UIClassVariablesEditorCache
+from . libs.class_var_editor_ui.panel import UIClassVariablesEditor
+from . libs.class_var_editor_ui.panel import get_prop_group_name
 
 # Dev
 from . operators.dev.add_all_modifiers import BMTOOL_OT_add_all_modifiers

@@ -27,7 +27,7 @@ from bpy.props import (
                        EnumProperty,
                        )
 
-from .modal_input.preferences import ModalShortcutsPreferences
+from .libs.modal_input.preferences import ModalShortcutsPreferences
 
 
 class BMToolPreferences(ModalShortcutsPreferences, AddonPreferences):

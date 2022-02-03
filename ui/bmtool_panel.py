@@ -19,7 +19,7 @@
 
 from bpy.types import Panel
 
-from ..lib.utils.modifier_prop_types import get_all_editable_props
+from ..libs.emtk.utils.modifier_prop_types import get_all_editable_props
 
 
 """

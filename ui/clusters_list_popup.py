@@ -28,10 +28,10 @@ import bpy
 from bpy.props import BoolProperty, IntProperty, FloatProperty, StringProperty
 from bpy.types import Operator
 
-from ..lib.modifiers_operator import ModifiersOperator
-from ..lib.utils.modifier_prop_types import get_all_editable_props
+from ..libs.emtk.modifiers_operator import ModifiersOperator
+from ..libs.emtk.utils.modifier_prop_types import get_all_editable_props
 
-from ..class_var_editor_ui.panel import UIClassVariablesEditor
+from ..libs.class_var_editor_ui.panel import UIClassVariablesEditor
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

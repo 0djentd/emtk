@@ -21,9 +21,8 @@ import json
 
 import bpy
 
-from ...lib.utils.modifier_prop_types import get_all_editable_props
-# from ...lib.utils.modifier_prop_types import get_props_filtered_by_types
-from ...lib.utils.modifier_prop_types import MODIFIER_TYPES
+from ...libs.emtk.utils.modifier_prop_types import get_all_editable_props
+from ...libs.emtk.utils.modifier_prop_types import MODIFIER_TYPES
 
 
 class BMTOOL_OT_add_all_modifiers(bpy.types.Operator):

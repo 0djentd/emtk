@@ -27,9 +27,8 @@ from bpy.props import (
                        StringProperty
                        )
 
-from ..lib.utils.modifier_prop_types import get_all_editable_props
-# from ..lib.utils.modifier_prop_types import get_props_filtered_by_types
-from ..lib.utils.modifier_prop_types import MODIFIER_TYPES
+from ..emtk.utils.modifier_prop_types import get_all_editable_props
+from ..emtk.utils.modifier_prop_types import MODIFIER_TYPES
 
 from .shortcuts import generate_new_shortcut
 from .shortcuts import ModalShortcutsGroup, ModalShortcutsCache, ModalShortcut
