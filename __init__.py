@@ -30,7 +30,7 @@ from . operators.bmtoole2 import BMTOOL_OT_bmtoole2
 from . operators.dev.add_new_cluster import BMTOOL_OT_add_new_cluster
 
 # Preferences
-from . preferences.panel import BMToolPreferences
+from . preferences import BMToolPreferences
 from . modal_input.operators import BMTOOLS_OT_start_editing_modal_shortcut
 from . modal_input.operators import BMTOOLS_OT_add_or_update_modal_shortcut
 from . modal_input.operators import\

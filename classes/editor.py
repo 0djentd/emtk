@@ -28,8 +28,7 @@ logger.setLevel(logging.DEBUG)
 class ModalClustersEditor(ModalInputOperator):
     """Editor base class"""
 
-    # Constructor {{{
-    def __init__(self, *args, name, obj_types, **kwargs):
+    def __init__(self, *args, name: str, obj_types: list[str], **kwargs):
         super().__init__(*args, **kwargs)
         if not isinstance(name, str):
             raise TypeError
@@ -50,7 +49,6 @@ class ModalClustersEditor(ModalInputOperator):
                       # Can be 'ANY' as well.
                       'types': obj_types
                       }
-    # }}}
 
     # Editor methods {{{
     def editor_switched_to(self, context, clusters):

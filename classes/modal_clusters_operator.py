@@ -475,6 +475,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
         return True
     # }}}
 
+    # TODO: rename this methods.
     # Methods reserved for operators. {{{
     def bmtool_modal_pre(self, context, event):
         """Operator-specific modal method 1
