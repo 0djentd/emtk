@@ -46,7 +46,7 @@ Cache is being cleared every time shortcuts are changed.
 # Add dictionary 'variables' to ModalShortcut class.
 
 # This is mapping for en_US.UTF-8 layout.
-LETTERS_MAPPING = {
+_LETTERS_MAPPING = {
                    'ZERO': '0',
                    'ONE': '1',
                    'TWO': '2',
@@ -581,7 +581,7 @@ def _check_event_type_type(val):
     if val not in string.ascii_uppercase:
         val = val.upper()
         if val not in string.ascii_lowercase\
-                and val not in LETTERS_MAPPING:
+                and val not in _LETTERS_MAPPING:
             return 'Expected event_type in [A-Z], got {val}'
 
 
@@ -676,6 +676,7 @@ def generate_new_shortcut(shortcut_shortcut_id: str,  # {{{
     k = ['shift', 'ctrl', 'alt']
     for x in k:
         shortcut_elements.update({x: False})
+
     event_type_index = None
     event_type_index, shortcut_elements['event_type']\
         = _get_next_letter_in_shortcut_name(
