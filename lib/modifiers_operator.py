@@ -87,7 +87,7 @@ class ModifiersOperator():
             return False
 
         # Add some cluster types
-        default_clusters = self._default_cluster_types()
+        default_clusters = _default_cluster_types()
         for x in default_clusters:
             y = x.get_this_cluster_parser_variables()
             if y not in clusters:
@@ -171,45 +171,46 @@ class ModifiersOperator():
         self.m_list = modifiers_list
         self.update_object_list(context)
 
-    def _default_cluster_types(self):
-        """
-        Some cluster types to add to addon settings or use without bpy.
-        """
-        clusters = []
-        cluster = ModifiersCluster(
-                                   cluster_name='Beveled Boolean',
-                                   cluster_type='BEVELED_BOOLEAN',
-                                   modifiers_by_type=[
-                                       ['BOOLEAN'], ['BEVEL']],
-                                   modifiers_by_name=[
-                                       ['ANY'], ['ANY']],
-                                   cluster_priority=0,
-                                   cluster_createable=True,
-                                   )
-        clusters.append(cluster)
 
-        cluster = ModifiersCluster(
-                                   cluster_name='Triple Bevel',
-                                   cluster_type='TRIPLE_BEVEL',
-                                   modifiers_by_type=[['BEVEL'],
-                                                      ['BEVEL'],
-                                                      ['BEVEL']],
-                                   modifiers_by_name=[
-                                       ['ANY'], ['ANY'], ['ANY']],
-                                   cluster_priority=0,
-                                   cluster_createable=True,
-                                   )
-        clusters.append(cluster)
+def _default_cluster_types():
+    """
+    Some cluster types to add to addon settings or use without bpy.
+    """
+    clusters = []
+    cluster = ModifiersCluster(
+                               cluster_name='Beveled Boolean',
+                               cluster_type='BEVELED_BOOLEAN',
+                               modifiers_by_type=[
+                                   ['BOOLEAN'], ['BEVEL']],
+                               modifiers_by_name=[
+                                   ['ANY'], ['ANY']],
+                               cluster_priority=0,
+                               cluster_createable=True,
+                               )
+    clusters.append(cluster)
 
-        cluster = ClustersLayer(
-                                cluster_name='Double Bevel Cluster',
-                                cluster_type='BEVEL_CLUSTER',
-                                modifiers_by_type=[
-                                    ['TRIPLE_BEVEL'],
-                                    ['TRIPLE_BEVEL']],
-                                modifiers_by_name=[['ANY'], ['ANY']],
-                                cluster_priority=0,
-                                cluster_createable=True,
-                                )
-        clusters.append(cluster)
-        return clusters
+    cluster = ModifiersCluster(
+                               cluster_name='Triple Bevel',
+                               cluster_type='TRIPLE_BEVEL',
+                               modifiers_by_type=[['BEVEL'],
+                                                  ['BEVEL'],
+                                                  ['BEVEL']],
+                               modifiers_by_name=[
+                                   ['ANY'], ['ANY'], ['ANY']],
+                               cluster_priority=0,
+                               cluster_createable=True,
+                               )
+    clusters.append(cluster)
+
+    cluster = ClustersLayer(
+                            cluster_name='Double Bevel Cluster',
+                            cluster_type='BEVEL_CLUSTER',
+                            modifiers_by_type=[
+                                ['TRIPLE_BEVEL'],
+                                ['TRIPLE_BEVEL']],
+                            modifiers_by_name=[['ANY'], ['ANY']],
+                            cluster_priority=0,
+                            cluster_createable=True,
+                            )
+    clusters.append(cluster)
+    return clusters
