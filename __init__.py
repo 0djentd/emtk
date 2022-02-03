@@ -39,13 +39,13 @@ from . modal_input.operators import\
 # UI
 from . ui.pie_menus import VIEW3D_MT_PIE_bmtools_pie_1
 from . ui.bmtool_panel import VIEW3D_PT_bmtool_panel
-from . ui.utils.operators import BMTOOLS_OT_bmtool_invoke_operator_func
 from . ui.clusters_list_popup import BMTOOLS_OT_clusters_list_popup
 
 # Class variables editor
-from . ui.ui_class_variables_editor import UIClassVariablesEditorCache
-from . ui.ui_class_variables_editor import UIClassVariablesEditor
-from . ui.ui_class_variables_editor import get_prop_group_name
+from . class_var_editor_ui.operators import BMTOOLS_OT_bmtool_invoke_operator_func
+from . class_var_editor_ui.panel import UIClassVariablesEditorCache
+from . class_var_editor_ui.panel import UIClassVariablesEditor
+from . class_var_editor_ui.panel import get_prop_group_name
 
 # Dev
 from . operators.dev.add_all_modifiers import BMTOOL_OT_add_all_modifiers

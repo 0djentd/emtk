@@ -19,10 +19,10 @@
 
 import unittest
 
-from ..ui_class_variables_editor_utils import get_attr_or_iter_from_str_nested
-from ..ui_class_variables_editor_utils import set_attr_or_iter_from_str_nested
-from ..ui_class_variables_editor_utils import get_last_attr_name_in_sequence
-from ..ui_class_variables_editor_utils import get_attr_obj_str
+from ..utils import get_attr_or_iter_from_str_nested
+from ..utils import set_attr_or_iter_from_str_nested
+from ..utils import get_last_attr_name_in_sequence
+from ..utils import get_attr_obj_str
 
 
 class Modifier():

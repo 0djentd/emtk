@@ -31,7 +31,7 @@ from bpy.types import Operator
 from ..lib.modifiers_operator import ModifiersOperator
 from ..lib.utils.modifier_prop_types import get_all_editable_props
 
-from .ui_class_variables_editor import UIClassVariablesEditor
+from ..class_var_editor_ui.panel import UIClassVariablesEditor
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
