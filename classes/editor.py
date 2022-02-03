@@ -19,7 +19,7 @@
 
 import logging
 
-from ..modal_input.object import ModalInputOperator
+from ..libs.modal_input.object import ModalInputOperator
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

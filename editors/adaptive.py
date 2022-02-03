@@ -26,14 +26,14 @@ try:
     Modifier = bpy.types.Modifier
     _WITH_BPY = True
 except ModuleNotFoundError:
-    from ..lib.dummy_modifiers import DummyBlenderModifier
+    from ..libs.emtk.dummy_modifiers import DummyBlenderModifier
     Modifier = DummyBlenderModifier
     _WITH_BPY = False
 
-from ..lib.utils.modifier_prop_types import get_props_filtered_by_types
-from ..lib.clusters.cluster_trait import ClusterTrait
+from ..libs.emtk.utils.modifier_prop_types import get_props_filtered_by_types
+from ..libs.emtk.clusters.cluster_trait import ClusterTrait
 from ..classes.editor import ModalClustersEditor
-from ..modal_input.shortcuts import generate_new_shortcut
+from ..libs.modal_input.shortcuts import generate_new_shortcut
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
