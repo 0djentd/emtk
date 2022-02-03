@@ -18,11 +18,11 @@
 # ##### END GPL LICENSE BLOCK #####
 
 import unittest
-from lib.lists.extended_modifiers_list import ExtendedModifiersList
-from lib.dummy_modifiers import DummyBlenderObj
-from lib.clusters.cluster_trait import ClusterTrait
-from lib.clusters.modifiers_cluster import ModifiersCluster
-from lib.clusters.clusters_layer import ClustersLayer
+from libs.emtk.lists.extended_modifiers_list import ExtendedModifiersList
+from libs.emtk.dummy_modifiers import DummyBlenderObj
+from libs.emtk.clusters.cluster_trait import ClusterTrait
+from libs.emtk.clusters.modifiers_cluster import ModifiersCluster
+from libs.emtk.clusters.clusters_layer import ClustersLayer
 
 try:
     import bpy
