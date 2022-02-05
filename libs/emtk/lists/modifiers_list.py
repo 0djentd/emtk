@@ -505,7 +505,8 @@ class ModifiersList():
 
     # @check_obj_ref
     @check_if_removed
-    def iterate(self, mod, direction, m_type=None, loop=True):  # {{{
+    def iterate(self, mod, direction: str,
+                m_type: str = None, loop: bool = True):  # {{{
         """Iterate over clusters or modifiers starting from mod.
 
         Direction should be a str in {'UP', 'DOWN'}
@@ -519,6 +520,7 @@ class ModifiersList():
         if type(mod) is int:
             i = mod
         else:
+            # TODO: this method only exists in cluster trait subclasses.
             mod = self._check_cluster_or_modifier(mod)
             i = self._data.index(mod)
 

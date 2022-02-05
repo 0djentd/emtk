@@ -34,6 +34,7 @@ from ....controller.actions import (
 from ...utils import check_if_removed
 
 logger = logging.getLogger(__name__)
+# logger.setLevel(logging.ERROR)
 logger.setLevel(logging.DEBUG)
 
 
@@ -85,9 +86,7 @@ class ClustersListTrait():
                 raise ValueError
         return cluster
 
-    # ====================
-    # Actions
-    # ====================
+    # Actions {{{
     @check_if_removed
     def deconstruct(self, clusters):
         """Deconstructs clusters on this layer."""
@@ -118,11 +117,8 @@ class ClustersListTrait():
         """Creates cluster or layer on this layer."""
         logger.info(f'Creating {cluster_type_instance} on layer {self}')
         raise ValueError
+    # }}}
 
-    # =============
-    # Actual modifier getters
-    # Always return actual modifiers
-    # =============
     def get_actual_modifier_by_index(self, i):
         """
         Returns modifier by index.
@@ -143,7 +139,7 @@ class ClustersListTrait():
                 return x
         raise ValueError(f'No modifier with name "{m_name}"')
 
-    # LIST GETTERS {{{
+    # Iterators {{{
     def all_elements(self):
         """
         Returns list of all clusters and modifiers anywhere in this cluster.
@@ -201,10 +197,6 @@ class ClustersListTrait():
         return full_modifiers_list(result)
     # }}}
 
-    # ==============================
-    # Methods based on get_cluster_or_layer
-    # ==============================
-    # TODO: this doesnt work at all.
     # @check_obj_ref
     @check_if_removed
     def get_cluster_or_layer(self, obj):

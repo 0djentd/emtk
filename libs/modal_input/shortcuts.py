@@ -103,6 +103,7 @@ class CachedObject():
             setattr(self, x, {})
 
 
+# TODO: proper LRU or whatever
 def method_cache(func):
     """Creates cache for instance method. Instance should
     implement 'cache_clear' method and invoke it
@@ -157,6 +158,7 @@ def check_refresh(func):
 # }}}
 
 
+# TODO: proper name
 class HashedList():  # {{{
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -298,14 +300,13 @@ class ModalShortcut(CachedObject):  # {{{
 
     def compare(self, obj):
         """Compare with bpy.types.event or another ModalShortcut."""
-
-        # TODO: remove this
         if isinstance(obj, ModalShortcut):
             return self.compare_mappings(obj.event_type,
                                          obj.shift,
                                          obj.ctrl,
                                          obj.alt)
         else:
+            # TODO: remove this
             try:
                 return self.compare_mappings(obj.type,
                                              obj.shift,
