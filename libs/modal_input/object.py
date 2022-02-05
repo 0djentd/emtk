@@ -21,6 +21,7 @@ import math
 import copy
 import logging
 import string
+import typing
 
 import bpy
 
@@ -122,7 +123,8 @@ class ModalInputOperator():
 
     # Get val {{{
     # This two methods are used to get variable value from modal input mode.
-    def modal_digits_pop(self, number_type='ANY') -> int | float | None:
+    def modal_digits_pop(
+            self, number_type='ANY') -> typing.Union[None, int, float]:
         """Returns number that were typed in 'DIGITS' mode.
 
         number_type can be either 'ANY', 'INT' or 'FLOAT'.
@@ -141,7 +143,8 @@ class ModalInputOperator():
         self.modal_input_mode = self.__DEFAULT_MODE
         return result
 
-    def modal_digits_get(self, number_type='ANY') -> int | float | None:
+    def modal_digits_get(
+            self, number_type='ANY') -> typing.Union[None, int, float]:
         """Returns number or str."""
         if len(self.__modal_digits_str) == 0:
             return None
@@ -158,7 +161,7 @@ class ModalInputOperator():
                     i = z
             return int(self.__modal_digits_str[0:i])
         elif number_type == 'FLOAT':
-            result = copy.copy(self.__modal_digits_str)
+            result = self.__modal_digits_str.copy()
             f = False
             for x in self.__modal_digits_str:
                 if x == '.':
@@ -253,7 +256,7 @@ class ModalInputOperator():
     # }}}
 
     def modal_input_mouse_rna_type(  # {{{
-            self, obj, attr: str, event, sens: float = 1.0) -> int | float:
+            self, obj, attr: str, event, sens: float = 1.0) -> typing.Union[int, float]:
         """This is a wrapper for 'modal_input_mouse_variables' method.
 
         obj is expected to be rna_type struct (Blender object with rna_type
