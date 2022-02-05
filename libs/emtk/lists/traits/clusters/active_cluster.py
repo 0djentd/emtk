@@ -25,24 +25,14 @@ from ...utils import check_if_removed, check_obj_ref
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
+# TODO: remove this mixin?
+
 
 class ActiveClusterTrait():
     """Active cluster and selection for clusters list."""
 
     # Active_modifier doesnt neccessary means that this is an actual modifier.
     # It mostly used for clusters, as every modifier is a cluster anyways.
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
-        # Cluster that selection started from
-        self._cluster_to_select_from = None
-
-        # Additional cluster selection
-        self._selected_clusters = None
-
-        # Active modifier
-        self._mod = None
 
     def get_cluster(self):
         """
