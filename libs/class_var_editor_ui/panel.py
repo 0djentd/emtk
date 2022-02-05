@@ -186,6 +186,7 @@ class UIClassVariablesEditor():   # {{{
                     round_value=2,
                     icon=None,
                     check=False,
+                    editable=True,
                     **kwargs
                     ):
 
@@ -235,6 +236,9 @@ class UIClassVariablesEditor():   # {{{
 
                 # Variable
                 cls.draw_var_editor(col, element_str)
+
+                if not editable:
+                    continue
 
                 # Remove element
                 col = row.column()
@@ -288,6 +292,7 @@ class UIClassVariablesEditor():   # {{{
                     round_value=2,
                     icon=None,
                     check=False,
+                    editable=False,
                     **kwargs
                     ):
 
@@ -330,7 +335,6 @@ class UIClassVariablesEditor():   # {{{
                                   text=attr_name)
             op.func = line
 
-            i = 0
             for x, y in zip(attr, attr.values()):
                 row = box.row()
                 col = row.column()
@@ -341,6 +345,9 @@ class UIClassVariablesEditor():   # {{{
                 # Variable
                 cls.draw_var_editor(col, element_str)
 
+                if not editable:
+                    continue
+
                 # Remove element
                 col = row.column()
                 line = f'cls.{attr_str}.pop(\'{x}\')'
@@ -348,8 +355,6 @@ class UIClassVariablesEditor():   # {{{
                 op = col.operator('bmtools.bmtool_invoke_operator_func',
                                   text="", icon='X')
                 op.func = line
-
-                i += 1
         return
     # }}}
 
@@ -365,6 +370,7 @@ class UIClassVariablesEditor():   # {{{
                         round_value=2,
                         icon=None,
                         check=False,
+                        editable=False,
                         **kwargs
                         ):
 
@@ -379,7 +385,7 @@ class UIClassVariablesEditor():   # {{{
         col = row.column()
 
         # Active
-        if prop_group.var_editor_currently_edited == attr_str:
+        if editable and prop_group.var_editor_currently_edited == attr_str:
             col.prop(prop_group, prop_name, text='')
             line = f'cls.var_editor_stop("{attr_str}")'
             line = re.sub('cls', cls.get_class_line(), line)
@@ -414,6 +420,10 @@ class UIClassVariablesEditor():   # {{{
                 val = str(val)
             else:
                 val = ''
+
+            if not editable:
+                col.label(text=var_name + val)
+                return
 
             line = f'cls.var_editor_start("{attr_str}")'
             line = re.sub('cls', cls.get_class_line(), line)
