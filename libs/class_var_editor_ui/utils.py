@@ -24,10 +24,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-# TODO: remove this module
-
-
-def _get_var_editor_prop_name(var_type):
+def get_var_editor_prop_name(var_type):
     if var_type is bool:
         prop_name = "var_editor_bool"
     elif var_type is int:
@@ -67,7 +64,7 @@ def set_attr_or_iter_from_str_nested(
 
 
 def get_attr_or_iter_from_str_nested(obj, attr_str, check=True, fast=False):
-
+    """Return attr from string with nested attributes and/or iterators."""
     if check:
         _check_attr_str(attr_str)
 

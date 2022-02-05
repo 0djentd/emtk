@@ -27,7 +27,7 @@ from bpy.props import (BoolProperty, IntProperty,
                        FloatProperty, StringProperty)
 from bpy.types import PropertyGroup
 
-from .utils import (_get_var_editor_prop_name,
+from .utils import (get_var_editor_prop_name,
                     get_prop_group_name,
                     get_last_attr_name_in_sequence,
                     get_attr_obj_str,
@@ -379,7 +379,7 @@ class UIClassVariablesEditor():   # {{{
 
         prop_group_name = get_prop_group_name(cls)
         prop_group = getattr(bpy.context.scene, prop_group_name)
-        prop_name = _get_var_editor_prop_name(type(attr))
+        prop_name = get_var_editor_prop_name(type(attr))
 
         row = layout.row()
         col = row.column()
@@ -469,7 +469,7 @@ class UIClassVariablesEditor():   # {{{
         attr_type = type(attr)
 
         if attr_type not in {list, dict}:
-            prop_name = _get_var_editor_prop_name(attr_type)
+            prop_name = get_var_editor_prop_name(attr_type)
             setattr(prop_group, prop_name, attr)
 
         if logger.isEnabledFor(logging.DEBUG):
@@ -510,7 +510,7 @@ class UIClassVariablesEditor():   # {{{
         attr_type = type(attr)
 
         if attr_type not in {list, dict}:
-            prop_name = _get_var_editor_prop_name(attr_type)
+            prop_name = get_var_editor_prop_name(attr_type)
             attr_val = getattr(prop_group, prop_name)
 
             # Set attribute value
