@@ -25,6 +25,7 @@ import string
 import bpy
 
 logger = logging.getLogger(__name__)
+# logger.setLevel(logging.ERROR)
 logger.setLevel(logging.DEBUG)
 
 
@@ -79,7 +80,6 @@ class ModalInputOperator():
     __LETTERS_TYPES = {'STR', 'ENUM'}
     # }}}
 
-    # Properties {{{
     # This is currently active mode in ModalInputOperator object.
     @property
     def modal_input_mode(self):
@@ -96,10 +96,9 @@ class ModalInputOperator():
         self.__modal_digits_str = ''
         self.__modal_letters_str = ''
         self.__modal_input_mode = mode
-    # }}}
 
     # TODO: this method duplicated in adaptive modifiers editor.
-    def switch_mode(self, mode: str, prop_def=None):
+    def switch_mode(self, mode: str, prop_def=None) -> None:
         """
         This method should be used instead of modal_input_mode property
         when possbile.
@@ -121,9 +120,9 @@ class ModalInputOperator():
         self.__modal_digits_str = ''
         self.__modal_letters_str = ''
 
-    # Pop val {{{
+    # Get val {{{
     # This two methods are used to get variable value from modal input mode.
-    def modal_digits_pop(self, number_type='ANY'):
+    def modal_digits_pop(self, number_type='ANY') -> int | float | None:
         """Returns number that were typed in 'DIGITS' mode.
 
         number_type can be either 'ANY', 'INT' or 'FLOAT'.
@@ -134,17 +133,15 @@ class ModalInputOperator():
         self.modal_input_mode = self.__DEFAULT_MODE
         return result
 
-    def modal_letters_pop(self):
+    def modal_letters_pop(self) -> str:
         """Returns string that were typed in 'STRING' mode."""
 
         result = self.__modal_letters_str
         self.__modal_letters_str = ''
         self.modal_input_mode = self.__DEFAULT_MODE
         return result
-    # }}}
 
-    # Get val {{{
-    def modal_digits_get(self, number_type='ANY'):
+    def modal_digits_get(self, number_type='ANY') -> int | float | None:
         """Returns number or str."""
         if len(self.__modal_digits_str) == 0:
             return None
@@ -169,13 +166,14 @@ class ModalInputOperator():
             if f is False:
                 result = result + '.0'
             return float(result)
+        raise ValueError
 
     def modal_letters_get(self) -> str:
         """Returns str."""
         return copy.copy(self.__modal_letters_str)
     # }}}
 
-    def modal_digits(self, event, prop_def):  # {{{
+    def modal_digits(self, event, prop_def) -> bool:  # {{{
         """Writes a string that can be used to get integer or float."""
 
         if self.modal_input_mode != 'DIGITS':
@@ -204,7 +202,7 @@ class ModalInputOperator():
         return True
     # }}}
 
-    def modal_letters(self, event, prop_def):  # {{{
+    def modal_letters(self, event, prop_def) -> bool:  # {{{
         """This thing writes a string that can be used in modal operator."""
 
         if self.modal_input_mode != 'LETTERS':
@@ -254,7 +252,8 @@ class ModalInputOperator():
         return True
     # }}}
 
-    def modal_input_mouse_rna_type(self, obj, attr, event, sens=1):  # {{{
+    def modal_input_mouse_rna_type(  # {{{
+            self, obj, attr: str, event, sens: float = 1.0) -> int | float:
         """This is a wrapper for 'modal_input_mouse_variables' method.
 
         obj is expected to be rna_type struct (Blender object with rna_type
@@ -587,7 +586,7 @@ class ModalInputOperator():
 
 
 # Utils {{{
-def _vec_len(x1, x2, y1, y2):
+def _vec_len(x1: float, x2: float, y1: float, y2: float) -> float:
     x = x1 - x2
     y = y1 - y2
     return math.sqrt(pow(x, 2) + pow(y, 2))
@@ -621,12 +620,13 @@ def _get_view3d_window(v=None):
     return a
 
 
-def _get_delta_pct(event, bounds=-100, use_width=False, limit=None):
+def _get_delta_pct(event, bounds: float = -100,
+                   use_width: bool = False, limit: float = None) -> float:
     """Returns float between 0 and 100 for event."""
 
     v = _get_view3d_window()
-    d = (v.width, v.height)
-    c = (d[0]/2, d[1]/2)
+    d = v.width, v.height
+    c = d[0]/2, d[1]/2
 
     if c[0] > c[1]:
         if not use_width:
@@ -640,14 +640,11 @@ def _get_delta_pct(event, bounds=-100, use_width=False, limit=None):
             m = c[1]
 
     m = m - bounds
-
     vec = _vec_len(c[0], event.mouse_x, c[1], event.mouse_y)
     result = vec/(m/100)
 
     # Limit
     if limit is not None:
-        if type(limit) not in {int, float}:
-            raise TypeError
         if result > limit:
             result = limit
     return result
