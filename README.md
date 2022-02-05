@@ -23,4 +23,7 @@ _BMToolM_ is a modal operator that can be used to edit clusters
 and modifiers of an object. It has editing modes for
 all editable properties of all Blender modifiers.
 
-There is a few operators that invoke UI popups.
+There is a few operators that invoke UI popups with similar or extended
+functionality as well.
+
+BMTools uses EMTK, modal_input and class_var_editor_ui as python modules.
