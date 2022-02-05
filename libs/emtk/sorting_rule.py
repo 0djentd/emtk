@@ -18,7 +18,7 @@
 # ##### END GPL LICENSE BLOCK #####
 
 
-# TODO: Rework whole thing. It should have subclasses.
+# TODO: Rework whole thing. It should have subclasses and use enums.
 class SortingRule():
     """
     Base class for cluster sorting rules.
