@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-def get_var_editor_prop_name(var_type):
+def get_var_editor_prop_name(var_type) -> str:
     if var_type is bool:
         prop_name = "var_editor_bool"
     elif var_type is int:
@@ -38,14 +38,14 @@ def get_var_editor_prop_name(var_type):
     return prop_name
 
 
-def get_prop_group_name(cls):
+def get_prop_group_name(cls) -> str:
     line = None
     name = cls.__name__
     if re.match('.*_OT_', name):
         line = re.sub('.*_OT_', 'cls_var_editor_operator_', name)
     elif re.match('.*_PT_', name):
         line = re.sub('.*_PT_', 'cls_var_editor_panel_', name)
-    return line
+    return str(line)
 
 
 def set_attr_or_iter_from_str_nested(
@@ -81,7 +81,7 @@ def get_attr_or_iter_from_str_nested(obj, attr_str, check=True, fast=False):
     return result
 
 
-def _check_attr_str(attr_str: str):
+def _check_attr_str(attr_str: str) -> None:
     if re.match('obj\.', attr_str):
         raise ValueError
     if re.search('\*', attr_str):
@@ -96,9 +96,10 @@ def _check_attr_str(attr_str: str):
         raise ValueError
     if re.search('\+', attr_str):
         raise ValueError
+    return None
 
 
-def get_last_attr_name_in_sequence(sequence):
+def get_last_attr_name_in_sequence(sequence: str) -> str:
     """Get last attr name in sequence.
 
     Example:
@@ -114,7 +115,7 @@ def get_last_attr_name_in_sequence(sequence):
     return m.string[m.start(): m.end()]
 
 
-def get_attr_obj_str(sequence):
+def get_attr_obj_str(sequence: str):
     """Get attribute's object from attr str.
 
     Returns list attr_str if attr is element of list.

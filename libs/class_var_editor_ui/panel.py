@@ -35,6 +35,7 @@ from .utils import (get_var_editor_prop_name,
                     get_attr_or_iter_from_str_nested)
 
 logger = logging.getLogger(__name__)
+# logger.setLevel(logging.ERROR)
 logger.setLevel(logging.DEBUG)
 
 
