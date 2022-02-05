@@ -527,7 +527,7 @@ class ClustersParser():
             self.available_cluster_types.append(cluster_type)
             result = True
 
-        logger.info(f"Modifiers cluster availability is {result}")
+        logger.info("Modifiers cluster availability is {}", result)
         logger.info("Finished updating cluster types list")
         logger.info(" ")
         return result
@@ -817,7 +817,6 @@ class ClustersParser():
             # =================
             # Checking clusters
             # =================
-            # {{{
             # Check cluster types for compatibility with this sequence
             # of modifiers.
             for y in clusters_to_parse_against:
@@ -869,7 +868,6 @@ class ClustersParser():
 
                     if iteration_result == 'POSSIBLE':
                         clusters_to_remove.append(y)
-            # }}}
 
             # Removing not compatible with this modifiers sequence
             # clusters from possible types.
@@ -881,10 +879,7 @@ class ClustersParser():
                 possible_cluster_types.remove(x)
             clusters_to_remove.clear()
 
-            # ================
-            # Cluster creation
-            # ================
-            # {{{
+            # Cluster creation {{{
             # If allowed to skip cluster or modifier if no cluster can be
             # created at all, and add it to result.
             # Then request another modifier.
@@ -965,9 +960,7 @@ class ClustersParser():
                 logger.debug("Parser needs another modifier")
                 iteration_result = 'POSSIBLE'
             else:
-                logger.debug(
-                        "Something is wrong with cluster creation")
-                raise ValueError
+                raise ValueError("Something is wrong with cluster creation")
 
             # Info
             if iteration_result == 'SUCCESS':
@@ -977,12 +970,10 @@ class ClustersParser():
                 else:
                     logger.debug("Added new cluster")
             elif iteration_result == 'POSSIBLE':
-                logger.debug(
-                        "Iteration failed, possible cluster types found")
+                logger.debug("Iteration failed, possible cluster types found")
             else:
-                raise ValueError(
-                        "Something is wrong with iteration result")
-            logger.debug(" ")
+                raise ValueError("Something is wrong with iteration result")
+            logger.debug("")
 
             # Decide if should continue parsing
             if len(modifiers_to_parse) == 0:
@@ -990,16 +981,13 @@ class ClustersParser():
                 parsing_modifiers = False
             else:
                 need_another_modifier = True
-
-            # Start next iteration
             parse_iteration += 1
         # }}}
 
         # Parse result sanity check  {{{
         if parser_sanity_checks:
-            if not isinstance(parse_result, list):
-                raise ValueError(
-                        "Expected parse_result to be a list.")
+            if type(parse_result) is not list:
+                raise ValueError("Expected parse_result to be a list.")
             else:
                 for x in parse_result:
                     if not isinstance(x[1], ClusterTrait):
@@ -1067,13 +1055,13 @@ class ClustersParser():
         logger.debug("Selecting cluster.")
 
         # Highest priority.
-        y = clusters[0].get_this_cluster_priority()
+        priority = clusters[0].get_this_cluster_priority()
 
         # Longest.
-        k = clusters[0].get_this_cluster_possible_length()
+        length = clusters[0].get_this_cluster_possible_length()
 
         # Restored cluster length.
-        m = None
+        length_2 = None
 
         result = clusters[0]
 
@@ -1083,7 +1071,7 @@ class ClustersParser():
         for x in clusters:
             if 'RESTORED' in x.get_this_cluster_tags():
                 logger.debug("Selected RESTORED cluster.")
-                m = x.get_this_cluster_possible_length()
+                length_2 = x.get_this_cluster_possible_length()
                 result = x
                 found_restored_cluster = True
                 break
@@ -1092,18 +1080,18 @@ class ClustersParser():
         if not found_restored_cluster:
             for x in clusters:
                 # If cluster has higher priority.
-                if x.get_this_cluster_priority() > y:
+                if x.get_this_cluster_priority() > priority:
 
                     # And longer or same length.
-                    if x.get_this_cluster_possible_length() >= k:
-                        y = x.get_this_cluster_priority()
-                        k = x.get_this_cluster_possible_length()
+                    if x.get_this_cluster_possible_length() >= length:
+                        priority = x.get_this_cluster_priority()
+                        length = x.get_this_cluster_possible_length()
                         result = x
 
                 # Or it is just longer.
-                elif x.get_this_cluster_possible_length() > k:
-                    y = x.get_this_cluster_priority()
-                    k = x.get_this_cluster_possible_length()
+                elif x.get_this_cluster_possible_length() > length:
+                    priority = x.get_this_cluster_priority()
+                    length = x.get_this_cluster_possible_length()
                     result = x
 
         # If restored clusters, only use length
@@ -1114,8 +1102,8 @@ class ClustersParser():
                 logger.debug(
                         f"{x.get_this_cluster_tags()}")
                 if 'RESTORED' in x.get_this_cluster_tags():
-                    if x.get_this_cluster_possible_length() > m:
-                        m = x.get_this_cluster_possible_length()
+                    if x.get_this_cluster_possible_length() > length_2:
+                        length_2 = x.get_this_cluster_possible_length()
                         result = x
 
         logger.debug(f"Selected {result} cluster.")

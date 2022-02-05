@@ -258,6 +258,7 @@ class ClustersListTrait():
             return x[-1]
 
 
+# Iterators {{{
 class clusters_list_generated_list(collections.UserList):
 
     def __init__(self, obj, *args, **kwargs):
@@ -314,6 +315,7 @@ class full_clusters_list(clusters_list_generated_clusters_list):
 class full_list(clusters_list_generated_list):
     """List of all modifiers and clusters."""
     pass
+# }}}
 
 
 @dataclasses.dataclass

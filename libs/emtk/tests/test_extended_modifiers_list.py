@@ -575,10 +575,10 @@ class MovingTests(unittest.TestCase):
         self.e.move_down(self.moved_cluster)
 
     def tearDown(self):
-        del(self.o)
-        del(self.e)
-        del(self.moved_cluster)
-        del(self.moved_cluster_2)
+        del self.o
+        del self.e
+        del self.moved_cluster
+        del self.moved_cluster_2
 
     def test_moved_cluster_up(self):
         self.assertEqual(self.moved_cluster, self.e[2])

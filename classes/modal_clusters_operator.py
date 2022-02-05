@@ -29,6 +29,9 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
 # logger.setLevel(logging.DEBUG)
 
+# TODO: use modal kbs for general editing too.
+# TODO: actually working modal input str.
+
 
 class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
     """

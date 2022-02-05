@@ -292,7 +292,7 @@ class UIClassVariablesEditor():   # {{{
                     round_value=2,
                     icon=None,
                     check=False,
-                    editable=False,
+                    editable=True,
                     **kwargs
                     ):
 
@@ -370,7 +370,7 @@ class UIClassVariablesEditor():   # {{{
                         round_value=2,
                         icon=None,
                         check=False,
-                        editable=False,
+                        editable=True,
                         **kwargs
                         ):
 

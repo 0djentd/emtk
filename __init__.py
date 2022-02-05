@@ -64,6 +64,9 @@ bl_info = {
 }
 
 logger = logging.getLogger(__package__)
+# logger.setLevel(logging.ERROR)
+# logging.basicConfig(level=logging.ERROR)
+
 logger.setLevel(logging.DEBUG)
 logging.basicConfig(level=logging.DEBUG)
 
@@ -152,7 +155,7 @@ def unregister():
         if re.match('cls_var_editor', x):
             logger.info(f'Removing property group {x}')
             prop_group = getattr(bpy.types.Scene, x)
-            del(prop_group)
+            del prop_group
 
     if kc is not None:
         for km, kmi in addon_keymaps:

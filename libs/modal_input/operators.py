@@ -37,7 +37,6 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-
 class BMTOOLS_OT_start_editing_modal_shortcut(bpy.types.Operator):  # {{{
     bl_idname = "bmtools.start_editing_modal_shortcut"
     bl_label = "Start editing bmtool modal operator kbs."
