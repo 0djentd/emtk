@@ -20,6 +20,7 @@
 import math
 import logging
 import typing
+import string
 
 try:
     import bpy
@@ -415,7 +416,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
             return True
 
         elif event.type\
-                in self._ModalInputOperatort__MODAL_LETTERS_LIST\
+                in string.ascii_uppercase\
                 and prop_def.type in self.__LETTERS_INPUT_TYPES:
             logger.info(f'Switching to modal letters {prop_name}')
             self.modal_input_mode = 'LETTERS'
@@ -548,7 +549,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
 
     def __check_event_is_simple(self, event: bpy.types.Event) -> bool:
         """Checks if event should not be passed to modal input base class."""
-        if (event.type in self._ModalInputOperator__MODAL_LETTERS_LIST
+        if (event.type in string.ascii_uppercase
                 or event.type in {'PERIOD', 'BACK-SPACE', 'RET', 'SPACE'})\
                 and event.value == 'PRESS':
             return True
