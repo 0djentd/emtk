@@ -20,6 +20,7 @@
 import unittest
 from libs.emtk.lists.extended_modifiers_list import ExtendedModifiersList
 from libs.emtk.dummy_modifiers import DummyBlenderObj
+from libs.emtk.dummy_modifiers import DummyBlenderModifier
 from libs.emtk.clusters.cluster_trait import ClusterTrait
 from libs.emtk.clusters.modifiers_cluster import ModifiersCluster
 from libs.emtk.clusters.clusters_layer import ClustersLayer
@@ -30,12 +31,268 @@ try:
 except ModuleNotFoundError:
     _WITH_BPY = False
 
+MODIFIERS_DATA = [  # {{{
+        ('Bevel6', 'BEVEL'),
+        ('Array', 'ARRAY'),
+        ('TopBevel', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel2', 'BEVEL'),
+        ('Bevel6', 'BEVEL'),
+        ('Bevel6', 'BEVEL'),
+        ('MediumBevel', 'BEVEL'),
+        ('Bevel6', 'BEVEL'),
+        ('Bevel6', 'BEVEL'),
+        ('Bevel6', 'BEVEL'),
+        ('Array', 'ARRAY'),
+        ('TopBevel', 'BEVEL'),
+        ('WeightedNormal', 'WEIGHTED_NORMAL'),
+        ('Bevel6', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Array', 'ARRAY'),
+        ('Bevel5', 'BEVEL'),
+        ('Array', 'ARRAY'),
+        ('Array', 'ARRAY'),
+        ('Array', 'ARRAY'),
+        ('Array', 'ARRAY'),
+        ('Boolean3', 'BOOLEAN'),
+        ('Boolean3', 'BOOLEAN'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Array', 'ARRAY'),
+        ('TopBevel', 'BEVEL'),
+        ('WeightedNormal', 'WEIGHTED_NORMAL'),
+        ('Bevel2', 'BEVEL'),
+        ('Array', 'ARRAY'),
+        ('Array', 'ARRAY'),
+        ('Bevel5', 'BEVEL'),
+        ('Boolean3', 'BOOLEAN'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel2', 'BEVEL'),
+        ('Boolean3', 'BOOLEAN'),
+        ('Bevel6', 'BEVEL'),
+        ('Boolean3', 'BOOLEAN'),
+        ('Boolean3', 'BOOLEAN'),
+        ('Bevel2', 'BEVEL'),
+        ('Boolean3', 'BOOLEAN'),
+        ('MediumBevel', 'BEVEL'),
+        ('Bevel6', 'BEVEL'),
+        ('Bevel6', 'BEVEL'),
+        ('Array', 'ARRAY'),
+        ('Array', 'ARRAY'),
+        ('TopBevel', 'BEVEL'),
+        ('WeightedNormal', 'WEIGHTED_NORMAL'),
+        ('TopBevel', 'BEVEL'),
+        ('WeightedNormal', 'WEIGHTED_NORMAL'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel2', 'BEVEL'),
+        ('Bevel6', 'BEVEL'),
+        ('Bevel6', 'BEVEL'),
+        ('MediumBevel', 'BEVEL'),
+        ('Bevel6', 'BEVEL'),
+        ('Bevel6', 'BEVEL'),
+        ('Bevel6', 'BEVEL'),
+        ('Array', 'ARRAY'),
+        ('TopBevel', 'BEVEL'),
+        ('WeightedNormal', 'WEIGHTED_NORMAL'),
+        ('Bevel6', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Array', 'ARRAY'),
+        ('Bevel5', 'BEVEL'),
+        ('Array', 'ARRAY'),
+        ('Array', 'ARRAY'),
+        ('Array', 'ARRAY'),
+        ('Array', 'ARRAY'),
+        ('Boolean3', 'BOOLEAN'),
+        ('Boolean3', 'BOOLEAN'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Array', 'ARRAY'),
+        ('TopBevel', 'BEVEL'),
+        ('WeightedNormal', 'WEIGHTED_NORMAL'),
+        ('Bevel2', 'BEVEL'),
+        ('Array', 'ARRAY'),
+        ('Array', 'ARRAY'),
+        ('Bevel5', 'BEVEL'),
+        ('Boolean3', 'BOOLEAN'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Array', 'ARRAY'),
+        ('Bevel5', 'BEVEL'),
+        ('Array', 'ARRAY'),
+        ('Array', 'ARRAY'),
+        ('Array', 'ARRAY'),
+        ('Array', 'ARRAY'),
+        ('Boolean3', 'BOOLEAN'),
+        ('Boolean3', 'BOOLEAN'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Array', 'ARRAY'),
+        ('TopBevel', 'BEVEL'),
+        ('WeightedNormal', 'WEIGHTED_NORMAL'),
+        ('Bevel2', 'BEVEL'),
+        ('Array', 'ARRAY'),
+        ('Array', 'ARRAY'),
+        ('Bevel5', 'BEVEL'),
+        ('Boolean3', 'BOOLEAN'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel2', 'BEVEL'),
+        ('Boolean3', 'BOOLEAN'),
+        ('Bevel6', 'BEVEL'),
+        ('Boolean3', 'BOOLEAN'),
+        ('Boolean3', 'BOOLEAN'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Array', 'ARRAY'),
+        ('Bevel5', 'BEVEL'),
+        ('Array', 'ARRAY'),
+        ('Array', 'ARRAY'),
+        ('Array', 'ARRAY'),
+        ('Array', 'ARRAY'),
+        ('Boolean3', 'BOOLEAN'),
+        ('Boolean3', 'BOOLEAN'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Array', 'ARRAY'),
+        ('TopBevel', 'BEVEL'),
+        ('WeightedNormal', 'WEIGHTED_NORMAL'),
+        ('Bevel2', 'BEVEL'),
+        ('Array', 'ARRAY'),
+        ('Array', 'ARRAY'),
+        ('Bevel5', 'BEVEL'),
+        ('Boolean3', 'BOOLEAN'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel2', 'BEVEL'),
+        ('Boolean3', 'BOOLEAN'),
+        ('Bevel6', 'BEVEL'),
+        ('Boolean3', 'BOOLEAN'),
+        ('Boolean3', 'BOOLEAN'),
+        ('Bevel2', 'BEVEL'),
+        ('Boolean3', 'BOOLEAN'),
+        ('MediumBevel', 'BEVEL'),
+        ('Bevel6', 'BEVEL'),
+        ('Bevel6', 'BEVEL'),
+        ('Array', 'ARRAY'),
+        ('Array', 'ARRAY'),
+        ('TopBevel', 'BEVEL'),
+        ('WeightedNormal', 'WEIGHTED_NORMAL'),
+        ('TopBevel', 'BEVEL'),
+        ('WeightedNormal', 'WEIGHTED_NORMAL'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel2', 'BEVEL'),
+        ('Bevel6', 'BEVEL'),
+        ('Bevel6', 'BEVEL'),
+        ('MediumBevel', 'BEVEL'),
+        ('Bevel6', 'BEVEL'),
+        ('Bevel6', 'BEVEL'),
+        ('Bevel6', 'BEVEL'),
+        ('Array', 'ARRAY'),
+        ('TopBevel', 'BEVEL'),
+        ('WeightedNormal', 'WEIGHTED_NORMAL'),
+        ('Bevel6', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Array', 'ARRAY'),
+        ('Bevel5', 'BEVEL'),
+        ('Array', 'ARRAY'),
+        ('Array', 'ARRAY'),
+        ('Array', 'ARRAY'),
+        ('Array', 'ARRAY'),
+        ('Boolean3', 'BOOLEAN'),
+        ('Boolean3', 'BOOLEAN'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Array', 'ARRAY'),
+        ('TopBevel', 'BEVEL'),
+        ('WeightedNormal', 'WEIGHTED_NORMAL'),
+        ('Bevel2', 'BEVEL'),
+        ('Array', 'ARRAY'),
+        ('Array', 'ARRAY'),
+        ('Bevel5', 'BEVEL'),
+        ('Boolean3', 'BOOLEAN'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Array', 'ARRAY'),
+        ('Bevel5', 'BEVEL'),
+        ('Array', 'ARRAY'),
+        ('Array', 'ARRAY'),
+        ('Array', 'ARRAY'),
+        ('Array', 'ARRAY'),
+        ('Boolean3', 'BOOLEAN'),
+        ('Boolean3', 'BOOLEAN'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel5', 'BEVEL'),
+        ('Array', 'ARRAY'),
+        ('TopBevel', 'BEVEL'),
+        ('WeightedNormal', 'WEIGHTED_NORMAL'),
+        ('Bevel2', 'BEVEL'),
+        ('Array', 'ARRAY'),
+        ('Array', 'ARRAY'),
+        ('Bevel5', 'BEVEL'),
+        ('Boolean3', 'BOOLEAN'),
+        ('Bevel5', 'BEVEL'),
+        ('Bevel2', 'BEVEL'),
+        ('Boolean3', 'BOOLEAN'),
+        ('Bevel6', 'BEVEL'),
+        ('Boolean3', 'BOOLEAN'),
+        ('Boolean3', 'BOOLEAN'),
+        ('Bevel2', 'BEVEL'),
+        ('Boolean3', 'BOOLEAN'),
+        ('MediumBevel', 'BEVEL'),
+        ('Bevel6', 'BEVEL'),
+        ('Bevel6', 'BEVEL'),
+        ('Array', 'ARRAY'),
+        ('Array', 'ARRAY'),
+        ('TopBevel', 'BEVEL'),
+        ('WeightedNormal', 'WEIGHTED_NORMAL'),
+        ('TopBevel', 'BEVEL'),
+        ('WeightedNormal', 'WEIGHTED_NORMAL'),
+        ]
+        # }}}
+
+
+def add_modifiers(obj, count) -> list[DummyBlenderModifier]:
+    mods = []
+    if count > len(MODIFIERS_DATA):
+        raise ValueError
+    for i, x in enumerate(MODIFIERS_DATA):
+        if i == count:
+            break
+        mod = obj.modifier_add(x[0], x[1])
+        mods.append(mod)
+    return mods
+
 
 class ExtendedModifiersListTests():
     def setUp(self):
         self.o = DummyBlenderObj()
-        mods = []
-        mods.append(self.o.modifier_add('Bevel', 'BEVEL'))
+        add_modifiers(self.o, 1)
         self.e = ExtendedModifiersList(self.o)
 
     def tearDown(self):
@@ -272,21 +529,7 @@ class DifferentModifiersTests(
 
     def setUp(self):
         self.o = DummyBlenderObj()
-        mods = []
-        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
-        mods.append(self.o.modifier_add('Array', 'ARRAY'))
-        mods.append(self.o.modifier_add('TopBevel', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel2', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
-        mods.append(self.o.modifier_add('MediumBevel', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
-        mods.append(self.o.modifier_add('Array', 'ARRAY'))
-        mods.append(self.o.modifier_add('TopBevel', 'BEVEL'))
-        mods.append(self.o.modifier_add('WeightedNormal', 'WEIGHTED_NORMAL'))
+        add_modifiers(self.o, 10)
         self.e = ExtendedModifiersList(self.o)
 
 
@@ -298,15 +541,7 @@ class LoadClustersTests(
 
     def setUp(self):
         self.o = DummyBlenderObj()
-        mods = []
-        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
-        mods.append(self.o.modifier_add('Array', 'ARRAY'))
-        mods.append(self.o.modifier_add('TopBevel', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel2', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
-        mods.append(self.o.modifier_add(
-            'WeightedNormal', 'WEIGHTED_NORMAL'))
+        add_modifiers(self.o, 10)
         self.e = ExtendedModifiersList(self.o)
         self.e.save_modifiers_state()
         self.e.save_clusters_state()
@@ -318,7 +553,7 @@ class LoadClustersTests(
         self.e = ExtendedModifiersList(self.o)
 
     def test_number_of_clusters(self):
-        self.assertEqual(len(self.e), 7)
+        self.assertEqual(len(self.e), 10)
 
     def test_check_clusters_state_eq(self):
         self.assertEqual(
@@ -338,15 +573,7 @@ class ProgressiveLoadClustersTests(
 
     def setUp(self):
         self.o = DummyBlenderObj()
-        mods = []
-        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
-        mods.append(self.o.modifier_add('Array', 'ARRAY'))
-        mods.append(self.o.modifier_add('TopBevel', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel2', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
-        mods.append(self.o.modifier_add(
-            'WeightedNormal', 'WEIGHTED_NORMAL'))
+        add_modifiers(self.o, 10)
         self.e = ExtendedModifiersList(self.o)
         self.e.save_modifiers_state()
         self.e.save_clusters_state()
@@ -377,52 +604,7 @@ class LayersTests(
 
     def setUp(self):
         self.o = DummyBlenderObj()
-        mods = []
-        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
-        mods.append(self.o.modifier_add('Array', 'ARRAY'))
-        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
-        mods.append(self.o.modifier_add('Array', 'ARRAY'))
-        mods.append(self.o.modifier_add('Array', 'ARRAY'))
-        mods.append(self.o.modifier_add('Array', 'ARRAY'))
-        mods.append(self.o.modifier_add('Array', 'ARRAY'))
-        mods.append(self.o.modifier_add('Boolean3', 'BOOLEAN'))
-        mods.append(self.o.modifier_add('Boolean3', 'BOOLEAN'))
-        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
-        mods.append(self.o.modifier_add('Array', 'ARRAY'))
-        mods.append(self.o.modifier_add('TopBevel', 'BEVEL'))
-        mods.append(self.o.modifier_add('WeightedNormal', 'WEIGHTED_NORMAL'))
-        mods.append(self.o.modifier_add('Bevel2', 'BEVEL'))
-        mods.append(self.o.modifier_add('Array', 'ARRAY'))
-        mods.append(self.o.modifier_add('Array', 'ARRAY'))
-        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
-        mods.append(self.o.modifier_add('Boolean3', 'BOOLEAN'))
-        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel2', 'BEVEL'))
-        mods.append(self.o.modifier_add('Boolean3', 'BOOLEAN'))
-        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
-        mods.append(self.o.modifier_add('Boolean3', 'BOOLEAN'))
-        mods.append(self.o.modifier_add('Boolean3', 'BOOLEAN'))
-        mods.append(self.o.modifier_add('Bevel2', 'BEVEL'))
-        mods.append(self.o.modifier_add('Boolean3', 'BOOLEAN'))
-        mods.append(self.o.modifier_add('MediumBevel', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
-        mods.append(self.o.modifier_add('Array', 'ARRAY'))
-        mods.append(self.o.modifier_add('Array', 'ARRAY'))
-        mods.append(self.o.modifier_add('TopBevel', 'BEVEL'))
-        mods.append(self.o.modifier_add('WeightedNormal', 'WEIGHTED_NORMAL'))
-        mods.append(self.o.modifier_add('TopBevel', 'BEVEL'))
-        mods.append(self.o.modifier_add('WeightedNormal', 'WEIGHTED_NORMAL'))
-        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
+        add_modifiers(self.o, 50)
         clusters = []
 
         cluster = ModifiersCluster(cluster_name='Beveled Boolean',
@@ -489,52 +671,7 @@ class MovingTests(unittest.TestCase):
 
     def setUp(self):
         self.o = DummyBlenderObj()
-        mods = []
-        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
-        mods.append(self.o.modifier_add('Array', 'ARRAY'))
-        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
-        mods.append(self.o.modifier_add('Array', 'ARRAY'))
-        mods.append(self.o.modifier_add('Array', 'ARRAY'))
-        mods.append(self.o.modifier_add('Array', 'ARRAY'))
-        mods.append(self.o.modifier_add('Array', 'ARRAY'))
-        mods.append(self.o.modifier_add('Boolean3', 'BOOLEAN'))
-        mods.append(self.o.modifier_add('Boolean3', 'BOOLEAN'))
-        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
-        mods.append(self.o.modifier_add('Array', 'ARRAY'))
-        mods.append(self.o.modifier_add('TopBevel', 'BEVEL'))
-        mods.append(self.o.modifier_add('WeightedNormal', 'WEIGHTED_NORMAL'))
-        mods.append(self.o.modifier_add('Bevel2', 'BEVEL'))
-        mods.append(self.o.modifier_add('Array', 'ARRAY'))
-        mods.append(self.o.modifier_add('Array', 'ARRAY'))
-        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
-        mods.append(self.o.modifier_add('Boolean3', 'BOOLEAN'))
-        mods.append(self.o.modifier_add('Bevel5', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel2', 'BEVEL'))
-        mods.append(self.o.modifier_add('Boolean3', 'BOOLEAN'))
-        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
-        mods.append(self.o.modifier_add('Boolean3', 'BOOLEAN'))
-        mods.append(self.o.modifier_add('Boolean3', 'BOOLEAN'))
-        mods.append(self.o.modifier_add('Bevel2', 'BEVEL'))
-        mods.append(self.o.modifier_add('Boolean3', 'BOOLEAN'))
-        mods.append(self.o.modifier_add('MediumBevel', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
-        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
-        mods.append(self.o.modifier_add('Array', 'ARRAY'))
-        mods.append(self.o.modifier_add('Array', 'ARRAY'))
-        mods.append(self.o.modifier_add('TopBevel', 'BEVEL'))
-        mods.append(self.o.modifier_add('WeightedNormal', 'WEIGHTED_NORMAL'))
-        mods.append(self.o.modifier_add('TopBevel', 'BEVEL'))
-        mods.append(self.o.modifier_add('WeightedNormal', 'WEIGHTED_NORMAL'))
-        mods.append(self.o.modifier_add('Bevel6', 'BEVEL'))
+        add_modifiers(self.o, 50)
         clusters = []
 
         cluster = ModifiersCluster(cluster_name='Beveled Boolean',
