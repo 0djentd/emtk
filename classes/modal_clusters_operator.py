@@ -87,7 +87,6 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
 
     # Use modifiers of any type.
     __BMTOOLM = True
-
     # }}}
 
     @classmethod
@@ -566,12 +565,12 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
     # }}}
 
     # Clusters selection utils  {{{
-    def __stop_selecting_clusters(self):
+    def __stop_selecting_clusters(self) -> None:
         self.__selecting_clusters = False
         layer = self.m_list.get_layer()
         layer.selection.clear()
 
-    def __start_selecting_clusters(self):
+    def __start_selecting_clusters(self) -> None:
         self.__selecting_clusters = True
         layer = self.m_list.get_layer()
         layer.selection.start(layer.active)
