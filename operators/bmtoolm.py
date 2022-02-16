@@ -23,9 +23,7 @@ from bpy.types import Operator
 
 from ..classes.modal_clusters_operator import ModalClustersOperator
 from ..ui.bmtool_ui import BMToolUi
-
-from ..editors.adaptive import\
-        AdaptiveModalEditor
+from ..editors.adaptive import AdaptiveModalEditor
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

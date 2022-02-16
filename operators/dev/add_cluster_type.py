@@ -18,6 +18,7 @@
 # ##### END GPL LICENSE BLOCK #####
 
 import json
+
 from bpy.types import Operator
 from bpy.props import StringProperty
 
