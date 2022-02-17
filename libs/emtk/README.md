@@ -14,14 +14,14 @@ Copyright 2022, Sergey Shapochkin
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-EMTKL, ExtendedModifiersToolKitLibrary.
+EMTK, ExtendedModifiersToolKit.
 =======================================
 
 This library provides new level of abstraction for _Blender_ modifiers stack.
 
 Library name is not final and probably will be changed on release.
 
-_EMTKL_ is designed to be used with _BMTools_.
+_EMTK_ is designed to be used with _BMTools_.
 
 Most classes and methods have docstrings.
 

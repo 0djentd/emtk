@@ -16,7 +16,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 BMTools
 =======
 
-_BMTools_ is a _Blender_ addon that uses _EMTKL_ to simplify editing
+_BMTools_ is a _Blender_ addon that uses _EMTK_ to simplify editing
 modifiers stack through modal operators and abstraction layers.
 
 _BMToolM_ is a modal operator that can be used to edit clusters
