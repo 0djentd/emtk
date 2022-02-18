@@ -19,8 +19,9 @@
 
 from bpy.types import Menu
 
+# TODO: Not implemented
 
-# TODO: not implemented
+
 class VIEW3D_MT_PIE_cluster_types(Menu):
     bl_label = "Cluster types editing"
     bl_idname = "BMTOOLS_MT_PIE_cluster_types"

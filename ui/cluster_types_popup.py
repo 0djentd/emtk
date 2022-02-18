@@ -17,6 +17,7 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
+
 import logging
 import string
 import re
@@ -35,6 +36,8 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 USE_PROFILER = False
+
+# TODO: Not implemented
 
 
 class BMTOOLS_OT_clusters_types_popup(
