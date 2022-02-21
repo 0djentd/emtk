@@ -191,11 +191,11 @@ class ShortcutsCacheTests(unittest.TestCase):
 class MethodsCacheTests(unittest.TestCase):
 
     @method_cache
-    def funct(self, val):
+    def method_example(self, val):
         pow(val, val)
 
     def test_iter_err(self):
         with self.assertRaises(ValueError):
             for x in range(10):
                 for x in range(150):
-                    self.funct(x)
+                    self.method_example(x)
