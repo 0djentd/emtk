@@ -171,6 +171,10 @@ class ModifiersOperator():
         self.m_list = modifiers_list
         self.update_object_list(context)
 
+    def update_object_list(self, context):
+        """Not implemented"""
+        pass
+
 
 def _default_cluster_types():
     """
