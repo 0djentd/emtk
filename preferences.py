@@ -17,15 +17,17 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-from bpy.types import AddonPreferences
-
 from bpy.props import (
-                       BoolProperty,
-                       IntProperty,
-                       FloatProperty,
-                       StringProperty,
-                       EnumProperty,
-                       )
+    BoolProperty,
+    EnumProperty,
+    FloatProperty,
+    IntProperty,
+    StringProperty,
+)
+
+import dataclasses
+
+from bpy.types import AddonPreferences
 
 from .libs.modal_input.preferences import ModalShortcutsPreferences
 
