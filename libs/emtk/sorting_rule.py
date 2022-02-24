@@ -20,9 +20,7 @@
 
 # TODO: Rework whole thing. It should have subclasses and use enums.
 class SortingRule():
-    """
-    Base class for cluster sorting rules.
-    """
+    """Base class for cluster sorting rules."""
 
     def __init__(self,
                  s_name=None,
@@ -117,34 +115,38 @@ class SortingRule():
         else:
             raise TypeError
 
-    def check_sorting_rule_sanity(self):
+    def check_sorting_rule_sanity(self, throw_error=True):
         """
         Checks sorting rule for usual errors.
         Return True or False.
         """
 
-        if self._SortingRule__SORTING_RULE_IS_SANE:
-            return True
+        if self.__SORTING_RULE_IS_SANE:
+            result = True
 
         for x in self.after_clusters:
             if not isinstance(x, str):
-                return False
+                result = False
 
         for x in self.before_clusters:
             if not isinstance(x, str):
-                return False
+                result = False
 
         if not isinstance(self.sorting_rule_priority, int):
-            return False
+            result = False
 
         if self.last_cluster and self.first_cluster:
-            return False
+            result = False
 
         for x in self.after_clusters:
             for y in self.before_clusters:
                 if x == y:
-                    return False
-        return True
+                    result = False
+        result = True
+
+        if not result and throw_error:
+            raise ValueError
+        return result
 
 
 class RelativePosition(SortingRule):
