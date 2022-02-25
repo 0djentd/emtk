@@ -41,7 +41,7 @@ logger.setLevel(logging.ERROR)
 class ClustersParser():
     """Base class for objects that should be able to parse clusters."""
 
-    def __init__(self, *args,  # {{{
+    def __init__(self, *args,  
                  skip_parser=None,
                  cluster_types=None,
                  only_default_cluster=None,
@@ -142,7 +142,7 @@ class ClustersParser():
                 result.append(x)
         return result
 
-    def parse_recursively(self, modifiers_to_parse,  # {{{
+    def parse_recursively(self, modifiers_to_parse,  
                           additional_types=None,
                           no_available_types=False,
                           no_available_layer_types=False,
@@ -228,7 +228,7 @@ class ClustersParser():
         return result
     
 
-    def parse_clusters_state(self, modifiers,  # {{{
+    def parse_clusters_state(self, modifiers,  
                              clusters_state,
                              clusters_names=None):
         """
@@ -270,7 +270,7 @@ class ClustersParser():
 
     # TODO: remove this
     # Wrappers {{{
-    def _parse_modifiers(self, modifiers_to_parse,  # {{{
+    def _parse_modifiers(self, modifiers_to_parse,  
                          additional_types=None,
                          no_available_types=False,
                          clusters_names=None):
@@ -344,7 +344,7 @@ class ClustersParser():
         return clusters
     
 
-    def _parse_clusters(self, clusters_to_parse,  # {{{
+    def _parse_clusters(self, clusters_to_parse,  
                         additional_types=None,
                         no_available_types=False,
                         clusters_names=None):
@@ -387,7 +387,7 @@ class ClustersParser():
         return clusters
     
 
-    def _parse_clusters_recursively(self,  # {{{
+    def _parse_clusters_recursively(self,  
                                     modifiers_to_parse,
                                     additional_types=None,
                                     no_available_types=False,
@@ -449,7 +449,7 @@ class ClustersParser():
         return parse_result
     
 
-    def _parse_modifiers_for_simple_clusters(self, modifiers_to_parse,  # {{{
+    def _parse_modifiers_for_simple_clusters(self, modifiers_to_parse,  
                                              additional_types=None,
                                              no_available_types=False):
         """
@@ -562,7 +562,7 @@ class ClustersParser():
 
     
 
-    def _unwrap_saved_clusters_state(self, clusters_state):  # {{{
+    def _unwrap_saved_clusters_state(self, clusters_state):  
         """
         Returns clusters instances that are specified
         for reconstructing clusters.
@@ -1046,7 +1046,7 @@ class ClustersParser():
         return parse_result
     
 
-    def _cluster_priority_select(self, clusters):  # {{{
+    def _cluster_priority_select(self, clusters):  
         """
         Takes list of clusters as an argument.
         Returns cluster that have higher priority when

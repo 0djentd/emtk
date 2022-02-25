@@ -105,7 +105,7 @@ class BMTOOLS_OT_clusters_list_popup(
             self.__draw_modifier(layout, x)
 
     # TODO: move this to mixin class
-    def __draw_cluster(self, layout, cluster):  # {{{
+    def __draw_cluster(self, layout, cluster):  
 
         row = layout.row()
 
@@ -282,7 +282,7 @@ class BMTOOLS_OT_clusters_list_popup(
         
 
     # TODO: move this to mixin class
-    def __draw_modifier(self, layout, modifier):  # {{{
+    def __draw_modifier(self, layout, modifier):  
         if modifier.show_expanded:
             icon = 'DOWNARROW_HLT'
         else:

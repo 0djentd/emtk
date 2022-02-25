@@ -39,7 +39,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-class UIClassVariablesEditorCache(PropertyGroup):  # {{{
+class UIClassVariablesEditorCache(PropertyGroup):  
     """This prop group used to edit variables in ui."""
 
     # New attribute value
@@ -60,7 +60,7 @@ class UIClassVariablesEditorCache(PropertyGroup):  # {{{
 
 
 
-class UIClassVariablesEditor():   # {{{
+class UIClassVariablesEditor():   
     """
     Mix-in class for operators and panels that
     should be able to edit class variables from
@@ -108,7 +108,7 @@ class UIClassVariablesEditor():   # {{{
 
     # this method can be recursive.
     @classmethod
-    def draw_var_editor(cls,  # {{{
+    def draw_var_editor(cls,  
                         layout,
                         attr_str,
                         *args,
@@ -175,7 +175,7 @@ class UIClassVariablesEditor():   # {{{
     
 
     @classmethod
-    def __draw_list(cls,  # {{{
+    def __draw_list(cls,  
                     layout,
                     attr_str,
                     *args,
@@ -281,7 +281,7 @@ class UIClassVariablesEditor():   # {{{
     
 
     @classmethod
-    def __draw_dict(cls,  # {{{
+    def __draw_dict(cls,  
                     layout,
                     attr_str,
                     attr,
@@ -359,7 +359,7 @@ class UIClassVariablesEditor():   # {{{
     
 
     @classmethod
-    def __draw_variable(cls,  # {{{
+    def __draw_variable(cls,  
                         layout,
                         attr_str,
                         *args,
@@ -439,7 +439,7 @@ class UIClassVariablesEditor():   # {{{
     
 
     @classmethod
-    def var_editor_start(cls, variable):  # {{{
+    def var_editor_start(cls, variable):  
         """Start editing class variable in UI.
 
         variable str should only use " or '.
@@ -480,7 +480,7 @@ class UIClassVariablesEditor():   # {{{
     
 
     @classmethod
-    def var_editor_stop(cls, variable):  # {{{
+    def var_editor_stop(cls, variable):  
         """Stop editing class variable in UI and set edited class variable.
 
         variable str should only use " or '.
@@ -532,7 +532,7 @@ class UIClassVariablesEditor():   # {{{
     
 
     @classmethod
-    def __move_list_element(  # {{{
+    def __move_list_element(  
             cls, list_attr_str: str, index: int, direction: str):
         if type(list_attr_str) is not str:
             raise TypeError
@@ -559,7 +559,7 @@ class UIClassVariablesEditor():   # {{{
     
 
     @classmethod
-    def __duplicate_list_element(  # {{{
+    def __duplicate_list_element(  
             cls, list_attr_str: str, index: int):
         if type(list_attr_str) is not str:
             raise TypeError

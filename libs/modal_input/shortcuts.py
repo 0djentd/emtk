@@ -164,7 +164,7 @@ def check_refresh(func):
 
 
 # TODO: proper name
-class HashedList():  # {{{
+class HashedList():  
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -199,7 +199,7 @@ class HashedList():  # {{{
 
 
 
-class ModalShortcut(CachedObject):  # {{{
+class ModalShortcut(CachedObject):  
     """This object represents keyboard shortcut for modal operators."""
 
     def __init__(self, shortcut_id, event_type,
@@ -361,7 +361,7 @@ class ModalShortcut(CachedObject):  # {{{
 
 
 
-class ModalShortcutsGroup(CachedObject, HashedList):  # {{{
+class ModalShortcutsGroup(CachedObject, HashedList):  
     """This object represents keyboard shortcut group for modal operators."""
 
     def __init__(self, value, shortcuts=None):
@@ -488,7 +488,7 @@ class ModalShortcutsGroup(CachedObject, HashedList):  # {{{
 
 
 
-class ModalShortcutsCache(CachedObject, HashedList):  # {{{
+class ModalShortcutsCache(CachedObject, HashedList):  
     """Object that represents modal shortcuts groups."""
 
     def __init__(self, groups=None):
@@ -661,7 +661,7 @@ def deserialize_shortcut(obj: str) -> ModalShortcut:
 
 
 
-def generate_new_shortcut(shortcut_shortcut_id: str,  # {{{
+def generate_new_shortcut(shortcut_shortcut_id: str,  
                           already_existing_shortcuts: list = [],
                           max_iterations: int = 2048,
                           ignore_duplicates=False) -> ModalShortcut:

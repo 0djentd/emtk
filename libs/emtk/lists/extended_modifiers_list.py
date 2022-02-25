@@ -523,7 +523,7 @@ class FirstLayerClustersListTrait():
 # first layer clusters list as clusters layer?
 # Will be kinda hard to rework everything at this point though.
 @dataclasses.dataclass
-class FirstLayerClustersListState(ObjectState):  # {{{
+class FirstLayerClustersListState(ObjectState):  
     items_data: list
 
     def serialize(self):

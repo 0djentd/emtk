@@ -201,7 +201,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
     
 
     # ClustersEditor methods {{{
-    def editor_switched_to(self, context, clusters):  # {{{
+    def editor_switched_to(self, context, clusters):  
         """Called every time editor is switched to."""
 
         if not isinstance(clusters, list):
@@ -287,7 +287,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
             raise ValueError
     
 
-    def __default_mode(self, event):  # {{{
+    def __default_mode(self, event):  
         """
         No props besides bools and enums can be edited in default mode.
         No modal input mode can be used in default mode.
@@ -346,7 +346,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
             pass
     
 
-    def __modal_mode(self, event):  # {{{
+    def __modal_mode(self, event):  
         """
         Mode used to edit properties within multiple iterations.
 

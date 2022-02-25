@@ -71,7 +71,7 @@ doesnt have anything to do with modifiers and operate on list in general.
 class ModifiersList():
     """Base class for cluster_trait and first_layer_clusters_list."""
 
-    def __init__(self, obj=None, *args, no_obj=None,  # {{{
+    def __init__(self, obj=None, *args, no_obj=None,  
                  no_default_actions=False,
                  **kwargs):
         super().__init__()
@@ -506,7 +506,7 @@ class ModifiersList():
     # @check_obj_ref
     @check_if_removed
     def iterate(self, mod, direction: str,
-                m_type: str = None, loop: bool = True):  # {{{
+                m_type: str = None, loop: bool = True):  
         """Iterate over clusters or modifiers starting from mod.
 
         Direction should be a str in {'UP', 'DOWN'}

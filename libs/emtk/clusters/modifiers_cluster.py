@@ -40,7 +40,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-class ModifiersCluster(  # {{{
+class ModifiersCluster(  
     ClusterTrait,
     ModifiersList
 ):
@@ -95,7 +95,7 @@ class ModifiersCluster(  # {{{
 
 
 @dataclasses.dataclass
-class ModifiersClusterState(ObjectState):  # {{{
+class ModifiersClusterState(ObjectState):  
     items_data: list
 
     def serialize(self):

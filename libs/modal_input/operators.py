@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-class BMTOOLS_OT_start_editing_modal_shortcut(bpy.types.Operator):  # {{{
+class BMTOOLS_OT_start_editing_modal_shortcut(bpy.types.Operator):  
     bl_idname = "bmtools.start_editing_modal_shortcut"
     bl_label = "Start editing bmtool modal operator kbs."
     bl_description = "Start editing modal shortcut"
@@ -84,7 +84,7 @@ class BMTOOLS_OT_start_editing_modal_shortcut(bpy.types.Operator):  # {{{
 
 
 
-class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):  # {{{
+class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):  
     bl_label = "Add or change bmtool modal operator kbs."
     bl_idname = "bmtools.add_or_update_modal_shortcut"
     bl_description = "Add or update modal shortcut"
@@ -149,7 +149,7 @@ class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):  # {{{
 
 
 
-class BMTOOL_OT_reparse_default_modifiers_props_kbs(  # {{{
+class BMTOOL_OT_reparse_default_modifiers_props_kbs(  
         bpy.types.Operator):
     bl_idname = "object.reparse_default_modifiers_props_kbs"
     bl_label = "BMTool add all modifiers props to kbs"

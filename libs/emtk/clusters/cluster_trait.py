@@ -58,7 +58,7 @@ class ClusterTrait():
     default_data: dict
     """
 
-    def __init__(self,  # {{{
+    def __init__(self,  
                  *args,
                  cluster_name=None,
                  cluster_type=None,
@@ -136,7 +136,7 @@ class ClusterTrait():
         # TODO: dont need this
         
 
-    def _check_cluster_definition(self, cluster_definition):  # {{{
+    def _check_cluster_definition(self, cluster_definition):  
         """
         Checks types in cluster definition and add default
         values.
@@ -215,7 +215,7 @@ class ClusterTrait():
 
     # Props {{{
     @property
-    def name(self):  # {{{
+    def name(self):  
         return self.get_this_cluster_name()
 
     @name.setter
@@ -259,7 +259,7 @@ class ClusterTrait():
     
 
     @property
-    def type(self):  # {{{
+    def type(self):  
         return self.get_this_cluster_type()
 
     @check_if_removed
@@ -273,7 +273,7 @@ class ClusterTrait():
 
     # Methods reserved for subclasses {{{
     # TODO: remove this
-    def modcluster_extra_availability_check(self, modifiers):  # {{{
+    def modcluster_extra_availability_check(self, modifiers):  
         """
         Additional method reserved for custom types.
         Checks if modifiers can be considered as

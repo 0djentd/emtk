@@ -123,7 +123,7 @@ def _get_object_state_subclass_by_name(name):
 
 
 @dataclasses.dataclass
-class ObjectState(collections.UserDict):  # {{{
+class ObjectState(collections.UserDict):  
     """
     This classes should not be instantiated using constructor.
     Use one of classmethods insead.
@@ -157,7 +157,7 @@ class ObjectState(collections.UserDict):  # {{{
 
 
 @dataclasses.dataclass
-class ModifierState(ObjectState):  # {{{
+class ModifierState(ObjectState):  
     """Object representing stored modifier state."""
 
     _object_type = Modifier

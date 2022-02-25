@@ -139,7 +139,7 @@ MODIFIER_TYPES = [
 
 
 
-def get_all_editable_props(modifier, no_ignore=False):  # {{{
+def get_all_editable_props(modifier, no_ignore=False):  
     """
     Returns list of names of all modifier props that
     can be edited in modal operator.
@@ -174,7 +174,7 @@ def get_all_editable_props(modifier, no_ignore=False):  # {{{
 
 
 
-def get_props_filtered_by_types(modifier) -> dict:  # {{{
+def get_props_filtered_by_types(modifier) -> dict:  
     """Returns dict with modifier props."""
     result = {}
     props = get_all_editable_props(modifier)
@@ -198,7 +198,7 @@ def get_props_filtered_by_types(modifier) -> dict:  # {{{
 
 
 
-def filter_props_by_type(modifier, props,  # {{{
+def filter_props_by_type(modifier, props,  
                          props_type, props_subtype=None):
     """Returns new list of modifier props filtered by props_type"""
     if not isinstance(props_type, str):
@@ -222,7 +222,7 @@ def filter_props_by_type(modifier, props,  # {{{
 
 
 
-def filter_props_by_types_subtypes(  # {{{
+def filter_props_by_types_subtypes(  
         obj, props_names, t=None, s=None):
     """Returns filtered list of props names"""
     if not isinstance(t, list) and t is not None:

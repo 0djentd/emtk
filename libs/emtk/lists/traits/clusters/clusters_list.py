@@ -319,7 +319,7 @@ class full_list(clusters_list_generated_list):
 
 
 @dataclasses.dataclass
-class ClustersListState():  # {{{
+class ClustersListState():  
     def serialize(self):
         logger.debug(f'Serializing {self}')
         self._check_type(self)

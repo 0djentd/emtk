@@ -90,7 +90,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
     
 
     @classmethod
-    def poll(self, context):  # {{{
+    def poll(self, context):  
         """Check if operator can be used."""
         if context.area.type != 'VIEW_3D':
             return False
@@ -103,7 +103,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
         return True
     
 
-    def modal(self, context, event):  # {{{
+    def modal(self, context, event):  
         """Method that is initiated every frame or whatever."""
 
         # Exit out of editor mode or finish operator.
@@ -164,7 +164,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
         return {'RUNNING_MODAL'}
     
 
-    def invoke(self, context, event):  # {{{
+    def invoke(self, context, event):  
         """Method that is invoked once per operator usage."""
 
         self.mode = self.__DEFAULT_MODE
@@ -520,7 +520,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
         return
     
 
-    def clear(self, context):  # {{{
+    def clear(self, context):  
         """Removes operator.
 
         Used when encountering FINISHED or CANCELLED in modal method

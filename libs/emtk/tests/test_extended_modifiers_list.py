@@ -31,7 +31,7 @@ try:
 except ModuleNotFoundError:
     _WITH_BPY = False
 
-MODIFIERS_DATA = [  # {{{
+MODIFIERS_DATA = [  
     ('Bevel6', 'BEVEL'),
     ('Array', 'ARRAY'),
     ('TopBevel', 'BEVEL'),

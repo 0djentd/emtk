@@ -44,7 +44,7 @@ I assume this is possible to have cache for multiple 'instances'
 in class variables by identyfing panels somehow.
 """
 # TODO: No idea why this doesnt work properly with inheritance.
-# class BlenderUIWrapper():  # {{{
+# class BlenderUIWrapper():  
 #     """Base class for EMTK panels and menus.
 #     Provides additional methods based on 'poll' and 'draw' methods.
 #     """
@@ -59,7 +59,7 @@ in class variables by identyfing panels somehow.
 #
 #     __debug = True
 #
-#     # Public properties.  # {{{
+#     # Public properties.  
 #     @classmethod
 #     @property
 #     def active_object_changed(cls):
@@ -208,7 +208,7 @@ class VIEW3D_PT_bmtool_panel(Panel):
         """
         return type(self).instances[0]
 
-    # Properties.  # {{{
+    # Properties.  
     @classmethod
     @property
     def active_object_changed(cls):

@@ -39,7 +39,7 @@ import blf
 #         elif isinstance(x, OperatorInfoUI):
 #             draw_operator_info(x, context)
 
-def bmtool_modifier_ui_draw(self, context):  # {{{
+def bmtool_modifier_ui_draw(self, context):  
     ui_t = self.bmtool_ui(context)
     offset = 0
     offset_2 = 0
@@ -100,7 +100,7 @@ def bmtool_modifier_ui_draw(self, context):  # {{{
 
 
 
-class BMToolUi:  # {{{
+class BMToolUi:  
     """
     Base class for BMToolMod operators that use its UI features
     """
