@@ -91,7 +91,7 @@ class ModifiersCluster(  # {{{
 
     def get_state(self):
         return ModifiersClusterState(self)
-# }}}
+
 
 
 @dataclasses.dataclass
@@ -154,4 +154,4 @@ class ModifiersClusterState(ObjectState):  # {{{
             if not x.compare(items[i]):
                 return False
         return True
-# }}}
+

@@ -100,7 +100,7 @@ def unwrap_obj_ref(func, allow_no_value=False):
 def unwrap_obj_ref_allow_no_value(func):
     """Same as unwrap_obj_ref, but allows obj to be None."""
     return unwrap_obj_ref(func, allow_no_value=True)
-# }}}
+
 
 
 class Selection():

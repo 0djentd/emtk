@@ -134,7 +134,7 @@ class ClusterTrait():
             raise ValueError('This cluster cant be used.')
 
         # TODO: dont need this
-        # }}}
+        
 
     def _check_cluster_definition(self, cluster_definition):  # {{{
         """
@@ -211,7 +211,7 @@ class ClusterTrait():
             if not isinstance(y, str):
                 raise TypeError
         return x
-    # }}}
+    
 
     # Props {{{
     @property
@@ -256,7 +256,7 @@ class ClusterTrait():
             self.instance_data['name'] = cluster_name
         else:
             raise TypeError
-    # }}}
+    
 
     @property
     def type(self):  # {{{
@@ -268,8 +268,8 @@ class ClusterTrait():
         Returns this ModifiersCluster's type
         """
         return self.default_data['type']
-    # }}}
-    # }}}
+    
+    
 
     # Methods reserved for subclasses {{{
     # TODO: remove this
@@ -295,7 +295,7 @@ class ClusterTrait():
         Should return True or False.
         """
         return True
-    # }}}
+    
 
     # Cluster subclass-specific additional actions. {{{
 
@@ -331,7 +331,7 @@ class ClusterTrait():
         cluster's layers and modifiers clusters.
         """
         return
-    # }}}
+    
 
     # Cluster subclass-specific additional interpretation. {{{
 
@@ -362,8 +362,8 @@ class ClusterTrait():
         cluster's layers and modifiers clusters.
         """
         return
-    # }}}
-    # }}}
+    
+    
 
     # Cluster tags {{{
     @check_if_removed
@@ -406,7 +406,7 @@ class ClusterTrait():
         for x in y:
             self.instance_data['tags'].remove(x)
         return result
-    # }}}
+    
 
     # Initializing cluster  {{{
     @check_if_removed
@@ -446,7 +446,7 @@ class ClusterTrait():
 
         else:
             return False
-    # }}}
+    
 
     # Clusters sorting {{{
     @check_if_removed
@@ -496,7 +496,7 @@ class ClusterTrait():
             return []
         else:
             return self._sorting_rules
-    # }}}
+    
 
     # Parsing {{{
     def get_this_cluster_possible_length(self):
@@ -593,7 +593,7 @@ class ClusterTrait():
             return additional_checks
 
         return None
-    # }}}
+    
 
     # Cluster visibility  {{{
     def get_this_cluster_visibility(self):
@@ -683,7 +683,7 @@ class ClusterTrait():
             else:
                 new_cluster_vis.append(None)
         self.set_this_cluster_visibility(new_cluster_vis)
-    # }}}
+    
 
     # Utility {{{
     # TODO: allow checking without throwing error
@@ -774,4 +774,4 @@ class ClusterTrait():
             result\
                 = f"Already removed cluster {self.default_data['name']}"
         return result
-    # }}}
+    

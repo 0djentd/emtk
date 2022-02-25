@@ -79,7 +79,7 @@ class ModalInputOperator():
     # TODO: enum can be used with digits input (using item index)
     __DIGITS_TYPES = {'INT', 'FLOAT'}
     __LETTERS_TYPES = {'STR', 'ENUM'}
-    # }}}
+    
 
     # This is currently active mode in ModalInputOperator object.
     @property
@@ -174,7 +174,7 @@ class ModalInputOperator():
     def modal_letters_get(self) -> str:
         """Returns str."""
         return copy.copy(self.__modal_letters_str)
-    # }}}
+    
 
     def modal_digits(self, event, prop_def) -> bool:  # {{{
         """Writes a string that can be used to get integer or float."""
@@ -203,7 +203,7 @@ class ModalInputOperator():
         else:
             return False
         return True
-    # }}}
+    
 
     def modal_letters(self, event, prop_def) -> bool:  # {{{
         """This thing writes a string that can be used in modal operator."""
@@ -253,7 +253,7 @@ class ModalInputOperator():
         else:
             return False
         return True
-    # }}}
+    
 
     def modal_input_mouse_rna_type(  # {{{
             self, obj, attr: str, event, sens: float = 1.0) -> typing.Union[int, float]:
@@ -290,7 +290,7 @@ class ModalInputOperator():
         possible_prop_types = {'BOOLEAN': bool, 'INT': int, 'FLOAT': float}
         if type(attr_val) is not possible_prop_types[prop_type]:
             raise TypeError
-        # }}}
+        
 
         return self.modal_input_mouse_variables(event,
                                                 attr_val=attr_val,
@@ -302,7 +302,7 @@ class ModalInputOperator():
                                                 prop_soft_max=prop_soft_max,
                                                 prop_step=prop_step,
                                                 sens=sens)
-    # }}}
+    
 
     def modal_input_mouse_variables(self,  # {{{
                                     event,
@@ -410,7 +410,7 @@ class ModalInputOperator():
             else:
                 raise TypeError(
                     f'Not implemented prop subtype "{prop_subtype}"')
-            # }}}
+            
 
         elif prop_type == 'INT':  # {{{
             if prop_subtype == 'NONE':
@@ -457,7 +457,7 @@ class ModalInputOperator():
             else:
                 raise TypeError(
                     f'Not implemented prop subtype "{prop_subtype}"')
-        # }}}
+        
 
         elif prop_type == 'FLOAT':  # {{{
             if prop_subtype == 'NONE':
@@ -512,7 +512,7 @@ class ModalInputOperator():
             else:
                 raise TypeError(
                     f'Not implemented prop subtype "{prop_subtype}"')
-        # }}}
+        
 
         # elif prop_type == 'VECTOR_FLOAT':  # {{{
             # if prop_subtype == 'NONE':
@@ -563,7 +563,7 @@ class ModalInputOperator():
             # elif prop_subtype == 'LAYER_MEMBER':
             #     raise TypeError
 
-            # }}}
+            
         else:
             raise TypeError(
                 f'Not implemented prop type "{prop_type}"')
@@ -585,7 +585,7 @@ class ModalInputOperator():
         logger.debug(f'Returning {result}')
         logger.debug(' ')
         return result
-    # }}}
+    
 
 
 # Utils {{{
@@ -651,4 +651,4 @@ def _get_delta_pct(event, bounds: float = -100,
         if result > limit:
             result = limit
     return result
-# }}}
+

@@ -179,7 +179,7 @@ class FirstLayerClustersListTrait():
     def remove_cluster_type(self, cluster):
         """Remove cluster type"""
         return self._clusters_parser.remove_cluster_type(cluster)
-    # }}}
+    
 
     # Actions {{{
     def ask(self, question):
@@ -268,7 +268,7 @@ class FirstLayerClustersListTrait():
             restore_modifier_state(modifiers[-1], modifier_props)
         result = self._clusters_parser.parse_recursively(modifiers)
         self._data.extend(result)
-    # }}}
+    
 
     # Storing clusters state {{{
     def get_clusters_state(self) -> list:
@@ -391,7 +391,7 @@ class FirstLayerClustersListTrait():
             return x
         else:
             return False
-    # }}}
+    
 
     # saving modifiers state for fast check. {{{
     def get_modifiers_state(self):
@@ -474,7 +474,7 @@ class FirstLayerClustersListTrait():
             if not a.compare(b):
                 return True
         return False
-    # }}}
+    
 
     # Utility {{{
     def _check_if_actual_modifiers_list_is_correct(self):
@@ -513,7 +513,7 @@ class FirstLayerClustersListTrait():
 
     def __repr__(self):
         return self.__str__()
-    # }}}
+    
 
     def get_state(self):
         return FirstLayerClustersListState.get_data_from_obj(self)
@@ -582,7 +582,7 @@ class FirstLayerClustersListState(ObjectState):  # {{{
             if not x.compare(items[i]):
                 return False
         return True
-# }}}
+
 
 
 class ExtendedModifiersList(

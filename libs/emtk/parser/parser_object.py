@@ -118,7 +118,7 @@ class ClustersParser():
         if isinstance(cluster_types, list):
             for x in cluster_types:
                 self.update_cluster_types(x)
-    # }}}
+    
 
     """
     parse_result is a list of lists with string, cluster and modifiers.
@@ -226,7 +226,7 @@ class ClustersParser():
                                                   clusters_names,
                                                   layers_to_create)
         return result
-    # }}}
+    
 
     def parse_clusters_state(self, modifiers,  # {{{
                              clusters_state,
@@ -266,7 +266,7 @@ class ClustersParser():
         logger.debug(f"result is {parse_result}")
         logger.debug("FINISHED RESTORING CLUSTERS STATE")
         return parse_result
-    # }}}
+    
 
     # TODO: remove this
     # Wrappers {{{
@@ -342,7 +342,7 @@ class ClustersParser():
         clusters = self._initialize_clusters(unwrapped_result, clusters_names)
 
         return clusters
-    # }}}
+    
 
     def _parse_clusters(self, clusters_to_parse,  # {{{
                         additional_types=None,
@@ -385,7 +385,7 @@ class ClustersParser():
             parse_result, ['SKIP', 'CREATE'])
         clusters = self._initialize_clusters(unwrapped_result, clusters_names)
         return clusters
-    # }}}
+    
 
     def _parse_clusters_recursively(self,  # {{{
                                     modifiers_to_parse,
@@ -447,7 +447,7 @@ class ClustersParser():
             else:
                 parsing_iteration += 1
         return parse_result
-    # }}}
+    
 
     def _parse_modifiers_for_simple_clusters(self, modifiers_to_parse,  # {{{
                                              additional_types=None,
@@ -487,8 +487,8 @@ class ClustersParser():
         unwrapped_result = self._unwrap_parse_result(parse_result, ['CREATE'])
         clusters = self._initialize_clusters(unwrapped_result)
         return clusters
-    # }}}
-    # }}}
+    
+    
 
     # Cluster types  {{{
     def update_cluster_types(self, cluster_type_to_add):
@@ -560,7 +560,7 @@ class ClustersParser():
             f"Cant find cluster with type {cluster_type}\
                         in {self.available_layer_types}")
 
-    # }}}
+    
 
     def _unwrap_saved_clusters_state(self, clusters_state):  # {{{
         """
@@ -622,7 +622,7 @@ class ClustersParser():
             # Add cluster type to result.
             result.append(cluster_type)
         return result
-    # }}}
+    
 
     # Parser {{{
     # =============================
@@ -708,7 +708,7 @@ class ClustersParser():
                 logger.debug(
                     f"priority is {x.default_data['priority']}")
                 logger.debug(" ")
-        # }}}
+        
 
         # Variables {{{
         # if _WITH_BPY:
@@ -761,7 +761,7 @@ class ClustersParser():
 
         # False, if no modifiers left to parse
         parsing_modifiers = True
-        # }}}
+        
 
         # Iterate over modifiers or clusters {{{
         while parsing_modifiers:
@@ -781,7 +781,7 @@ class ClustersParser():
                 elif parse_iteration\
                         >= max_iterations:
                     raise ValueError("Parsing failed, too many iterations")
-            # }}}
+            
 
             # Add modifier to sequence
             modifier = modifiers_to_parse.pop(0)
@@ -806,7 +806,7 @@ class ClustersParser():
                 logger.debug(possible_clusters_confirmed)
                 logger.debug(
                     f"Previous iteration result was '{iteration_result}'")
-            # }}}
+            
 
             # Decide what clusters types to use in checking
             if iteration_result == 'SUCCESS' or parse_iteration == 0:
@@ -953,7 +953,7 @@ class ClustersParser():
 
                 need_another_modifier = True
                 iteration_result = 'SUCCESS'
-            # }}}
+            
 
             # Parser needs another modifier
             elif need_another_modifier is True:
@@ -982,7 +982,7 @@ class ClustersParser():
             else:
                 need_another_modifier = True
             parse_iteration += 1
-        # }}}
+        
 
         # Parse result sanity check  {{{
         if parser_sanity_checks:
@@ -1030,7 +1030,7 @@ class ClustersParser():
             #     # of sanity check itself
             #     # raise ValueError(
             #     #         "Actual modifiers count after parsing is wrong.")
-        # }}}
+        
 
         # Info {{{
         if logger.isEnabledFor(logging.DEBUG):
@@ -1041,10 +1041,10 @@ class ClustersParser():
             logger.debug("         Finished parsing")
             logger.debug("===================================")
             logger.debug(" ")
-        # }}}
+        
 
         return parse_result
-    # }}}
+    
 
     def _cluster_priority_select(self, clusters):  # {{{
         """
@@ -1109,7 +1109,7 @@ class ClustersParser():
         logger.debug(f"Selected {result} cluster.")
         logger.debug(f"{result.get_this_cluster_tags()}")
         return result
-    # }}}
+    
 
     # Parse result processing  {{{
     def _unwrap_parse_result(self, parse_result, tags):
@@ -1204,7 +1204,7 @@ class ClustersParser():
         x[1]._controller = self._controller
         x[1]._clusters_parser = self
         return x
-    # }}}
+    
 
     # TODO: remove this
     def _get_new_cluster_type_index(self):
@@ -1271,4 +1271,4 @@ def _clean_restored_clusters(clusters):
         x.remove_tag_from_this_cluster('RESTORED')
         x.instance_data['by_name'] = []
     return clusters
-# }}}
+

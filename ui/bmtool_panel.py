@@ -69,7 +69,7 @@ in class variables by identyfing panels somehow.
 #     @property
 #     def selected_objects_changed(cls):
 #         return cls.__selected_objects_changed
-#     # }}}
+#     
 #
 #     # Public methods that should not be overloaded. {{{
 #     @classmethod
@@ -128,7 +128,7 @@ in class variables by identyfing panels somehow.
 #         self.panel_draw(context)
 #         if self.__debug:
 #             print('Panel was drawn')
-#     # }}}
+#     
 #
 #     # Public methods {{{
 #     @classmethod
@@ -174,8 +174,8 @@ in class variables by identyfing panels somehow.
 #         It should return None.
 #         """
 #         return
-#     # }}}
-# # }}}
+#     
+# 
 
 
 class VIEW3D_PT_bmtool_panel(Panel):
@@ -235,7 +235,7 @@ class VIEW3D_PT_bmtool_panel(Panel):
     @classmethod
     def _set_tag_panel_invoke(cls, val):
         cls.__tag_panel_invoke_value = val
-    # }}}
+    
 
     # panel was drawn  {{{
     @property
@@ -253,8 +253,8 @@ class VIEW3D_PT_bmtool_panel(Panel):
     @classmethod
     def _set_panel_was_drawn(cls, val):
         cls.__panel_was_drawn_value = val
-    # }}}
-    # }}}
+    
+    
 
     # Public methods that should not be overloaded. {{{
     @classmethod
@@ -334,7 +334,7 @@ class VIEW3D_PT_bmtool_panel(Panel):
         self.panel_draw(context)
         if cls.__debug:
             print('Panel was drawn')
-    # }}}
+    
 
     # Public methods {{{
     @classmethod
@@ -347,8 +347,8 @@ class VIEW3D_PT_bmtool_panel(Panel):
         """
         return
 
-    # }}}
-    # }}}
+    
+    
 
     # Example:
     # {'Bevel': True, 'Array': False}
@@ -384,7 +384,7 @@ class VIEW3D_PT_bmtool_panel(Panel):
     @classmethod
     def panel_remove(cls, context):
         cls.modifiers_expanded = {}
-    # }}}
+    
 
     def __draw_modifier_props(self, modifier):
         layout = self.layout.box()

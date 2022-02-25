@@ -144,4 +144,4 @@ class ClustersLayerState(ObjectState):  # {{{
             if not x.compare(items[i]):
                 return False
         return True
-# }}}
+

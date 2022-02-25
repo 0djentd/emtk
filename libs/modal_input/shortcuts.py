@@ -92,7 +92,7 @@ def unwrap_str_to_obj(func):
             group = self[group]
         return func(self, group, *args, **kwargs)
     return wrapper_unwrap_str_to_obj
-# }}}
+
 
 
 # Cache {{{
@@ -160,7 +160,7 @@ def check_refresh(func):
             self.cache_clear()
         return func(self, *args, **kwargs)
     return wrapper_check_refresh
-# }}}
+
 
 
 # TODO: proper name
@@ -196,7 +196,7 @@ class HashedList():  # {{{
     def remove(self, obj):
         return self._data.remove(obj)
 
-# }}}
+
 
 
 class ModalShortcut(CachedObject):  # {{{
@@ -268,7 +268,7 @@ class ModalShortcut(CachedObject):  # {{{
             raise TypeError
         self._alt = val
         self.cache_clear()
-    # }}}
+    
 
     @property
     def shortcut_id(self):
@@ -301,7 +301,7 @@ class ModalShortcut(CachedObject):  # {{{
             self._description = d
         else:
             raise TypeError(f'Expected None or str, got {type(d)}')
-    # }}}
+    
 
     def compare(self, obj):
         """Compare with bpy.types.event or another ModalShortcut."""
@@ -358,7 +358,7 @@ class ModalShortcut(CachedObject):  # {{{
         for x in _MAPPING:
             result.update({x: getattr(self, x)})
         return json.dumps(result)
-# }}}
+
 
 
 class ModalShortcutsGroup(CachedObject, HashedList):  # {{{
@@ -405,7 +405,7 @@ class ModalShortcutsGroup(CachedObject, HashedList):  # {{{
             logger.error('Removing duplicates.')
             shortcuts = fix_duplicates(shortcuts)
         self._data = shortcuts
-    # }}}
+    
 
     # List methods {{{
     @refresh_cache
@@ -434,7 +434,7 @@ class ModalShortcutsGroup(CachedObject, HashedList):  # {{{
             self._data.append(shortcut)
         else:
             self._data.insert(index, shortcut)
-    # }}}
+    
 
     @check_refresh
     @method_cache
@@ -485,7 +485,7 @@ class ModalShortcutsGroup(CachedObject, HashedList):  # {{{
         result = {'name': self.value,
                   'shortcuts': serialized_shortcuts}
         return json.dumps(result)
-# }}}
+
 
 
 class ModalShortcutsCache(CachedObject, HashedList):  # {{{
@@ -522,7 +522,7 @@ class ModalShortcutsCache(CachedObject, HashedList):  # {{{
         if e:
             self._data.remove(e)
         self._data.append(group)
-    # }}}
+    
 
     @property
     def shortcuts_groups(self):
@@ -574,7 +574,7 @@ class ModalShortcutsCache(CachedObject, HashedList):  # {{{
 
     def cache_clear(self) -> None:
         self._CachedObject__cache_clear()
-# }}}
+
 
 
 # Utils {{{
@@ -627,7 +627,7 @@ def _str_repr_event(event):
         if getattr(event, x):
             line = line + f' + {x}'
     return line
-# }}}
+
 
 
 # Deserialization {{{
@@ -658,7 +658,7 @@ def deserialize_shortcut(obj: str) -> ModalShortcut:
                          s['shift'],
                          s['ctrl'],
                          s['alt'])
-# }}}
+
 
 
 def generate_new_shortcut(shortcut_shortcut_id: str,  # {{{
@@ -793,4 +793,4 @@ def _get_next_letter_in_shortcut_name(
     else:
         raise TypeError
     return new_index, event_type
-# }}}
+

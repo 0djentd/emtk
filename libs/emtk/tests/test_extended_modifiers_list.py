@@ -274,7 +274,7 @@ MODIFIERS_DATA = [  # {{{
     ('TopBevel', 'BEVEL'),
     ('WeightedNormal', 'WEIGHTED_NORMAL'),
 ]
-# }}}
+
 
 
 def add_modifiers(obj, count) -> list[DummyBlenderModifier]:

@@ -70,7 +70,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
         'collapse': 'R',
         'exit': 'Q'
     }
-    # }}}
+    
 
     # Const {{{
     # Default modal editing mode.
@@ -87,7 +87,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
 
     # Use modifiers of any type.
     __BMTOOLM = True
-    # }}}
+    
 
     @classmethod
     def poll(self, context):  # {{{
@@ -101,7 +101,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
         elif context.object.type != 'MESH':
             return False
         return True
-    # }}}
+    
 
     def modal(self, context, event):  # {{{
         """Method that is initiated every frame or whatever."""
@@ -162,7 +162,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
             raise ValueError
 
         return {'RUNNING_MODAL'}
-    # }}}
+    
 
     def invoke(self, context, event):  # {{{
         """Method that is invoked once per operator usage."""
@@ -216,7 +216,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
 
         context.window_manager.modal_handler_add(self)
         return {'RUNNING_MODAL'}
-    # }}}
+    
 
     # Modal actions. {{{
     def __modal_actions(self, context, event):
@@ -244,7 +244,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                 else:
                     cluster.toggle_this_cluster_visibility(
                         [False, True, False, False])
-            # }}}
+            
 
         # Modifier visibility 2{{{
         elif (event.type == self.__bmtool_kbs['visibility_2'])\
@@ -265,12 +265,12 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                 else:
                     cluster.toggle_this_cluster_visibility(
                         [False, False, False, True])
-            # }}}
+            
 
         # Sort modifiers{{{
         elif (event.type == self.__bmtool_kbs['sort'])\
                 & (event.value == 'PRESS'):
-            layer.apply_sorting_rules()  # }}}
+            layer.apply_sorting_rules()  
 
         # Duplicate cluster modifiers and parse {{{
         elif (event.type == self.__bmtool_kbs['add_new'])\
@@ -284,7 +284,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                 self.m_list.duplicate(cluster)
 
             # Trigger active modifier change
-            self.bmtool_modifier_update(context)  # }}}
+            self.bmtool_modifier_update(context)  
 
         # Apply active cluster{{{
         elif (event.type == self.__bmtool_kbs['apply_remove'])\
@@ -304,7 +304,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                 return {'FINISHED'}
 
             # Trigger active modifier change.
-            self.bmtool_modifier_update(context)  # }}}
+            self.bmtool_modifier_update(context)  
 
         # Deconstruct cluster.{{{
         elif (event.type == self.__bmtool_kbs['construct_deconstruct'])\
@@ -315,7 +315,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                     self.report({'INFO'}, "Deconstructed cluster")
                 else:
                     self.report({'ERROR'}, "Cant deconstruct cluster")
-            # }}}
+            
 
         # Construct cluster from selection.{{{
         elif (event.type == self.__bmtool_kbs['construct_deconstruct'])\
@@ -329,7 +329,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                 self.__stop_selecting_clusters()
             else:
                 self.report({'ERROR'}, "No clustes selected.")
-            # }}}
+            
 
         # Toggle selection.{{{
         elif (event.type == self.__bmtool_kbs['toogle_selection'])\
@@ -340,7 +340,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                 self.__stop_selecting_clusters()
             else:
                 self.__start_selecting_clusters()
-            # }}}
+            
 
         # Remove active cluster.{{{
         elif (event.type == self.__bmtool_kbs['apply_remove'])\
@@ -356,7 +356,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
             self.__stop_selecting_clusters()
 
             # Trigger active modifier change.
-            self.bmtool_modifier_update(context)  # }}}
+            self.bmtool_modifier_update(context)  
 
         # Move modifier up.{{{
         elif (event.type == self.__bmtool_kbs['up'])\
@@ -371,7 +371,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
 
             # Trigger active modifier change.
             self.bmtool_modifier_update(context)
-            # }}}
+            
 
         # Move modifier down.{{{
         elif (event.type == self.__bmtool_kbs['down'])\
@@ -386,7 +386,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
 
             # Trigger active modifier change.
             self.bmtool_modifier_update(context)
-            # }}}
+            
 
         # Collapse cluster.{{{
         elif (event.type == self.__bmtool_kbs['collapse'])\
@@ -414,7 +414,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
             self.bmtool_modifier_update(context)
 
             self.__stop_selecting_clusters()
-            # }}}
+            
 
         # Scroll through modifiers up.{{{
         elif (event.type == self.__bmtool_kbs['up'])\
@@ -443,7 +443,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                         layer.active = layer.iterate(cluster, 'UP', loop=True)
 
             # Trigger active modifier change.
-            self.bmtool_modifier_update(context)  # }}}
+            self.bmtool_modifier_update(context)  
 
         # Scroll through modifiers down.{{{
         elif (event.type == self.__bmtool_kbs['down'])\
@@ -472,11 +472,11 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                             cluster, 'DOWN', loop=True)
 
                 # Trigger active modifier change.
-                self.bmtool_modifier_update(context)  # }}}
+                self.bmtool_modifier_update(context)  
         else:
             return False
         return True
-    # }}}
+    
 
     # TODO: rename this methods.
     # Methods reserved for operators. {{{
@@ -518,7 +518,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
         ModalClustersOperator modal methods.
         """
         return
-    # }}}
+    
 
     def clear(self, context):  # {{{
         """Removes operator.
@@ -563,7 +563,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
             logger.info("Clusters were already removed.")
 
         logger.info("Modal operator finished.")
-    # }}}
+    
 
     # Clusters selection utils  {{{
     def __stop_selecting_clusters(self) -> None:
@@ -587,4 +587,4 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
             return layer.get_selection()
         else:
             return [cluster]
-    # }}}
+    

@@ -119,7 +119,7 @@ def _get_object_state_subclass_by_name(name):
         return ModifierState
     else:
         raise ValueError(type(name), name)
-# }}}
+
 
 
 @dataclasses.dataclass
@@ -153,7 +153,7 @@ class ObjectState(collections.UserDict):  # {{{
         for x, y in obj.__dataclass_fields__.items():
             if type(getattr(obj, x)) != y.type:
                 raise TypeError
-# }}}
+
 
 
 @dataclasses.dataclass
@@ -202,4 +202,4 @@ class ModifierState(ObjectState):  # {{{
             if getattr(obj, x) != y:
                 return False
         return True
-# }}}
+

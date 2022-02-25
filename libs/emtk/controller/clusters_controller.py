@@ -226,7 +226,7 @@ class ClustersController():
                         result.append([command, y])
                     return result
         return []
-    # }}}
+    
 
     # Applying  {{{
     # TODO: to be removed
@@ -249,7 +249,7 @@ class ClustersController():
         layer = self.e.get_cluster_or_layer(action.subject)
         logger.debug(f'Applying {action} on layer {layer}')
         layer.do(action)
-    # }}}
+    
 
     # Utils  {{{
     def _sort_commands_by_layer_depth(self, commands):
@@ -278,7 +278,7 @@ class ClustersController():
             result.append(x[1])
         result.reverse()
         return result
-    # }}}
+    
 
     # Serialize {{{
     def _serialize_batch_command(self, batch):
@@ -301,7 +301,7 @@ class ClustersController():
         else:
             result.append('CLUSTER')
         return result
-    # }}}
+    
 
     # Deserialize {{{
     def deserialize_batch_command(self, batch):
@@ -341,4 +341,4 @@ class ClustersController():
             if x.type == obj_type:
                 if x.name == obj_name:
                     return x
-    # }}}
+    

@@ -176,4 +176,4 @@ class ActiveClusterTrait():
             self.active = clusters_index
 
         return True
-    # }}}
+    

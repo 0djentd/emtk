@@ -117,7 +117,7 @@ class ClustersListTrait():
         """Creates cluster or layer on this layer."""
         logger.info(f'Creating {cluster_type_instance} on layer {self}')
         raise ValueError
-    # }}}
+    
 
     def get_actual_modifier_by_index(self, i):
         """
@@ -195,7 +195,7 @@ class ClustersListTrait():
             for y in x.all_modifiers():
                 result.append(y)
         return full_modifiers_list(result)
-    # }}}
+    
 
     # @check_obj_ref
     @check_if_removed
@@ -315,7 +315,7 @@ class full_clusters_list(clusters_list_generated_clusters_list):
 class full_list(clusters_list_generated_list):
     """List of all modifiers and clusters."""
     pass
-# }}}
+
 
 
 @dataclasses.dataclass
@@ -384,4 +384,4 @@ class ClustersListState():  # {{{
             return obj.instance_data
         except AttributeError:
             return {}
-    # }}}
+    

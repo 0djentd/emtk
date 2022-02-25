@@ -135,8 +135,8 @@ MODIFIER_TYPES = [
     "SOFT_BODY",
     "SURFACE"
 ]
-# }}}
-# }}}
+
+
 
 
 def get_all_editable_props(modifier, no_ignore=False):  # {{{
@@ -171,7 +171,7 @@ def get_all_editable_props(modifier, no_ignore=False):  # {{{
         if not isinstance(x, str):
             raise TypeError
     return result
-# }}}
+
 
 
 def get_props_filtered_by_types(modifier) -> dict:  # {{{
@@ -195,7 +195,7 @@ def get_props_filtered_by_types(modifier) -> dict:  # {{{
                 raise TypeError
     logger.debug(result)
     return result
-# }}}
+
 
 
 def filter_props_by_type(modifier, props,  # {{{
@@ -219,7 +219,7 @@ def filter_props_by_type(modifier, props,  # {{{
             continue
         result.append(x)
     return result
-# }}}
+
 
 
 def filter_props_by_types_subtypes(  # {{{
@@ -246,4 +246,4 @@ def filter_props_by_types_subtypes(  # {{{
                 continue
         result.append(x)
     return result
-# }}}
+

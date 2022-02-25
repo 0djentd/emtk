@@ -97,7 +97,7 @@ def bmtool_modifier_ui_draw(self, context):  # {{{
             blf.color(font_id, 0.95, 0.95, 0.2, 1)
             blf.draw(font_id, "Encountered error while drawing text")
             offset -= 18
-# }}}
+
 
 
 class BMToolUi:  # {{{
@@ -278,5 +278,5 @@ class BMToolUi:  # {{{
         ui_t = []
         ui_t.append("Not implemented for modifiers clusters")
         return ui_t
-    # }}}
-# }}}
+    
+

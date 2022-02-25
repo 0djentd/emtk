@@ -52,7 +52,7 @@ class BMTOOLS_OT_start_editing_modal_shortcut(bpy.types.Operator):  # {{{
         name="Group to be edited",
         default=""
     )
-    # }}}
+    
 
     def execute(self, context):
         prefs = context.preferences.addons['bmtools'].preferences
@@ -81,7 +81,7 @@ class BMTOOLS_OT_start_editing_modal_shortcut(bpy.types.Operator):  # {{{
             prefs.edited_shortcut_ctrl = shortcut.ctrl
             prefs.edited_shortcut_alt = shortcut.alt
         return {'FINISHED'}
-# }}}
+
 
 
 class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):  # {{{
@@ -106,7 +106,7 @@ class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):  # {{{
         name="Group to be edited",
         default=""
     )
-    # }}}
+    
 
     # Shortcut attrs {{{
     shortcut_event_type: StringProperty(
@@ -129,7 +129,7 @@ class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):  # {{{
         name="Shortcut require alt to be pressed",
         default=False
     )
-    # }}}
+    
 
     def execute(self, context):
         prefs = context.preferences.addons['bmtools'].preferences
@@ -146,7 +146,7 @@ class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):  # {{{
         prefs.bmtool_editing_modal_shortcut_value = ""
         prefs.bmtool_editing_modal_shortcut_group = ""
         return {'FINISHED'}
-# }}}
+
 
 
 class BMTOOL_OT_reparse_default_modifiers_props_kbs(  # {{{
@@ -205,4 +205,4 @@ class BMTOOL_OT_reparse_default_modifiers_props_kbs(  # {{{
         else:
             raise ValueError
         return {'FINISHED'}
-# }}}
+

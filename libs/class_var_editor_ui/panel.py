@@ -57,7 +57,7 @@ class UIClassVariablesEditorCache(PropertyGroup):  # {{{
     # Class name with 'bpy.types.' prefix
     # Example: bpy.types.BMTOOLS_OT_clusters_list_popup
     var_editor_class: StringProperty('')
-# }}}
+
 
 
 class UIClassVariablesEditor():   # {{{
@@ -104,7 +104,7 @@ class UIClassVariablesEditor():   # {{{
             draw button "stop editing"
             draw buttons "start editing"
     """
-    # }}}
+    
 
     # this method can be recursive.
     @classmethod
@@ -172,7 +172,7 @@ class UIClassVariablesEditor():   # {{{
                 *args,
                 **kwargs
             )
-    # }}}
+    
 
     @classmethod
     def __draw_list(cls,  # {{{
@@ -278,7 +278,7 @@ class UIClassVariablesEditor():   # {{{
                                   text="", icon='TRIA_DOWN')
                 op.func = line
             return
-    # }}}
+    
 
     @classmethod
     def __draw_dict(cls,  # {{{
@@ -356,7 +356,7 @@ class UIClassVariablesEditor():   # {{{
                                   text="", icon='X')
                 op.func = line
         return
-    # }}}
+    
 
     @classmethod
     def __draw_variable(cls,  # {{{
@@ -436,7 +436,7 @@ class UIClassVariablesEditor():   # {{{
                                   text=var_name + val)
             op.func = line
             return
-    # }}}
+    
 
     @classmethod
     def var_editor_start(cls, variable):  # {{{
@@ -477,7 +477,7 @@ class UIClassVariablesEditor():   # {{{
                     {prop_group.var_editor_currently_edited}')
             logger.debug('Variable editor inv. finished')
             logger.debug(' ')
-    # }}}
+    
 
     @classmethod
     def var_editor_stop(cls, variable):  # {{{
@@ -529,7 +529,7 @@ class UIClassVariablesEditor():   # {{{
             logger.debug(' ')
 
         prop_group.var_editor_currently_edited = ''
-    # }}}
+    
 
     @classmethod
     def __move_list_element(  # {{{
@@ -556,7 +556,7 @@ class UIClassVariablesEditor():   # {{{
                 return
         else:
             raise ValueError
-    # }}}
+    
 
     @classmethod
     def __duplicate_list_element(  # {{{
@@ -574,5 +574,5 @@ class UIClassVariablesEditor():   # {{{
         logger.info(f'Duplicating {attr} element {index}')
         logger.debug(f'{element}, {duplicate}')
 
-    # }}}
-# }}}
+    
+
