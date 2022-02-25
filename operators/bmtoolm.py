@@ -73,7 +73,7 @@ class BMTOOL_OT_bmtoolm(BMToolUi, ModalClustersOperator, Operator):
         editor = self.get_editor()
         if editor is not None:
             return editor.editor_modal(
-                    context, event, self.m_list.get_cluster())
+                context, event, self.m_list.get_cluster())
         else:
             raise TypeError
 
@@ -88,7 +88,7 @@ class BMTOOL_OT_bmtoolm(BMToolUi, ModalClustersOperator, Operator):
         # Call remove method of editor
         if self.__active_editor is not None:
             self.__active_editor.editor_switched_from(
-                    context, self.m_list.get_cluster())
+                context, self.m_list.get_cluster())
 
         # Get list of possible ediors
         self.__possible_editors = self.__get_editors(self.m_list.get_cluster())
@@ -102,7 +102,7 @@ class BMTOOL_OT_bmtoolm(BMToolUi, ModalClustersOperator, Operator):
         # Call invoke method of editor
         if self.__active_editor is not None:
             self.__active_editor.editor_switched_to(
-                    context, self.m_list.get_cluster())
+                context, self.m_list.get_cluster())
 
     def bmtool_operator_inv(self, context, event):
         """

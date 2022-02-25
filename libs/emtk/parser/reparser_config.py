@@ -56,6 +56,7 @@ class ReparseConfig(collections.UserDict):
         data: dict  Dictionary with object properties as keys and
                     subclasses of PropertyReparserConfig as items.
     """
+
     def __init__(self, obj=None):
         if type(obj) is str:
             self.data = _deserialize_config(obj, self._CONFIG_CLASSES)
@@ -138,6 +139,7 @@ class Delta(_ReparseConfigElement):
                                 considering modifier as different.
     """
     delta: float
+
 
 _CONFIG_CLASSES.update({'Delta': Delta})
 _CONFIG_CLASSES.update({'Basic': Basic})

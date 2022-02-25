@@ -51,26 +51,26 @@ in class variables by identyfing panels somehow.
 #     __tag_panel_init = True
 #     __tag_panel_invoke = True
 #     __panel_was_drawn = False
-# 
+#
 #     __previous_active_object_id = None
 #     __previous_selected_objects_id = None
 #     __active_object_changed = True
 #     __selected_objects_changed = True
-# 
+#
 #     __debug = True
-# 
+#
 #     # Public properties.  # {{{
 #     @classmethod
 #     @property
 #     def active_object_changed(cls):
 #         return cls.__active_object_changed
-# 
+#
 #     @classmethod
 #     @property
 #     def selected_objects_changed(cls):
 #         return cls.__selected_objects_changed
 #     # }}}
-# 
+#
 #     # Public methods that should not be overloaded. {{{
 #     @classmethod
 #     def poll(cls, context):
@@ -80,12 +80,12 @@ in class variables by identyfing panels somehow.
 #             if cls.__debug:
 #                 print('Panel was initiated')
 #             cls.__tag_panel_init = False
-# 
+#
 #         # POLL
 #         allow_draw = cls.panel_poll(context)
 #         if cls.__debug:
 #             print('Panel was polled')
-# 
+#
 #         # REMOVE
 #         if not allow_draw:
 #             cls.__tag_panel_invoke = True
@@ -97,24 +97,24 @@ in class variables by identyfing panels somehow.
 #         if cls.__debug:
 #             print(allow_draw)
 #         return allow_draw
-# 
+#
 #     def draw(self, context):
 #         # get state
 #         active_object = id(context.object)
 #         selected_objects = []
 #         for x in context.selected_objects:
 #             selected_objects.append(id(x))
-# 
+#
 #         # public variables
 #         if active_object != self.__previous_active_object_id:
 #             self.active_object_changed = True
 #         if selected_objects != self.__previous_selected_objects_id:
 #             self.selected_objects_changed = True
-# 
+#
 #         # store state
 #         self.__previous_active_object_id = active_object
 #         self.__previous_selected_objects_id = selected_objects
-# 
+#
 #         # INVOKE
 #         a = self.__tag_panel_invoke
 #         if a:
@@ -123,53 +123,53 @@ in class variables by identyfing panels somehow.
 #                 print('Panel was invoked')
 #             self.__tag_panel_invoke = False
 #         self.__panel_was_drawn = True
-# 
+#
 #         # DRAW
 #         self.panel_draw(context)
 #         if self.__debug:
 #             print('Panel was drawn')
 #     # }}}
-# 
+#
 #     # Public methods {{{
 #     @classmethod
 #     def panel_init(cls, context):
 #         """This method called once per Blender launch or addon
 #         reload on first object poll.
-# 
+#
 #         It should have classmethod decorator.
 #         It should return None.
 #         """
 #         return
-# 
+#
 #     @classmethod
 #     def panel_poll(cls, context):
 #         """This method called every time object is polled.
-# 
+#
 #         It should have classmethod decorator.
 #         It should return True or False.
 #         """
 #         raise RuntimeError('No panel-specific method.')
-# 
+#
 #     def panel_invoke(self, context):
 #         """This method called every time object is drawn after failed poll.
 #         Also called on first draw after Blender launch or addon reload.
-# 
+#
 #         It should return None.
 #         """
 #         return
-# 
+#
 #     def panel_draw(self, context):
 #         """This method called every time object drawn.
-# 
+#
 #         It should return None.
 #         """
 #         return
-# 
+#
 #     @classmethod
 #     def panel_remove(cls, context):
 #         """This method called every time object poll failed
 #         after successfull draw.
-# 
+#
 #         It should have classmethod decorator.
 #         It should return None.
 #         """

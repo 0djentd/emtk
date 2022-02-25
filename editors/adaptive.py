@@ -54,64 +54,64 @@ class AdaptiveModalEditor(ModalClustersEditor):
 
     # All supported modifier types. {{{
     __MODIFIER_TYPES = [
-                        "DATA_TRANSFER",
-                        "MESH_CACHE",
-                        "MESH_SEQUENCE_CACHE",
-                        "NORMAL_EDIT",
-                        "WEIGHTED_NORMAL",
-                        "UV_PROJECT",
-                        "UV_WARP",
-                        "VERTEX_WEIGHT_EDIT",
-                        "VERTEX_WEIGHT_MIX",
-                        "VERTEX_WEIGHT_PROXIMITY",
-                        "ARRAY",
-                        "BEVEL",
-                        "BOOLEAN",
-                        "BUILD",
-                        "DECIMATE",
-                        "EDGE_SPLIT",
-                        "NODES",
-                        "MASK",
-                        "MIRROR",
-                        "MESH_TO_VOLUME",
-                        "MULTIRES",
-                        "REMESH",
-                        "SCREW",
-                        "SKIN",
-                        "SOLIDIFY",
-                        "SUBSURF",
-                        "TRIANGULATE",
-                        "VOLUME_TO_MESH",
-                        "WELD",
-                        "WIREFRAME",
-                        "ARMATURE",
-                        "CAST",
-                        "CURVE",
-                        "DISPLACE",
-                        "HOOK",
-                        "LAPLACIANDEFORM",
-                        "LATTICE",
-                        "MESH_DEFORM",
-                        "SHRINKWRAP",
-                        "SIMPLE_DEFORM",
-                        "SMOOTH",
-                        "CORRECTIVE_SMOOTH",
-                        "LAPLACIANSMOOTH",
-                        "SURFACE_DEFORM",
-                        "WARP",
-                        "WAVE",
-                        "VOLUME_DISPLACE",
-                        "CLOTH",
-                        "COLLISION",
-                        "DYNAMIC_PAINT",
-                        "EXPLODE",
-                        "FLUID",
-                        "OCEAN",
-                        "PARTICLE_INSTANCE",
-                        "PARTICLE_SYSTEM",
-                        "SOFT_BODY",
-                        "SURFACE"
-                        ]
+        "DATA_TRANSFER",
+        "MESH_CACHE",
+        "MESH_SEQUENCE_CACHE",
+        "NORMAL_EDIT",
+        "WEIGHTED_NORMAL",
+        "UV_PROJECT",
+        "UV_WARP",
+        "VERTEX_WEIGHT_EDIT",
+        "VERTEX_WEIGHT_MIX",
+        "VERTEX_WEIGHT_PROXIMITY",
+        "ARRAY",
+        "BEVEL",
+        "BOOLEAN",
+        "BUILD",
+        "DECIMATE",
+        "EDGE_SPLIT",
+        "NODES",
+        "MASK",
+        "MIRROR",
+        "MESH_TO_VOLUME",
+        "MULTIRES",
+        "REMESH",
+        "SCREW",
+        "SKIN",
+        "SOLIDIFY",
+        "SUBSURF",
+        "TRIANGULATE",
+        "VOLUME_TO_MESH",
+        "WELD",
+        "WIREFRAME",
+        "ARMATURE",
+        "CAST",
+        "CURVE",
+        "DISPLACE",
+        "HOOK",
+        "LAPLACIANDEFORM",
+        "LATTICE",
+        "MESH_DEFORM",
+        "SHRINKWRAP",
+        "SIMPLE_DEFORM",
+        "SMOOTH",
+        "CORRECTIVE_SMOOTH",
+        "LAPLACIANSMOOTH",
+        "SURFACE_DEFORM",
+        "WARP",
+        "WAVE",
+        "VOLUME_DISPLACE",
+        "CLOTH",
+        "COLLISION",
+        "DYNAMIC_PAINT",
+        "EXPLODE",
+        "FLUID",
+        "OCEAN",
+        "PARTICLE_INSTANCE",
+        "PARTICLE_SYSTEM",
+        "SOFT_BODY",
+        "SURFACE"
+    ]
     # }}}
 
     # All prop types.
@@ -150,8 +150,8 @@ class AdaptiveModalEditor(ModalClustersEditor):
     # All types that use some type of modal editing.
     __MODAL_INPUT_PROP_TYPES\
         = __LETTERS_INPUT_TYPES.union(
-                __DIGITS_INPUT_TYPES.union(
-                    __DELTA_INPUT_TYPES))
+            __DIGITS_INPUT_TYPES.union(
+                __DELTA_INPUT_TYPES))
 
     # All types that can be edited in default mode without switching.
     __NOT_MODAL_INPUT_PROP_TYPES = __TOGGLE_TYPES
@@ -519,7 +519,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
         logger.debug(f'Modal int {prop_name}')
         for x in self.__mods:
             new_val = self.modal_input_mouse_rna_type(
-                    x, prop_name, event)
+                x, prop_name, event)
             setattr(x, prop_name, new_val)
         return
 
@@ -527,7 +527,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
         logger.debug(f'Modal float {prop_name}')
         for x in self.__mods:
             new_val = self.modal_input_mouse_rna_type(
-                    x, prop_name, event)
+                x, prop_name, event)
             setattr(x, prop_name, new_val)
         return
 

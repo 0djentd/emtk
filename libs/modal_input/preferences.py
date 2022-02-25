@@ -18,12 +18,12 @@
 # ##### END GPL LICENSE BLOCK #####
 
 from bpy.props import (
-                       BoolProperty,
-                       IntProperty,
-                       FloatProperty,
-                       StringProperty,
-                       EnumProperty,
-                       )
+    BoolProperty,
+    IntProperty,
+    FloatProperty,
+    StringProperty,
+    EnumProperty,
+)
 
 from .shortcuts import ModalShortcutsCache, ModalShortcut
 
@@ -39,8 +39,8 @@ class ModalShortcutsPreferences():
     _modal_shortcuts = None
 
     bmtool_modal_operators_serialized_shortcuts: StringProperty(
-            name='Modal operators serialized shortcuts.',
-            default='')
+        name='Modal operators serialized shortcuts.',
+        default='')
 
     @property
     def modal_shortcuts(self):
@@ -60,21 +60,22 @@ class ModalShortcutsPreferences():
     bmtool_editing_modal_shortcut_group: StringProperty("")
 
     # Its properties
-    edited_shortcut_event_type: StringProperty(name="Letter", maxlen=1, default="")
+    edited_shortcut_event_type: StringProperty(
+        name="Letter", maxlen=1, default="")
     edited_shortcut_shift: BoolProperty(name="Shift", default=False)
     edited_shortcut_ctrl: BoolProperty(name="Ctrl", default=False)
     edited_shortcut_alt: BoolProperty(name="Alt", default=False)
 
     # This is search field
     shortcuts_groups_search_str: StringProperty(
-            name="Search through bmtool modal props groups",
-            default=''
-            )
+        name="Search through bmtool modal props groups",
+        default=''
+    )
 
     shortcuts_search_str: StringProperty(
-            name="Search through bmtool modal props",
-            default=''
-            )
+        name="Search through bmtool modal props",
+        default=''
+    )
     # }}}
 
     # Search {{{
@@ -89,11 +90,11 @@ class ModalShortcutsPreferences():
         self._check_cache_refresh()
 
         result = self.modal_shortcuts.search_by_shortcut_id(
-                self.shortcuts_groups_search_str, self.shortcuts_search_str)
+            self.shortcuts_groups_search_str, self.shortcuts_search_str)
 
         if not result:
             layout.label(
-                    text="Type shortcut name above to see modal shortcuts.")
+                text="Type shortcut name above to see modal shortcuts.")
             layout.label(text="Example: bevel angle")
             return
 
@@ -109,7 +110,7 @@ class ModalShortcutsPreferences():
                         and y.shortcut_id\
                         == self.bmtool_editing_modal_shortcut_value:
                     self.__draw_shortcut_editor(
-                            col, x.value, y.shortcut_id, y)
+                        col, x.value, y.shortcut_id, y)
                 else:
                     self.__draw_shortcut(col, x.value, y.shortcut_id, y)
     # }}}
@@ -160,11 +161,11 @@ class ModalShortcutsPreferences():
 
     def save_cache(self):
         self.bmtool_modal_operators_serialized_shortcuts\
-                = self.modal_shortcuts.serialize()
+            = self.modal_shortcuts.serialize()
 
     def refresh_cache(self):
         self._modal_shortcuts = ModalShortcutsCache(
-                self.bmtool_modal_operators_serialized_shortcuts)
+            self.bmtool_modal_operators_serialized_shortcuts)
 
     def _check_cache_refresh(self):
         if self._modal_shortcuts is None:

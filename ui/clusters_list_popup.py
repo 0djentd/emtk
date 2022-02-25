@@ -93,7 +93,7 @@ class BMTOOLS_OT_clusters_list_popup(
             cProfile.runctx(c, globals(), locals())
         else:
             self._BMTOOLS_OT_clusters_list_popup__draw_clusters_list(
-                    box, self.m_list)
+                box, self.m_list)
 
     def __draw_clusters_list(self, layout, clusters_list):
         for x in clusters_list:
@@ -162,11 +162,11 @@ class BMTOOLS_OT_clusters_list_popup(
 
         # Visibility {{{
         v = {
-             'show_viewport': None,
-             'show_editmode': None,
-             'show_on_cage': None,
-             'show_render': None,
-             }
+            'show_viewport': None,
+            'show_editmode': None,
+            'show_on_cage': None,
+            'show_render': None,
+        }
 
         for i, x in enumerate(v):
             m = [0, 0, 0, 0]
@@ -408,5 +408,5 @@ class BMTOOLS_OT_clusters_list_popup(
             x.show_expanded = False
         self.prefs = context.preferences.addons['bmtools'].preferences
         context.window_manager.invoke_popup(
-                self, width=self.prefs.clusters_list_popup_width)
+            self, width=self.prefs.clusters_list_popup_width)
         return {'RUNNING_MODAL'}

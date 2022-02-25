@@ -139,13 +139,13 @@ class ClustersCommand():
 
         if not isinstance(initial_action, ClustersAction):
             raise TypeError(
-                    f'Expected ClustersAction, got {type(initial_action)}')
+                f'Expected ClustersAction, got {type(initial_action)}')
         if actions is not None:
             if isinstance(actions, list):
                 for x in actions:
                     if not isinstance(x, ClustersAction):
                         raise TypeError(
-                                f'Expected ClustersAction, got {type(x)}')
+                            f'Expected ClustersAction, got {type(x)}')
                 actions_to_do = actions
             else:
                 raise TypeError

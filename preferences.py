@@ -39,44 +39,44 @@ class BMToolPreferences(ModalShortcutsPreferences, AddonPreferences):
 
     # Properties {{{
     settings_category: EnumProperty(
-            name="Settings category",
-            items=[('GENERAL', 'General settings', 'CUBE', 0),
-                   ('SHORTCUTS', 'Shortcuts settings', 'CUBE', 1),
-                   ('ADDITIONAL', 'Additional settings', 'CUBE', 2),
-                   ],
-            default='GENERAL')
+        name="Settings category",
+        items=[('GENERAL', 'General settings', 'CUBE', 0),
+               ('SHORTCUTS', 'Shortcuts settings', 'CUBE', 1),
+               ('ADDITIONAL', 'Additional settings', 'CUBE', 2),
+               ],
+        default='GENERAL')
 
     save_clusters: BoolProperty(
-            name="Save clusters on operator finish",
-            default=True)
+        name="Save clusters on operator finish",
+        default=True)
 
     save_clusters_backup: BoolProperty(
-            name="Save clusters backup on operator finish",
-            default=True)
+        name="Save clusters backup on operator finish",
+        default=True)
 
     backup_mesh_on_modifier_apply_remove: BoolProperty(
-            name="Backup mesh on modifier apply or remove.",
-            default=True)
+        name="Backup mesh on modifier apply or remove.",
+        default=True)
 
     backup_collection_name: StringProperty(
-            name="Name of collection that will be used for mesh backup.",
-            default='BMToolM mesh backup')
+        name="Name of collection that will be used for mesh backup.",
+        default='BMToolM mesh backup')
 
     custom_cluster_types: BoolProperty(
-            name="Use custom cluster types.",
-            default=True)
+        name="Use custom cluster types.",
+        default=True)
 
     always_add_custom_cluster_types: BoolProperty(
-            name="Always add custom cluster types.",
-            default=True)
+        name="Always add custom cluster types.",
+        default=True)
 
     cluster_types: StringProperty(
-            name="ClusterTypes",
-            default="[]")
+        name="ClusterTypes",
+        default="[]")
 
     clusters_list_popup_width: IntProperty(
-            name="Clusters list popup width",
-            default=400)
+        name="Clusters list popup width",
+        default=400)
     # }}}
 
     def draw(self, context):

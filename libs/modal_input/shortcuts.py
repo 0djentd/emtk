@@ -47,26 +47,26 @@ Cache is being cleared every time shortcuts are changed.
 
 # This is mapping for en_US.UTF-8 layout.
 _LETTERS_MAPPING = {
-                   'ZERO': '0',
-                   'ONE': '1',
-                   'TWO': '2',
-                   'THREE': '3',
-                   'FOUR': '4',
-                   'FIVE': '5',
-                   'SIX': '6',
-                   'SEVEN': '7',
-                   'EIGHT': '8',
-                   'NINE': '9',
-                   'MINUS': '-',
-                   'EQUAL': '=',
-                   'BACK_SLASH': '\\',
-                   'LEFT_BRACKET': '[',
-                   'RIGHT_BRACKET': ']',
-                   'SEMI_COLON': ';',
-                   'ACCENT_GRAVE': '\'',
-                   'COMMA': ',',
-                   'PERIOD': '.',
-                   }
+    'ZERO': '0',
+    'ONE': '1',
+    'TWO': '2',
+    'THREE': '3',
+    'FOUR': '4',
+    'FIVE': '5',
+    'SIX': '6',
+    'SEVEN': '7',
+    'EIGHT': '8',
+    'NINE': '9',
+    'MINUS': '-',
+    'EQUAL': '=',
+    'BACK_SLASH': '\\',
+    'LEFT_BRACKET': '[',
+    'RIGHT_BRACKET': ']',
+    'SEMI_COLON': ';',
+    'ACCENT_GRAVE': '\'',
+    'COMMA': ',',
+    'PERIOD': '.',
+}
 
 
 # Decorators {{{
@@ -74,6 +74,7 @@ def convert_mapping(func):
     """Converts object (expecting ModalShortcut
     or bpy.types.event) to mapping.
     """
+
     def wrapper_convert_mapping(self, obj, *args, **kwargs):
         if isinstance(obj, ModalShortcut):
             return func(self, obj.event_type, obj.shift,
@@ -85,6 +86,7 @@ def convert_mapping(func):
 
 def unwrap_str_to_obj(func):
     """Check if obj is str, find item with item.shortcut_id == obj."""
+
     def wrapper_unwrap_str_to_obj(self, group, *args, **kwargs):
         if type(group) is str:
             group = self[group]
@@ -109,6 +111,7 @@ def method_cache(func):
     implement 'cache_clear' method and invoke it
     after attributes are changed.
     """
+
     def wrapper_method_cache(self, *args, **kwargs):
         if len(kwargs) != 0:
             raise TypeError
@@ -136,6 +139,7 @@ def method_cache(func):
 
 def refresh_cache(func):
     """Decorator for methods that require cache refresh afterwards."""
+
     def wrapper_refresh_cache(self, *args, **kwargs):
         result = func(self, *args, **kwargs)
         self.cache_clear()
@@ -145,6 +149,7 @@ def refresh_cache(func):
 
 def check_refresh(func):
     """Refresh cache before using method if any of objects require it."""
+
     def wrapper_check_refresh(self, *args, **kwargs):
         refresh = False
         for x in self._data:
@@ -491,14 +496,14 @@ class ModalShortcutsCache(CachedObject, HashedList):  # {{{
         self._data = None
         if type(groups) is str:
             self.shortcuts_groups = deserialize_shortcuts_cache(
-                    groups)
+                groups)
         elif type(groups) is list:
             self.shortcuts_groups = groups
         elif groups is None:
             self.shortcuts_groups = []
         else:
             raise TypeError(
-                    'Expected str, list of ModalShortcutsGroups or None.')
+                'Expected str, list of ModalShortcutsGroups or None.')
 
     # List methods {{{
     @refresh_cache
@@ -549,7 +554,7 @@ class ModalShortcutsCache(CachedObject, HashedList):  # {{{
             shortcut_shortcut_id: str) -> list[ModalShortcutsGroup]:
 
         shortcuts_group_value = shortcuts_groups_name_format(
-                shortcuts_group_value)
+            shortcuts_group_value)
 
         result = []
         for x in self.shortcuts_groups:
@@ -681,7 +686,7 @@ def generate_new_shortcut(shortcut_shortcut_id: str,  # {{{
     event_type_index = None
     event_type_index, shortcut_elements['event_type']\
         = _get_next_letter_in_shortcut_name(
-                    shortcut_elements['shortcut_id'], event_type_index)
+        shortcut_elements['shortcut_id'], event_type_index)
 
     if len(already_existing_shortcuts) == 0:
         return ModalShortcut(shortcut_elements['shortcut_id'],
@@ -706,7 +711,7 @@ def generate_new_shortcut(shortcut_shortcut_id: str,  # {{{
                 if ignore_duplicates:
                     continue
                 raise ValueError(
-                        f'{shortcut_elements["shortcut_id"]} already exists.')
+                    f'{shortcut_elements["shortcut_id"]} already exists.')
 
             # Props that are same.
             same = []
@@ -728,9 +733,9 @@ def generate_new_shortcut(shortcut_shortcut_id: str,  # {{{
             # If all boolean elements already True, change event_type.
             if len(e) == 0:
                 event_type_index, shortcut_elements['event_type']\
-                        = _get_next_letter_in_shortcut_name(
-                        shortcut_elements['shortcut_id'],
-                        event_type_index)
+                    = _get_next_letter_in_shortcut_name(
+                    shortcut_elements['shortcut_id'],
+                    event_type_index)
                 for z in k:
                     shortcut_elements.update({z: False})
                 reparse = True

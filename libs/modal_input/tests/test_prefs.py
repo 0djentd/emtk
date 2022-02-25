@@ -75,7 +75,7 @@ class UtilsTests(unittest.TestCase):
 
         with self.assertRaises(ValueError):
             index, letter = _get_next_letter_in_shortcut_name(
-                    shortcut_name, index)
+                shortcut_name, index)
 
 
 example_1_args = ['angle', 'A', True, False, False]

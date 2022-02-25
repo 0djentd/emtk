@@ -58,18 +58,18 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
 
     # Mappings
     __bmtool_kbs = {
-                  'visibility_1': 'V',
-                  'visibility_2': 'B',
-                  'sort': 'T',
-                  'add_new': 'N',
-                  'apply_remove': 'X',
-                  'construct_deconstruct': 'C',
-                  'toogle_selection': 'G',
-                  'up': 'E',
-                  'down': 'F',
-                  'collapse': 'R',
-                  'exit': 'Q'
-                  }
+        'visibility_1': 'V',
+        'visibility_2': 'B',
+        'sort': 'T',
+        'add_new': 'N',
+        'apply_remove': 'X',
+        'construct_deconstruct': 'C',
+        'toogle_selection': 'G',
+        'up': 'E',
+        'down': 'F',
+        'collapse': 'R',
+        'exit': 'Q'
+    }
     # }}}
 
     # Const {{{
@@ -180,8 +180,8 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
             logger.info("BMTool UI is created")
             sv = bpy.types.SpaceView3D
             self.bmtool_ui_draw_handler = sv.draw_handler_add(
-                    bmtool_modifier_ui_draw, (self, context),
-                    'WINDOW', 'POST_PIXEL')
+                bmtool_modifier_ui_draw, (self, context),
+                'WINDOW', 'POST_PIXEL')
             context.area.tag_redraw()
 
         # TODO: this should be in lib
@@ -232,18 +232,18 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                 if self.__selecting_clusters:
                     for x in layer.get_selection():
                         x.toggle_this_cluster_visibility(
-                                [True, False, False, False])
+                            [True, False, False, False])
                 else:
                     cluster.toggle_this_cluster_visibility(
-                            [True, False, False, False])
+                        [True, False, False, False])
             else:
                 if self.__selecting_clusters:
                     for x in layer.get_selection():
                         x.toggle_this_cluster_visibility(
-                                [False, True, False, False])
+                            [False, True, False, False])
                 else:
                     cluster.toggle_this_cluster_visibility(
-                            [False, True, False, False])
+                        [False, True, False, False])
             # }}}
 
         # Modifier visibility 2{{{
@@ -253,18 +253,18 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                 if self.__selecting_clusters:
                     for x in layer.get_selection():
                         cluster.toggle_this_cluster_visibility(
-                                [False, False, False, True])
+                            [False, False, False, True])
                 else:
                     cluster.toggle_this_cluster_visibility(
-                            [False, False, False, True])
+                        [False, False, False, True])
             else:
                 if self.__selecting_clusters:
                     for x in layer.get_selection():
                         cluster.toggle_this_cluster_visibility(
-                                [False, False, True, False])
+                            [False, False, True, False])
                 else:
                     cluster.toggle_this_cluster_visibility(
-                            [False, False, False, True])
+                        [False, False, False, True])
             # }}}
 
         # Sort modifiers{{{
@@ -278,7 +278,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
 
             if not self.__BMTOOLM:
                 x = self.m_list.create_modifier(
-                        self._DEFAULT_M_NAME, self._DEFAULT_M_TYPE)
+                    self._DEFAULT_M_NAME, self._DEFAULT_M_TYPE)
                 self.m_list.active = x
             else:
                 self.m_list.duplicate(cluster)
@@ -438,7 +438,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                 else:
                     if not self.__BMTOOLM:
                         layer.active = layer.iterate(
-                                cluster, 'UP', self._DEFAULT_M_TYPE)
+                            cluster, 'UP', self._DEFAULT_M_TYPE)
                     else:
                         layer.active = layer.iterate(cluster, 'UP', loop=True)
 
@@ -466,9 +466,10 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                 else:
                     if not self.__BMTOOLM:
                         layer.active = layer.iterate(
-                                cluster, 'DOWN', self._DEFAULT_M_TYPE)
+                            cluster, 'DOWN', self._DEFAULT_M_TYPE)
                     else:
-                        layer.active = layer.iterate(cluster, 'DOWN', loop=True)
+                        layer.active = layer.iterate(
+                            cluster, 'DOWN', loop=True)
 
                 # Trigger active modifier change.
                 self.bmtool_modifier_update(context)  # }}}
@@ -530,7 +531,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
         context.workspace.status_text_set(None)
         if self.__UI:
             bpy.types.SpaceView3D.draw_handler_remove(
-                    self.bmtool_ui_draw_handler, 'WINDOW')
+                self.bmtool_ui_draw_handler, 'WINDOW')
             context.area.tag_redraw()
             logger.info("BMTool UI is removed")
 

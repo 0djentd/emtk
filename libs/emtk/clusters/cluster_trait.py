@@ -81,17 +81,17 @@ class ClusterTrait():
         super().__init__(no_obj=True, *args, **kwargs)
 
         d = {
-             'name': cluster_name,
-             'type': cluster_type,
-             'by_type': modifiers_by_type,
-             'by_name': modifiers_by_name,
-             'tags': cluster_tags,
-             'priority': cluster_priority,
-             'sane': cluster_is_sane,
-             'kinda_sane': cluster_is_kinda_sane,
-             'dynamic': cluster_dynamic,
-             'createable': cluster_createable,
-             }
+            'name': cluster_name,
+            'type': cluster_type,
+            'by_type': modifiers_by_type,
+            'by_name': modifiers_by_name,
+            'tags': cluster_tags,
+            'priority': cluster_priority,
+            'sane': cluster_is_sane,
+            'kinda_sane': cluster_is_kinda_sane,
+            'dynamic': cluster_dynamic,
+            'createable': cluster_createable,
+        }
 
         # Check dict.
         self.default_data\
@@ -312,6 +312,7 @@ class ClusterTrait():
     Additional ClustersCommands that are required for action to be
     allowed by this cluster.
     """
+
     def cluster_answer_case_self(self, action):
         """
         This method is called when action.subject is cluster itself.
@@ -342,6 +343,7 @@ class ClusterTrait():
     Additional actions on cluster itself, without changing other
     clusters in any way.
     """
+
     def cluster_do_case_self(self, action):
         """
         This method is called when action.subject is cluster itself.
@@ -551,10 +553,10 @@ class ClusterTrait():
             # Use specific names list, if there is one
             if len(self.instance_data['by_name']) != 0:
                 modifiers_by_names\
-                        = self.instance_data['by_name']
+                    = self.instance_data['by_name']
             else:
                 modifiers_by_names\
-                        = self.default_data['by_name']
+                    = self.default_data['by_name']
 
             # Check name
             if modifiers_by_names[y] != ['ANY']\
@@ -585,7 +587,7 @@ class ClusterTrait():
 
         # Additional checks reserved for custom types
         additional_checks = self.modcluster_extra_availability_check(
-                modifiers)
+            modifiers)
 
         if additional_checks is not None:
             return additional_checks
@@ -716,16 +718,16 @@ class ClusterTrait():
         if len(self.instance_data['by_name']) > 0:
             if len_2 != len(self.instance_data['by_name']):
                 raise ValueError(
-                        'Length of specified modifiers names is wrong.')
+                    'Length of specified modifiers names is wrong.')
         if len_1 != len_2:
             raise ValueError(
-                    f'Length of types ({l_1}) and names ({l_2}) is different.')
+                f'Length of types ({l_1}) and names ({l_2}) is different.')
         if len_1 == 0:
             raise ValueError(
-                    'Length of modifiers types cant be 0.')
+                'Length of modifiers types cant be 0.')
         if self.default_data['by_type'][0] == ['ANY']:
             raise ValueError(
-                    'First modifier cant be any, specify modifier type.')
+                'First modifier cant be any, specify modifier type.')
         for mod_types in self.default_data['by_type']:
             if isinstance(mod_types, list):
                 if len(mod_types) == 0:

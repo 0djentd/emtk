@@ -20,18 +20,18 @@
 import logging
 
 from ..controller.actions import (
-                                  ClustersAction,
-                                  ClustersCommand,
-                                  ClustersBatchCommand,
-                                  )
+    ClustersAction,
+    ClustersCommand,
+    ClustersBatchCommand,
+)
 
 from ..controller.answers import (
-                                  ClusterActionAnswer,
-                                  ActionDefaultRemove,
-                                  ActionDefaultApply,
-                                  ActionDefaultMove,
-                                  ActionDefaultDeconstuct
-                                  )
+    ClusterActionAnswer,
+    ActionDefaultRemove,
+    ActionDefaultApply,
+    ActionDefaultMove,
+    ActionDefaultDeconstuct
+)
 
 from .utils import check_if_removed, check_obj_ref
 from .selection import Selection, unwrap_obj_ref
@@ -285,11 +285,11 @@ class ModifiersList():
             direction_2 = 'UP'
         else:
             raise ValueError(
-                    "Direction should be either 'UP' or 'DOWN'")
+                "Direction should be either 'UP' or 'DOWN'")
 
         # This only used when moving actual modifiers with dry=true.
         length = len(
-                cluster_to_move_through.all_modifiers())
+            cluster_to_move_through.all_modifiers())
 
         x = ClustersAction('MOVE', obj)
         x_2 = ClustersAction('MOVE', cluster_to_move_through)

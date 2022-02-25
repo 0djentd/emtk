@@ -21,11 +21,11 @@ import bpy
 import logging
 
 from bpy.props import (
-                       BoolProperty,
-                       IntProperty,
-                       FloatProperty,
-                       StringProperty
-                       )
+    BoolProperty,
+    IntProperty,
+    FloatProperty,
+    StringProperty
+)
 
 from ..emtk.utils.modifier_prop_types import get_all_editable_props
 from ..emtk.utils.modifier_prop_types import MODIFIER_TYPES
@@ -44,14 +44,14 @@ class BMTOOLS_OT_start_editing_modal_shortcut(bpy.types.Operator):  # {{{
 
     # Shortcut name and group {{{
     shortcut_name: StringProperty(
-            name="Shortcut to be edited",
-            default=""
-            )
+        name="Shortcut to be edited",
+        default=""
+    )
 
     shortcut_group: StringProperty(
-            name="Group to be edited",
-            default=""
-            )
+        name="Group to be edited",
+        default=""
+    )
     # }}}
 
     def execute(self, context):
@@ -98,43 +98,43 @@ class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):  # {{{
 
     # Shortcut name and group {{{
     shortcut_name: StringProperty(
-            name="Shortcut to be edited",
-            default=""
-            )
+        name="Shortcut to be edited",
+        default=""
+    )
 
     shortcut_group: StringProperty(
-            name="Group to be edited",
-            default=""
-            )
+        name="Group to be edited",
+        default=""
+    )
     # }}}
 
     # Shortcut attrs {{{
     shortcut_event_type: StringProperty(
-            name="Shortcut mapping",
-            maxlen=1,
-            default="",
-            )
+        name="Shortcut mapping",
+        maxlen=1,
+        default="",
+    )
 
     shortcut_shift: BoolProperty(
-            name="Shortcut require shift to be pressed",
-            default=False
-            )
+        name="Shortcut require shift to be pressed",
+        default=False
+    )
 
     shortcut_ctrl: BoolProperty(
-            name="Shortcut require ctrl to be pressed",
-            default=False
-            )
+        name="Shortcut require ctrl to be pressed",
+        default=False
+    )
 
     shortcut_alt: BoolProperty(
-            name="Shortcut require alt to be pressed",
-            default=False
-            )
+        name="Shortcut require alt to be pressed",
+        default=False
+    )
     # }}}
 
     def execute(self, context):
         prefs = context.preferences.addons['bmtools'].preferences
         group = prefs.modal_shortcuts.find_by_value(
-                self.shortcut_group)
+            self.shortcut_group)
         shortcut = ModalShortcut(self.shortcut_name,
                                  self.shortcut_event_type,
                                  self.shortcut_shift,
@@ -155,9 +155,9 @@ class BMTOOL_OT_reparse_default_modifiers_props_kbs(  # {{{
     bl_label = "BMTool add all modifiers props to kbs"
 
     replace_kbs: BoolProperty(
-            name='Replace existing.',
-            default=True
-            )
+        name='Replace existing.',
+        default=True
+    )
 
     @classmethod
     def poll(self, context):
@@ -190,7 +190,7 @@ class BMTOOL_OT_reparse_default_modifiers_props_kbs(  # {{{
                 shortcuts = []
             else:
                 shortcuts = prefs.modal_shortcuts.find_by_value(
-                        x.type).shortcuts
+                    x.type).shortcuts
 
             shortcuts = []
             for y in props:
@@ -201,7 +201,7 @@ class BMTOOL_OT_reparse_default_modifiers_props_kbs(  # {{{
         result = ModalShortcutsCache(groups)
         if replace:
             prefs.bmtool_modal_operators_serialized_shortcuts\
-                    = result.serialize()
+                = result.serialize()
         else:
             raise ValueError
         return {'FINISHED'}

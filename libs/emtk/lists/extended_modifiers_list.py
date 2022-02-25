@@ -75,7 +75,7 @@ class FirstLayerClustersListTrait():
 
         if not no_default_actions:
             self.add_action_answer(
-                    ActionDefaultRemove(self, only_interpret=True))
+                ActionDefaultRemove(self, only_interpret=True))
         if not no_parse:
             self.create_modifiers_list()
 
@@ -135,11 +135,11 @@ class FirstLayerClustersListTrait():
             logger.info("Modifiers not parsed.")
             if len(modifiers_to_parse) > 0:
                 parse_result\
-                        = self._clusters_parser.parse_recursively(
-                            modifiers_to_parse)
+                    = self._clusters_parser.parse_recursively(
+                        modifiers_to_parse)
                 if parse_result is False:
                     logger.error(
-                            "Error while parsing. Cant create modifiers list.")
+                        "Error while parsing. Cant create modifiers list.")
                     raise ValueError
                 logger.info("Setting parse result as a modifiers list.")
                 self._data = parse_result
@@ -153,11 +153,11 @@ class FirstLayerClustersListTrait():
                 logger.info("Modifiers already parsed.")
                 logger.info(clusters_state)
                 parse_result = self._clusters_parser.parse_clusters_state(
-                        modifiers_to_parse, clusters_state,
-                        clusters_names=list(self.all_clusters().names()))
+                    modifiers_to_parse, clusters_state,
+                    clusters_names=list(self.all_clusters().names()))
                 if parse_result is False:
                     logger.error(
-                            "Error while parsing. Cant create modifiers list.")
+                        "Error while parsing. Cant create modifiers list.")
                     raise ValueError
                 logger.info("Parse result ")
                 logger.info(parse_result)
@@ -239,14 +239,14 @@ class FirstLayerClustersListTrait():
         for x in cluster_type.get_modifiers_sequence():
             if _WITH_BPY:
                 modifiers.append(
-                        self._object.modifiers.new(x[0], x[1]))
+                    self._object.modifiers.new(x[0], x[1]))
             if not _WITH_BPY:
                 modifiers.append(
-                        self._object.modifier_add(x[0], x[1]))
+                    self._object.modifier_add(x[0], x[1]))
         cluster = copy.deepcopy(cluster_type)
         clusters_names = self.all_clusters().names()
         self._clusters_parser._initialize_cluster(
-                cluster, modifiers, clusters_names)
+            cluster, modifiers, clusters_names)
         self._data.append(cluster)
         return True
 
@@ -261,10 +261,10 @@ class FirstLayerClustersListTrait():
             modifier_props = get_modifier_state(x)
             if _WITH_BPY:
                 modifiers.append(
-                        self._object.modifiers.new(x.name, x.type))
+                    self._object.modifiers.new(x.name, x.type))
             if not _WITH_BPY:
                 modifiers.append(
-                        self._object.modifier_add(x.name, x.type))
+                    self._object.modifier_add(x.name, x.type))
             restore_modifier_state(modifiers[-1], modifier_props)
         result = self._clusters_parser.parse_recursively(modifiers)
         self._data.extend(result)
@@ -531,9 +531,9 @@ class FirstLayerClustersListState(ObjectState):  # {{{
         self._check_type(self)
         state = {}
         state.update = {
-                        'data': self.data,
-                        'items_data': self.items_data,
-                        }
+            'data': self.data,
+            'items_data': self.items_data,
+        }
         return json.dumps(state)
 
     @classmethod
@@ -584,13 +584,14 @@ class FirstLayerClustersListState(ObjectState):  # {{{
         return True
 # }}}
 
+
 class ExtendedModifiersList(
-                            FirstLayerClustersListTrait,
-                            ActiveClusterTrait,
-                            SortableClustersListTrait,
-                            ClustersListTrait,
-                            ModifiersList
-                            ):
+    FirstLayerClustersListTrait,
+    ActiveClusterTrait,
+    SortableClustersListTrait,
+    ClustersListTrait,
+    ModifiersList
+):
     """
     Clusters list with methods for editing, adding, removing,
     sorting and parsing clusters or modifiers on multiple clusters layers of

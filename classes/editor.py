@@ -39,16 +39,16 @@ class ModalClustersEditor(ModalInputOperator):
                 raise TypeError
 
         self.props = {
-                      # Editor name to be shown in ui
-                      'name': name,
+            # Editor name to be shown in ui
+            'name': name,
 
-                      # List of cluster types that this editor
-                      # can be used with.
-                      # Example:
-                      # ['BEVEL_CLUSTER', 'BEVEL']
-                      # Can be 'ANY' as well.
-                      'types': obj_types
-                      }
+            # List of cluster types that this editor
+            # can be used with.
+            # Example:
+            # ['BEVEL_CLUSTER', 'BEVEL']
+            # Can be 'ANY' as well.
+            'types': obj_types
+        }
 
     # Editor methods {{{
     def editor_switched_to(self, context, clusters):

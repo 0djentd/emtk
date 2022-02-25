@@ -35,106 +35,106 @@ logger.setLevel(logging.DEBUG)
 # Const {{{
 # Props that cant be edited or properly displayed
 NOT_VAL_PROP = {
-                'rna_type',
-                'debug',
-                }
+    'rna_type',
+    'debug',
+}
 
 # This props not intended to be edited.
 # TODO: there is more not editable props
 NOT_EDITABLE_PROP = {
-                     'type',
-                     }
+    'type',
+}
 
 # Props that can be edited in bmtool_operator anyway.
 IGNORE_PROPS = {
-                'name',
-                'show_viewport',
-                'show_render',
-                'show_in_editmode',
-                'show_on_cage',
-                'show_expanded',
-                'is_active',
-                }
+    'name',
+    'show_viewport',
+    'show_render',
+    'show_in_editmode',
+    'show_on_cage',
+    'show_expanded',
+    'is_active',
+}
 
 # If one of this modifier prop properties is True,
 # prop should not be editable.
 CHECK_PROP_IS_FALSE = {
-                       'is_hidden',
-                       'is_readonly',
-                       'is_runtime',
-                       'is_output'
-                       }
+    'is_hidden',
+    'is_readonly',
+    'is_runtime',
+    'is_output'
+}
 
 # This is types of props that can be edited in modal operator
 EDITABLE_TYPES = {
-                  'BOOLEAN',
-                  'INT',
-                  'FLOAT',
-                  'STRING',
-                  'ENUM',
-                  'COLLECTION'
-                  }
+    'BOOLEAN',
+    'INT',
+    'FLOAT',
+    'STRING',
+    'ENUM',
+    'COLLECTION'
+}
 
 # All supported modifier types. {{{
 MODIFIER_TYPES = [
-                    "DATA_TRANSFER",
-                    "MESH_CACHE",
-                    "MESH_SEQUENCE_CACHE",
-                    "NORMAL_EDIT",
-                    "WEIGHTED_NORMAL",
-                    "UV_PROJECT",
-                    "UV_WARP",
-                    "VERTEX_WEIGHT_EDIT",
-                    "VERTEX_WEIGHT_MIX",
-                    "VERTEX_WEIGHT_PROXIMITY",
-                    "ARRAY",
-                    "BEVEL",
-                    "BOOLEAN",
-                    "BUILD",
-                    "DECIMATE",
-                    "EDGE_SPLIT",
-                    "NODES",
-                    "MASK",
-                    "MIRROR",
-                    # "MESH_TO_VOLUME",
-                    "MULTIRES",
-                    "REMESH",
-                    "SCREW",
-                    "SKIN",
-                    "SOLIDIFY",
-                    "SUBSURF",
-                    "TRIANGULATE",
-                    "VOLUME_TO_MESH",
-                    "WELD",
-                    "WIREFRAME",
-                    "ARMATURE",
-                    "CAST",
-                    "CURVE",
-                    "DISPLACE",
-                    "HOOK",
-                    "LAPLACIANDEFORM",
-                    "LATTICE",
-                    "MESH_DEFORM",
-                    "SHRINKWRAP",
-                    "SIMPLE_DEFORM",
-                    "SMOOTH",
-                    "CORRECTIVE_SMOOTH",
-                    "LAPLACIANSMOOTH",
-                    "SURFACE_DEFORM",
-                    "WARP",
-                    "WAVE",
-                    # "VOLUME_DISPLACE",
-                    "CLOTH",
-                    "COLLISION",
-                    "DYNAMIC_PAINT",
-                    "EXPLODE",
-                    "FLUID",
-                    "OCEAN",
-                    "PARTICLE_INSTANCE",
-                    "PARTICLE_SYSTEM",
-                    "SOFT_BODY",
-                    "SURFACE"
-                    ]
+    "DATA_TRANSFER",
+    "MESH_CACHE",
+    "MESH_SEQUENCE_CACHE",
+    "NORMAL_EDIT",
+    "WEIGHTED_NORMAL",
+    "UV_PROJECT",
+    "UV_WARP",
+    "VERTEX_WEIGHT_EDIT",
+    "VERTEX_WEIGHT_MIX",
+    "VERTEX_WEIGHT_PROXIMITY",
+    "ARRAY",
+    "BEVEL",
+    "BOOLEAN",
+    "BUILD",
+    "DECIMATE",
+    "EDGE_SPLIT",
+    "NODES",
+    "MASK",
+    "MIRROR",
+    # "MESH_TO_VOLUME",
+    "MULTIRES",
+    "REMESH",
+    "SCREW",
+    "SKIN",
+    "SOLIDIFY",
+    "SUBSURF",
+    "TRIANGULATE",
+    "VOLUME_TO_MESH",
+    "WELD",
+    "WIREFRAME",
+    "ARMATURE",
+    "CAST",
+    "CURVE",
+    "DISPLACE",
+    "HOOK",
+    "LAPLACIANDEFORM",
+    "LATTICE",
+    "MESH_DEFORM",
+    "SHRINKWRAP",
+    "SIMPLE_DEFORM",
+    "SMOOTH",
+    "CORRECTIVE_SMOOTH",
+    "LAPLACIANSMOOTH",
+    "SURFACE_DEFORM",
+    "WARP",
+    "WAVE",
+    # "VOLUME_DISPLACE",
+    "CLOTH",
+    "COLLISION",
+    "DYNAMIC_PAINT",
+    "EXPLODE",
+    "FLUID",
+    "OCEAN",
+    "PARTICLE_INSTANCE",
+    "PARTICLE_SYSTEM",
+    "SOFT_BODY",
+    "SURFACE"
+]
 # }}}
 # }}}
 

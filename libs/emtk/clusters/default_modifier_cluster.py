@@ -28,8 +28,8 @@ except ModuleNotFoundError:
 
 
 class DefaultModifierCluster(
-                             ModifiersCluster
-                             ):
+    ModifiersCluster
+):
     """
     Cluster type for default modifiers without custom behaviour, tags, or name.
     Consist of one modifier. Returns actual Blender modifier name and type to
@@ -38,16 +38,16 @@ class DefaultModifierCluster(
 
     def __init__(self, *args, **kwargs):
         super().__init__(
-                         cluster_type="DEFAULT_MODIFIER_CLUSTER",
-                         cluster_name="Default Modifier",
-                         modifiers_by_type=['ANY'],
-                         modifiers_by_name=['ANY'],
-                         cluster_is_sane=True,
-                         cluster_is_kinda_sane=False,
-                         cluster_createable=True,
-                         cluster_dynamic=True,
-                         *args, **kwargs,
-                         )
+            cluster_type="DEFAULT_MODIFIER_CLUSTER",
+            cluster_name="Default Modifier",
+            modifiers_by_type=['ANY'],
+            modifiers_by_name=['ANY'],
+            cluster_is_sane=True,
+            cluster_is_kinda_sane=False,
+            cluster_createable=True,
+            cluster_dynamic=True,
+            *args, **kwargs,
+        )
 
     def get_this_cluster_name(self):
         if not self.instance_data['initialized']\
@@ -93,7 +93,7 @@ class DefaultModifierCluster(
         # If there is not exactly one modifier
         if len(modifiers) != 1:
             return ValueError(
-                    'DefaultModifierCluster can work only with one modifier.')
+                'DefaultModifierCluster can work only with one modifier.')
 
         # If it is not an actual modifier
         if _WITH_BPY:

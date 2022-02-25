@@ -51,7 +51,7 @@ from . libs.class_var_editor_ui.panel import get_prop_group_name
 # Dev
 from . operators.dev.add_all_modifiers import BMTOOL_OT_add_all_modifiers
 from . operators.dev.add_all_modifiers import\
-        BMTOOL_OT_add_all_modifiers_and_dump_props
+    BMTOOL_OT_add_all_modifiers_and_dump_props
 from . operators.dev.add_cluster_type import BMTOOL_OT_add_cluster_type_object
 
 bl_info = {

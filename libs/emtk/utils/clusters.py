@@ -81,7 +81,7 @@ def get_cluster_types_definitions_from_settings(
             raise ValueError
 
     c = bpy.context.preferences.addons[
-            addon_name].preferences.cluster_types
+        addon_name].preferences.cluster_types
     c = _deserialize_cluster_type_definitions_list(c)
     if group is not None:
         c = _filter_by_attr(c, 'group', group)
@@ -99,7 +99,7 @@ def save_cluster_type_definition_to_settings(
     c = _add_replace_cluster_type(c, cluster)
     c = _serialize_cluster_type_definitions_list(c)
     bpy.context.preferences.addons[
-            addon_name].preferences.cluster_types = c
+        addon_name].preferences.cluster_types = c
 
 
 def remove_cluster_type_definition_from_settings(
@@ -109,7 +109,7 @@ def remove_cluster_type_definition_from_settings(
     t = _remove_cluster_type(t, cluster)
     t = _serialize_cluster_type_definitions_list(t)
     bpy.context.preferences.addons[
-            addon_name].preferences.cluster_types = t
+        addon_name].preferences.cluster_types = t
 
 
 # ===================
@@ -146,7 +146,7 @@ def save_cluster_type_definition_to_obj(
         obj, cluster, addon_name, group=None, dont_add_prop=False):
     """Adds cluster type definition to object."""
     c = get_cluster_types_definitions_from_obj(
-            obj, addon_name, group, dont_add_prop)
+        obj, addon_name, group, dont_add_prop)
     # and add group to definition.
     if group is not None:
         cluster['group'] = group
@@ -161,7 +161,7 @@ def remove_cluster_type_definition_from_obj(
         obj, cluster, addon_name, group=None, dont_add_prop=False):
     """Removes cluster type definition from object."""
     c = get_cluster_types_definitions_from_obj(
-            obj, addon_name, group, dont_add_prop)
+        obj, addon_name, group, dont_add_prop)
     c = _remove_cluster_type(c, cluster)
     c = _serialize_cluster_type_definitions_list(c)
     obj[f'{addon_name}_cluster_types'] = c
@@ -270,31 +270,31 @@ def instantiate_cluster_from_definition(cluster_type_definition,
     x = cluster_type_definition
     if x['cluster_trait_subclass'] == 'ModifiersCluster':
         result = ModifiersCluster(
-                                  cluster_name=x['name'],
-                                  cluster_type=x['type'],
-                                  modifiers_by_type=x['by_type'],
-                                  modifiers_by_name=x['by_name'],
-                                  cluster_tags=x['tags'],
-                                  cluster_priority=x['priority'],
-                                  cluster_is_sane=x['sane'],
-                                  cluster_createable=x['createable'],
-                                  dont_define_cluster=False,
-                                  *args, **kwargs
-                                  )
+            cluster_name=x['name'],
+            cluster_type=x['type'],
+            modifiers_by_type=x['by_type'],
+            modifiers_by_name=x['by_name'],
+            cluster_tags=x['tags'],
+            cluster_priority=x['priority'],
+            cluster_is_sane=x['sane'],
+            cluster_createable=x['createable'],
+            dont_define_cluster=False,
+            *args, **kwargs
+        )
 
     elif x['cluster_trait_subclass'] == 'ClustersLayer':
         result = ClustersLayer(
-                               cluster_name=x['name'],
-                               cluster_type=x['type'],
-                               modifiers_by_type=x['by_type'],
-                               modifiers_by_name=x['by_name'],
-                               cluster_tags=x['tags'],
-                               cluster_priority=x['priority'],
-                               cluster_is_sane=x['sane'],
-                               cluster_createable=x['createable'],
-                               dont_define_cluster=False,
-                               *args, **kwargs
-                               )
+            cluster_name=x['name'],
+            cluster_type=x['type'],
+            modifiers_by_type=x['by_type'],
+            modifiers_by_name=x['by_name'],
+            cluster_tags=x['tags'],
+            cluster_priority=x['priority'],
+            cluster_is_sane=x['sane'],
+            cluster_createable=x['createable'],
+            dont_define_cluster=False,
+            *args, **kwargs
+        )
     else:
         raise TypeError(f'Cant deserialize {x["cluster_class"]}')
 
@@ -338,7 +338,7 @@ def _deserialize_cluster_type_definitions_list(
         definitions_list = json.loads(serialized_definitions_list)
     except json.decoder.JSONDecodeError:
         logger.error(
-                f'Cant deserialize {serialized_definitions_list}, skipping.')
+            f'Cant deserialize {serialized_definitions_list}, skipping.')
         definitions_list = []
 
     clusters = []

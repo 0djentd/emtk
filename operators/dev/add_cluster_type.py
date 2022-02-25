@@ -30,19 +30,19 @@ class BMTOOL_OT_add_cluster_type_object(Operator):
     bl_options = {'REGISTER', 'UNDO'}
 
     serialized_cluster_type: StringProperty(
-                                            name='Cluster Type',
-                                            default=''
-                                            )
+        name='Cluster Type',
+        default=''
+    )
 
     obj_prop_name: StringProperty(
-                                  name='Cluster Types Prop Name',
-                                  default='BMTool'
-                                  )
+        name='Cluster Types Prop Name',
+        default='BMTool'
+    )
 
     obj_prop_group: StringProperty(
-                                  name='Cluster Types Prop Group',
-                                  default='ClusterTypes'
-                                  )
+        name='Cluster Types Prop Group',
+        default='ClusterTypes'
+    )
 
     def execute(self, context):
         # Dont do anything if operator properties are not correct.
@@ -54,7 +54,7 @@ class BMTOOL_OT_add_cluster_type_object(Operator):
             return {'FINISHED'}
 
         cluster_type_to_add = json.loads(
-                self.serialized_cluster_type)
+            self.serialized_cluster_type)
 
         prop_name = f'{self.obj_prop_name}{self.obj_prop_group}'
 
@@ -87,6 +87,6 @@ class BMTOOL_OT_add_cluster_type_object(Operator):
                         f'Adding cluster type {cluster_name} to {obj}.')
 
             clusters.update(
-                    {cluster_type_to_add['name']: cluster_type_to_add})
+                {cluster_type_to_add['name']: cluster_type_to_add})
             obj[prop_name] = json.dumps(clusters)
         return {'FINISHED'}

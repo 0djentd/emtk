@@ -115,7 +115,6 @@ class UIClassVariablesEditor():   # {{{
                         check=True,
                         **kwargs
                         ):
-
         """Draw editor for variable."""
 
         if type(attr_str) is not str:
@@ -136,7 +135,7 @@ class UIClassVariablesEditor():   # {{{
             attr_str = attr_str[4:]
 
         attr = get_attr_or_iter_from_str_nested(
-                cls, attr_str, check=check)
+            cls, attr_str, check=check)
         if attr is None:
             logger.debug(f'Ignoring variable "{attr_str}", type is None.')
             return
@@ -146,33 +145,33 @@ class UIClassVariablesEditor():   # {{{
         # recursive 'draw_var_editor'
         if attr_type is list:
             cls.__draw_list(
-                            layout,
-                            attr_str,
-                            attr=attr,
-                            check=check,
-                            *args,
-                            **kwargs
-                            )
+                layout,
+                attr_str,
+                attr=attr,
+                check=check,
+                *args,
+                **kwargs
+            )
 
         elif attr_type is dict:
             cls.__draw_dict(
-                            layout,
-                            attr_str,
-                            attr=attr,
-                            check=check,
-                            *args,
-                            **kwargs
-                            )
+                layout,
+                attr_str,
+                attr=attr,
+                check=check,
+                *args,
+                **kwargs
+            )
         # draw property
         else:
             cls.__draw_variable(
-                                layout,
-                                attr_str,
-                                attr=attr,
-                                check=check,
-                                *args,
-                                **kwargs
-                                )
+                layout,
+                attr_str,
+                attr=attr,
+                check=check,
+                *args,
+                **kwargs
+            )
     # }}}
 
     @classmethod
@@ -506,7 +505,7 @@ class UIClassVariablesEditor():   # {{{
                     {prop_group.var_editor_currently_edited}')
 
         attr = get_attr_or_iter_from_str_nested(
-                cls, prop_group.var_editor_currently_edited)
+            cls, prop_group.var_editor_currently_edited)
 
         attr_type = type(attr)
 
@@ -516,11 +515,11 @@ class UIClassVariablesEditor():   # {{{
 
             # Set attribute value
             set_attr_or_iter_from_str_nested(
-                    cls, prop_group.var_editor_currently_edited, attr_val)
+                cls, prop_group.var_editor_currently_edited, attr_val)
 
         if logger.isEnabledFor(logging.DEBUG):
             attr = get_attr_or_iter_from_str_nested(
-                    cls, prop_group.var_editor_currently_edited)
+                cls, prop_group.var_editor_currently_edited)
 
             logger.debug(f'new attr: {attr}')
 

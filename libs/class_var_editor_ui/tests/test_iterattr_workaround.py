@@ -60,56 +60,56 @@ class WorkaroundScriptTests(unittest.TestCase):
         attr_str = 'modifier.integer'
         attr = self.cluster.modifier.integer
         attr_2 = get_attr_or_iter_from_str_nested(
-                self.cluster, attr_str, check=self.check, fast=self.fast)
+            self.cluster, attr_str, check=self.check, fast=self.fast)
         self.assertEqual(attr, attr_2)
 
     def test_string(self):
         attr_str = 'modifier.string'
         attr = self.cluster.modifier.string
         attr_2 = get_attr_or_iter_from_str_nested(
-                self.cluster, attr_str, check=self.check, fast=self.fast)
+            self.cluster, attr_str, check=self.check, fast=self.fast)
         self.assertEqual(attr, attr_2)
 
     def test_dictionary(self):
         attr_str = 'modifier.dictionary'
         attr = self.cluster.modifier.dictionary
         attr_2 = get_attr_or_iter_from_str_nested(
-                self.cluster, attr_str, check=self.check, fast=self.fast)
+            self.cluster, attr_str, check=self.check, fast=self.fast)
         self.assertEqual(attr, attr_2)
 
     def test_dictionary_element_1(self):
         attr_str = "modifier.dictionary['name']"
         attr = self.cluster.modifier.dictionary['name']
         attr_2 = get_attr_or_iter_from_str_nested(
-                self.cluster, attr_str, check=self.check, fast=self.fast)
+            self.cluster, attr_str, check=self.check, fast=self.fast)
         self.assertEqual(attr, attr_2)
 
     def test_dictionary_element_2(self):
         attr_str = 'modifier.dictionary["name"]'
         attr = self.cluster.modifier.dictionary["name"]
         attr_2 = get_attr_or_iter_from_str_nested(
-                self.cluster, attr_str, check=self.check, fast=self.fast)
+            self.cluster, attr_str, check=self.check, fast=self.fast)
         self.assertEqual(attr, attr_2)
 
     def test_dictionary_element_3(self):
         attr_str = 'modifier.dictionary[\'name\']'
         attr = self.cluster.modifier.dictionary['name']
         attr_2 = get_attr_or_iter_from_str_nested(
-                self.cluster, attr_str, check=self.check, fast=self.fast)
+            self.cluster, attr_str, check=self.check, fast=self.fast)
         self.assertEqual(attr, attr_2)
 
     def test_list_element_1(self):
         attr_str = 'modifier.array[1]'
         attr = self.cluster.modifier.array[1]
         attr_2 = get_attr_or_iter_from_str_nested(
-                self.cluster, attr_str, check=self.check, fast=self.fast)
+            self.cluster, attr_str, check=self.check, fast=self.fast)
         self.assertEqual(attr, attr_2)
 
     def test_nested_dictionary_element_1(self):
         attr_str = "modifier.nested_dictionary['modifier']['name']"
         attr = self.cluster.modifier.nested_dictionary['modifier']['name']
         attr_2 = get_attr_or_iter_from_str_nested(
-                self.cluster, attr_str, check=self.check, fast=self.fast)
+            self.cluster, attr_str, check=self.check, fast=self.fast)
         self.assertEqual(attr, attr_2)
 
     # SET ATTR
@@ -196,7 +196,7 @@ class SequenceParserFunctionsTests(unittest.TestCase):
 
     def test_get_last_attr_name_in_sequence_3(self):
         result_1 = get_last_attr_name_in_sequence(
-                'cluster.modifiers[\'Bevel\'].type')
+            'cluster.modifiers[\'Bevel\'].type')
         result_2 = 'type'
         self.assertEqual(result_1, result_2)
 
@@ -212,6 +212,6 @@ class SequenceParserFunctionsTests(unittest.TestCase):
 
     def test_get_attr_obj_str_3(self):
         result_1 = get_attr_obj_str(
-                'cluster.modifiers[\'Bevel\'].type')
+            'cluster.modifiers[\'Bevel\'].type')
         result_2 = 'cluster.modifiers[\'Bevel\']'
         self.assertEqual(result_1, result_2)

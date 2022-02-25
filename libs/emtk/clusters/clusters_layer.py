@@ -24,7 +24,7 @@ import logging
 from ..lists.modifiers_list import ModifiersList
 from ..lists.traits.clusters.clusters_list import ClustersListTrait
 from ..lists.traits.clusters.sortable_clusters_list\
-        import SortableClustersListTrait
+    import SortableClustersListTrait
 from ..lists.traits.clusters.active_cluster import ActiveClusterTrait
 from .cluster_trait import ClusterTrait
 from ..object_state import ObjectState
@@ -45,17 +45,18 @@ logger.setLevel(logging.DEBUG)
 
 
 class ClustersLayer(
-                    ActiveClusterTrait,
-                    SortableClustersListTrait,
-                    ClustersListTrait,
-                    ClusterTrait,
-                    ModifiersList
-                    ):
+    ActiveClusterTrait,
+    SortableClustersListTrait,
+    ClustersListTrait,
+    ClusterTrait,
+    ModifiersList
+):
 
     """
     Base class for modifiers clusters that contain other clusters
     in them.
     """
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -89,9 +90,9 @@ class ClustersLayerState(ObjectState):  # {{{
         self._check_type(self)
         state = {}
         state.update = {
-                        'data': self.data,
-                        'items_data': self.items_data,
-                        }
+            'data': self.data,
+            'items_data': self.items_data,
+        }
         return json.dumps(state)
 
     @classmethod

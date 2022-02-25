@@ -32,8 +32,8 @@ except ModuleNotFoundError:
 class ModifierStateClassTests(unittest.TestCase):
     def setUp(self):
         self.obj = ModifierState(
-                name='modifier preset',
-                data={'angle_limit': 123}, tags=['STORED'])
+            name='modifier preset',
+            data={'angle_limit': 123}, tags=['STORED'])
 
     def tearDown(self):
         del self.obj

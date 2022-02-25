@@ -90,5 +90,5 @@ class BMTOOLS_OT_clusters_types_popup(
         print('Operator invoked')
         prefs = context.preferences.addons['bmtools'].preferences
         context.window_manager.invoke_popup(
-                self, width=prefs.clusters_list_popup_width)
+            self, width=prefs.clusters_list_popup_width)
         return {'RUNNING_MODAL'}

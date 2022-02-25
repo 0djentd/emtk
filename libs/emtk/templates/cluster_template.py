@@ -26,6 +26,7 @@ class SampleCluster(ModifiersCluster):
     """
     This is example of custom cluster type.
     """
+
     def __init__(self, bevel_name='Big Bevel', *args, **kwargs):
         # Most essential cluster variables can be created using
         # ModififersCluster constructor.

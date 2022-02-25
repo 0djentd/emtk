@@ -113,12 +113,12 @@ class SortableClustersListTrait():
             if x[1].last_cluster:
                 if x[0] not in clusters_that_should_be_last:
                     clusters_that_should_be_last.append(
-                            x[1].sorting_rule_priority, x[0])
+                        x[1].sorting_rule_priority, x[0])
 
             if x[1].first_cluster:
                 if x[0] not in clusters_that_should_be_first:
                     clusters_that_should_be_first.append(
-                            x[1].sorting_rule_priority, x[0])
+                        x[1].sorting_rule_priority, x[0])
 
             for y in x[1].after_clusters:
                 e = x[1].sorting_rule_priority + y + x[0]

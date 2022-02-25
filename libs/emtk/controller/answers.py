@@ -44,6 +44,7 @@ class ClusterActionAnswer():
     case_all methods are used when action subject
     is anywhere in nested clusters.
     """
+
     def __init__(self, cluster, *args,
                  action_type, only_interpret=False,
                  **kwargs):
@@ -129,17 +130,17 @@ class ActionDefaultTemplate(ClusterActionAnswer):
         # Deconstruct cluster with components if not allowed to change it.
         if not self.cluster.default_data['dynamic']:
             actions.append(
-                    ClustersCommand(
-                        ClustersAction(
-                            'DECONSTRUCT', self.cluster)))
+                ClustersCommand(
+                    ClustersAction(
+                        'DECONSTRUCT', self.cluster)))
 
         # If removing modifier and it is last modifier.
         elif len(self.cluster._data) == 1:
             actions.append(ClustersAction('REMOVE', self.cluster))
             actions.append(
-                    ClustersCommand(
-                        ClustersAction(
-                            'REMOVE', self.cluster)))
+                ClustersCommand(
+                    ClustersAction(
+                        'REMOVE', self.cluster)))
         return actions
 
     def _no_action_answer(self, action):
@@ -286,20 +287,20 @@ class ActionDefaultMove(ClusterActionAnswer):
                 for x in range(action.props['length']):
                     if _WITH_BPY:
                         bpy.ops.object.modifier_move_up(
-                                new_context, modifier=mod_name)
+                            new_context, modifier=mod_name)
                     else:
                         self.cluster._object.modifier_move_up(
-                                modifier=mod_name)
+                            modifier=mod_name)
                     # TODO: this is for moving modifiers in modifiers cluster.
                     # self.cluster._data.insert(i+1, mod)
             elif action.props['direction'] == 'DOWN':
                 for x in range(action.props['length']):
                     if _WITH_BPY:
                         bpy.ops.object.modifier_move_down(
-                                new_context, modifier=mod_name)
+                            new_context, modifier=mod_name)
                     else:
                         self.cluster._object.modifier_move_down(
-                                modifier=mod_name)
+                            modifier=mod_name)
                     # self.cluster._data.insert(i-1, mod)
         else:
             i = self.cluster._data.index(action.subject)

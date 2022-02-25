@@ -30,11 +30,11 @@ except ModuleNotFoundError:
     _WITH_BPY = False
 
 from .actions import (
-                      ClusterRequest,
-                      ClustersAction,
-                      ClustersCommand,
-                      ClustersBatchCommand
-                      )
+    ClusterRequest,
+    ClustersAction,
+    ClustersCommand,
+    ClustersBatchCommand
+)
 
 from ..lists.traits.clusters.clusters_list import ClustersListTrait
 
@@ -67,7 +67,7 @@ class ClustersController():
                         raise TypeError
                     else:
                         batch = ClustersBatchCommand(
-                                ClustersCommand(command))
+                            ClustersCommand(command))
                 else:
                     batch = ClustersBatchCommand(command)
             else:
@@ -156,16 +156,16 @@ class ClustersController():
             else:
                 o = command.initial_action.subject
                 logger.debug(
-                        f'Not adding clusters actions, {o} has no clusters.')
+                    f'Not adding clusters actions, {o} has no clusters.')
 
         if command.affect_modifiers:
             if not command.reverse_by_layer:
                 modifiers = command.initial_action.\
-                        subject.all_modifiers()
+                    subject.all_modifiers()
                 modifiers = reversed(modifiers)
             else:
                 modifiers = command.initial_action.\
-                        subject.all_modifiers()
+                    subject.all_modifiers()
 
             logger.debug(f'Adding modifiers actions for {modifiers}')
             for x in modifiers:
@@ -176,7 +176,7 @@ class ClustersController():
                 actions.append(a)
 
         actions = self._sort_actions_by_layer_depth(
-                actions)
+            actions)
         logger.debug(f'{actions}')
         command.actions = actions
         logger.debug(f'Populated {command}')

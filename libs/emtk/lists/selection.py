@@ -37,11 +37,11 @@ def _check_obj_type(self, obj, allow_no_value):
             if x.name == obj:
                 return x
         raise ValueError(
-                f'No object with name "{obj}" in {self._data}')
+            f'No object with name "{obj}" in {self._data}')
     if obj is None and allow_no_value:
         return None
     raise TypeError(
-            f'Expected cluster, modifier, int or str, got {type(obj)}.')
+        f'Expected cluster, modifier, int or str, got {type(obj)}.')
 
 
 def _check_if_obj_is_list(self, obj, allow_no_value):
@@ -68,6 +68,7 @@ def unwrap_obj_ref_seq(func, allow_no_value=False):
 
     Provides new list with modifiers list elements references.
     """
+
     def wrapper_unwrap_obj_ref_seq(self, obj, *args, **kwargs):
         obj = _check_if_obj_is_list(self, obj, allow_no_value)
         return func(self, obj, *args, **kwargs)
@@ -110,6 +111,7 @@ class Selection():
     'additional selection', that is not being affected
     by active cluster ('add', 'remove')
     """
+
     def __init__(self, modifiers_list):
         # ModifiersList subclass object.
         self._data = modifiers_list

@@ -28,9 +28,9 @@ from ....object_state import _add_type_name_to_dict
 
 from ....controller.answers import ActionDefaultDeconstuct
 from ....controller.actions import (
-                                    ClustersAction,
-                                    ClustersCommand,
-                                    )
+    ClustersAction,
+    ClustersCommand,
+)
 from ...utils import check_if_removed
 
 logger = logging.getLogger(__name__)
@@ -56,8 +56,8 @@ class ClustersListTrait():
 
     def __init__(self, *args, no_default_actions=False, **kwargs):
         super().__init__(
-                         no_default_actions=no_default_actions,
-                         *args, **kwargs)
+            no_default_actions=no_default_actions,
+            *args, **kwargs)
         if not no_default_actions:
             default_actions = [ActionDefaultDeconstuct]
             for x in default_actions:
@@ -347,8 +347,8 @@ class ClustersListState():  # {{{
                 items_data = []
                 for y in state[x].items():
                     items_data.append(
-                            _get_object_state_subclass_by_name(
-                                y['type']).deserialize(y))
+                        _get_object_state_subclass_by_name(
+                            y['type']).deserialize(y))
                 data.update({x: items_data})
             elif x == 'data':
                 data.update({x: _remove_type_name_from_dict(state[x])})

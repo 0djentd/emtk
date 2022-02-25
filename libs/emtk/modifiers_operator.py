@@ -108,7 +108,7 @@ class ModifiersOperator():
         self.selected_objects = []
         for obj in bpy.context.view_layer.objects.selected:
             obj_mod_list = ExtendedModifiersList(
-                    obj, cluster_types=clusters)
+                obj, cluster_types=clusters)
             if not obj_mod_list.create_modifiers_list(obj):
                 return False
 
@@ -182,39 +182,39 @@ def _default_cluster_types():
     """
     clusters = []
     cluster = ModifiersCluster(
-                               cluster_name='Beveled Boolean',
-                               cluster_type='BEVELED_BOOLEAN',
-                               modifiers_by_type=[
-                                   ['BOOLEAN'], ['BEVEL']],
-                               modifiers_by_name=[
-                                   ['ANY'], ['ANY']],
-                               cluster_priority=0,
-                               cluster_createable=True,
-                               )
+        cluster_name='Beveled Boolean',
+        cluster_type='BEVELED_BOOLEAN',
+        modifiers_by_type=[
+            ['BOOLEAN'], ['BEVEL']],
+        modifiers_by_name=[
+            ['ANY'], ['ANY']],
+        cluster_priority=0,
+        cluster_createable=True,
+    )
     clusters.append(cluster)
 
     cluster = ModifiersCluster(
-                               cluster_name='Triple Bevel',
-                               cluster_type='TRIPLE_BEVEL',
-                               modifiers_by_type=[['BEVEL'],
-                                                  ['BEVEL'],
-                                                  ['BEVEL']],
-                               modifiers_by_name=[
-                                   ['ANY'], ['ANY'], ['ANY']],
-                               cluster_priority=0,
-                               cluster_createable=True,
-                               )
+        cluster_name='Triple Bevel',
+        cluster_type='TRIPLE_BEVEL',
+        modifiers_by_type=[['BEVEL'],
+                           ['BEVEL'],
+                           ['BEVEL']],
+        modifiers_by_name=[
+            ['ANY'], ['ANY'], ['ANY']],
+        cluster_priority=0,
+        cluster_createable=True,
+    )
     clusters.append(cluster)
 
     cluster = ClustersLayer(
-                            cluster_name='Double Bevel Cluster',
-                            cluster_type='BEVEL_CLUSTER',
-                            modifiers_by_type=[
-                                ['TRIPLE_BEVEL'],
-                                ['TRIPLE_BEVEL']],
-                            modifiers_by_name=[['ANY'], ['ANY']],
-                            cluster_priority=0,
-                            cluster_createable=True,
-                            )
+        cluster_name='Double Bevel Cluster',
+        cluster_type='BEVEL_CLUSTER',
+        modifiers_by_type=[
+            ['TRIPLE_BEVEL'],
+            ['TRIPLE_BEVEL']],
+        modifiers_by_name=[['ANY'], ['ANY']],
+        cluster_priority=0,
+        cluster_createable=True,
+    )
     clusters.append(cluster)
     return clusters

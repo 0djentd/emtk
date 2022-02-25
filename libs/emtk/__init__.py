@@ -24,9 +24,9 @@ from .sorting_rule import SortingRule
 from .lists.extended_modifiers_list import ExtendedModifiersList
 
 __all__ = [
-           ExtendedModifiersList,
-           ModifiersCluster,
-           ClustersLayer,
-           DummyBlenderObj,
-           SortingRule,
-           ]
+    ExtendedModifiersList,
+    ModifiersCluster,
+    ClustersLayer,
+    DummyBlenderObj,
+    SortingRule,
+]

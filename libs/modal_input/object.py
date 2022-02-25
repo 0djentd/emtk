@@ -41,30 +41,30 @@ class ModalInputOperator():
     __MODAL_LETTERS = list(string.ascii_uppercase)
 
     __MODAL_DIGITS = {
-                     'ZERO': '0',
-                     'ONE': '1',
-                     'TWO': '2',
-                     'THREE': '3',
-                     'FOUR': '4',
-                     'FIVE': '5',
-                     'SIX': '6',
-                     'SEVEN': '7',
-                     'EIGHT': '8',
-                     'NINE': '9',
-                     }
+        'ZERO': '0',
+        'ONE': '1',
+        'TWO': '2',
+        'THREE': '3',
+        'FOUR': '4',
+        'FIVE': '5',
+        'SIX': '6',
+        'SEVEN': '7',
+        'EIGHT': '8',
+        'NINE': '9',
+    }
 
     __MODAL_DIGITS_NUMPAD = {
-                            'NUMPAD_0': '0',
-                            'NUMPAD_1': '1',
-                            'NUMPAD_2': '2',
-                            'NUMPAD_3': '3',
-                            'NUMPAD_4': '4',
-                            'NUMPAD_5': '5',
-                            'NUMPAD_6': '6',
-                            'NUMPAD_7': '7',
-                            'NUMPAD_8': '8',
-                            'NUMPAD_9': '9',
-                            }
+        'NUMPAD_0': '0',
+        'NUMPAD_1': '1',
+        'NUMPAD_2': '2',
+        'NUMPAD_3': '3',
+        'NUMPAD_4': '4',
+        'NUMPAD_5': '5',
+        'NUMPAD_6': '6',
+        'NUMPAD_7': '7',
+        'NUMPAD_8': '8',
+        'NUMPAD_9': '9',
+    }
 
     __MODAL_DIGITS_LIST = list(__MODAL_DIGITS) + list(__MODAL_DIGITS_NUMPAD)
 
@@ -216,26 +216,26 @@ class ModalInputOperator():
             if event.type == x and event.value == 'PRESS':
                 if event.shift:
                     self.__modal_letters_str\
-                            = self.__modal_letters_str + x
+                        = self.__modal_letters_str + x
                 else:
                     self.__modal_letters_str\
-                            = self.__modal_letters_str + x.lower()
+                        = self.__modal_letters_str + x.lower()
                 return True
 
         # Digits
         for x in self.__MODAL_DIGITS:
             if event.type == x and event.value == 'PRESS':
                 self.__modal_letters_str\
-                        = self.__modal_letters_str\
-                        + self.__MODAL_DIGITS[x]
+                    = self.__modal_letters_str\
+                    + self.__MODAL_DIGITS[x]
                 return True
 
         # Digits 2
         for x in self.__MODAL_DIGITS_NUMPAD:
             if event.type == x and event.value == 'PRESS':
                 self.__modal_letters_str\
-                        = self.__modal_letters_str\
-                        + self.__MODAL_DIGITS_NUMPAD[x]
+                    = self.__modal_letters_str\
+                    + self.__MODAL_DIGITS_NUMPAD[x]
                 return True
 
         # Anything else
@@ -244,10 +244,10 @@ class ModalInputOperator():
         elif event.type == 'MINUS' and event.value == 'PRESS':
             if event.shift:
                 self.__modal_letters_str\
-                        = self.__modal_letters_str + '_'
+                    = self.__modal_letters_str + '_'
             else:
                 self.__modal_letters_str\
-                        = self.__modal_letters_str + '-'
+                    = self.__modal_letters_str + '-'
         elif event.type == 'BACK-SPACE' and event.value == 'PRESS':
             self.__modal_letters_str = self.__modal_letters_str[0:-1]
         else:
@@ -340,7 +340,7 @@ class ModalInputOperator():
         if logger.isEnabledFor(logging.DEBUG):
             logger.debug('----- Modal input module v1 ------')
             logger.debug(
-                    f'delta: {delta_pct}, {delta_pct_i}, {delta}')
+                f'delta: {delta_pct}, {delta_pct_i}, {delta}')
             logger.debug(f'distance: {distance}')
             logger.debug(f'attr_val: {attr_val}')
             logger.debug(f'attr_name: {attr_name}')

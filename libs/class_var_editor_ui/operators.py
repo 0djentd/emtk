@@ -31,7 +31,7 @@ class BMTOOLS_OT_bmtool_invoke_operator_func(Operator):
 
     bl_idname = "bmtools.bmtool_invoke_operator_func"
     bl_label = "Invoke one of bmtools operator functions."
-    
+
     # Line to eval
     func: StringProperty("")
 

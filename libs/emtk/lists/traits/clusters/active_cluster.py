@@ -59,7 +59,7 @@ class ActiveClusterTrait():
         interface that uses ExtendedModifiersList.
         """
         return self.get_cluster_or_layer(
-                self.get_cluster())
+            self.get_cluster())
 
     # Operations on selection {{{
     def remove_selection(self):
@@ -146,15 +146,15 @@ class ActiveClusterTrait():
             for x in clusters:
                 modifiers += x.all_modifiers()
             result = self._clusters_parser.parse_recursively(
-                    modifiers,
-                    clusters_names=self.all_clusters().names())
+                modifiers,
+                clusters_names=self.all_clusters().names())
 
         # If there is only cluster layers,
         # try to create another layer from them
         else:
             logger.info("Reparsing clusters.")
             result = self._clusters_parser._parse_clusters_recursively(
-                    clusters)
+                clusters)
 
         # If result is bad, revert changes.
         if result is False or None:

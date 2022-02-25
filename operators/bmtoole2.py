@@ -58,7 +58,7 @@ class BMTOOL_OT_bmtoole2(ModifiersOperator, Operator):
         self.create_objects_modifiers_lists(context)
 
         self.m_list[0].set_this_cluster_visibility(
-                (True, False, True, False))
+            (True, False, True, False))
         print(get_modifier_state(self.m_list._object.modifiers['Bevel']))
         del(self.selected_objects)
         del(self.m_list)

@@ -41,9 +41,9 @@ logger.setLevel(logging.DEBUG)
 
 
 class ModifiersCluster(  # {{{
-                       ClusterTrait,
-                       ModifiersList
-                       ):
+    ClusterTrait,
+    ModifiersList
+):
     """
     Base class for modifiers cluster type
     """
@@ -103,9 +103,9 @@ class ModifiersClusterState(ObjectState):  # {{{
         self._check_type(self)
         state = {}
         state.update = {
-                        'data': self.data,
-                        'items_data': self.items_data,
-                        }
+            'data': self.data,
+            'items_data': self.items_data,
+        }
         return json.dumps(state)
 
     @classmethod
