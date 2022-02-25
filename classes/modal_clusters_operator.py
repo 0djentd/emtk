@@ -70,10 +70,6 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                   'collapse': 'R',
                   'exit': 'Q'
                   }
-<<<<<<< HEAD
-=======
-
->>>>>>> parent of 813aeba (Autopep8 fix.)
 
 
     # Const {{{
@@ -222,11 +218,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
         return {'RUNNING_MODAL'}
 
 
-<<<<<<< HEAD
     # Modal actions. {{{
-=======
-    # Modal actions.
->>>>>>> parent of 813aeba (Autopep8 fix.)
     def __modal_actions(self, context, event):
         """This method is used for general modifiers stack editing."""
 
@@ -252,10 +244,6 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                 else:
                     cluster.toggle_this_cluster_visibility(
                             [False, True, False, False])
-<<<<<<< HEAD
-=======
-
->>>>>>> parent of 813aeba (Autopep8 fix.)
 
 
         # Modifier visibility 2{{{
@@ -277,10 +265,6 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                 else:
                     cluster.toggle_this_cluster_visibility(
                             [False, False, False, True])
-<<<<<<< HEAD
-=======
-
->>>>>>> parent of 813aeba (Autopep8 fix.)
 
 
         # Sort modifiers{{{
@@ -333,11 +317,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                     self.report({'ERROR'}, "Cant deconstruct cluster")
 
 
-<<<<<<< HEAD
         # Construct cluster from selection.{{{
-=======
-        # Construct cluster from selection.
->>>>>>> parent of 813aeba (Autopep8 fix.)
         elif (event.type == self.__bmtool_kbs['construct_deconstruct'])\
                 & (event.value == 'PRESS'):
 
@@ -351,11 +331,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                 self.report({'ERROR'}, "No clustes selected.")
 
 
-<<<<<<< HEAD
         # Toggle selection.{{{
-=======
-        # Toggle selection.
->>>>>>> parent of 813aeba (Autopep8 fix.)
         elif (event.type == self.__bmtool_kbs['toogle_selection'])\
                 & (event.value == 'PRESS'):
 
@@ -366,11 +342,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                 self.__start_selecting_clusters()
 
 
-<<<<<<< HEAD
         # Remove active cluster.{{{
-=======
-        # Remove active cluster.
->>>>>>> parent of 813aeba (Autopep8 fix.)
         elif (event.type == self.__bmtool_kbs['apply_remove'])\
                 & (event.value == 'PRESS'):
             logger.info('Removing cluster')
@@ -401,11 +373,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
             self.bmtool_modifier_update(context)
 
 
-<<<<<<< HEAD
         # Move modifier down.{{{
-=======
-        # Move modifier down.
->>>>>>> parent of 813aeba (Autopep8 fix.)
         elif (event.type == self.__bmtool_kbs['down'])\
                 & event.shift & (event.value == 'PRESS'):
             logger.info('Moving cluster')
@@ -420,11 +388,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
             self.bmtool_modifier_update(context)
 
 
-<<<<<<< HEAD
         # Collapse cluster.{{{
-=======
-        # Collapse cluster.
->>>>>>> parent of 813aeba (Autopep8 fix.)
         elif (event.type == self.__bmtool_kbs['collapse'])\
                 & (event.value == 'PRESS'):
             logger.info('Collapse toggle cluster')
@@ -452,11 +416,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
             self.__stop_selecting_clusters()
 
 
-<<<<<<< HEAD
         # Scroll through modifiers up.{{{
-=======
-        # Scroll through modifiers up.
->>>>>>> parent of 813aeba (Autopep8 fix.)
         elif (event.type == self.__bmtool_kbs['up'])\
                 & (event.value == 'PRESS'):
 
@@ -518,11 +478,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
 
 
     # TODO: rename this methods.
-<<<<<<< HEAD
     # Methods reserved for operators. {{{
-=======
-    # Methods reserved for operators.
->>>>>>> parent of 813aeba (Autopep8 fix.)
     def bmtool_modal_pre(self, context, event):
         """Operator-specific modal method 1
 
@@ -608,11 +564,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
         logger.info("Modal operator finished.")
 
 
-<<<<<<< HEAD
     # Clusters selection utils  {{{
-=======
-    # Clusters selection utils
->>>>>>> parent of 813aeba (Autopep8 fix.)
     def __stop_selecting_clusters(self) -> None:
         self.__selecting_clusters = False
         layer = self.m_list.get_layer()
