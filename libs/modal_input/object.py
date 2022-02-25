@@ -33,7 +33,7 @@ logger.setLevel(logging.DEBUG)
 class ModalInputOperator():
     """Base class for modal operators and editors."""
 
-    # Constants {{{
+    # Constants
     __MODES = {'NONE', 'DELTA', 'DIGITS', 'LETTERS'}
 
     __DEFAULT_MODE = 'NONE'
@@ -121,7 +121,7 @@ class ModalInputOperator():
         self.__modal_digits_str = ''
         self.__modal_letters_str = ''
 
-    # Get val {{{
+    # Get val
     # This two methods are used to get variable value from modal input mode.
     def modal_digits_pop(
             self, number_type='ANY') -> typing.Union[None, int, float]:
@@ -286,7 +286,7 @@ class ModalInputOperator():
         prop_step = prop_def.step
         sens = float(sens)
 
-        # Checks {{{
+        # Checks
         possible_prop_types = {'BOOLEAN': bool, 'INT': int, 'FLOAT': float}
         if type(attr_val) is not possible_prop_types[prop_type]:
             raise TypeError
@@ -588,7 +588,7 @@ class ModalInputOperator():
     
 
 
-# Utils {{{
+# Utils
 def _vec_len(x1: float, x2: float, y1: float, y2: float) -> float:
     x = x1 - x2
     y = y1 - y2

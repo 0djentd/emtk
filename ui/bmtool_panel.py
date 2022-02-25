@@ -71,7 +71,7 @@ in class variables by identyfing panels somehow.
 #         return cls.__selected_objects_changed
 #     
 #
-#     # Public methods that should not be overloaded. {{{
+#     # Public methods that should not be overloaded.
 #     @classmethod
 #     def poll(cls, context):
 #         # INIT
@@ -130,7 +130,7 @@ in class variables by identyfing panels somehow.
 #             print('Panel was drawn')
 #     
 #
-#     # Public methods {{{
+#     # Public methods
 #     @classmethod
 #     def panel_init(cls, context):
 #         """This method called once per Blender launch or addon
@@ -189,7 +189,7 @@ class VIEW3D_PT_bmtool_panel(Panel):
     instances = []
 
     # TODO: move to base class.
-    # WRAPPER  {{{
+    # WRAPPER 
     __tag_panel_init = True
     __tag_panel_invoke_value = True
     __panel_was_drawn_value = False
@@ -219,7 +219,7 @@ class VIEW3D_PT_bmtool_panel(Panel):
     def selected_objects_changed(cls):
         return cls.__selected_objects_changed
 
-    # tag panel invoke  {{{
+    # tag panel invoke 
     @property
     def __tag_panel_invoke(self):
         self._get_tag_panel_invoke()
@@ -237,7 +237,7 @@ class VIEW3D_PT_bmtool_panel(Panel):
         cls.__tag_panel_invoke_value = val
     
 
-    # panel was drawn  {{{
+    # panel was drawn 
     @property
     def __panel_was_drawn(self):
         self._get_panel_was_drawn()
@@ -256,7 +256,7 @@ class VIEW3D_PT_bmtool_panel(Panel):
     
     
 
-    # Public methods that should not be overloaded. {{{
+    # Public methods that should not be overloaded.
     @classmethod
     def poll(cls, context):
         if cls.__debug:
@@ -336,7 +336,7 @@ class VIEW3D_PT_bmtool_panel(Panel):
             print('Panel was drawn')
     
 
-    # Public methods {{{
+    # Public methods
     @classmethod
     def panel_init(cls, context):
         """This method called once per Blender launch or addon
@@ -354,7 +354,7 @@ class VIEW3D_PT_bmtool_panel(Panel):
     # {'Bevel': True, 'Array': False}
     modifiers_expanded = {}
 
-    # Panel methods {{{
+    # Panel methods
     @classmethod
     def panel_poll(cls, context):
         if context.object is None:

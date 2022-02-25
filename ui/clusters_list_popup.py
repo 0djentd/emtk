@@ -109,7 +109,7 @@ class BMTOOLS_OT_clusters_list_popup(
 
         row = layout.row()
 
-        # Cluster name {{{
+        # Cluster name
         val = not cluster.instance_data['collapsed']
         line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').\
                 instance_data[\'collapsed\'] = {val}'
@@ -123,7 +123,7 @@ class BMTOOLS_OT_clusters_list_popup(
         op.func = line
         
 
-        # Actions {{{
+        # Actions
         # Move down
         line = f'self.m_list.get_cluster_or_layer(self.m_list.find_cluster_by_name("{cluster.name}")).\
                 move_down("{cluster.name}")'
@@ -160,7 +160,7 @@ class BMTOOLS_OT_clusters_list_popup(
                           text='', icon='CHECKMARK')
         op.func = line
 
-        # Visibility {{{
+        # Visibility
         v = {
             'show_viewport': None,
             'show_editmode': None,
@@ -215,7 +215,7 @@ class BMTOOLS_OT_clusters_list_popup(
         if not cluster.instance_data['collapsed']:
             row = layout.row()
 
-            # Cluster definition {{{
+            # Cluster definition
             col = row.column()
             val = not cluster.instance_data['show_definition_expanded']
             line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').\
@@ -230,7 +230,7 @@ class BMTOOLS_OT_clusters_list_popup(
             op.func = line
             
 
-            # Cluster props {{{
+            # Cluster props
             col = row.column()
             val = not cluster.instance_data['show_props_expanded']
             line = f'self.m_list.find_cluster_by_name(\'{cluster.name}\').\
@@ -290,7 +290,7 @@ class BMTOOLS_OT_clusters_list_popup(
 
         row = layout.row()
 
-        # Modifier collapsed {{{
+        # Modifier collapsed
         val = not modifier.show_expanded
         col = row.column()
         line = f'self.m_list.find_modifier_by_name(\'{modifier.name}\').\
@@ -305,7 +305,7 @@ class BMTOOLS_OT_clusters_list_popup(
         op.func = line
         
 
-        # Actions {{{
+        # Actions
         # Move down
         line = f'self.m_list.get_cluster_or_layer(self.m_list.find_modifier_by_name("{modifier.name}")).\
                 move_down("{modifier.name}")'
@@ -342,7 +342,7 @@ class BMTOOLS_OT_clusters_list_popup(
                           text='', icon='CHECKMARK')
         op.func = line
 
-        # Visibility {{{
+        # Visibility
         # v = {
         #      'show_viewport': None,
         #      'show_editmode': None,

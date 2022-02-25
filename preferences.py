@@ -37,7 +37,7 @@ class BMToolPreferences(ModalShortcutsPreferences, AddonPreferences):
 
     needs_restart = False
 
-    # Properties {{{
+    # Properties
     settings_category: EnumProperty(
         name="Settings category",
         items=[('GENERAL', 'General settings', 'CUBE', 0),

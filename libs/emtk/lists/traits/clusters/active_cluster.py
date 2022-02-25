@@ -61,7 +61,7 @@ class ActiveClusterTrait():
         return self.get_cluster_or_layer(
             self.get_cluster())
 
-    # Operations on selection {{{
+    # Operations on selection
     def remove_selection(self):
         """
         Removes selected clusters on this layer.

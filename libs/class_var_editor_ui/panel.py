@@ -67,7 +67,7 @@ class UIClassVariablesEditor():
     Blender UI ('draw(self, context)' method) using this module.
     """
 
-    # info {{{
+    # info
     """
     How this thing works:
 

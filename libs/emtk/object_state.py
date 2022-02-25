@@ -48,7 +48,7 @@ types = {bool, int, float, str, list, dict, set, tuple}
 # TODO: ObjectConfig is ObjectStateData and ReparseConfig.
 
 
-# functions used when serializing/deserializing object state.  {{{
+# functions used when serializing/deserializing object state. 
 # This is workaround for serializing tuples and sets
 def _add_type_name_to_dict(obj):
     """Add info about element type to dictionary.

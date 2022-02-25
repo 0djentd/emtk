@@ -171,7 +171,7 @@ class BMToolUi:
             ui_t.append(" ")
         return ui_t
 
-    # UI utils  {{{
+    # UI utils 
     # TODO: remove this method.
     def bmtool_ui_modifiers_list(self, m_list):
         """

@@ -86,7 +86,7 @@ class ClustersListTrait():
                 raise ValueError
         return cluster
 
-    # Actions {{{
+    # Actions
     @check_if_removed
     def deconstruct(self, clusters):
         """Deconstructs clusters on this layer."""
@@ -139,7 +139,7 @@ class ClustersListTrait():
                 return x
         raise ValueError(f'No modifier with name "{m_name}"')
 
-    # Iterators {{{
+    # Iterators
     def all_elements(self):
         """
         Returns list of all clusters and modifiers anywhere in this cluster.
@@ -258,7 +258,7 @@ class ClustersListTrait():
             return x[-1]
 
 
-# Iterators {{{
+# Iterators
 class clusters_list_generated_list(collections.UserList):
 
     def __init__(self, obj, *args, **kwargs):

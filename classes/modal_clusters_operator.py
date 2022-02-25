@@ -39,7 +39,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
     through ModififersOperator and ExtendedModifiersList.
     """
 
-    # Var {{{
+    # Var
 
     # Operator mode, can be 'ACTIONS' or 'EDITOR'.
     # self.mode
@@ -72,7 +72,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
     }
     
 
-    # Const {{{
+    # Const
     # Default modal editing mode.
     __DEFAULT_MODE = 'ACTIONS'
 
@@ -218,7 +218,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
         return {'RUNNING_MODAL'}
     
 
-    # Modal actions. {{{
+    # Modal actions.
     def __modal_actions(self, context, event):
         """This method is used for general modifiers stack editing."""
 
@@ -272,7 +272,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                 & (event.value == 'PRESS'):
             layer.apply_sorting_rules()  
 
-        # Duplicate cluster modifiers and parse {{{
+        # Duplicate cluster modifiers and parse
         elif (event.type == self.__bmtool_kbs['add_new'])\
                 & (event.value == 'PRESS'):
 
@@ -479,7 +479,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
     
 
     # TODO: rename this methods.
-    # Methods reserved for operators. {{{
+    # Methods reserved for operators.
     def bmtool_modal_pre(self, context, event):
         """Operator-specific modal method 1
 
@@ -565,7 +565,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
         logger.info("Modal operator finished.")
     
 
-    # Clusters selection utils  {{{
+    # Clusters selection utils 
     def __stop_selecting_clusters(self) -> None:
         self.__selecting_clusters = False
         layer = self.m_list.get_layer()

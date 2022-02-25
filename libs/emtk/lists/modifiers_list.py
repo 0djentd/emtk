@@ -92,7 +92,7 @@ class ModifiersList():
                 self.add_action_answer(x(self))
     
 
-    # Selection {{{
+    # Selection
     @property
     @check_if_removed
     def active(self):
@@ -114,7 +114,7 @@ class ModifiersList():
         return self.selection.get()
     
 
-    # List methods {{{
+    # List methods
     @check_if_removed
     def __getitem__(self, index):
         return self._data.__getitem__(index)
@@ -190,7 +190,7 @@ class ModifiersList():
     def deserialize(cls, obj):
         raise NotImplementedError
 
-    # Clusters actions {{{
+    # Clusters actions
     """
     This methods create a new command and pass it to
     interpreter. This will automatically add
@@ -440,7 +440,7 @@ class ModifiersList():
         self._actions.update({action_answer.action_type: action_answer})
     
 
-    # Modifiers list utils. {{{
+    # Modifiers list utils.
     def all_modifiers(self):
         return self._data
 

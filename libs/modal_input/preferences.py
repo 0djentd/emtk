@@ -54,7 +54,7 @@ class ModalShortcutsPreferences():
         else:
             raise TypeError
 
-    # Currently edited shortcut properties {{{
+    # Currently edited shortcut properties
     # Shortcut and group that is being edited
     bmtool_editing_modal_shortcut_value: StringProperty("")
     bmtool_editing_modal_shortcut_group: StringProperty("")
@@ -78,7 +78,7 @@ class ModalShortcutsPreferences():
     )
     
 
-    # Search {{{
+    # Search
     def draw_shortcuts_search(self, context):
         return self.__draw_shortcuts_search(context)
 
@@ -115,7 +115,7 @@ class ModalShortcutsPreferences():
                     self.__draw_shortcut(col, x.value, y.shortcut_id, y)
     
 
-    # Draw shortcut {{{
+    # Draw shortcut
     def __draw_shortcut(self,
                         layout,
                         shortcuts_group_name: str,

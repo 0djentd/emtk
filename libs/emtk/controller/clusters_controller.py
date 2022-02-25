@@ -77,7 +77,7 @@ class ClustersController():
 
             self._apply_batch(batch)
 
-    # Solver  {{{
+    # Solver 
     def _solve_batch(self, batch):
         """
         Solves batch command.
@@ -228,7 +228,7 @@ class ClustersController():
         return []
     
 
-    # Applying  {{{
+    # Applying 
     # TODO: to be removed
     def _apply_batch(self, batch):
         logger.debug(f'Applying {batch}')
@@ -251,7 +251,7 @@ class ClustersController():
         layer.do(action)
     
 
-    # Utils  {{{
+    # Utils 
     def _sort_commands_by_layer_depth(self, commands):
         result = []
         d = []
@@ -280,7 +280,7 @@ class ClustersController():
         return result
     
 
-    # Serialize {{{
+    # Serialize
     def _serialize_batch_command(self, batch):
         result = []
         for x in batch.commands:
@@ -303,7 +303,7 @@ class ClustersController():
         return result
     
 
-    # Deserialize {{{
+    # Deserialize
     def deserialize_batch_command(self, batch):
         result = []
         for x in batch.commands:

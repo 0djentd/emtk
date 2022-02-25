@@ -50,9 +50,9 @@ class AdaptiveModalEditor(ModalClustersEditor):
     implementing rna_type attribute, including modifier.
     """
 
-    # Constants {{{
+    # Constants
 
-    # All supported modifier types. {{{
+    # All supported modifier types.
     __MODIFIER_TYPES = [
         "DATA_TRANSFER",
         "MESH_CACHE",
@@ -160,7 +160,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
     __DEFAULT_MODE = 'NO_MODE'
     
 
-    # Constructor {{{
+    # Constructor
     # Currently active mode.
     # self.mode
 
@@ -200,7 +200,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
         self.prop_def = None
     
 
-    # ClustersEditor methods {{{
+    # ClustersEditor methods
     def editor_switched_to(self, context, clusters):  
         """Called every time editor is switched to."""
 
@@ -393,7 +393,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
             raise TypeError
     
 
-    # Simple events {{{
+    # Simple events
     def __check_if_should_switch_mode(self, event):
         prop_name = self.__get_shortcut_value(event)
         if prop_name == self.mode:
@@ -423,7 +423,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
             self.modal_letters(event, prop_def)
             return True
 
-    # Digits and letters {{{
+    # Digits and letters
     def __check_if_modal_letters(self, event):
         # Get prop name and def for mode
         prop_name = self.mode
@@ -468,7 +468,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
     
     
 
-    # Complex events {{{
+    # Complex events
     def __check_if_delta_prop_changed(self, event) -> None:
 
         # Use active mode prop name.
@@ -490,7 +490,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
         return
     
 
-    # Properties editing {{{
+    # Properties editing
     def __toggle_bool(self, prop_name):
         logger.info(f'Toggle {prop_name}')
 
@@ -536,7 +536,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
         return
     
 
-    # Utils {{{
+    # Utils
     def __get_shortcut_value(
             self, event: bpy.types.Event) -> typing.Union[str, None]:
         logger.debug(f'Look up kbs for {event.type}')
@@ -584,7 +584,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
         self.__prop_def = None
     
 
-    # UI {{{
+    # UI
     def get_mappings_for_ui(self):
         """Returns list of strings with info about props.
 

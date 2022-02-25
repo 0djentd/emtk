@@ -32,7 +32,7 @@ logger = logging.getLogger(__package__)
 logger.setLevel(logging.DEBUG)
 
 
-# Const {{{
+# Const
 # Props that cant be edited or properly displayed
 NOT_VAL_PROP = {
     'rna_type',
@@ -75,7 +75,7 @@ EDITABLE_TYPES = {
     'COLLECTION'
 }
 
-# All supported modifier types. {{{
+# All supported modifier types.
 MODIFIER_TYPES = [
     "DATA_TRANSFER",
     "MESH_CACHE",

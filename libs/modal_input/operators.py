@@ -42,7 +42,7 @@ class BMTOOLS_OT_start_editing_modal_shortcut(bpy.types.Operator):
     bl_label = "Start editing bmtool modal operator kbs."
     bl_description = "Start editing modal shortcut"
 
-    # Shortcut name and group {{{
+    # Shortcut name and group
     shortcut_name: StringProperty(
         name="Shortcut to be edited",
         default=""
@@ -96,7 +96,7 @@ class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):
     # shortcut_ctrl
     # shortcut_alt
 
-    # Shortcut name and group {{{
+    # Shortcut name and group
     shortcut_name: StringProperty(
         name="Shortcut to be edited",
         default=""
@@ -108,7 +108,7 @@ class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):
     )
     
 
-    # Shortcut attrs {{{
+    # Shortcut attrs
     shortcut_event_type: StringProperty(
         name="Shortcut mapping",
         maxlen=1,

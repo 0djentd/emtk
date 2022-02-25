@@ -69,7 +69,7 @@ _LETTERS_MAPPING = {
 }
 
 
-# Decorators {{{
+# Decorators
 def convert_mapping(func):
     """Converts object (expecting ModalShortcut
     or bpy.types.event) to mapping.
@@ -95,7 +95,7 @@ def unwrap_str_to_obj(func):
 
 
 
-# Cache {{{
+# Cache
 class CachedObject():
     def __init__(self, *args, **kwargs):
         self._cache_variables = set()
@@ -214,8 +214,8 @@ class ModalShortcut(CachedObject):
         self.alt = alt
         self.description = description
 
-    # Properties {{{
-    # Mapping {{{
+    # Properties
+    # Mapping
     @property
     def event_type(self):
         """Letter to use in mapping."""
@@ -373,7 +373,7 @@ class ModalShortcutsGroup(CachedObject, HashedList):
         self.value = value
         self.tag_refresh = False
 
-    # Properties {{{
+    # Properties
     @property
     def value(self):
         return self._value
@@ -407,7 +407,7 @@ class ModalShortcutsGroup(CachedObject, HashedList):
         self._data = shortcuts
     
 
-    # List methods {{{
+    # List methods
     @refresh_cache
     def update(self, shortcut):
         e = self.find_by_shortcut_id(shortcut.shortcut_id)
@@ -505,7 +505,7 @@ class ModalShortcutsCache(CachedObject, HashedList):
             raise TypeError(
                 'Expected str, list of ModalShortcutsGroups or None.')
 
-    # List methods {{{
+    # List methods
     @refresh_cache
     def add(self, group: ModalShortcutsGroup):
         if not isinstance(group, ModalShortcutsGroup):
@@ -577,7 +577,7 @@ class ModalShortcutsCache(CachedObject, HashedList):
 
 
 
-# Utils {{{
+# Utils
 @functools.lru_cache
 def _check_event_type_type(val):
     if type(val) is not str:
@@ -630,7 +630,7 @@ def _str_repr_event(event):
 
 
 
-# Deserialization {{{
+# Deserialization
 @functools.lru_cache(maxsize=8)
 def deserialize_shortcuts_cache(obj: str) -> list[ModalShortcutsGroup]:
     obj = json.loads(obj)

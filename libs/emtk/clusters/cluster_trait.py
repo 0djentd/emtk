@@ -213,7 +213,7 @@ class ClusterTrait():
         return x
     
 
-    # Props {{{
+    # Props
     @property
     def name(self):  
         return self.get_this_cluster_name()
@@ -271,7 +271,7 @@ class ClusterTrait():
     
     
 
-    # Methods reserved for subclasses {{{
+    # Methods reserved for subclasses
     # TODO: remove this
     def modcluster_extra_availability_check(self, modifiers):  
         """
@@ -297,7 +297,7 @@ class ClusterTrait():
         return True
     
 
-    # Cluster subclass-specific additional actions. {{{
+    # Cluster subclass-specific additional actions.
 
     """
     This three methods should return None, ClustersCommand or
@@ -333,7 +333,7 @@ class ClusterTrait():
         return
     
 
-    # Cluster subclass-specific additional interpretation. {{{
+    # Cluster subclass-specific additional interpretation.
 
     """
     This three methods called just before applying action and
@@ -365,7 +365,7 @@ class ClusterTrait():
     
     
 
-    # Cluster tags {{{
+    # Cluster tags
     @check_if_removed
     def get_this_cluster_tags(self):
         """
@@ -408,7 +408,7 @@ class ClusterTrait():
         return result
     
 
-    # Initializing cluster  {{{
+    # Initializing cluster 
     @check_if_removed
     def set_this_cluster_modifiers(self, modifiers):
         """
@@ -448,7 +448,7 @@ class ClusterTrait():
             return False
     
 
-    # Clusters sorting {{{
+    # Clusters sorting
     @check_if_removed
     def add_sorting_rule(self, sorting_rule):
         """
@@ -498,7 +498,7 @@ class ClusterTrait():
             return self._sorting_rules
     
 
-    # Parsing {{{
+    # Parsing
     def get_this_cluster_possible_length(self):
         """Returns maximum possible modifiers sequence length."""
         return len(self.default_data['by_type'])
@@ -595,7 +595,7 @@ class ClusterTrait():
         return None
     
 
-    # Cluster visibility  {{{
+    # Cluster visibility 
     def get_this_cluster_visibility(self):
         """
         Returns list with info about this cluster visability
@@ -685,7 +685,7 @@ class ClusterTrait():
         self.set_this_cluster_visibility(new_cluster_vis)
     
 
-    # Utility {{{
+    # Utility
     # TODO: allow checking without throwing error
     @check_if_removed
     def check_this_cluster_sanity(self):

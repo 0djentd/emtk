@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-# Decorators {{{
+# Decorators
 def _check_obj_type(self, obj, allow_no_value):
     if obj in self._data:
         return obj

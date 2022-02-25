@@ -79,7 +79,7 @@ class FirstLayerClustersListTrait():
         if not no_parse:
             self.create_modifiers_list()
 
-    # Parsing {{{
+    # Parsing
     def create_modifiers_list(self, obj=None):
         """
         Creates modifiers list for object.
@@ -181,7 +181,7 @@ class FirstLayerClustersListTrait():
         return self._clusters_parser.remove_cluster_type(cluster)
     
 
-    # Actions {{{
+    # Actions
     def ask(self, question):
         """
         Returns actions required to allow action, if it is not
@@ -270,7 +270,7 @@ class FirstLayerClustersListTrait():
         self._data.extend(result)
     
 
-    # Storing clusters state {{{
+    # Storing clusters state
     def get_clusters_state(self) -> list:
         """
         Returns list with info about current clusters state.
@@ -393,7 +393,7 @@ class FirstLayerClustersListTrait():
             return False
     
 
-    # saving modifiers state for fast check. {{{
+    # saving modifiers state for fast check.
     def get_modifiers_state(self):
         """Returns current object actual modifiers info."""
         result = []
@@ -476,7 +476,7 @@ class FirstLayerClustersListTrait():
         return False
     
 
-    # Utility {{{
+    # Utility
     def _check_if_actual_modifiers_list_is_correct(self):
         """
         Checks if actual modifiers in clusters ordered

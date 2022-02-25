@@ -50,7 +50,7 @@ class ModalClustersEditor(ModalInputOperator):
             'types': obj_types
         }
 
-    # Editor methods {{{
+    # Editor methods
     def editor_switched_to(self, context, clusters):
         """Called every time editor is switched to."""
         return self.switched_to(context, clusters)
@@ -68,7 +68,7 @@ class ModalClustersEditor(ModalInputOperator):
         return self.modal(context, event, clusters)
     
 
-    # Editor-specific method placeholders for subclasses {{{
+    # Editor-specific method placeholders for subclasses
     def switched_to(self, context, clusters):
         """Called every time editor is switched to."""
         self._no_editor_method()
