@@ -225,7 +225,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
         layer = self.m_list.get_layer()
         cluster = self.m_list.get_cluster()
 
-        # Modifier visibility{{{
+        # Modifier visibility
         if (event.type == self.__bmtool_kbs['visibility_1'])\
                 & (event.value == 'PRESS'):
             if event.shift:
@@ -246,7 +246,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                         [False, True, False, False])
             
 
-        # Modifier visibility 2{{{
+        # Modifier visibility 2
         elif (event.type == self.__bmtool_kbs['visibility_2'])\
                 & (event.value == 'PRESS'):
             if event.shift:
@@ -267,7 +267,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                         [False, False, False, True])
             
 
-        # Sort modifiers{{{
+        # Sort modifiers
         elif (event.type == self.__bmtool_kbs['sort'])\
                 & (event.value == 'PRESS'):
             layer.apply_sorting_rules()  
@@ -286,7 +286,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
             # Trigger active modifier change
             self.bmtool_modifier_update(context)  
 
-        # Apply active cluster{{{
+        # Apply active cluster
         elif (event.type == self.__bmtool_kbs['apply_remove'])\
                 & event.shift & (event.value == 'PRESS'):
 
@@ -306,7 +306,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
             # Trigger active modifier change.
             self.bmtool_modifier_update(context)  
 
-        # Deconstruct cluster.{{{
+        # Deconstruct cluster.
         elif (event.type == self.__bmtool_kbs['construct_deconstruct'])\
                 & event.shift & (event.value == 'PRESS'):
 
@@ -317,7 +317,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                     self.report({'ERROR'}, "Cant deconstruct cluster")
             
 
-        # Construct cluster from selection.{{{
+        # Construct cluster from selection.
         elif (event.type == self.__bmtool_kbs['construct_deconstruct'])\
                 & (event.value == 'PRESS'):
 
@@ -331,7 +331,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                 self.report({'ERROR'}, "No clustes selected.")
             
 
-        # Toggle selection.{{{
+        # Toggle selection.
         elif (event.type == self.__bmtool_kbs['toogle_selection'])\
                 & (event.value == 'PRESS'):
 
@@ -342,7 +342,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                 self.__start_selecting_clusters()
             
 
-        # Remove active cluster.{{{
+        # Remove active cluster.
         elif (event.type == self.__bmtool_kbs['apply_remove'])\
                 & (event.value == 'PRESS'):
             logger.info('Removing cluster')
@@ -358,7 +358,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
             # Trigger active modifier change.
             self.bmtool_modifier_update(context)  
 
-        # Move modifier up.{{{
+        # Move modifier up.
         elif (event.type == self.__bmtool_kbs['up'])\
                 & event.shift & (event.value == 'PRESS'):
             logger.info('Moving cluster')
@@ -373,7 +373,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
             self.bmtool_modifier_update(context)
             
 
-        # Move modifier down.{{{
+        # Move modifier down.
         elif (event.type == self.__bmtool_kbs['down'])\
                 & event.shift & (event.value == 'PRESS'):
             logger.info('Moving cluster')
@@ -388,7 +388,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
             self.bmtool_modifier_update(context)
             
 
-        # Collapse cluster.{{{
+        # Collapse cluster.
         elif (event.type == self.__bmtool_kbs['collapse'])\
                 & (event.value == 'PRESS'):
             logger.info('Collapse toggle cluster')
@@ -416,7 +416,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
             self.__stop_selecting_clusters()
             
 
-        # Scroll through modifiers up.{{{
+        # Scroll through modifiers up.
         elif (event.type == self.__bmtool_kbs['up'])\
                 & (event.value == 'PRESS'):
 
@@ -445,7 +445,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
             # Trigger active modifier change.
             self.bmtool_modifier_update(context)  
 
-        # Scroll through modifiers down.{{{
+        # Scroll through modifiers down.
         elif (event.type == self.__bmtool_kbs['down'])\
                 & (event.value == 'PRESS'):
 
