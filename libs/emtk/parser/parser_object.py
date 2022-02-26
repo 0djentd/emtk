@@ -197,7 +197,7 @@ class ClustersParser():
                 modifiers_to_parse_2.append(x)
 
             # Parse modifiers once.
-            if self._ClustersParser__SIMPLE_CLUSTERS:
+            if self.__SIMPLE_CLUSTERS:
                 parse_result = self._parse_modifiers_for_simple_clusters(
                     modifiers_to_parse_2)
                 if parse_result is False:
@@ -316,7 +316,7 @@ class ClustersParser():
             return []
 
         # Skip parser and return result with default modifier clusters
-        if self._ClustersParser__SKIP_PARSE:
+        if self.__SKIP_PARSE:
             logger.debug(
                 "Dont using any complex clusters.")
             result = []
@@ -422,7 +422,7 @@ class ClustersParser():
         # If not specified how many layers to parse, use default number.
         if layers_to_create is None:
             max_iterations\
-                = self._ClustersParser__RECURSIVE_PARSER_MAX_ITERATIONS
+                = self.__RECURSIVE_PARSER_MAX_ITERATIONS
         else:
             max_iterations = layers_to_create
 
@@ -497,13 +497,13 @@ class ClustersParser():
         for x in copy.copy(self.available_cluster_types):
             if x.get_this_cluster_default_name()\
                     == cluster_type.get_this_cluster_default_name():
-                if self._ClustersParser__REPLACE_ON_UPDATE:
+                if self.__REPLACE_ON_UPDATE:
                     self.available_cluster_types.remove(x)
                 else:
                     raise ValueError
 
         # If sanity checks are enabled
-        if self._ClustersParser__CLUSTERS_SANITY_CHECKS:
+        if self.__CLUSTERS_SANITY_CHECKS:
             # Check cluster for any usual errors
             if cluster_type.check_this_cluster_sanity():
                 self.available_cluster_types.append(cluster_type)
@@ -665,7 +665,7 @@ class ClustersParser():
             return result
 
         # Only use default modifier cluster in parsing
-        if self._ClustersParser__DEFAULT_CLUSTERS:
+        if self.__DEFAULT_CLUSTERS:
             available_to_parser_cluster_types = []
             cluster = DefaultModifierCluster()
             available_to_parser_cluster_types.append(cluster)
