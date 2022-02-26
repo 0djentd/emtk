@@ -79,9 +79,9 @@ class ModalInputOperator():
     # TODO: enum can be used with digits input (using item index)
     __DIGITS_TYPES = {'INT', 'FLOAT'}
     __LETTERS_TYPES = {'STR', 'ENUM'}
-    
 
     # This is currently active mode in ModalInputOperator object.
+
     @property
     def modal_input_mode(self):
         return self.__modal_input_mode
@@ -174,9 +174,8 @@ class ModalInputOperator():
     def modal_letters_get(self) -> str:
         """Returns str."""
         return copy.copy(self.__modal_letters_str)
-    
 
-    def modal_digits(self, event, prop_def) -> bool:  
+    def modal_digits(self, event, prop_def) -> bool:
         """Writes a string that can be used to get integer or float."""
 
         if self.modal_input_mode != 'DIGITS':
@@ -203,9 +202,8 @@ class ModalInputOperator():
         else:
             return False
         return True
-    
 
-    def modal_letters(self, event, prop_def) -> bool:  
+    def modal_letters(self, event, prop_def) -> bool:
         """This thing writes a string that can be used in modal operator."""
 
         if self.modal_input_mode != 'LETTERS':
@@ -253,9 +251,8 @@ class ModalInputOperator():
         else:
             return False
         return True
-    
 
-    def modal_input_mouse_rna_type(  
+    def modal_input_mouse_rna_type(
             self, obj, attr: str, event, sens: float = 1.0) -> typing.Union[int, float]:
         """This is a wrapper for 'modal_input_mouse_variables' method.
 
@@ -290,7 +287,6 @@ class ModalInputOperator():
         possible_prop_types = {'BOOLEAN': bool, 'INT': int, 'FLOAT': float}
         if type(attr_val) is not possible_prop_types[prop_type]:
             raise TypeError
-        
 
         return self.modal_input_mouse_variables(event,
                                                 attr_val=attr_val,
@@ -302,9 +298,8 @@ class ModalInputOperator():
                                                 prop_soft_max=prop_soft_max,
                                                 prop_step=prop_step,
                                                 sens=sens)
-    
 
-    def modal_input_mouse_variables(self,  
+    def modal_input_mouse_variables(self,
                                     event,
                                     attr_val=None,
                                     attr_name=None,
@@ -370,7 +365,7 @@ class ModalInputOperator():
             DISTANCE,
         """
 
-        if prop_type == 'BOOLEAN':  
+        if prop_type == 'BOOLEAN':
             if prop_subtype == 'NONE':
                 if delta_pct_i > 0.5:
                     result = True
@@ -410,9 +405,8 @@ class ModalInputOperator():
             else:
                 raise TypeError(
                     f'Not implemented prop subtype "{prop_subtype}"')
-            
 
-        elif prop_type == 'INT':  
+        elif prop_type == 'INT':
             if prop_subtype == 'NONE':
                 if prop_soft_max < prop_step * 1000:
                     x = delta_pct_i * prop_soft_max
@@ -457,9 +451,8 @@ class ModalInputOperator():
             else:
                 raise TypeError(
                     f'Not implemented prop subtype "{prop_subtype}"')
-        
 
-        elif prop_type == 'FLOAT':  
+        elif prop_type == 'FLOAT':
             if prop_subtype == 'NONE':
                 result = float(distance*delta)
 
@@ -512,9 +505,8 @@ class ModalInputOperator():
             else:
                 raise TypeError(
                     f'Not implemented prop subtype "{prop_subtype}"')
-        
 
-        # elif prop_type == 'VECTOR_FLOAT':  
+        # elif prop_type == 'VECTOR_FLOAT':
             # if prop_subtype == 'NONE':
             #     raise TypeError
 
@@ -563,7 +555,6 @@ class ModalInputOperator():
             # elif prop_subtype == 'LAYER_MEMBER':
             #     raise TypeError
 
-            
         else:
             raise TypeError(
                 f'Not implemented prop type "{prop_type}"')
@@ -585,7 +576,6 @@ class ModalInputOperator():
         logger.debug(f'Returning {result}')
         logger.debug(' ')
         return result
-    
 
 
 # Utils
@@ -651,4 +641,3 @@ def _get_delta_pct(event, bounds: float = -100,
         if result > limit:
             result = limit
     return result
-

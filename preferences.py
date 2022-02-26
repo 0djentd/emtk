@@ -77,7 +77,6 @@ class BMToolPreferences(ModalShortcutsPreferences, AddonPreferences):
     clusters_list_popup_width: IntProperty(
         name="Clusters list popup width",
         default=400)
-    
 
     def draw(self, context):
         layout = self.layout

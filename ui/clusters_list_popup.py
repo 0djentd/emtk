@@ -105,7 +105,7 @@ class BMTOOLS_OT_clusters_list_popup(
             self.__draw_modifier(layout, x)
 
     # TODO: move this to mixin class
-    def __draw_cluster(self, layout, cluster):  
+    def __draw_cluster(self, layout, cluster):
 
         row = layout.row()
 
@@ -121,7 +121,6 @@ class BMTOOLS_OT_clusters_list_popup(
         op = row.operator('bmtools.bmtool_invoke_operator_func',
                           text=cluster.name, icon=icon)
         op.func = line
-        
 
         # Actions
         # Move down
@@ -191,8 +190,6 @@ class BMTOOLS_OT_clusters_list_popup(
                               text='', icon=icon)
             op.func = line
 
-        
-
         # Duplicate
         line = f'self.m_list.get_cluster_or_layer(self.m_list.find_cluster_by_name("{cluster.name}")).\
                 duplicate("{cluster.name}")'
@@ -210,7 +207,6 @@ class BMTOOLS_OT_clusters_list_popup(
         op = col.operator('bmtools.bmtool_invoke_operator_func',
                           text='', icon='MOD_DECIM')
         op.func = line
-        
 
         if not cluster.instance_data['collapsed']:
             row = layout.row()
@@ -228,7 +224,6 @@ class BMTOOLS_OT_clusters_list_popup(
             op = col.operator('bmtools.bmtool_invoke_operator_func',
                               text='Definition', icon=icon)
             op.func = line
-            
 
             # Cluster props
             col = row.column()
@@ -243,7 +238,6 @@ class BMTOOLS_OT_clusters_list_popup(
             op = col.operator('bmtools.bmtool_invoke_operator_func',
                               text='Properties', icon=icon)
             op.func = line
-            
 
             if cluster.instance_data['show_props_expanded']\
                     or cluster.instance_data['show_definition_expanded']:
@@ -279,10 +273,9 @@ class BMTOOLS_OT_clusters_list_popup(
                 self.__draw_clusters_list(layout, cluster)
             else:
                 self.__draw_modifiers_list(layout, cluster)
-        
 
     # TODO: move this to mixin class
-    def __draw_modifier(self, layout, modifier):  
+    def __draw_modifier(self, layout, modifier):
         if modifier.show_expanded:
             icon = 'DOWNARROW_HLT'
         else:
@@ -303,7 +296,6 @@ class BMTOOLS_OT_clusters_list_popup(
         op = col.operator('bmtools.bmtool_invoke_operator_func',
                           text=modifier.name + ' modifier', icon=icon)
         op.func = line
-        
 
         # Actions
         # Move down
@@ -373,8 +365,6 @@ class BMTOOLS_OT_clusters_list_popup(
         #                       text='', icon=icon)
         #     op.func = line
 
-        
-
         # Duplicate
         # line = f'self.m_list.get_cluster_or_layer(self.m_list.find_cluster_by_name("{cluster.name}")).\
         #         duplicate("{cluster.name}")'
@@ -383,7 +373,6 @@ class BMTOOLS_OT_clusters_list_popup(
         # op = col.operator('bmtools.bmtool_invoke_operator_func',
         #                   text='', icon='DUPLICATE')
         # op.func = line
-        
 
         if modifier.show_expanded:
             box = layout.box()
@@ -393,7 +382,6 @@ class BMTOOLS_OT_clusters_list_popup(
                     row = box.row()
                 col = row.column()
                 col.prop(modifier, y)
-        
 
     @classmethod
     def get_class_line(cls):

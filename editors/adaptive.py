@@ -112,7 +112,6 @@ class AdaptiveModalEditor(ModalClustersEditor):
         "SOFT_BODY",
         "SURFACE"
     ]
-    
 
     # All prop types.
     __ALL_TYPES = {'BOOLEAN', 'INT', 'FLOAT', 'STRING',
@@ -158,7 +157,6 @@ class AdaptiveModalEditor(ModalClustersEditor):
 
     # Default editor mode.
     __DEFAULT_MODE = 'NO_MODE'
-    
 
     # Constructor
     # Currently active mode.
@@ -198,10 +196,9 @@ class AdaptiveModalEditor(ModalClustersEditor):
         # modifiers type or editor is switched.
         self.__mods = []
         self.prop_def = None
-    
 
     # ClustersEditor methods
-    def editor_switched_to(self, context, clusters):  
+    def editor_switched_to(self, context, clusters):
         """Called every time editor is switched to."""
 
         if not isinstance(clusters, list):
@@ -253,7 +250,6 @@ class AdaptiveModalEditor(ModalClustersEditor):
         logger.debug(self.__kbs_no_modal)
         logger.debug('Editing mappings')
         logger.debug(self.__kbs_editing)
-    
 
     def editor_switched_from(self, context, clusters):
         """Called every time editor is switched from."""
@@ -285,9 +281,8 @@ class AdaptiveModalEditor(ModalClustersEditor):
             raise ValueError
         elif self.mode in self.__kbs_no_modal:
             raise ValueError
-    
 
-    def __default_mode(self, event):  
+    def __default_mode(self, event):
         """
         No props besides bools and enums can be edited in default mode.
         No modal input mode can be used in default mode.
@@ -344,9 +339,8 @@ class AdaptiveModalEditor(ModalClustersEditor):
                 pass
         else:
             pass
-    
 
-    def __modal_mode(self, event):  
+    def __modal_mode(self, event):
         """
         Mode used to edit properties within multiple iterations.
 
@@ -391,9 +385,9 @@ class AdaptiveModalEditor(ModalClustersEditor):
                 return
         else:
             raise TypeError
-    
 
     # Simple events
+
     def __check_if_should_switch_mode(self, event):
         prop_name = self.__get_shortcut_value(event)
         if prop_name == self.mode:
@@ -465,10 +459,9 @@ class AdaptiveModalEditor(ModalClustersEditor):
                 setattr(mod, self.mode, val)
             self.__switch_to_default()
             return True
-    
-    
 
     # Complex events
+
     def __check_if_delta_prop_changed(self, event) -> None:
 
         # Use active mode prop name.
@@ -488,9 +481,9 @@ class AdaptiveModalEditor(ModalClustersEditor):
         elif prop_def.type == 'STRING':
             self.__modal_str(event, prop_name)
         return
-    
 
     # Properties editing
+
     def __toggle_bool(self, prop_name):
         logger.info(f'Toggle {prop_name}')
 
@@ -534,9 +527,9 @@ class AdaptiveModalEditor(ModalClustersEditor):
     def __modal_str(self, event, prop_name):
         logger.debug(f'Modal str {prop_name}')
         return
-    
 
     # Utils
+
     def __get_shortcut_value(
             self, event: bpy.types.Event) -> typing.Union[str, None]:
         logger.debug(f'Look up kbs for {event.type}')
@@ -582,9 +575,9 @@ class AdaptiveModalEditor(ModalClustersEditor):
         self.mode = self.__DEFAULT_MODE
         self.modal_input_mode = self._ModalInputOperator__DEFAULT_MODE
         self.__prop_def = None
-    
 
     # UI
+
     def get_mappings_for_ui(self):
         """Returns list of strings with info about props.
 
@@ -614,4 +607,3 @@ class AdaptiveModalEditor(ModalClustersEditor):
         if len(line) == 0:
             line = 'No kb shortcut.'
         return line
-    

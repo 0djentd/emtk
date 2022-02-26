@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-class BMTOOLS_OT_start_editing_modal_shortcut(bpy.types.Operator):  
+class BMTOOLS_OT_start_editing_modal_shortcut(bpy.types.Operator):
     bl_idname = "bmtools.start_editing_modal_shortcut"
     bl_label = "Start editing bmtool modal operator kbs."
     bl_description = "Start editing modal shortcut"
@@ -52,7 +52,6 @@ class BMTOOLS_OT_start_editing_modal_shortcut(bpy.types.Operator):
         name="Group to be edited",
         default=""
     )
-    
 
     def execute(self, context):
         prefs = context.preferences.addons['bmtools'].preferences
@@ -83,8 +82,7 @@ class BMTOOLS_OT_start_editing_modal_shortcut(bpy.types.Operator):
         return {'FINISHED'}
 
 
-
-class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):  
+class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):
     bl_label = "Add or change bmtool modal operator kbs."
     bl_idname = "bmtools.add_or_update_modal_shortcut"
     bl_description = "Add or update modal shortcut"
@@ -106,7 +104,6 @@ class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):
         name="Group to be edited",
         default=""
     )
-    
 
     # Shortcut attrs
     shortcut_event_type: StringProperty(
@@ -129,7 +126,6 @@ class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):
         name="Shortcut require alt to be pressed",
         default=False
     )
-    
 
     def execute(self, context):
         prefs = context.preferences.addons['bmtools'].preferences
@@ -148,8 +144,7 @@ class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):
         return {'FINISHED'}
 
 
-
-class BMTOOL_OT_reparse_default_modifiers_props_kbs(  
+class BMTOOL_OT_reparse_default_modifiers_props_kbs(
         bpy.types.Operator):
     bl_idname = "object.reparse_default_modifiers_props_kbs"
     bl_label = "BMTool add all modifiers props to kbs"
@@ -205,4 +200,3 @@ class BMTOOL_OT_reparse_default_modifiers_props_kbs(
         else:
             raise ValueError
         return {'FINISHED'}
-

@@ -40,7 +40,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-class ModifiersCluster(  
+class ModifiersCluster(
     ClusterTrait,
     ModifiersList
 ):
@@ -93,9 +93,8 @@ class ModifiersCluster(
         return ModifiersClusterState(self)
 
 
-
 @dataclasses.dataclass
-class ModifiersClusterState(ObjectState):  
+class ModifiersClusterState(ObjectState):
     items_data: list
 
     def serialize(self):
@@ -154,4 +153,3 @@ class ModifiersClusterState(ObjectState):
             if not x.compare(items[i]):
                 return False
         return True
-

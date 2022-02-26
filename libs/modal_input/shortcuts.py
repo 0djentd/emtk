@@ -94,7 +94,6 @@ def unwrap_str_to_obj(func):
     return wrapper_unwrap_str_to_obj
 
 
-
 # Cache
 class CachedObject():
     def __init__(self, *args, **kwargs):
@@ -162,9 +161,8 @@ def check_refresh(func):
     return wrapper_check_refresh
 
 
-
 # TODO: proper name
-class HashedList():  
+class HashedList():
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
@@ -197,9 +195,7 @@ class HashedList():
         return self._data.remove(obj)
 
 
-
-
-class ModalShortcut(CachedObject):  
+class ModalShortcut(CachedObject):
     """This object represents keyboard shortcut for modal operators."""
 
     def __init__(self, shortcut_id, event_type,
@@ -268,7 +264,6 @@ class ModalShortcut(CachedObject):
             raise TypeError
         self._alt = val
         self.cache_clear()
-    
 
     @property
     def shortcut_id(self):
@@ -301,7 +296,6 @@ class ModalShortcut(CachedObject):
             self._description = d
         else:
             raise TypeError(f'Expected None or str, got {type(d)}')
-    
 
     def compare(self, obj):
         """Compare with bpy.types.event or another ModalShortcut."""
@@ -360,8 +354,7 @@ class ModalShortcut(CachedObject):
         return json.dumps(result)
 
 
-
-class ModalShortcutsGroup(CachedObject, HashedList):  
+class ModalShortcutsGroup(CachedObject, HashedList):
     """This object represents keyboard shortcut group for modal operators."""
 
     def __init__(self, value, shortcuts=None):
@@ -405,9 +398,9 @@ class ModalShortcutsGroup(CachedObject, HashedList):
             logger.error('Removing duplicates.')
             shortcuts = fix_duplicates(shortcuts)
         self._data = shortcuts
-    
 
     # List methods
+
     @refresh_cache
     def update(self, shortcut):
         e = self.find_by_shortcut_id(shortcut.shortcut_id)
@@ -434,7 +427,6 @@ class ModalShortcutsGroup(CachedObject, HashedList):
             self._data.append(shortcut)
         else:
             self._data.insert(index, shortcut)
-    
 
     @check_refresh
     @method_cache
@@ -487,8 +479,7 @@ class ModalShortcutsGroup(CachedObject, HashedList):
         return json.dumps(result)
 
 
-
-class ModalShortcutsCache(CachedObject, HashedList):  
+class ModalShortcutsCache(CachedObject, HashedList):
     """Object that represents modal shortcuts groups."""
 
     def __init__(self, groups=None):
@@ -522,7 +513,6 @@ class ModalShortcutsCache(CachedObject, HashedList):
         if e:
             self._data.remove(e)
         self._data.append(group)
-    
 
     @property
     def shortcuts_groups(self):
@@ -574,7 +564,6 @@ class ModalShortcutsCache(CachedObject, HashedList):
 
     def cache_clear(self) -> None:
         self._CachedObject__cache_clear()
-
 
 
 # Utils
@@ -629,7 +618,6 @@ def _str_repr_event(event):
     return line
 
 
-
 # Deserialization
 @functools.lru_cache(maxsize=8)
 def deserialize_shortcuts_cache(obj: str) -> list[ModalShortcutsGroup]:
@@ -660,8 +648,7 @@ def deserialize_shortcut(obj: str) -> ModalShortcut:
                          s['alt'])
 
 
-
-def generate_new_shortcut(shortcut_shortcut_id: str,  
+def generate_new_shortcut(shortcut_shortcut_id: str,
                           already_existing_shortcuts: list = [],
                           max_iterations: int = 2048,
                           ignore_duplicates=False) -> ModalShortcut:
@@ -793,4 +780,3 @@ def _get_next_letter_in_shortcut_name(
     else:
         raise TypeError
     return new_index, event_type
-

@@ -41,7 +41,7 @@ logger.setLevel(logging.ERROR)
 class ClustersParser():
     """Base class for objects that should be able to parse clusters."""
 
-    def __init__(self, *args,  
+    def __init__(self, *args,
                  skip_parser=None,
                  cluster_types=None,
                  only_default_cluster=None,
@@ -118,7 +118,6 @@ class ClustersParser():
         if isinstance(cluster_types, list):
             for x in cluster_types:
                 self.update_cluster_types(x)
-    
 
     """
     parse_result is a list of lists with string, cluster and modifiers.
@@ -142,7 +141,7 @@ class ClustersParser():
                 result.append(x)
         return result
 
-    def parse_recursively(self, modifiers_to_parse,  
+    def parse_recursively(self, modifiers_to_parse,
                           additional_types=None,
                           no_available_types=False,
                           no_available_layer_types=False,
@@ -226,9 +225,8 @@ class ClustersParser():
                                                   clusters_names,
                                                   layers_to_create)
         return result
-    
 
-    def parse_clusters_state(self, modifiers,  
+    def parse_clusters_state(self, modifiers,
                              clusters_state,
                              clusters_names=None):
         """
@@ -266,11 +264,10 @@ class ClustersParser():
         logger.debug(f"result is {parse_result}")
         logger.debug("FINISHED RESTORING CLUSTERS STATE")
         return parse_result
-    
 
     # TODO: remove this
     # Wrappers
-    def _parse_modifiers(self, modifiers_to_parse,  
+    def _parse_modifiers(self, modifiers_to_parse,
                          additional_types=None,
                          no_available_types=False,
                          clusters_names=None):
@@ -342,9 +339,8 @@ class ClustersParser():
         clusters = self._initialize_clusters(unwrapped_result, clusters_names)
 
         return clusters
-    
 
-    def _parse_clusters(self, clusters_to_parse,  
+    def _parse_clusters(self, clusters_to_parse,
                         additional_types=None,
                         no_available_types=False,
                         clusters_names=None):
@@ -385,9 +381,8 @@ class ClustersParser():
             parse_result, ['SKIP', 'CREATE'])
         clusters = self._initialize_clusters(unwrapped_result, clusters_names)
         return clusters
-    
 
-    def _parse_clusters_recursively(self,  
+    def _parse_clusters_recursively(self,
                                     modifiers_to_parse,
                                     additional_types=None,
                                     no_available_types=False,
@@ -447,9 +442,8 @@ class ClustersParser():
             else:
                 parsing_iteration += 1
         return parse_result
-    
 
-    def _parse_modifiers_for_simple_clusters(self, modifiers_to_parse,  
+    def _parse_modifiers_for_simple_clusters(self, modifiers_to_parse,
                                              additional_types=None,
                                              no_available_types=False):
         """
@@ -487,10 +481,9 @@ class ClustersParser():
         unwrapped_result = self._unwrap_parse_result(parse_result, ['CREATE'])
         clusters = self._initialize_clusters(unwrapped_result)
         return clusters
-    
-    
 
-    # Cluster types 
+    # Cluster types
+
     def update_cluster_types(self, cluster_type_to_add):
         """Adds cluster type to available cluster types"""
         if not isinstance(cluster_type_to_add, ClusterTrait):
@@ -560,9 +553,7 @@ class ClustersParser():
             f"Cant find cluster with type {cluster_type}\
                         in {self.available_layer_types}")
 
-    
-
-    def _unwrap_saved_clusters_state(self, clusters_state):  
+    def _unwrap_saved_clusters_state(self, clusters_state):
         """
         Returns clusters instances that are specified
         for reconstructing clusters.
@@ -622,7 +613,6 @@ class ClustersParser():
             # Add cluster type to result.
             result.append(cluster_type)
         return result
-    
 
     # Parser
     # =============================
@@ -630,6 +620,7 @@ class ClustersParser():
     #       CLUSTERS PARSER
     #
     # =============================
+
     def _clusters_parser(self, mods,
                          available_to_parser_cluster_types, *,
                          max_iterations=2000,
@@ -679,7 +670,7 @@ class ClustersParser():
             cluster = DefaultModifierCluster()
             available_to_parser_cluster_types.append(cluster)
 
-        # Info 
+        # Info
         if logger.isEnabledFor(logging.DEBUG):
             for x in modifiers_to_parse:
                 logger.debug(f"{x}")
@@ -708,7 +699,6 @@ class ClustersParser():
                 logger.debug(
                     f"priority is {x.default_data['priority']}")
                 logger.debug(" ")
-        
 
         # Variables
         # if _WITH_BPY:
@@ -761,13 +751,12 @@ class ClustersParser():
 
         # False, if no modifiers left to parse
         parsing_modifiers = True
-        
 
         # Iterate over modifiers or clusters
         while parsing_modifiers:
             logger.debug(f"Parse iteration {parse_iteration}")
 
-            # Parser sanity checks 
+            # Parser sanity checks
             if parser_sanity_checks:
                 if len(possible_clusters_confirmed) > len(
                         available_to_parser_cluster_types):
@@ -781,7 +770,6 @@ class ClustersParser():
                 elif parse_iteration\
                         >= max_iterations:
                     raise ValueError("Parsing failed, too many iterations")
-            
 
             # Add modifier to sequence
             modifier = modifiers_to_parse.pop(0)
@@ -794,7 +782,7 @@ class ClustersParser():
             # while parsing clusters
             skipped_modifier = False
 
-            # Info 
+            # Info
             if logger.isEnabledFor(logging.DEBUG):
                 logger.debug("Currently parsed modifiers:")
                 logger.debug(parsed_modifiers)
@@ -806,7 +794,6 @@ class ClustersParser():
                 logger.debug(possible_clusters_confirmed)
                 logger.debug(
                     f"Previous iteration result was '{iteration_result}'")
-            
 
             # Decide what clusters types to use in checking
             if iteration_result == 'SUCCESS' or parse_iteration == 0:
@@ -953,7 +940,6 @@ class ClustersParser():
 
                 need_another_modifier = True
                 iteration_result = 'SUCCESS'
-            
 
             # Parser needs another modifier
             elif need_another_modifier is True:
@@ -982,9 +968,8 @@ class ClustersParser():
             else:
                 need_another_modifier = True
             parse_iteration += 1
-        
 
-        # Parse result sanity check 
+        # Parse result sanity check
         if parser_sanity_checks:
             if type(parse_result) is not list:
                 raise ValueError("Expected parse_result to be a list.")
@@ -1030,7 +1015,6 @@ class ClustersParser():
             #     # of sanity check itself
             #     # raise ValueError(
             #     #         "Actual modifiers count after parsing is wrong.")
-        
 
         # Info
         if logger.isEnabledFor(logging.DEBUG):
@@ -1041,12 +1025,10 @@ class ClustersParser():
             logger.debug("         Finished parsing")
             logger.debug("===================================")
             logger.debug(" ")
-        
 
         return parse_result
-    
 
-    def _cluster_priority_select(self, clusters):  
+    def _cluster_priority_select(self, clusters):
         """
         Takes list of clusters as an argument.
         Returns cluster that have higher priority when
@@ -1109,9 +1091,9 @@ class ClustersParser():
         logger.debug(f"Selected {result} cluster.")
         logger.debug(f"{result.get_this_cluster_tags()}")
         return result
-    
 
-    # Parse result processing 
+    # Parse result processing
+
     def _unwrap_parse_result(self, parse_result, tags):
         """
         Returns parse result filtered by parser decision.
@@ -1204,9 +1186,9 @@ class ClustersParser():
         x[1]._controller = self._controller
         x[1]._clusters_parser = self
         return x
-    
 
     # TODO: remove this
+
     def _get_new_cluster_type_index(self):
         """Returns unique for this parser cluster type index."""
         self._last_cluster_type_index += 1
@@ -1271,4 +1253,3 @@ def _clean_restored_clusters(clusters):
         x.remove_tag_from_this_cluster('RESTORED')
         x.instance_data['by_name'] = []
     return clusters
-

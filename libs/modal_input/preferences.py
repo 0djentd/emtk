@@ -76,9 +76,9 @@ class ModalShortcutsPreferences():
         name="Search through bmtool modal props",
         default=''
     )
-    
 
     # Search
+
     def draw_shortcuts_search(self, context):
         return self.__draw_shortcuts_search(context)
 
@@ -113,9 +113,9 @@ class ModalShortcutsPreferences():
                         col, x.value, y.shortcut_id, y)
                 else:
                     self.__draw_shortcut(col, x.value, y.shortcut_id, y)
-    
 
     # Draw shortcut
+
     def __draw_shortcut(self,
                         layout,
                         shortcuts_group_name: str,
@@ -157,7 +157,6 @@ class ModalShortcutsPreferences():
         a.shortcut_shift = self.edited_shortcut_shift
         a.shortcut_ctrl = self.edited_shortcut_ctrl
         a.shortcut_alt = self.edited_shortcut_alt
-    
 
     def save_cache(self):
         self.bmtool_modal_operators_serialized_shortcuts\

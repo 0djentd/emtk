@@ -71,7 +71,7 @@ doesnt have anything to do with modifiers and operate on list in general.
 class ModifiersList():
     """Base class for cluster_trait and first_layer_clusters_list."""
 
-    def __init__(self, obj=None, *args, no_obj=None,  
+    def __init__(self, obj=None, *args, no_obj=None,
                  no_default_actions=False,
                  **kwargs):
         super().__init__()
@@ -90,9 +90,9 @@ class ModifiersList():
                                ActionDefaultMove, ActionDefaultDeconstuct]
             for x in default_actions:
                 self.add_action_answer(x(self))
-    
 
     # Selection
+
     @property
     @check_if_removed
     def active(self):
@@ -112,9 +112,9 @@ class ModifiersList():
     @check_if_removed
     def get_selection(self):
         return self.selection.get()
-    
 
     # List methods
+
     @check_if_removed
     def __getitem__(self, index):
         return self._data.__getitem__(index)
@@ -172,9 +172,8 @@ class ModifiersList():
     # TODO:
     # add(obj) is defined in 'Clusters actions' section.
 
-    
-
     # This method is different in clusters.
+
     def _check_if_cluster_removed(self):
         if len(self) == 0 and _NO_EMPTY_LISTS:
             raise ValueError
@@ -438,9 +437,9 @@ class ModifiersList():
         if not isinstance(action_answer, ClusterActionAnswer):
             raise TypeError
         self._actions.update({action_answer.action_type: action_answer})
-    
 
     # Modifiers list utils.
+
     def all_modifiers(self):
         return self._data
 
@@ -495,7 +494,6 @@ class ModifiersList():
             e = []
             e.append(self._data[x])
             return e
-    
 
     def previous(self, mod, m_type=None, loop=True):
         return self.find_next_or_previous(mod, m_type, 'UP', loop)
@@ -506,7 +504,7 @@ class ModifiersList():
     # @check_obj_ref
     @check_if_removed
     def iterate(self, mod, direction: str,
-                m_type: str = None, loop: bool = True):  
+                m_type: str = None, loop: bool = True):
         """Iterate over clusters or modifiers starting from mod.
 
         Direction should be a str in {'UP', 'DOWN'}
@@ -564,4 +562,3 @@ class ModifiersList():
                     if loop:
                         return e
                     result = e
-    

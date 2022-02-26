@@ -48,7 +48,7 @@ types = {bool, int, float, str, list, dict, set, tuple}
 # TODO: ObjectConfig is ObjectStateData and ReparseConfig.
 
 
-# functions used when serializing/deserializing object state. 
+# functions used when serializing/deserializing object state.
 # This is workaround for serializing tuples and sets
 def _add_type_name_to_dict(obj):
     """Add info about element type to dictionary.
@@ -121,9 +121,8 @@ def _get_object_state_subclass_by_name(name):
         raise ValueError(type(name), name)
 
 
-
 @dataclasses.dataclass
-class ObjectState(collections.UserDict):  
+class ObjectState(collections.UserDict):
     """
     This classes should not be instantiated using constructor.
     Use one of classmethods insead.
@@ -155,9 +154,8 @@ class ObjectState(collections.UserDict):
                 raise TypeError
 
 
-
 @dataclasses.dataclass
-class ModifierState(ObjectState):  
+class ModifierState(ObjectState):
     """Object representing stored modifier state."""
 
     _object_type = Modifier
@@ -202,4 +200,3 @@ class ModifierState(ObjectState):
             if getattr(obj, x) != y:
                 return False
         return True
-

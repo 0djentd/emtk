@@ -66,9 +66,9 @@ class ModalClustersEditor(ModalInputOperator):
     def editor_modal(self, context, event, clusters):
         """Modal method 2"""
         return self.modal(context, event, clusters)
-    
 
     # Editor-specific method placeholders for subclasses
+
     def switched_to(self, context, clusters):
         """Called every time editor is switched to."""
         self._no_editor_method()
@@ -87,4 +87,3 @@ class ModalClustersEditor(ModalInputOperator):
 
     def _no_editor_method(self):
         raise ValueError('No editor-specific method.')
-    

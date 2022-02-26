@@ -82,7 +82,7 @@ class ClustersLayer(
 
 
 @dataclasses.dataclass
-class ClustersLayerState(ObjectState):  
+class ClustersLayerState(ObjectState):
     items_data: list
 
     def serialize(self):
@@ -144,4 +144,3 @@ class ClustersLayerState(ObjectState):
             if not x.compare(items[i]):
                 return False
         return True
-

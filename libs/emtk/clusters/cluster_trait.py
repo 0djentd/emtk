@@ -58,7 +58,7 @@ class ClusterTrait():
     default_data: dict
     """
 
-    def __init__(self,  
+    def __init__(self,
                  *args,
                  cluster_name=None,
                  cluster_type=None,
@@ -134,9 +134,8 @@ class ClusterTrait():
             raise ValueError('This cluster cant be used.')
 
         # TODO: dont need this
-        
 
-    def _check_cluster_definition(self, cluster_definition):  
+    def _check_cluster_definition(self, cluster_definition):
         """
         Checks types in cluster definition and add default
         values.
@@ -211,11 +210,11 @@ class ClusterTrait():
             if not isinstance(y, str):
                 raise TypeError
         return x
-    
 
     # Props
+
     @property
-    def name(self):  
+    def name(self):
         return self.get_this_cluster_name()
 
     @name.setter
@@ -256,10 +255,9 @@ class ClusterTrait():
             self.instance_data['name'] = cluster_name
         else:
             raise TypeError
-    
 
     @property
-    def type(self):  
+    def type(self):
         return self.get_this_cluster_type()
 
     @check_if_removed
@@ -268,12 +266,11 @@ class ClusterTrait():
         Returns this ModifiersCluster's type
         """
         return self.default_data['type']
-    
-    
 
     # Methods reserved for subclasses
     # TODO: remove this
-    def modcluster_extra_availability_check(self, modifiers):  
+
+    def modcluster_extra_availability_check(self, modifiers):
         """
         Additional method reserved for custom types.
         Checks if modifiers can be considered as
@@ -295,7 +292,6 @@ class ClusterTrait():
         Should return True or False.
         """
         return True
-    
 
     # Cluster subclass-specific additional actions.
 
@@ -331,7 +327,6 @@ class ClusterTrait():
         cluster's layers and modifiers clusters.
         """
         return
-    
 
     # Cluster subclass-specific additional interpretation.
 
@@ -362,10 +357,9 @@ class ClusterTrait():
         cluster's layers and modifiers clusters.
         """
         return
-    
-    
 
     # Cluster tags
+
     @check_if_removed
     def get_this_cluster_tags(self):
         """
@@ -406,9 +400,9 @@ class ClusterTrait():
         for x in y:
             self.instance_data['tags'].remove(x)
         return result
-    
 
-    # Initializing cluster 
+    # Initializing cluster
+
     @check_if_removed
     def set_this_cluster_modifiers(self, modifiers):
         """
@@ -446,9 +440,9 @@ class ClusterTrait():
 
         else:
             return False
-    
 
     # Clusters sorting
+
     @check_if_removed
     def add_sorting_rule(self, sorting_rule):
         """
@@ -496,9 +490,9 @@ class ClusterTrait():
             return []
         else:
             return self._sorting_rules
-    
 
     # Parsing
+
     def get_this_cluster_possible_length(self):
         """Returns maximum possible modifiers sequence length."""
         return len(self.default_data['by_type'])
@@ -593,9 +587,9 @@ class ClusterTrait():
             return additional_checks
 
         return None
-    
 
-    # Cluster visibility 
+    # Cluster visibility
+
     def get_this_cluster_visibility(self):
         """
         Returns list with info about this cluster visability
@@ -683,10 +677,10 @@ class ClusterTrait():
             else:
                 new_cluster_vis.append(None)
         self.set_this_cluster_visibility(new_cluster_vis)
-    
 
     # Utility
     # TODO: allow checking without throwing error
+
     @check_if_removed
     def check_this_cluster_sanity(self):
         """
@@ -774,4 +768,3 @@ class ClusterTrait():
             result\
                 = f"Already removed cluster {self.default_data['name']}"
         return result
-    

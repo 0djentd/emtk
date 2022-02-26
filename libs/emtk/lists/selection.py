@@ -102,7 +102,6 @@ def unwrap_obj_ref_allow_no_value(func):
     return unwrap_obj_ref(func, allow_no_value=True)
 
 
-
 class Selection():
     """
     Selection is sum of two lists:

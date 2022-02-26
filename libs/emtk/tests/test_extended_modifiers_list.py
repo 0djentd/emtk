@@ -31,7 +31,7 @@ try:
 except ModuleNotFoundError:
     _WITH_BPY = False
 
-MODIFIERS_DATA = [  
+MODIFIERS_DATA = [
     ('Bevel6', 'BEVEL'),
     ('Array', 'ARRAY'),
     ('TopBevel', 'BEVEL'),
@@ -274,7 +274,6 @@ MODIFIERS_DATA = [
     ('TopBevel', 'BEVEL'),
     ('WeightedNormal', 'WEIGHTED_NORMAL'),
 ]
-
 
 
 def add_modifiers(obj, count) -> list[DummyBlenderModifier]:

@@ -179,9 +179,9 @@ class FirstLayerClustersListTrait():
     def remove_cluster_type(self, cluster):
         """Remove cluster type"""
         return self._clusters_parser.remove_cluster_type(cluster)
-    
 
     # Actions
+
     def ask(self, question):
         """
         Returns actions required to allow action, if it is not
@@ -268,9 +268,9 @@ class FirstLayerClustersListTrait():
             restore_modifier_state(modifiers[-1], modifier_props)
         result = self._clusters_parser.parse_recursively(modifiers)
         self._data.extend(result)
-    
 
     # Storing clusters state
+
     def get_clusters_state(self) -> list:
         """
         Returns list with info about current clusters state.
@@ -391,9 +391,9 @@ class FirstLayerClustersListTrait():
             return x
         else:
             return False
-    
 
     # saving modifiers state for fast check.
+
     def get_modifiers_state(self):
         """Returns current object actual modifiers info."""
         result = []
@@ -474,9 +474,9 @@ class FirstLayerClustersListTrait():
             if not a.compare(b):
                 return True
         return False
-    
 
     # Utility
+
     def _check_if_actual_modifiers_list_is_correct(self):
         """
         Checks if actual modifiers in clusters ordered
@@ -513,7 +513,6 @@ class FirstLayerClustersListTrait():
 
     def __repr__(self):
         return self.__str__()
-    
 
     def get_state(self):
         return FirstLayerClustersListState.get_data_from_obj(self)
@@ -523,7 +522,7 @@ class FirstLayerClustersListTrait():
 # first layer clusters list as clusters layer?
 # Will be kinda hard to rework everything at this point though.
 @dataclasses.dataclass
-class FirstLayerClustersListState(ObjectState):  
+class FirstLayerClustersListState(ObjectState):
     items_data: list
 
     def serialize(self):
@@ -582,7 +581,6 @@ class FirstLayerClustersListState(ObjectState):
             if not x.compare(items[i]):
                 return False
         return True
-
 
 
 class ExtendedModifiersList(

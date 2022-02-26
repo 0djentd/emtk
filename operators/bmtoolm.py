@@ -120,9 +120,9 @@ class BMTOOL_OT_bmtoolm(BMToolUi, ModalClustersOperator, Operator):
         del(self.__editors)
         del(self.__possible_editors)
         del(self.__active_editor)
-    
 
     # UI
+
     def bmtool_ui(self, context):
         """
         Method that is used by BMToolUI
@@ -156,9 +156,9 @@ class BMTOOL_OT_bmtoolm(BMToolUi, ModalClustersOperator, Operator):
         else:
             ui_t.append(['No editor.', 20])
         return ui_t
-    
 
     # Editor selection
+
     def get_editor(self):
         """Returns currently active editor."""
         if self.__active_editor in self.__possible_editors:
@@ -181,9 +181,9 @@ class BMTOOL_OT_bmtoolm(BMToolUi, ModalClustersOperator, Operator):
             self._active_editor = self._possible_editors[i + 1]
         else:
             self._active_editor = self._possible_editors[0]
-    
 
     # Editors list
+
     def add_editor(self, editor):
         """Adds new editor type or replaces existing one."""
         self.remove_editor(editor)
@@ -216,4 +216,3 @@ class BMTOOL_OT_bmtoolm(BMToolUi, ModalClustersOperator, Operator):
     def __initialize_bmtoolm_editor(self, editor):
         editor.first_x = self.first_x
         editor.first_y = self.first_y
-    
