@@ -27,8 +27,8 @@ import blf
 #         return
 
 
-# def draw_bmtool(self, context):
-#     displayed_objects = self.bmtool_draw(context)
+# def draw_emtk(self, context):
+#     displayed_objects = self.emtk_draw(context)
 #     for x in displayed_objects:
 #         if isinstance(x, ClustersListUI):
 #             draw_clusters_list(x, context)
@@ -39,8 +39,8 @@ import blf
 #         elif isinstance(x, OperatorInfoUI):
 #             draw_operator_info(x, context)
 
-def bmtool_modifier_ui_draw(self, context):
-    ui_t = self.bmtool_ui(context)
+def emtk_modifier_ui_draw(self, context):
+    ui_t = self.emtk_ui(context)
     offset = 0
     offset_2 = 0
     for x in ui_t:
@@ -99,9 +99,9 @@ def bmtool_modifier_ui_draw(self, context):
             offset -= 18
 
 
-class BMToolUi:
+class EMTKUi:
     """
-    Base class for BMToolMod operators that use its UI features
+    Base class for EMTKMod operators that use its UI features
     """
 
     # Create draw handler and remove it after
@@ -115,43 +115,43 @@ class BMToolUi:
 
     # Prints info about operator in statusbar
     # TODO: remove this method.
-    def bmtool_stats(self, context):
+    def emtk_stats(self, context):
         """
         Prints info about modifier in statusbar
         """
         ui_t = ""
-        for x in self.bmtool_stats_list(context):
+        for x in self.emtk_stats_list(context):
             ui_t += x
             ui_t += " "
         context.workspace.status_text_set(ui_t)
 
     # TODO: remove this method.
-    def bmtool_ui(self, context):
+    def emtk_ui(self, context):
         """
         Method that is used by draw handler
         This method should be in operator
         Should return list of strings
         """
         ui_t = []
-        for line in self.bmtool_ui_list(context):
+        for line in self.emtk_ui_list(context):
             ui_t.append(line)
         ui_t.append(" ")
-        ui_t.append("No operator-specific bmtool_ui method")
+        ui_t.append("No operator-specific emtk_ui method")
         return ui_t
 
     # TODO: remove this method.
-    def bmtool_ui_modifier_stats(self, context):
+    def emtk_ui_modifier_stats(self, context):
         """
         This method should be in operator
         Should return modifier settings
         Should return list of strings
         """
         ui_t = []
-        ui_t.append("No bmtool_ui_modifier_stats method")
+        ui_t.append("No emtk_ui_modifier_stats method")
         return ui_t
 
     # TODO: remove this method.
-    def bmtool_ui_list(self):
+    def emtk_ui_list(self):
         """
         Returns list of lines with info about modifiers
         """
@@ -161,18 +161,18 @@ class BMToolUi:
         # List of modifiers
         if self._BMTOOL_UI_SHOW_ALL_OBJECTS:
             for y in self.selected_objects:
-                for x in self.bmtool_ui_modifiers_list(y):
+                for x in self.emtk_ui_modifiers_list(y):
                     ui_t.append(x)
                 ui_t.append(" ")
         else:
-            for x in self.bmtool_ui_modifiers_list(self.m_list):
+            for x in self.emtk_ui_modifiers_list(self.m_list):
                 ui_t.append(x)
             ui_t.append(" ")
         return ui_t
 
     # UI utils
     # TODO: remove this method.
-    def bmtool_ui_modifiers_list(self, m_list):
+    def emtk_ui_modifiers_list(self, m_list):
         """
         Returns list of strings with info about m_list
         """
@@ -188,13 +188,13 @@ class BMToolUi:
         ui_t.append("       CLUSTERS LIST")
         ui_t.append("=============================")
         for x in m_list:
-            ui_t += self._bmtool_ui_get_cluster_ui(
+            ui_t += self._emtk_ui_get_cluster_ui(
                 x, layer.get_selection(), m_list, m_name, m_type)
         ui_t.append("=============================")
         return ui_t
 
     # TODO: remove this method.
-    def _bmtool_ui_get_cluster_ui(
+    def _emtk_ui_get_cluster_ui(
             self, cluster, cluster_selection, m_list, m_name, m_type):
 
         if cluster in cluster_selection:
@@ -234,7 +234,7 @@ class BMToolUi:
         if cluster.has_clusters() and cluster.instance_data['collapsed'] is False:
             ui_t.append("------------------------------")
             for x in cluster:
-                ui_t += self._bmtool_ui_get_cluster_ui(
+                ui_t += self._emtk_ui_get_cluster_ui(
                     x, cluster_selection, m_list, m_name, m_type)
 
             ui_t.append("------------------------------")
@@ -256,7 +256,7 @@ class BMToolUi:
         return ui_t
 
     # TODO: remove this method.
-    def bmtool_ui_cluster_visibility(self, cluster):
+    def emtk_ui_cluster_visibility(self, cluster):
         line = " "
         for x in cluster.get_this_cluster_visibility():
             if x == 'ON':
@@ -270,7 +270,7 @@ class BMToolUi:
         return line
 
     # TODO: remove this method.
-    def bmtool_ui_modifier_visibility(self, m_list):
+    def emtk_ui_modifier_visibility(self, m_list):
         """
         Returns list of strings with info about m_list's active modifier
         """

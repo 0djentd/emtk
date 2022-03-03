@@ -192,4 +192,4 @@ class DummyBlenderObj():
 # class DummyBlenderPrefs():
 #     """Dummy blender prefs object."""
 #     def __init__(self):
-#         self.addons = {'bmtools': {DummyBlenderPrefsObj()}}
+#         self.addons = {'emtk': {DummyBlenderPrefsObj()}}

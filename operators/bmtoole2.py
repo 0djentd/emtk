@@ -19,13 +19,13 @@
 
 from bpy.types import Operator
 
-from ..libs.emtk.modifiers_operator import ModifiersOperator
-from ..libs.emtk.utils.modifiers import get_modifier_state
+from ..libs.libemtk.modifiers_operator import ModifiersOperator
+from ..libs.libemtk.utils.modifiers import get_modifier_state
 
 
-class BMTOOL_OT_bmtoole2(ModifiersOperator, Operator):
-    bl_idname = "object.bmtoole2"
-    bl_label = "BMToolE2"
+class BMTOOL_OT_emtke2(ModifiersOperator, Operator):
+    bl_idname = "object.emtke2"
+    bl_label = "EMTKE2"
     bl_description = "Add modifiers on selected objects"
 
     @classmethod

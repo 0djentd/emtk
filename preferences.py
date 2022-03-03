@@ -32,8 +32,8 @@ from bpy.types import AddonPreferences
 from .libs.modal_input.preferences import ModalShortcutsPreferences
 
 
-class BMToolPreferences(ModalShortcutsPreferences, AddonPreferences):
-    bl_idname = "bmtools"
+class EMTKPreferences(ModalShortcutsPreferences, AddonPreferences):
+    bl_idname = "emtk"
 
     needs_restart = False
 
@@ -60,7 +60,7 @@ class BMToolPreferences(ModalShortcutsPreferences, AddonPreferences):
 
     backup_collection_name: StringProperty(
         name="Name of collection that will be used for mesh backup.",
-        default='BMToolM mesh backup')
+        default='EMTKM mesh backup')
 
     custom_cluster_types: BoolProperty(
         name="Use custom cluster types.",
@@ -105,7 +105,7 @@ class BMToolPreferences(ModalShortcutsPreferences, AddonPreferences):
         if self.custom_cluster_types:
             layout.prop(self, "always_add_custom_cluster_types")
             layout.prop(self, "cluster_types")
-        layout.prop(self, "bmtool_modal_operators_serialized_shortcuts")
+        layout.prop(self, "emtk_modal_operators_serialized_shortcuts")
 
     def __draw_shortcuts_search(self, context):
         return self.draw_shortcuts_search(context)

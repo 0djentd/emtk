@@ -91,14 +91,14 @@ class ModifiersOperator():
         for x in default_clusters:
             y = x.get_this_cluster_parser_variables()
             if y not in clusters:
-                save_cluster_type_definition_to_settings(y, 'bmtools')
+                save_cluster_type_definition_to_settings(y, 'emtk')
 
         if bpy.context.preferences.addons[
-                'bmtools'].preferences.custom_cluster_types is True\
+                'emtk'].preferences.custom_cluster_types is True\
                 and bpy.context.preferences.addons[
-                'bmtools'].preferences.always_add_custom_cluster_types is True\
+                'emtk'].preferences.always_add_custom_cluster_types is True\
                 and _WITH_BPY is True:
-            clusters = get_cluster_types_definitions_from_settings('bmtools')
+            clusters = get_cluster_types_definitions_from_settings('emtk')
             clusters = instantiate_clusters_from_definitions(clusters)
         else:
             clusters = []
