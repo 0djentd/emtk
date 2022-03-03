@@ -19,6 +19,7 @@
 
 import re
 import logging
+import json
 
 import bpy
 
@@ -140,9 +141,15 @@ def register():
             logger.info(f'Adding property group {line} for {x}')
             prop = bpy.props.PointerProperty(type=UIClassVariablesEditorCache)
             setattr(bpy.types.Scene, line, prop)
-    prefs = bpy.context.preferences.addons['emtk'].preferences
-    prefs.refresh_cache()
-    logger.info('Finished registering EMTK and libemtk')
+    try:
+        prefs = bpy.context.preferences.addons['emtk'].preferences
+        prefs.refresh_cache()
+        # FIXME: auto generate shortcuts on addon first launch
+        # or blender update.
+        # This throws json error.
+    except KeyError:
+        logger.info('Skipped cache refresh.')
+    logger.info('Finished registering EMTK and libemtk.')
 
 
 def unregister():
