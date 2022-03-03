@@ -18,4 +18,4 @@
 # ##### END GPL LICENSE BLOCK #####
 
 
-EMTK_VERSION = (0, 1, 0)
+libemtk_VERSION = (0, 1, 0)

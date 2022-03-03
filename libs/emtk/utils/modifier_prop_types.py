@@ -45,7 +45,7 @@ NOT_EDITABLE_PROP = {
     'type',
 }
 
-# Props that can be edited in bmtool_operator anyway.
+# Props that can be edited in emtk_operator anyway.
 IGNORE_PROPS = {
     'name',
     'show_viewport',

@@ -29,14 +29,14 @@ class VIEW3D_MT_PIE_sorting_rules(Menu):
         layout = self.layout()
         pie = layout.menu_pie()
 
-        op = pie.operator("emtk.edit_sorting_rules",
+        op = pie.operator(libemtk.edit_sorting_rules",
                           text="Edit sorting rules")
         op.obj = 'SETTINGS'
 
-        op = pie.operator("emtk.edit_sorting_rules",
+        op = pie.operator(libemtk.edit_sorting_rules",
                           text="Edit scene sorting rules")
         op.obj = 'SCENE'
 
-        op = pie.operator("emtk.edit_sorting_rules",
+        op = pie.operator(libemtk.edit_sorting_rules",
                           text="Edit object sorting rules")
         op.obj = 'OBJECT'

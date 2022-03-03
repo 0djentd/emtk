@@ -19,7 +19,7 @@
 
 from bpy.types import Panel
 
-from ..libs.emtk.utils.modifier_prop_types import get_all_editable_props
+from ..libslibemtk.utils.modifier_prop_types import get_all_editable_props
 
 
 """
@@ -45,7 +45,7 @@ in class variables by identyfing panels somehow.
 """
 # TODO: No idea why this doesnt work properly with inheritance.
 # class BlenderUIWrapper():
-#     """Base class for EMTK panels and menus.
+#     """Base class for libemtk panels and menus.
 #     Provides additional methods based on 'poll' and 'draw' methods.
 #     """
 #     __tag_panel_init = True
@@ -178,10 +178,10 @@ in class variables by identyfing panels somehow.
 #
 
 
-class VIEW3D_PT_bmtool_panel(Panel):
-    bl_idname = "VIEW3D_PT_bmtool_panel"
+class VIEW3D_PT_emtk_panel(Panel):
+    bl_idname = "VIEW3D_PT_emtk_panel"
     bl_label = "Edit clusters"
-    bl_category = "BMTools"
+    bl_category = "EMTK"
     bl_space_type = "VIEW_3D"
     bl_region_type = "UI"
     bl_context = "objectmode"
@@ -366,7 +366,7 @@ class VIEW3D_PT_bmtool_panel(Panel):
             self.modifiers_expanded = {}
 
         layout = self.layout
-        layout.label(text="BMTools modifiers panel")
+        layout.label(text="EMTK modifiers panel")
         for x in context.object.modifiers:
             self.__draw_modifier_props(x)
 

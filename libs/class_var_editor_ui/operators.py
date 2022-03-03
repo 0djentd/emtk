@@ -26,11 +26,11 @@ from bpy.props import BoolProperty, IntProperty, FloatProperty, StringProperty
 from bpy.types import Panel, Operator
 
 
-class BMTOOLS_OT_bmtool_invoke_operator_func(Operator):
+class BMTOOLS_OT_emtk_invoke_operator_func(Operator):
     """Workaround to change panel class variables from button."""
 
-    bl_idname = "bmtools.bmtool_invoke_operator_func"
-    bl_label = "Invoke one of bmtools operator functions."
+    bl_idname = "emtk.emtk_invoke_operator_func"
+    bl_label = "Invoke one of emtk operator functions."
 
     # Line to eval
     func: StringProperty("")
