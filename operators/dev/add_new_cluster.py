@@ -20,11 +20,11 @@
 from bpy.types import Operator
 from bpy.props import FloatProperty, StringProperty
 
-from ...libslibemtk.modifiers_operator import ModifiersOperator
+from ...libs.emtk.modifiers_operator import ModifiersOperator
 
 
 class BMTOOL_OT_add_new_cluster(ModifiersOperator, Operator):
-    bl_idname = "emtk.add_new_cluster"
+    bl_idname = "bmtools.add_new_cluster"
     bl_label = "Add new cluster"
 
     cluster_type: StringProperty(name="Cluster Type", default='')

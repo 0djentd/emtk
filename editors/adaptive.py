@@ -27,12 +27,12 @@ try:
     Modifier = bpy.types.Modifier
     _WITH_BPY = True
 except ModuleNotFoundError:
-    from ..libslibemtk.dummy_modifiers import DummyBlenderModifier
+    from ..libs.emtk.dummy_modifiers import DummyBlenderModifier
     Modifier = DummyBlenderModifier
     _WITH_BPY = False
 
-from ..libslibemtk.utils.modifier_prop_types import get_props_filtered_by_types
-from ..libslibemtk.clusters.cluster_trait import ClusterTrait
+from ..libs.emtk.utils.modifier_prop_types import get_props_filtered_by_types
+from ..libs.emtk.clusters.cluster_trait import ClusterTrait
 from ..classes.editor import ModalClustersEditor
 from ..libs.modal_input.shortcuts import generate_new_shortcut
 
@@ -218,7 +218,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
         self.__mods = mods
 
         # Get existing shortcuts
-        prefs = bpy.context.preferences.addons['emtk'].preferences
+        prefs = bpy.context.preferences.addons['bmtools'].preferences
         s = prefs.modal_shortcuts.find_by_value(mod.type)
         self.modal_shortcuts = s
 

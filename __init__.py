@@ -23,18 +23,18 @@ import logging
 import bpy
 
 # Modal operators
-from . operators.emtkm import BMTOOL_OT_emtkm
-from . operators.emtke2 import BMTOOL_OT_emtke2
+from . operators.bmtoolm import BMTOOL_OT_bmtoolm
+from . operators.bmtoole2 import BMTOOL_OT_bmtoole2
 
 # Operators
 from . operators.dev.add_new_cluster import BMTOOL_OT_add_new_cluster
 
 # Preferences
-from . preferences import EMTKPreferences
+from . preferences import BMToolPreferences
 
 # UI
-from . ui.pie_menus import VIEW3D_MT_PIE_emtk_pie_1
-from . ui.emtk_panel import VIEW3D_PT_emtk_panel
+from . ui.pie_menus import VIEW3D_MT_PIE_bmtools_pie_1
+from . ui.bmtool_panel import VIEW3D_PT_bmtool_panel
 from . ui.clusters_list_popup import BMTOOLS_OT_clusters_list_popup
 
 # Modal input
@@ -43,7 +43,7 @@ from . libs.modal_input.operators import BMTOOLS_OT_add_or_update_modal_shortcut
 from . libs.modal_input.operators import BMTOOL_OT_reparse_default_modifiers_props_kbs
 
 # Class variables editor
-from . libs.class_var_editor_ui.operators import BMTOOLS_OT_emtk_invoke_operator_func
+from . libs.class_var_editor_ui.operators import BMTOOLS_OT_bmtool_invoke_operator_func
 from . libs.class_var_editor_ui.panel import UIClassVariablesEditorCache
 from . libs.class_var_editor_ui.panel import UIClassVariablesEditor
 from . libs.class_var_editor_ui.panel import get_prop_group_name
@@ -55,7 +55,7 @@ from . operators.dev.add_all_modifiers import\
 from . operators.dev.add_cluster_type import BMTOOL_OT_add_cluster_type_object
 
 bl_info = {
-    "name": "EMTK",
+    "name": "BMTools",
     "author": "Sergey Shapochkin, also known as djentled",
     "version": (0, 5, 0),
     "blender": (3, 1, 0),
@@ -73,14 +73,14 @@ logging.basicConfig(level=logging.DEBUG)
 classes = [
 
     # modal operators
-    BMTOOL_OT_emtkm,
-    BMTOOL_OT_emtke2,
+    BMTOOL_OT_bmtoolm,
+    BMTOOL_OT_bmtoole2,
 
-    # libemtk operators
+    # EMTK operators
     BMTOOL_OT_add_cluster_type_object,
 
     # prefs
-    EMTKPreferences,
+    BMToolPreferences,
     BMTOOLS_OT_start_editing_modal_shortcut,
     BMTOOLS_OT_add_or_update_modal_shortcut,
 
@@ -88,8 +88,8 @@ classes = [
     BMTOOLS_OT_clusters_list_popup,
 
     # ui
-    VIEW3D_MT_PIE_emtk_pie_1,
-    VIEW3D_PT_emtk_panel,
+    VIEW3D_MT_PIE_bmtools_pie_1,
+    VIEW3D_PT_bmtool_panel,
 
     # dev
     BMTOOL_OT_add_all_modifiers,
@@ -101,14 +101,14 @@ classes = [
     UIClassVariablesEditorCache,
 
     # utils operators
-    BMTOOLS_OT_emtk_invoke_operator_func,
+    BMTOOLS_OT_bmtool_invoke_operator_func,
 ]
 
 addon_keymaps = []
 
 
 def register():
-    logger.info('Registering EMTK and libemtk')
+    logger.info('Registering BMTools and EMTK')
 
     wm = bpy.context.window_manager
     kc = wm.keyconfigs.addon
@@ -140,13 +140,13 @@ def register():
             logger.info(f'Adding property group {line} for {x}')
             prop = bpy.props.PointerProperty(type=UIClassVariablesEditorCache)
             setattr(bpy.types.Scene, line, prop)
-    prefs = bpy.context.preferences.addons['emtk'].preferences
+    prefs = bpy.context.preferences.addons['bmtools'].preferences
     prefs.refresh_cache()
-    logger.info('Finished registering EMTK and libemtk')
+    logger.info('Finished registering BMTools and EMTK')
 
 
 def unregister():
-    logger.info('Unregistering EMTK and libemtk')
+    logger.info('Unregistering BMTools and EMTK')
 
     wm = bpy.context.window_manager
     kc = wm.keyconfigs.addon
@@ -166,4 +166,4 @@ def unregister():
     for cls in reversed(classes):
         logger.debug(f'Unregister class {cls}')
         bpy.utils.unregister_class(cls)
-    logger.info('Finished unregistering EMTK and libemtk')
+    logger.info('Finished unregistering BMTools and EMTK')

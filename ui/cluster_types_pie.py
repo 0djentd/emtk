@@ -30,14 +30,14 @@ class VIEW3D_MT_PIE_cluster_types(Menu):
         layout = self.layout()
         pie = layout.menu_pie()
 
-        op = pie.operator(libemtk.edit_cluster_types",
+        op = pie.operator("emtk.edit_cluster_types",
                           text="Edit cluster types")
         op.obj = 'SETTINGS'
 
-        op = pie.operator(libemtk.edit_cluster_types",
+        op = pie.operator("emtk.edit_cluster_types",
                           text="Edit scene cluster types")
         op.obj = 'SCENE'
 
-        op = pie.operator(libemtk.edit_cluster_types",
+        op = pie.operator("emtk.edit_cluster_types",
                           text="Edit object cluster types")
         op.obj = 'OBJECT'

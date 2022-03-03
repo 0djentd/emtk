@@ -27,8 +27,8 @@ from bpy.props import (
     StringProperty
 )
 
-from .libemtk.utils.modifier_prop_types import get_all_editable_props
-from .libemtk.utils.modifier_prop_types import MODIFIER_TYPES
+from ..emtk.utils.modifier_prop_types import get_all_editable_props
+from ..emtk.utils.modifier_prop_types import MODIFIER_TYPES
 
 from .shortcuts import generate_new_shortcut
 from .shortcuts import ModalShortcutsGroup, ModalShortcutsCache, ModalShortcut
@@ -38,8 +38,8 @@ logger.setLevel(logging.DEBUG)
 
 
 class BMTOOLS_OT_start_editing_modal_shortcut(bpy.types.Operator):
-    bl_idname = "emtk.start_editing_modal_shortcut"
-    bl_label = "Start editing emtk modal operator kbs."
+    bl_idname = "bmtools.start_editing_modal_shortcut"
+    bl_label = "Start editing bmtool modal operator kbs."
     bl_description = "Start editing modal shortcut"
 
     # Shortcut name and group
@@ -54,21 +54,21 @@ class BMTOOLS_OT_start_editing_modal_shortcut(bpy.types.Operator):
     )
 
     def execute(self, context):
-        prefs = context.preferences.addons['emtk'].preferences
+        prefs = context.preferences.addons['bmtools'].preferences
 
         # Deselect
-        if prefs.emtk_editing_modal_shortcut_value\
+        if prefs.bmtool_editing_modal_shortcut_value\
                 == self.shortcut_name\
-                and prefs.emtk_editing_modal_shortcut_group\
+                and prefs.bmtool_editing_modal_shortcut_group\
                 == self.shortcut_group:
-            prefs.emtk_editing_modal_shortcut_value = ""
-            prefs.emtk_editing_modal_shortcut_group = ""
+            prefs.bmtool_editing_modal_shortcut_value = ""
+            prefs.bmtool_editing_modal_shortcut_group = ""
 
         # Select
         else:
-            prefs.emtk_editing_modal_shortcut_value\
+            prefs.bmtool_editing_modal_shortcut_value\
                 = self.shortcut_name
-            prefs.emtk_editing_modal_shortcut_group\
+            prefs.bmtool_editing_modal_shortcut_group\
                 = self.shortcut_group
 
             group = prefs.modal_shortcuts.find_by_value(
@@ -83,8 +83,8 @@ class BMTOOLS_OT_start_editing_modal_shortcut(bpy.types.Operator):
 
 
 class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):
-    bl_label = "Add or change emtk modal operator kbs."
-    bl_idname = "emtk.add_or_update_modal_shortcut"
+    bl_label = "Add or change bmtool modal operator kbs."
+    bl_idname = "bmtools.add_or_update_modal_shortcut"
     bl_description = "Add or update modal shortcut"
 
     # shortcut_name
@@ -128,7 +128,7 @@ class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):
     )
 
     def execute(self, context):
-        prefs = context.preferences.addons['emtk'].preferences
+        prefs = context.preferences.addons['bmtools'].preferences
         group = prefs.modal_shortcuts.find_by_value(
             self.shortcut_group)
         shortcut = ModalShortcut(self.shortcut_name,
@@ -139,15 +139,15 @@ class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):
 
         group.update(shortcut)
         prefs.save_cache()
-        prefs.emtk_editing_modal_shortcut_value = ""
-        prefs.emtk_editing_modal_shortcut_group = ""
+        prefs.bmtool_editing_modal_shortcut_value = ""
+        prefs.bmtool_editing_modal_shortcut_group = ""
         return {'FINISHED'}
 
 
 class BMTOOL_OT_reparse_default_modifiers_props_kbs(
         bpy.types.Operator):
     bl_idname = "object.reparse_default_modifiers_props_kbs"
-    bl_label = "EMTK add all modifiers props to kbs"
+    bl_label = "BMTool add all modifiers props to kbs"
 
     replace_kbs: BoolProperty(
         name='Replace existing.',
@@ -174,7 +174,7 @@ class BMTOOL_OT_reparse_default_modifiers_props_kbs(
                 mod.show_viewport = False
                 modifiers.append(mod)
 
-        prefs = bpy.context.preferences.addons['emtk'].preferences
+        prefs = bpy.context.preferences.addons['bmtools'].preferences
         replace = self.replace_kbs
 
         groups = []
@@ -195,7 +195,7 @@ class BMTOOL_OT_reparse_default_modifiers_props_kbs(
 
         result = ModalShortcutsCache(groups)
         if replace:
-            prefs.emtk_modal_operators_serialized_shortcuts\
+            prefs.bmtool_modal_operators_serialized_shortcuts\
                 = result.serialize()
         else:
             raise ValueError

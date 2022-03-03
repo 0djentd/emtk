@@ -22,18 +22,18 @@ import logging
 from bpy.types import Operator
 
 from ..classes.modal_clusters_operator import ModalClustersOperator
-from ..ui.emtk_ui import EMTKUi
+from ..ui.bmtool_ui import BMToolUi
 from ..editors.adaptive import AdaptiveModalEditor
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-class BMTOOL_OT_emtkm(EMTKUi, ModalClustersOperator, Operator):
+class BMTOOL_OT_bmtoolm(BMToolUi, ModalClustersOperator, Operator):
     """Tool for editing all modifiers of an object."""
 
-    bl_idname = "object.emtkm"
-    bl_label = "EMTKM"
+    bl_idname = "object.bmtoolm"
+    bl_label = "BMToolM"
     bl_description = "Edit modifiers on selected objects"
 
     def __init__(self):
@@ -48,10 +48,10 @@ class BMTOOL_OT_emtkm(EMTKUi, ModalClustersOperator, Operator):
 
         self.__editors.append(AdaptiveModalEditor())
 
-    # EMTKMod methods
+    # BMToolMod methods
     # TODO: rename this methods
-    def emtk_modal_pre(self, context, event):
-        """Modal method 1, before emtkmod"""
+    def bmtool_modal_pre(self, context, event):
+        """Modal method 1, before bmtoolmod"""
         editor = self.get_editor()
         if editor is not None:
             return editor.editor_modal_pre(
@@ -59,8 +59,8 @@ class BMTOOL_OT_emtkm(EMTKUi, ModalClustersOperator, Operator):
         else:
             raise TypeError
 
-    def emtk_modal(self, context, event):
-        """Modal method 2, after emtkmod"""
+    def bmtool_modal(self, context, event):
+        """Modal method 2, after bmtoolmod"""
 
         # Scroll through possible editors.
         if (event == 'T') & (event.value == 'PRESSED'):
@@ -77,13 +77,13 @@ class BMTOOL_OT_emtkm(EMTKUi, ModalClustersOperator, Operator):
         else:
             raise TypeError
 
-    def emtk_modifier_update(self, context):
+    def bmtool_modifier_update(self, context):
         """
-        This method is called by emtkmod every time active
+        This method is called by bmtoolmod every time active
         cluster or modifier is changed.
         """
 
-        logger.debug('EMTKM modifier changed.')
+        logger.debug('BMToolM modifier changed.')
 
         # Call remove method of editor
         if self.__active_editor is not None:
@@ -104,17 +104,17 @@ class BMTOOL_OT_emtkm(EMTKUi, ModalClustersOperator, Operator):
             self.__active_editor.editor_switched_to(
                 context, self.m_list.get_cluster())
 
-    def emtk_operator_inv(self, context, event):
+    def bmtool_operator_inv(self, context, event):
         """
-        Method that is used by EMTKMod
+        Method that is used by BMToolMod
         Additional invoke method
         """
         for editor in self.__editors:
-            self.__initialize_emtkm_editor(editor)
+            self.__initialize_bmtoolm_editor(editor)
 
-    def emtk_operator_rm(self, context):
+    def bmtool_operator_rm(self, context):
         """
-        Method that is used by EMTKMod
+        Method that is used by BMToolMod
         Additional remove method
         """
         del(self.__editors)
@@ -123,9 +123,9 @@ class BMTOOL_OT_emtkm(EMTKUi, ModalClustersOperator, Operator):
 
     # UI
 
-    def emtk_ui(self, context):
+    def bmtool_ui(self, context):
         """
-        Method that is used by EMTKUI
+        Method that is used by BMToolUI
         Returns list of strings
         """
 
@@ -146,7 +146,7 @@ class BMTOOL_OT_emtkm(EMTKUi, ModalClustersOperator, Operator):
             ui_t.append("No active editor")
 
         ui_t.append(" ")
-        ui_t_2 = self.emtk_ui_list()
+        ui_t_2 = self.bmtool_ui_list()
         for x in ui_t_2:
             ui_t.append(x)
         if self.__active_editor is not None:
@@ -187,7 +187,7 @@ class BMTOOL_OT_emtkm(EMTKUi, ModalClustersOperator, Operator):
     def add_editor(self, editor):
         """Adds new editor type or replaces existing one."""
         self.remove_editor(editor)
-        self.__initialize_emtkm_editor(editor)
+        self.__initialize_bmtoolm_editor(editor)
         self.__editors.append(editor)
 
     def remove_editor(self, editor):
@@ -213,6 +213,6 @@ class BMTOOL_OT_emtkm(EMTKUi, ModalClustersOperator, Operator):
                 editors_list.append(editor)
         return editors_list
 
-    def __initialize_emtkm_editor(self, editor):
+    def __initialize_bmtoolm_editor(self, editor):
         editor.first_x = self.first_x
         editor.first_y = self.first_y

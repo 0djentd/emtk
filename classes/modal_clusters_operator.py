@@ -21,8 +21,8 @@ import logging
 
 import bpy
 
-from ..libslibemtk.modifiers_operator import ModifiersOperator
-from ..ui.emtk_ui import emtk_modifier_ui_draw
+from ..libs.emtk.modifiers_operator import ModifiersOperator
+from ..ui.bmtool_ui import bmtool_modifier_ui_draw
 from ..libs.modal_input.object import ModalInputOperator
 
 logger = logging.getLogger(__name__)
@@ -48,7 +48,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
     # self.__selecting_clusters
 
     # Draw handler.
-    # self.emtk_ui_draw_handler
+    # self.bmtool_ui_draw_handler
 
     # Active object ModifiersList instance.
     # self.m_list()
@@ -57,7 +57,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
     # self.selected_objects[]
 
     # Mappings
-    __emtk_kbs = {
+    __bmtool_kbs = {
         'visibility_1': 'V',
         'visibility_2': 'B',
         'sort': 'T',
@@ -104,11 +104,11 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
         """Method that is initiated every frame or whatever."""
 
         # Exit out of editor mode or finish operator.
-        if (event.type == self.__emtk_kbs['exit']
+        if (event.type == self.__bmtool_kbs['exit']
                 or event.type == 'LEFTMOUSE')\
                 and event.value == 'PRESS':
             if self.mode != self.__DEFAULT_MODE:
-                self.emtk_modifier_update(context)
+                self.bmtool_modifier_update(context)
                 self.mode = self.__DEFAULT_MODE
             else:
                 self.clear(context)
@@ -123,15 +123,15 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
         elif event.type == 'SPACE' and event.value == 'PRESS':
             if self.mode == 'ACTIONS':
                 self.mode = 'EDITOR'
-                self.emtk_modifier_update(context)
+                self.bmtool_modifier_update(context)
             else:
                 self.mode = 'ACTIONS'
-                self.emtk_modifier_update(context)
+                self.bmtool_modifier_update(context)
             logger.info(f'Switched mode to {self.mode}')
 
         # Modal method.
         if self.mode == 'EDITOR':
-            a = self.emtk_modal_pre(context, event)
+            a = self.bmtool_modal_pre(context, event)
             if a in self.__OPERATOR_REMOVE:
                 self.clear(context)
                 return a
@@ -151,7 +151,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
 
         # Modal method.
         elif self.mode == 'EDITOR':
-            a = self.emtk_modal(context, event)
+            a = self.bmtool_modal(context, event)
             if a in self.__OPERATOR_REMOVE:
                 self.clear(context)
                 return a
@@ -169,20 +169,20 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
         self.first_y = event.mouse_y
 
         # Operator-specific invoke
-        self.emtk_operator_inv(context, event)
+        self.bmtool_operator_inv(context, event)
 
         # Add UI.
         if self.__UI:
-            logger.info("EMTK UI is created")
+            logger.info("BMTool UI is created")
             sv = bpy.types.SpaceView3D
-            self.emtk_ui_draw_handler = sv.draw_handler_add(
-                emtk_modifier_ui_draw, (self, context),
+            self.bmtool_ui_draw_handler = sv.draw_handler_add(
+                bmtool_modifier_ui_draw, (self, context),
                 'WINDOW', 'POST_PIXEL')
             context.area.tag_redraw()
 
         # TODO: this should be in lib
         # Create backup collection.
-        addon_prefs = bpy.context.preferences.addons['emtk'].preferences
+        addon_prefs = bpy.context.preferences.addons['bmtools'].preferences
         b = addon_prefs.backup_mesh_on_modifier_apply_remove
         self.backup_mesh_on_modifier_apply_remove = b
         if b:
@@ -206,7 +206,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
             return {'FINISHED'}
 
         # Trigger active modifier change
-        self.emtk_modifier_update(context)
+        self.bmtool_modifier_update(context)
 
         logger.info("Finished initializing operator")
 
@@ -222,7 +222,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
         cluster = self.m_list.get_cluster()
 
         # Modifier visibility
-        if (event.type == self.__emtk_kbs['visibility_1'])\
+        if (event.type == self.__bmtool_kbs['visibility_1'])\
                 & (event.value == 'PRESS'):
             if event.shift:
                 if self.__selecting_clusters:
@@ -242,7 +242,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                         [False, True, False, False])
 
         # Modifier visibility 2
-        elif (event.type == self.__emtk_kbs['visibility_2'])\
+        elif (event.type == self.__bmtool_kbs['visibility_2'])\
                 & (event.value == 'PRESS'):
             if event.shift:
                 if self.__selecting_clusters:
@@ -262,12 +262,12 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                         [False, False, False, True])
 
         # Sort modifiers
-        elif (event.type == self.__emtk_kbs['sort'])\
+        elif (event.type == self.__bmtool_kbs['sort'])\
                 & (event.value == 'PRESS'):
             layer.apply_sorting_rules()
 
         # Duplicate cluster modifiers and parse
-        elif (event.type == self.__emtk_kbs['add_new'])\
+        elif (event.type == self.__bmtool_kbs['add_new'])\
                 & (event.value == 'PRESS'):
 
             if not self.__BMTOOLM:
@@ -278,10 +278,10 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                 self.m_list.duplicate(cluster)
 
             # Trigger active modifier change
-            self.emtk_modifier_update(context)
+            self.bmtool_modifier_update(context)
 
         # Apply active cluster
-        elif (event.type == self.__emtk_kbs['apply_remove'])\
+        elif (event.type == self.__bmtool_kbs['apply_remove'])\
                 & event.shift & (event.value == 'PRESS'):
 
             # Remove cluster.
@@ -298,10 +298,10 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                 return {'FINISHED'}
 
             # Trigger active modifier change.
-            self.emtk_modifier_update(context)
+            self.bmtool_modifier_update(context)
 
         # Deconstruct cluster.
-        elif (event.type == self.__emtk_kbs['construct_deconstruct'])\
+        elif (event.type == self.__bmtool_kbs['construct_deconstruct'])\
                 & event.shift & (event.value == 'PRESS'):
 
             for x in self.__get_clusters():
@@ -311,7 +311,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                     self.report({'ERROR'}, "Cant deconstruct cluster")
 
         # Construct cluster from selection.
-        elif (event.type == self.__emtk_kbs['construct_deconstruct'])\
+        elif (event.type == self.__bmtool_kbs['construct_deconstruct'])\
                 & (event.value == 'PRESS'):
 
             if self.__selecting_clusters:
@@ -324,7 +324,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                 self.report({'ERROR'}, "No clustes selected.")
 
         # Toggle selection.
-        elif (event.type == self.__emtk_kbs['toogle_selection'])\
+        elif (event.type == self.__bmtool_kbs['toogle_selection'])\
                 & (event.value == 'PRESS'):
 
             # Toggle selecting clusters.
@@ -334,7 +334,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                 self.__start_selecting_clusters()
 
         # Remove active cluster.
-        elif (event.type == self.__emtk_kbs['apply_remove'])\
+        elif (event.type == self.__bmtool_kbs['apply_remove'])\
                 & (event.value == 'PRESS'):
             logger.info('Removing cluster')
 
@@ -347,10 +347,10 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
             self.__stop_selecting_clusters()
 
             # Trigger active modifier change.
-            self.emtk_modifier_update(context)
+            self.bmtool_modifier_update(context)
 
         # Move modifier up.
-        elif (event.type == self.__emtk_kbs['up'])\
+        elif (event.type == self.__bmtool_kbs['up'])\
                 & event.shift & (event.value == 'PRESS'):
             logger.info('Moving cluster')
 
@@ -361,10 +361,10 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                 layer.move_up(cluster)
 
             # Trigger active modifier change.
-            self.emtk_modifier_update(context)
+            self.bmtool_modifier_update(context)
 
         # Move modifier down.
-        elif (event.type == self.__emtk_kbs['down'])\
+        elif (event.type == self.__bmtool_kbs['down'])\
                 & event.shift & (event.value == 'PRESS'):
             logger.info('Moving cluster')
 
@@ -375,10 +375,10 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                 layer.move_down(cluster)
 
             # Trigger active modifier change.
-            self.emtk_modifier_update(context)
+            self.bmtool_modifier_update(context)
 
         # Collapse cluster.
-        elif (event.type == self.__emtk_kbs['collapse'])\
+        elif (event.type == self.__bmtool_kbs['collapse'])\
                 & (event.value == 'PRESS'):
             logger.info('Collapse toggle cluster')
             self.__stop_selecting_clusters()
@@ -400,12 +400,12 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                 cluster.instance_data['collapsed'] = False
 
             # Trigger active modifier change.
-            self.emtk_modifier_update(context)
+            self.bmtool_modifier_update(context)
 
             self.__stop_selecting_clusters()
 
         # Scroll through modifiers up.
-        elif (event.type == self.__emtk_kbs['up'])\
+        elif (event.type == self.__bmtool_kbs['up'])\
                 & (event.value == 'PRESS'):
 
             # Only change modifier if there is more than one available.
@@ -431,10 +431,10 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                         layer.active = layer.iterate(cluster, 'UP', loop=True)
 
             # Trigger active modifier change.
-            self.emtk_modifier_update(context)
+            self.bmtool_modifier_update(context)
 
         # Scroll through modifiers down.
-        elif (event.type == self.__emtk_kbs['down'])\
+        elif (event.type == self.__bmtool_kbs['down'])\
                 & (event.value == 'PRESS'):
 
             # Only change modifier if there is more than one available.
@@ -460,7 +460,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
                             cluster, 'DOWN', loop=True)
 
                 # Trigger active modifier change.
-                self.emtk_modifier_update(context)
+                self.bmtool_modifier_update(context)
         else:
             return False
         return True
@@ -468,7 +468,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
     # TODO: rename this methods.
     # Methods reserved for operators.
 
-    def emtk_modal_pre(self, context, event):
+    def bmtool_modal_pre(self, context, event):
         """Operator-specific modal method 1
 
         Used before any other modal editing
@@ -476,7 +476,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
         """
         return
 
-    def emtk_modal(self, context, event):
+    def bmtool_modal(self, context, event):
         """Operator-specific modal method 2.
 
         All modal editing should be here.
@@ -484,7 +484,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
         """
         return
 
-    def emtk_modifier_update(self, context):
+    def bmtool_modifier_update(self, context):
         """Operator-specific modifier update.
 
         This method is called every time active modifier changed
@@ -492,14 +492,14 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
         """
         return
 
-    def emtk_operator_invoke(self, context, event):
+    def bmtool_operator_invoke(self, context, event):
         """Operator-specific invoke method.
 
         This method is called before ModalClustersOperator invoke.
         """
         return
 
-    def emtk_operator_remove(self, context):
+    def bmtool_operator_remove(self, context):
         """Operator-specific remove method
 
         This method is called when encountered FINISHED or CANCELLED in
@@ -518,17 +518,17 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
         context.workspace.status_text_set(None)
         if self.__UI:
             bpy.types.SpaceView3D.draw_handler_remove(
-                self.emtk_ui_draw_handler, 'WINDOW')
+                self.bmtool_ui_draw_handler, 'WINDOW')
             context.area.tag_redraw()
-            logger.info("EMTK UI is removed")
+            logger.info("BMTool UI is removed")
 
         # Operator-specific remove
-        self.emtk_operator_remove(context)
+        self.bmtool_operator_remove(context)
 
         already_removed = False
 
         # TODO: should not be here.
-        if bpy.context.preferences.addons['emtk'].preferences.save_clusters:
+        if bpy.context.preferences.addons['bmtools'].preferences.save_clusters:
             try:
                 self.m_list.save_modifiers_state()
                 self.m_list.save_clusters_state()

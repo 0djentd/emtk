@@ -36,7 +36,7 @@ class BMTOOL_OT_add_cluster_type_object(Operator):
 
     obj_prop_name: StringProperty(
         name='Cluster Types Prop Name',
-        default='EMTK'
+        default='BMTool'
     )
 
     obj_prop_group: StringProperty(

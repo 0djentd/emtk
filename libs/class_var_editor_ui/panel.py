@@ -203,10 +203,10 @@ class UIClassVariablesEditor():
             line = f'cls.var_editor_start("{attr_str}")'
             line = re.sub('cls', cls.get_class_line(), line)
             if icon is not None:
-                op = box.operator('emtk.emtk_invoke_operator_func',
+                op = box.operator('bmtools.bmtool_invoke_operator_func',
                                   text=attr_name, icon=icon)
             else:
-                op = box.operator('emtk.emtk_invoke_operator_func',
+                op = box.operator('bmtools.bmtool_invoke_operator_func',
                                   text=attr_name)
             op.func = line
             return
@@ -217,10 +217,10 @@ class UIClassVariablesEditor():
             line = re.sub('cls', cls.get_class_line(), line)
 
             if icon is not None:
-                op = box.operator('emtk.emtk_invoke_operator_func',
+                op = box.operator('bmtools.bmtool_invoke_operator_func',
                                   text=attr_name, icon=icon)
             else:
-                op = box.operator('emtk.emtk_invoke_operator_func',
+                op = box.operator('bmtools.bmtool_invoke_operator_func',
                                   text=attr_name)
             op.func = line
 
@@ -241,7 +241,7 @@ class UIClassVariablesEditor():
                 col = row.column()
                 line = f'cls.{attr_str}.pop({i})'
                 line = re.sub('cls', cls.get_class_line(), line)
-                op = col.operator('emtk.emtk_invoke_operator_func',
+                op = col.operator('bmtools.bmtool_invoke_operator_func',
                                   text="", icon='X')
                 op.func = line
 
@@ -251,7 +251,7 @@ class UIClassVariablesEditor():
                 col = row.column()
                 line = line_2 + f'("{attr_str}", index={i}, direction=\'UP\')'
                 line = re.sub('cls', cls.get_class_line(), line)
-                op = col.operator('emtk.emtk_invoke_operator_func',
+                op = col.operator('bmtools.bmtool_invoke_operator_func',
                                   text="", icon='TRIA_UP')
                 op.func = line
 
@@ -260,7 +260,7 @@ class UIClassVariablesEditor():
                 line = line_2 \
                     + f'("{attr_str}", index={i}, direction=\'DOWN\')'
                 line = re.sub('cls', cls.get_class_line(), line)
-                op = col.operator('emtk.emtk_invoke_operator_func',
+                op = col.operator('bmtools.bmtool_invoke_operator_func',
                                   text="", icon='TRIA_DOWN')
                 op.func = line
 
@@ -271,7 +271,7 @@ class UIClassVariablesEditor():
                 line = line_2 \
                     + f'("{attr_str}", index={i})'
                 line = re.sub('cls', cls.get_class_line(), line)
-                op = col.operator('emtk.emtk_invoke_operator_func',
+                op = col.operator('bmtools.bmtool_invoke_operator_func',
                                   text="", icon='TRIA_DOWN')
                 op.func = line
             return
@@ -310,10 +310,10 @@ class UIClassVariablesEditor():
             line = f'cls.var_editor_start("{attr_str}")'
             line = re.sub('cls', cls.get_class_line(), line)
             if icon is not None:
-                op = box.operator('emtk.emtk_invoke_operator_func',
+                op = box.operator('bmtools.bmtool_invoke_operator_func',
                                   text=attr_name, icon=icon)
             else:
-                op = box.operator('emtk.emtk_invoke_operator_func',
+                op = box.operator('bmtools.bmtool_invoke_operator_func',
                                   text=attr_name)
             op.func = line
             return
@@ -324,10 +324,10 @@ class UIClassVariablesEditor():
             line = re.sub('cls', cls.get_class_line(), line)
 
             if icon is not None:
-                op = box.operator('emtk.emtk_invoke_operator_func',
+                op = box.operator('bmtools.bmtool_invoke_operator_func',
                                   text=attr_name, icon=icon)
             else:
-                op = box.operator('emtk.emtk_invoke_operator_func',
+                op = box.operator('bmtools.bmtool_invoke_operator_func',
                                   text=attr_name)
             op.func = line
 
@@ -348,7 +348,7 @@ class UIClassVariablesEditor():
                 col = row.column()
                 line = f'cls.{attr_str}.pop(\'{x}\')'
                 line = re.sub('cls', cls.get_class_line(), line)
-                op = col.operator('emtk.emtk_invoke_operator_func',
+                op = col.operator('bmtools.bmtool_invoke_operator_func',
                                   text="", icon='X')
                 op.func = line
         return
@@ -386,10 +386,10 @@ class UIClassVariablesEditor():
             line = re.sub('cls', cls.get_class_line(), line)
             col = row.column()
             if icon is not None:
-                op = col.operator('emtk.emtk_invoke_operator_func',
+                op = col.operator('bmtools.bmtool_invoke_operator_func',
                                   text="Save", icon=icon)
             else:
-                op = col.operator('emtk.emtk_invoke_operator_func',
+                op = col.operator('bmtools.bmtool_invoke_operator_func',
                                   text="Save")
             op.func = line
             return
@@ -424,10 +424,10 @@ class UIClassVariablesEditor():
             line = re.sub('cls', cls.get_class_line(), line)
 
             if icon is not None:
-                op = col.operator('emtk.emtk_invoke_operator_func',
+                op = col.operator('bmtools.bmtool_invoke_operator_func',
                                   text=var_name + val, icon=icon)
             else:
-                op = col.operator('emtk.emtk_invoke_operator_func',
+                op = col.operator('bmtools.bmtool_invoke_operator_func',
                                   text=var_name + val)
             op.func = line
             return

@@ -38,7 +38,7 @@ class ModalShortcutsPreferences():
     __modal_operator_shortcuts_cache = None
     _modal_shortcuts = None
 
-    emtk_modal_operators_serialized_shortcuts: StringProperty(
+    bmtool_modal_operators_serialized_shortcuts: StringProperty(
         name='Modal operators serialized shortcuts.',
         default='')
 
@@ -56,8 +56,8 @@ class ModalShortcutsPreferences():
 
     # Currently edited shortcut properties
     # Shortcut and group that is being edited
-    emtk_editing_modal_shortcut_value: StringProperty("")
-    emtk_editing_modal_shortcut_group: StringProperty("")
+    bmtool_editing_modal_shortcut_value: StringProperty("")
+    bmtool_editing_modal_shortcut_group: StringProperty("")
 
     # Its properties
     edited_shortcut_event_type: StringProperty(
@@ -68,12 +68,12 @@ class ModalShortcutsPreferences():
 
     # This is search field
     shortcuts_groups_search_str: StringProperty(
-        name="Search through emtk modal props groups",
+        name="Search through bmtool modal props groups",
         default=''
     )
 
     shortcuts_search_str: StringProperty(
-        name="Search through emtk modal props",
+        name="Search through bmtool modal props",
         default=''
     )
 
@@ -106,9 +106,9 @@ class ModalShortcutsPreferences():
                 if i % 3 == 0:
                     row = box.row()
                 col = row.column()
-                if x.value == self.emtk_editing_modal_shortcut_group\
+                if x.value == self.bmtool_editing_modal_shortcut_group\
                         and y.shortcut_id\
-                        == self.emtk_editing_modal_shortcut_value:
+                        == self.bmtool_editing_modal_shortcut_value:
                     self.__draw_shortcut_editor(
                         col, x.value, y.shortcut_id, y)
                 else:
@@ -129,7 +129,7 @@ class ModalShortcutsPreferences():
         if not isinstance(shortcut, ModalShortcut):
             raise TypeError
 
-        b = layout.operator("emtk.start_editing_modal_shortcut",
+        b = layout.operator("bmtools.start_editing_modal_shortcut",
                             text=f'{shortcut}')
         b.shortcut_name = shortcut_name
         b.shortcut_group = shortcuts_group_name
@@ -150,7 +150,7 @@ class ModalShortcutsPreferences():
         col = row.column()
         col.prop(self, "edited_shortcut_alt")
 
-        a = layout.operator("emtk.add_or_update_modal_shortcut")
+        a = layout.operator("bmtools.add_or_update_modal_shortcut")
         a.shortcut_name = shortcut_name
         a.shortcut_group = shortcuts_group_name
         a.shortcut_event_type = self.edited_shortcut_event_type
@@ -159,12 +159,12 @@ class ModalShortcutsPreferences():
         a.shortcut_alt = self.edited_shortcut_alt
 
     def save_cache(self):
-        self.emtk_modal_operators_serialized_shortcuts\
+        self.bmtool_modal_operators_serialized_shortcuts\
             = self.modal_shortcuts.serialize()
 
     def refresh_cache(self):
         self._modal_shortcuts = ModalShortcutsCache(
-            self.emtk_modal_operators_serialized_shortcuts)
+            self.bmtool_modal_operators_serialized_shortcuts)
 
     def _check_cache_refresh(self):
         if self._modal_shortcuts is None:

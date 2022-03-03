@@ -28,8 +28,8 @@ import bpy
 from bpy.props import BoolProperty, IntProperty, FloatProperty, StringProperty
 from bpy.types import Operator
 
-from ..libslibemtk.modifiers_operator import ModifiersOperator
-from ..libslibemtk.utils.modifier_prop_types import get_all_editable_props
+from ..libs.emtk.modifiers_operator import ModifiersOperator
+from ..libs.emtk.utils.modifier_prop_types import get_all_editable_props
 
 from ..libs.class_var_editor_ui.panel import UIClassVariablesEditor
 
@@ -41,7 +41,7 @@ USE_PROFILER = False
 
 class BMTOOLS_OT_clusters_list_popup(
         UIClassVariablesEditor, ModifiersOperator, Operator):
-    bl_idname = "emtk.clusters_list_popup"
+    bl_idname = "bmtools.clusters_list_popup"
     bl_label = "View and edit active object's clusters."
 
     def __init__(self):
@@ -83,7 +83,7 @@ class BMTOOLS_OT_clusters_list_popup(
         cls = type(self)
         cls.iteration += 1
         layout = self.layout
-        layout.label(text='libemtk')
+        layout.label(text='EMTK')
         box = layout.box()
 
         if USE_PROFILER and cls.iteration in {1, 10, 100}:
@@ -118,7 +118,7 @@ class BMTOOLS_OT_clusters_list_popup(
             icon = 'DOWNARROW_HLT'
         else:
             icon = 'RIGHTARROW'
-        op = row.operator('emtk.emtk_invoke_operator_func',
+        op = row.operator('bmtools.bmtool_invoke_operator_func',
                           text=cluster.name, icon=icon)
         op.func = line
 
@@ -128,7 +128,7 @@ class BMTOOLS_OT_clusters_list_popup(
                 move_down("{cluster.name}")'
         line = re.sub('self', self.get_class_line(), line)
         col = row.column()
-        op = col.operator('emtk.emtk_invoke_operator_func',
+        op = col.operator('bmtools.bmtool_invoke_operator_func',
                           text='', icon='TRIA_DOWN')
         op.func = line
 
@@ -137,7 +137,7 @@ class BMTOOLS_OT_clusters_list_popup(
                 move_up("{cluster.name}")'
         line = re.sub('self', self.get_class_line(), line)
         col = row.column()
-        op = col.operator('emtk.emtk_invoke_operator_func',
+        op = col.operator('bmtools.bmtool_invoke_operator_func',
                           text='', icon='TRIA_UP')
         op.func = line
 
@@ -146,7 +146,7 @@ class BMTOOLS_OT_clusters_list_popup(
                 remove("{cluster.name}")'
         line = re.sub('self', self.get_class_line(), line)
         col = row.column()
-        op = col.operator('emtk.emtk_invoke_operator_func',
+        op = col.operator('bmtools.bmtool_invoke_operator_func',
                           text='', icon='X')
         op.func = line
 
@@ -155,7 +155,7 @@ class BMTOOLS_OT_clusters_list_popup(
                 apply("{cluster.name}")'
         line = re.sub('self', self.get_class_line(), line)
         col = row.column()
-        op = col.operator('emtk.emtk_invoke_operator_func',
+        op = col.operator('bmtools.bmtool_invoke_operator_func',
                           text='', icon='CHECKMARK')
         op.func = line
 
@@ -186,7 +186,7 @@ class BMTOOLS_OT_clusters_list_popup(
                 raise ValueError
 
             col = row.column()
-            op = col.operator('emtk.emtk_invoke_operator_func',
+            op = col.operator('bmtools.bmtool_invoke_operator_func',
                               text='', icon=icon)
             op.func = line
 
@@ -195,7 +195,7 @@ class BMTOOLS_OT_clusters_list_popup(
                 duplicate("{cluster.name}")'
         line = re.sub('self', self.get_class_line(), line)
         col = row.column()
-        op = col.operator('emtk.emtk_invoke_operator_func',
+        op = col.operator('bmtools.bmtool_invoke_operator_func',
                           text='', icon='DUPLICATE')
         op.func = line
 
@@ -204,7 +204,7 @@ class BMTOOLS_OT_clusters_list_popup(
                 deconstruct("{cluster.name}")'
         line = re.sub('self', self.get_class_line(), line)
         col = row.column()
-        op = col.operator('emtk.emtk_invoke_operator_func',
+        op = col.operator('bmtools.bmtool_invoke_operator_func',
                           text='', icon='MOD_DECIM')
         op.func = line
 
@@ -221,7 +221,7 @@ class BMTOOLS_OT_clusters_list_popup(
                 icon = 'DOWNARROW_HLT'
             else:
                 icon = 'RIGHTARROW'
-            op = col.operator('emtk.emtk_invoke_operator_func',
+            op = col.operator('bmtools.bmtool_invoke_operator_func',
                               text='Definition', icon=icon)
             op.func = line
 
@@ -235,7 +235,7 @@ class BMTOOLS_OT_clusters_list_popup(
                 icon = 'DOWNARROW_HLT'
             else:
                 icon = 'RIGHTARROW'
-            op = col.operator('emtk.emtk_invoke_operator_func',
+            op = col.operator('bmtools.bmtool_invoke_operator_func',
                               text='Properties', icon=icon)
             op.func = line
 
@@ -293,7 +293,7 @@ class BMTOOLS_OT_clusters_list_popup(
             icon = 'DOWNARROW_HLT'
         else:
             icon = 'RIGHTARROW'
-        op = col.operator('emtk.emtk_invoke_operator_func',
+        op = col.operator('bmtools.bmtool_invoke_operator_func',
                           text=modifier.name + ' modifier', icon=icon)
         op.func = line
 
@@ -303,7 +303,7 @@ class BMTOOLS_OT_clusters_list_popup(
                 move_down("{modifier.name}")'
         line = re.sub('self', self.get_class_line(), line)
         col = row.column()
-        op = col.operator('emtk.emtk_invoke_operator_func',
+        op = col.operator('bmtools.bmtool_invoke_operator_func',
                           text='', icon='TRIA_DOWN')
         op.func = line
 
@@ -312,7 +312,7 @@ class BMTOOLS_OT_clusters_list_popup(
                 move_up("{modifier.name}")'
         line = re.sub('self', self.get_class_line(), line)
         col = row.column()
-        op = col.operator('emtk.emtk_invoke_operator_func',
+        op = col.operator('bmtools.bmtool_invoke_operator_func',
                           text='', icon='TRIA_UP')
         op.func = line
 
@@ -321,7 +321,7 @@ class BMTOOLS_OT_clusters_list_popup(
                 remove("{modifier.name}")'
         line = re.sub('self', self.get_class_line(), line)
         col = row.column()
-        op = col.operator('emtk.emtk_invoke_operator_func',
+        op = col.operator('bmtools.bmtool_invoke_operator_func',
                           text='', icon='X')
         op.func = line
 
@@ -330,7 +330,7 @@ class BMTOOLS_OT_clusters_list_popup(
                 apply("{modifier.name}")'
         line = re.sub('self', self.get_class_line(), line)
         col = row.column()
-        op = col.operator('emtk.emtk_invoke_operator_func',
+        op = col.operator('bmtools.bmtool_invoke_operator_func',
                           text='', icon='CHECKMARK')
         op.func = line
 
@@ -361,7 +361,7 @@ class BMTOOLS_OT_clusters_list_popup(
         #         raise ValueError
 
         #     col = row.column()
-        #     op = col.operator('emtk.emtk_invoke_operator_func',
+        #     op = col.operator('bmtools.bmtool_invoke_operator_func',
         #                       text='', icon=icon)
         #     op.func = line
 
@@ -370,7 +370,7 @@ class BMTOOLS_OT_clusters_list_popup(
         #         duplicate("{cluster.name}")'
         # line = re.sub('self', self.get_class_line(), line)
         # col = row.column()
-        # op = col.operator('emtk.emtk_invoke_operator_func',
+        # op = col.operator('bmtools.bmtool_invoke_operator_func',
         #                   text='', icon='DUPLICATE')
         # op.func = line
 
@@ -394,7 +394,7 @@ class BMTOOLS_OT_clusters_list_popup(
         print('Operator invoked')
         for x in context.object.modifiers:
             x.show_expanded = False
-        self.prefs = context.preferences.addons['emtk'].preferences
+        self.prefs = context.preferences.addons['bmtools'].preferences
         context.window_manager.invoke_popup(
             self, width=self.prefs.clusters_list_popup_width)
         return {'RUNNING_MODAL'}

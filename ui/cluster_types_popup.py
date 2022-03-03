@@ -28,7 +28,7 @@ import bpy
 from bpy.types import Operator
 from bpy.props import BoolProperty, IntProperty, FloatProperty, StringProperty
 
-from ..libslibemtk.utils.modifier_prop_types import get_all_editable_props
+from ..libs.emtk.utils.modifier_prop_types import get_all_editable_props
 
 from ..libs.class_var_editor_ui.panel import UIClassVariablesEditor
 
@@ -42,7 +42,7 @@ USE_PROFILER = False
 
 class BMTOOLS_OT_clusters_types_popup(
         UIClassVariablesEditor, Operator):
-    bl_idname = "emtk.cluster_types_popup"
+    bl_idname = "bmtools.cluster_types_popup"
     bl_label = "View and edit cluster types"
 
     def __init__(self):
@@ -68,7 +68,7 @@ class BMTOOLS_OT_clusters_types_popup(
         cls = type(self)
         cls.iteration += 1
         layout = self.layout
-        layout.label(text='libemtk')
+        layout.label(text='EMTK')
         row = layout.row()
         col = row.column()
         self.__draw_switcher(col)
@@ -88,7 +88,7 @@ class BMTOOLS_OT_clusters_types_popup(
 
     def invoke(self, context, event):
         print('Operator invoked')
-        prefs = context.preferences.addons['emtk'].preferences
+        prefs = context.preferences.addons['bmtools'].preferences
         context.window_manager.invoke_popup(
             self, width=prefs.clusters_list_popup_width)
         return {'RUNNING_MODAL'}
