@@ -77,7 +77,7 @@ classes = [
     BMTOOL_OT_emtkm,
     BMTOOL_OT_emtke2,
 
-    # libemtk operators
+    # emtk operators
     BMTOOL_OT_add_cluster_type_object,
 
     # prefs
@@ -109,7 +109,7 @@ addon_keymaps = []
 
 
 def register():
-    logger.info('Registering EMTK and libemtk')
+    logger.info('Registering EMTK and emtk')
 
     wm = bpy.context.window_manager
     kc = wm.keyconfigs.addon
@@ -149,11 +149,11 @@ def register():
         # This throws json error.
     except KeyError:
         logger.info('Skipped cache refresh.')
-    logger.info('Finished registering EMTK and libemtk.')
+    logger.info('Finished registering EMTK and emtk.')
 
 
 def unregister():
-    logger.info('Unregistering EMTK and libemtk')
+    logger.info('Unregistering EMTK and emtk')
 
     wm = bpy.context.window_manager
     kc = wm.keyconfigs.addon
@@ -173,4 +173,4 @@ def unregister():
     for cls in reversed(classes):
         logger.debug(f'Unregister class {cls}')
         bpy.utils.unregister_class(cls)
-    logger.info('Finished unregistering EMTK and libemtk')
+    logger.info('Finished unregistering EMTK and emtk')

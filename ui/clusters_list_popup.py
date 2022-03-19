@@ -28,8 +28,8 @@ import bpy
 from bpy.props import BoolProperty, IntProperty, FloatProperty, StringProperty
 from bpy.types import Operator
 
-from ..libs.libemtk.modifiers_operator import ModifiersOperator
-from ..libs.libemtk.utils.modifier_prop_types import get_all_editable_props
+from ..libs.emtk.modifiers_operator import ModifiersOperator
+from ..libs.emtk.utils.modifier_prop_types import get_all_editable_props
 
 from ..libs.class_var_editor_ui.panel import UIClassVariablesEditor
 
@@ -83,7 +83,7 @@ class BMTOOLS_OT_clusters_list_popup(
         cls = type(self)
         cls.iteration += 1
         layout = self.layout
-        layout.label(text='libemtk')
+        layout.label(text='emtk')
         box = layout.box()
 
         if USE_PROFILER and cls.iteration in {1, 10, 100}:

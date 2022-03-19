@@ -28,7 +28,7 @@ import bpy
 from bpy.types import Operator
 from bpy.props import BoolProperty, IntProperty, FloatProperty, StringProperty
 
-from ..libs.libemtk.utils.modifier_prop_types import get_all_editable_props
+from ..libs.emtk.utils.modifier_prop_types import get_all_editable_props
 
 from ..libs.class_var_editor_ui.panel import UIClassVariablesEditor
 
@@ -68,7 +68,7 @@ class BMTOOLS_OT_clusters_types_popup(
         cls = type(self)
         cls.iteration += 1
         layout = self.layout
-        layout.label(text='libemtk')
+        layout.label(text='emtk')
         row = layout.row()
         col = row.column()
         self.__draw_switcher(col)
