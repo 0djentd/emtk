@@ -19,7 +19,7 @@
 
 from bpy.types import Panel
 
-from ..libs.emtk.utils.modifier_prop_types import get_all_editable_props
+from ..libs.libemtk.utils.modifier_prop_types import get_all_editable_props
 
 
 """
@@ -45,7 +45,7 @@ in class variables by identyfing panels somehow.
 """
 # TODO: No idea why this doesnt work properly with inheritance.
 # class BlenderUIWrapper():
-#     """Base class for emtk panels and menus.
+#     """Base class for libemtk panels and menus.
 #     Provides additional methods based on 'poll' and 'draw' methods.
 #     """
 #     __tag_panel_init = True

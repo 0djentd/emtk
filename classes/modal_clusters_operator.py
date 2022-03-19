@@ -21,7 +21,7 @@ import logging
 
 import bpy
 
-from ..libs.emtk.modifiers_operator import ModifiersOperator
+from ..libs.libemtk.modifiers_operator import ModifiersOperator
 from ..ui.emtk_ui import emtk_modifier_ui_draw
 from ..libs.modal_input.object import ModalInputOperator
 
