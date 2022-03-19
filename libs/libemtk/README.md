@@ -21,7 +21,7 @@ This library provides new level of abstraction for _Blender_ modifiers stack.
 
 Library name is not final and probably will be changed on release.
 
-_EMTK_ is designed to be used with _BMTools_.
+_EMTK_ is designed to be used with _EMTK_.
 
 Most classes and methods have docstrings.
 

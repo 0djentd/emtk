@@ -55,7 +55,7 @@ class UIClassVariablesEditorCache(PropertyGroup):
     var_editor_currently_edited: StringProperty('')
 
     # Class name with 'bpy.types.' prefix
-    # Example: bpy.types.BMTOOLS_OT_clusters_list_popup
+    # Example: bpy.types.EMTK_OT_clusters_list_popup
     var_editor_class: StringProperty('')
 
 
@@ -439,7 +439,7 @@ class UIClassVariablesEditor():
         variable str should only use " or '.
 
         Example:
-        var_editor_start(bpy.types.BMTOOLS_OT_clusters_list_popup,
+        var_editor_start(bpy.types.EMTK_OT_clusters_list_popup,
                          'm_list.get_cluster().name')
         """
         if type(variable) is not str:
@@ -479,7 +479,7 @@ class UIClassVariablesEditor():
         variable str should only use " or '.
 
         Example:
-        var_editor_stop(bpy.types.BMTOOLS_OT_clusters_list_popup,
+        var_editor_stop(bpy.types.EMTK_OT_clusters_list_popup,
                          'm_list.get_cluster().name')
         """
         if type(variable) is not str:

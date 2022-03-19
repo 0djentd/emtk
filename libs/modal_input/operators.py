@@ -37,7 +37,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-class BMTOOLS_OT_start_editing_modal_shortcut(bpy.types.Operator):
+class EMTK_OT_start_editing_modal_shortcut(bpy.types.Operator):
     bl_idname = "emtk.start_editing_modal_shortcut"
     bl_label = "Start editing emtk modal operator kbs."
     bl_description = "Start editing modal shortcut"
@@ -82,7 +82,7 @@ class BMTOOLS_OT_start_editing_modal_shortcut(bpy.types.Operator):
         return {'FINISHED'}
 
 
-class BMTOOLS_OT_add_or_update_modal_shortcut(bpy.types.Operator):
+class EMTK_OT_add_or_update_modal_shortcut(bpy.types.Operator):
     bl_label = "Add or change emtk modal operator kbs."
     bl_idname = "emtk.add_or_update_modal_shortcut"
     bl_description = "Add or update modal shortcut"

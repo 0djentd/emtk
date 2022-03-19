@@ -39,7 +39,7 @@ logger.setLevel(logging.DEBUG)
 USE_PROFILER = False
 
 
-class BMTOOLS_OT_clusters_list_popup(
+class EMTK_OT_clusters_list_popup(
         UIClassVariablesEditor, ModifiersOperator, Operator):
     bl_idname = "emtk.clusters_list_popup"
     bl_label = "View and edit active object's clusters."
@@ -87,12 +87,12 @@ class BMTOOLS_OT_clusters_list_popup(
         box = layout.box()
 
         if USE_PROFILER and cls.iteration in {1, 10, 100}:
-            c = 'self._BMTOOLS_OT_clusters_list_popup__draw_clusters_list(box, cls.m_list)'
+            c = 'self._EMTK_OT_clusters_list_popup__draw_clusters_list(box, cls.m_list)'
             print('Profiler stats for clusters list popup ')
             print(c)
             cProfile.runctx(c, globals(), locals())
         else:
-            self._BMTOOLS_OT_clusters_list_popup__draw_clusters_list(
+            self._EMTK_OT_clusters_list_popup__draw_clusters_list(
                 box, self.m_list)
 
     def __draw_clusters_list(self, layout, clusters_list):

@@ -36,15 +36,15 @@ from . preferences import EMTKPreferences
 # UI
 from . ui.pie_menus import VIEW3D_MT_PIE_emtk_pie_1
 from . ui.emtk_panel import VIEW3D_PT_emtk_panel
-from . ui.clusters_list_popup import BMTOOLS_OT_clusters_list_popup
+from . ui.clusters_list_popup import EMTK_OT_clusters_list_popup
 
 # Modal input
-from . libs.modal_input.operators import BMTOOLS_OT_start_editing_modal_shortcut
-from . libs.modal_input.operators import BMTOOLS_OT_add_or_update_modal_shortcut
+from . libs.modal_input.operators import EMTK_OT_start_editing_modal_shortcut
+from . libs.modal_input.operators import EMTK_OT_add_or_update_modal_shortcut
 from . libs.modal_input.operators import BMTOOL_OT_reparse_default_modifiers_props_kbs
 
 # Class variables editor
-from . libs.class_var_editor_ui.operators import BMTOOLS_OT_emtk_invoke_operator_func
+from . libs.class_var_editor_ui.operators import EMTK_OT_emtk_invoke_operator_func
 from . libs.class_var_editor_ui.panel import UIClassVariablesEditorCache
 from . libs.class_var_editor_ui.panel import UIClassVariablesEditor
 from . libs.class_var_editor_ui.panel import get_prop_group_name
@@ -82,11 +82,11 @@ classes = [
 
     # prefs
     EMTKPreferences,
-    BMTOOLS_OT_start_editing_modal_shortcut,
-    BMTOOLS_OT_add_or_update_modal_shortcut,
+    EMTK_OT_start_editing_modal_shortcut,
+    EMTK_OT_add_or_update_modal_shortcut,
 
     # popup operators
-    BMTOOLS_OT_clusters_list_popup,
+    EMTK_OT_clusters_list_popup,
 
     # ui
     VIEW3D_MT_PIE_emtk_pie_1,
@@ -102,7 +102,7 @@ classes = [
     UIClassVariablesEditorCache,
 
     # utils operators
-    BMTOOLS_OT_emtk_invoke_operator_func,
+    EMTK_OT_emtk_invoke_operator_func,
 ]
 
 addon_keymaps = []
@@ -118,7 +118,7 @@ def register():
         km = kc.keymaps.new(name="Object Mode")
 
         kmi = km.keymap_items.new("wm.call_menu_pie", "V", "PRESS", alt=True)
-        kmi.properties.name = "BMTOOLS_MT_PIE_bmtpie"
+        kmi.properties.name = "EMTK_MT_PIE_bmtpie"
         addon_keymaps.append((km, kmi))
 
     for cls in classes:

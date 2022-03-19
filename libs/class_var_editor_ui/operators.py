@@ -26,7 +26,7 @@ from bpy.props import BoolProperty, IntProperty, FloatProperty, StringProperty
 from bpy.types import Panel, Operator
 
 
-class BMTOOLS_OT_emtk_invoke_operator_func(Operator):
+class EMTK_OT_emtk_invoke_operator_func(Operator):
     """Workaround to change panel class variables from button."""
 
     bl_idname = "emtk.emtk_invoke_operator_func"

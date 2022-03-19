@@ -24,7 +24,7 @@ from bpy.types import Menu
 
 class VIEW3D_MT_PIE_cluster_types(Menu):
     bl_label = "Cluster types editing"
-    bl_idname = "BMTOOLS_MT_PIE_cluster_types"
+    bl_idname = "EMTK_MT_PIE_cluster_types"
 
     def draw(self, context):
         layout = self.layout()

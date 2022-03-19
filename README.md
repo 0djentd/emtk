@@ -13,17 +13,17 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-BMTools
+EMTK
 =======
 
-_BMTools_ is a _Blender_ addon that uses _EMTK_ to simplify editing
+_EMTK_ is a _Blender_ addon that uses _EMTK_ to simplify editing
 modifiers stack through modal operators and abstraction layers.
 
-_BMToolM_ is a modal operator that can be used to edit clusters
+_EMTKM_ is a modal operator that can be used to edit clusters
 and modifiers of an object. It has editing modes for
 all editable properties of all Blender modifiers.
 
 There is a few operators that invoke UI popups with similar or extended
 functionality as well.
 
-BMTools uses EMTK, modal_input and class_var_editor_ui as python modules.
+EMTK uses EMTK, modal_input and class_var_editor_ui as python modules.

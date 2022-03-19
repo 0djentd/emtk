@@ -40,7 +40,7 @@ USE_PROFILER = False
 # TODO: Not implemented
 
 
-class BMTOOLS_OT_clusters_types_popup(
+class EMTK_OT_clusters_types_popup(
         UIClassVariablesEditor, Operator):
     bl_idname = "emtk.cluster_types_popup"
     bl_label = "View and edit cluster types"

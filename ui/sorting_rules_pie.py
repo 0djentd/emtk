@@ -23,7 +23,7 @@ from bpy.types import Menu
 # TODO: not implemented
 class VIEW3D_MT_PIE_sorting_rules(Menu):
     bl_label = "Sorting rules editing"
-    bl_idname = "BMTOOLS_MT_PIE_sorting_rules"
+    bl_idname = "EMTK_MT_PIE_sorting_rules"
 
     def draw(self, context):
         layout = self.layout()
