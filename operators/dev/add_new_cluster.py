@@ -23,7 +23,7 @@ from bpy.props import FloatProperty, StringProperty
 from ...libs.libemtk.modifiers_operator import ModifiersOperator
 
 
-class BMTOOL_OT_add_new_cluster(ModifiersOperator, Operator):
+class EMTK_OT_add_new_cluster(ModifiersOperator, Operator):
     bl_idname = "emtk.add_new_cluster"
     bl_label = "Add new cluster"
 

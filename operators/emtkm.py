@@ -29,7 +29,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-class BMTOOL_OT_emtkm(EMTKUi, ModalClustersOperator, Operator):
+class EMTK_OT_emtkm(EMTKUi, ModalClustersOperator, Operator):
     """Tool for editing all modifiers of an object."""
 
     bl_idname = "object.emtkm"

@@ -23,7 +23,7 @@ from bpy.types import Operator
 from bpy.props import StringProperty
 
 
-class BMTOOL_OT_add_cluster_type_object(Operator):
+class EMTK_OT_add_cluster_type_object(Operator):
     bl_idname = "object.add_cluster_type"
     bl_label = "Add cluster type to an object"
     bl_description = "Add cluster type to an object"

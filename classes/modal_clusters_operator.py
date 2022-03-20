@@ -85,7 +85,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
     __UI_STATUSBAR = False
 
     # Use modifiers of any type.
-    __BMTOOLM = True
+    __EMTKM = True
 
     @classmethod
     def poll(self, context):
@@ -270,7 +270,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
         elif (event.type == self.__emtk_kbs['add_new'])\
                 & (event.value == 'PRESS'):
 
-            if not self.__BMTOOLM:
+            if not self.__EMTKM:
                 x = self.m_list.create_modifier(
                     self._DEFAULT_M_NAME, self._DEFAULT_M_TYPE)
                 self.m_list.active = x
@@ -413,7 +413,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
 
                 # First modifier.
                 if event.ctrl:
-                    if not self.__BMTOOLM:
+                    if not self.__EMTKM:
                         x = []
                         for y in layer:
                             if y.type == self._DEFAULT_M_TYPE:
@@ -424,7 +424,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
 
                 # Previous modifier.
                 else:
-                    if not self.__BMTOOLM:
+                    if not self.__EMTKM:
                         layer.active = layer.iterate(
                             cluster, 'UP', self._DEFAULT_M_TYPE)
                     else:
@@ -441,7 +441,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
             if len(layer) > 1:
                 # Last modifier.
                 if event.ctrl:
-                    if not self.__BMTOOLM:
+                    if not self.__EMTKM:
                         x = []
                         for y in layer:
                             if y.type == self._DEFAULT_M_TYPE:
@@ -452,7 +452,7 @@ class ModalClustersOperator(ModalInputOperator, ModifiersOperator):
 
                 # Next modifier.
                 else:
-                    if not self.__BMTOOLM:
+                    if not self.__EMTKM:
                         layer.active = layer.iterate(
                             cluster, 'DOWN', self._DEFAULT_M_TYPE)
                     else:

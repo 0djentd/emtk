@@ -105,13 +105,13 @@ class EMTKUi:
     """
 
     # Create draw handler and remove it after
-    _BMTOOL_UI = True
+    _EMTK_UI = True
 
     # Show additional info
-    _BMTOOL_UI_V = True
+    _EMTK_UI_V = True
 
     # Show all objects mods
-    _BMTOOL_UI_SHOW_ALL_OBJECTS = False
+    _EMTK_UI_SHOW_ALL_OBJECTS = False
 
     # Prints info about operator in statusbar
     # TODO: remove this method.
@@ -159,7 +159,7 @@ class EMTKUi:
         ui_t = []
 
         # List of modifiers
-        if self._BMTOOL_UI_SHOW_ALL_OBJECTS:
+        if self._EMTK_UI_SHOW_ALL_OBJECTS:
             for y in self.selected_objects:
                 for x in self.emtk_ui_modifiers_list(y):
                     ui_t.append(x)

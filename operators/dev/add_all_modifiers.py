@@ -25,7 +25,7 @@ from ...libs.libemtk.utils.modifier_prop_types import get_all_editable_props
 from ...libs.libemtk.utils.modifier_prop_types import MODIFIER_TYPES
 
 
-class BMTOOL_OT_add_all_modifiers(bpy.types.Operator):
+class EMTK_OT_add_all_modifiers(bpy.types.Operator):
     bl_idname = "object.add_all_modifiers"
     bl_label = "EMTK add all modifiers"
     bl_description = "Add all modifiers on selected objects"
@@ -57,7 +57,7 @@ class BMTOOL_OT_add_all_modifiers(bpy.types.Operator):
         return {'FINISHED'}
 
 
-class BMTOOL_OT_add_all_modifiers_and_dump_props(bpy.types.Operator):
+class EMTK_OT_add_all_modifiers_and_dump_props(bpy.types.Operator):
     bl_idname = "object.add_all_modifiers_and_dump_props"
     bl_label = "EMTK add all modifiers and dump props"
     bl_description = "Add all modifiers on selected objects and dump props"

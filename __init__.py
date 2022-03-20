@@ -24,11 +24,11 @@ import json
 import bpy
 
 # Modal operators
-from . operators.emtkm import BMTOOL_OT_emtkm
-from . operators.emtke2 import BMTOOL_OT_emtke2
+from . operators.emtkm import EMTK_OT_emtkm
+from . operators.emtke2 import EMTK_OT_emtke2
 
 # Operators
-from . operators.dev.add_new_cluster import BMTOOL_OT_add_new_cluster
+from . operators.dev.add_new_cluster import EMTK_OT_add_new_cluster
 
 # Preferences
 from . preferences import EMTKPreferences
@@ -41,7 +41,7 @@ from . ui.clusters_list_popup import EMTK_OT_clusters_list_popup
 # Modal input
 from . libs.modal_input.operators import EMTK_OT_start_editing_modal_shortcut
 from . libs.modal_input.operators import EMTK_OT_add_or_update_modal_shortcut
-from . libs.modal_input.operators import BMTOOL_OT_reparse_default_modifiers_props_kbs
+from . libs.modal_input.operators import EMTK_OT_reparse_default_modifiers_props_kbs
 
 # Class variables editor
 from . libs.class_var_editor_ui.operators import EMTK_OT_emtk_invoke_operator_func
@@ -50,10 +50,10 @@ from . libs.class_var_editor_ui.panel import UIClassVariablesEditor
 from . libs.class_var_editor_ui.panel import get_prop_group_name
 
 # Dev
-from . operators.dev.add_all_modifiers import BMTOOL_OT_add_all_modifiers
+from . operators.dev.add_all_modifiers import EMTK_OT_add_all_modifiers
 from . operators.dev.add_all_modifiers import\
-    BMTOOL_OT_add_all_modifiers_and_dump_props
-from . operators.dev.add_cluster_type import BMTOOL_OT_add_cluster_type_object
+    EMTK_OT_add_all_modifiers_and_dump_props
+from . operators.dev.add_cluster_type import EMTK_OT_add_cluster_type_object
 
 bl_info = {
     "name": "EMTK",
@@ -74,11 +74,11 @@ logging.basicConfig(level=logging.DEBUG)
 classes = [
 
     # modal operators
-    BMTOOL_OT_emtkm,
-    BMTOOL_OT_emtke2,
+    EMTK_OT_emtkm,
+    EMTK_OT_emtke2,
 
     # libemtk operators
-    BMTOOL_OT_add_cluster_type_object,
+    EMTK_OT_add_cluster_type_object,
 
     # prefs
     EMTKPreferences,
@@ -93,10 +93,10 @@ classes = [
     VIEW3D_PT_emtk_panel,
 
     # dev
-    BMTOOL_OT_add_all_modifiers,
-    BMTOOL_OT_add_new_cluster,
-    BMTOOL_OT_add_all_modifiers_and_dump_props,
-    BMTOOL_OT_reparse_default_modifiers_props_kbs,
+    EMTK_OT_add_all_modifiers,
+    EMTK_OT_add_new_cluster,
+    EMTK_OT_add_all_modifiers_and_dump_props,
+    EMTK_OT_reparse_default_modifiers_props_kbs,
 
     # property groups
     UIClassVariablesEditorCache,

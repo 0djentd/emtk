@@ -23,7 +23,7 @@ from ..libs.libemtk.modifiers_operator import ModifiersOperator
 from ..libs.libemtk.utils.modifiers import get_modifier_state
 
 
-class BMTOOL_OT_emtke2(ModifiersOperator, Operator):
+class EMTK_OT_emtke2(ModifiersOperator, Operator):
     bl_idname = "object.emtke2"
     bl_label = "EMTKE2"
     bl_description = "Add modifiers on selected objects"
@@ -32,9 +32,9 @@ class BMTOOL_OT_emtke2(ModifiersOperator, Operator):
     def poll(self, context):
         if context.area.type != 'VIEW_3D':
             return False
-        elif context.mode != 'OBJECT' and self._BMTOOL_EDITMODE is False:
+        elif context.mode != 'OBJECT' and self._EMTK_EDITMODE is False:
             return False
-        elif len(context.selected_objects) > 1 and self._BMTOOL_SINGLE_OBJECT:
+        elif len(context.selected_objects) > 1 and self._EMTK_SINGLE_OBJECT:
             return False
         elif len(context.selected_objects) == 0:
             return False
