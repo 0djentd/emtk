@@ -118,7 +118,7 @@ def register():
         km = kc.keymaps.new(name="Object Mode")
 
         kmi = km.keymap_items.new("wm.call_menu_pie", "V", "PRESS", alt=True)
-        kmi.properties.name = "EMTK_MT_PIE_bmtpie"
+        kmi.properties.name = "EMTK_MT_PIE_emtk_pie"
         addon_keymaps.append((km, kmi))
 
     for cls in classes:

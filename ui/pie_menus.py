@@ -22,7 +22,7 @@ from bpy.types import Menu
 
 class VIEW3D_MT_PIE_emtk_pie_1(Menu):
     bl_label = "EMTK"
-    bl_idname = "EMTK_MT_PIE_bmtpie"
+    bl_idname = "EMTK_MT_PIE_emtk_pie"
 
     def draw(self, context):
         layout = self.layout
