@@ -22,10 +22,10 @@
 
 import cProfile
 
-from libs.libemtk.lists.extended_modifiers_list import ExtendedModifiersList
-from libs.libemtk.dummy_modifiers import DummyBlenderObj
-from libs.libemtk.clusters.modifiers_cluster import ModifiersCluster
-from libs.libemtk.clusters.clusters_layer import ClustersLayer
+from libemtk.lists.extended_modifiers_list import ExtendedModifiersList
+from libemtk.dummy_modifiers import DummyBlenderObj
+from libemtk.clusters.modifiers_cluster import ModifiersCluster
+from libemtk.clusters.clusters_layer import ClustersLayer
 
 obj = DummyBlenderObj()
 mods = []

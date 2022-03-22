@@ -19,8 +19,8 @@
 
 from bpy.types import Operator
 
-from ..libs.libemtk.modifiers_operator import ModifiersOperator
-from ..libs.libemtk.utils.modifiers import get_modifier_state
+from libemtk.modifiers_operator import ModifiersOperator
+from libemtk.utils.modifiers import get_modifier_state
 
 
 class EMTK_OT_emtke2(ModifiersOperator, Operator):

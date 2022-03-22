@@ -21,9 +21,9 @@ import logging
 
 import bpy
 
-from ..libs.libemtk.modifiers_operator import ModifiersOperator
+from libemtk.modifiers_operator import ModifiersOperator
 from ..ui.emtk_ui import emtk_modifier_ui_draw
-from ..libs.modal_input.object import ModalInputOperator
+from modal_input.object import ModalInputOperator
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
