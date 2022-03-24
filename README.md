@@ -27,3 +27,16 @@ There is a few operators that invoke UI popups with similar or extended
 functionality as well.
 
 EMTK uses EMTK, modal_input and class_var_editor_ui as python modules.
+
+# Installation
+Linux:
+```
+mkdir -p ~/.config/blender/3.1/scripts/addons
+cp -r emtk ~/.config/blender/3.1/scripts/addons/
+```
+
+Windows:
+idk
+
+Mac:
+idk
