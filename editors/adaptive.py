@@ -35,6 +35,7 @@ from libemtk.utils.modifier_prop_types import get_props_filtered_by_types
 from libemtk.clusters.cluster_trait import ClusterTrait
 from ..classes.editor import ModalClustersEditor
 from modal_input.shortcuts import generate_new_shortcut
+from modal_input.shortcuts import ModalShortcutsGroup
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
@@ -234,6 +235,10 @@ class AdaptiveModalEditor(ModalClustersEditor):
             else:
                 raise TypeError
 
+        # Create new shortcuts group, if needed.
+        if s is None:
+            s = ModalShortcutsGroup(mod.type, [])
+
         # Generate missing shortcuts.
         new_props = []
         for x in props:
@@ -242,6 +247,10 @@ class AdaptiveModalEditor(ModalClustersEditor):
                     new_props.append(x)
         for x in new_props:
             s.add(generate_new_shortcut(x, s.shortcuts))
+
+        # Update cache if shortcuts group changed.
+        if len(new_props) > 0:
+            prefs.modal_shortcuts.update(s)
 
         logger.debug('Editor switched to.')
         logger.debug('Modal props mappings')
