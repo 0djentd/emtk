@@ -25,7 +25,7 @@ import bpy
 
 # Modal operators
 from . operators.emtkm import EMTK_OT_emtkm
-from . operators.emtke2 import EMTK_OT_emtke2
+from . operators.dev.add_modifiers import EMTK_OT_add_modifiers
 
 # Operators
 from . operators.dev.add_new_cluster import EMTK_OT_add_new_cluster
@@ -75,7 +75,7 @@ classes = [
 
     # modal operators
     EMTK_OT_emtkm,
-    EMTK_OT_emtke2,
+    EMTK_OT_add_modifiers,
 
     # libemtk operators
     EMTK_OT_add_cluster_type_object,
