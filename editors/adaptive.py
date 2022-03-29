@@ -226,14 +226,13 @@ class AdaptiveModalEditor(ModalClustersEditor):
         # Filter properties.
         props = get_props_filtered_by_types(mods[0])
         for x in props:
-            if x in self.__MODAL_INPUT_PROP_TYPES:
-                for y in props[x]:
+            for y in props[x]:
+                if x in self.__MODAL_INPUT_PROP_TYPES:
                     self.__kbs_modal.add(y)
-            elif x in self.__NOT_MODAL_INPUT_PROP_TYPES:
-                for y in props[x]:
+                elif x in self.__NOT_MODAL_INPUT_PROP_TYPES:
                     self.__kbs_no_modal.add(y)
-            else:
-                raise TypeError
+                else:
+                    raise TypeError
 
         # Create new shortcuts group, if needed.
         if s is None:
