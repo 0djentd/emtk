@@ -32,7 +32,7 @@ logger.setLevel(logging.DEBUG)
 class EMTK_OT_emtkm(EMTKUi, ModalClustersOperator, Operator):
     """Tool for editing all modifiers of an object."""
 
-    bl_idname = "object.emtkm"
+    bl_idname = "emtk.emtkm"
     bl_label = "EMTKM"
     bl_description = "Edit modifiers on selected objects"
 

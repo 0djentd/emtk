@@ -23,9 +23,9 @@ from libemtk.modifiers_operator import ModifiersOperator
 from libemtk.utils.modifiers import get_modifier_state
 
 
-class EMTK_OT_emtke2(ModifiersOperator, Operator):
-    bl_idname = "object.emtke2"
-    bl_label = "EMTKE2"
+class EMTK_OT_add_modifiers(ModifiersOperator, Operator):
+    bl_idname = "emtk.add_modifiers"
+    bl_label = "emtk add modifiers"
     bl_description = "Add modifiers on selected objects"
 
     @classmethod
