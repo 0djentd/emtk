@@ -57,7 +57,7 @@ from . operators.dev.add_cluster_type import EMTK_OT_add_cluster_type_object
 
 bl_info = {
     "name": "EMTK",
-    "author": "Sergey Shapochkin, also known as djentled",
+    "author": "Sergey Shapochkin, also known as djentled, also known as djentd",
     "version": (0, 5, 0),
     "blender": (3, 1, 0),
     "description": "Tools for editing modifiers and clusters.",
