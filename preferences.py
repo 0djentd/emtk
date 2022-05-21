@@ -29,7 +29,7 @@ import dataclasses
 
 from bpy.types import AddonPreferences
 
-from modal_shortcutspreferences import ModalShortcutsPreferences
+from modal_shortcuts.preferences import ModalShortcutsPreferences
 
 
 class EMTKPreferences(ModalShortcutsPreferences, AddonPreferences):
