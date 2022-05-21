@@ -26,7 +26,7 @@ all editable properties of all Blender modifiers.
 There is a few operators that invoke UI popups with similar or extended
 functionality as well.
 
-EMTK uses EMTK, modal_input and class_var_editor_ui as python modules.
+EMTK uses EMTK, modal_shortcuts and class_var_editor_ui as python modules.
 
 # Installation
 Linux:

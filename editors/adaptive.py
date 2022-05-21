@@ -34,8 +34,8 @@ except ModuleNotFoundError:
 from libemtk.utils.modifier_prop_types import get_props_filtered_by_types
 from libemtk.clusters.cluster_trait import ClusterTrait
 from ..classes.editor import ModalClustersEditor
-from modal_input.shortcuts import generate_new_shortcut
-from modal_input.shortcuts import ModalShortcutsGroup
+from modal_shortcutsshortcuts import generate_new_shortcut
+from modal_shortcutsshortcuts import ModalShortcutsGroup
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)

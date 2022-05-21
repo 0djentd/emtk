@@ -39,15 +39,15 @@ from . ui.emtk_panel import VIEW3D_PT_emtk_panel
 from . ui.clusters_list_popup import EMTK_OT_clusters_list_popup
 
 # Modal input
-from modal_input.operators import EMTK_OT_start_editing_modal_shortcut
-from modal_input.operators import EMTK_OT_add_or_update_modal_shortcut
-from modal_input.operators import EMTK_OT_reparse_default_modifiers_props_kbs
+from modal_shortcutsoperators import EMTK_OT_start_editing_modal_shortcut
+from modal_shortcutsoperators import EMTK_OT_add_or_update_modal_shortcut
+from modal_shortcutsoperators import EMTK_OT_reparse_default_modifiers_props_kbs
 
 # Class variables editor
-from class_var_editor_ui.operators import EMTK_OT_emtk_invoke_operator_func
-from class_var_editor_ui.panel import UIClassVariablesEditorCache
-from class_var_editor_ui.panel import UIClassVariablesEditor
-from class_var_editor_ui.panel import get_prop_group_name
+from class_variables_editor_ui.operators import EMTK_OT_emtk_invoke_operator_func
+from class_variables_editor_ui.panel import UIClassVariablesEditorCache
+from class_variables_editor_ui.panel import UIClassVariablesEditor
+from class_variables_editor_ui.panel import get_prop_group_name
 
 # Dev
 from . operators.dev.add_all_modifiers import EMTK_OT_add_all_modifiers

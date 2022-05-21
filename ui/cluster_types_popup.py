@@ -30,7 +30,7 @@ from bpy.props import BoolProperty, IntProperty, FloatProperty, StringProperty
 
 from libemtk.utils.modifier_prop_types import get_all_editable_props
 
-from class_var_editor_ui.panel import UIClassVariablesEditor
+from class_variables_editor_ui.panel import UIClassVariablesEditor
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
