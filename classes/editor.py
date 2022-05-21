@@ -19,7 +19,7 @@
 
 import logging
 
-from modal_shortcutsobject import ModalInputOperator
+from modal_shortcuts object import ModalInputOperator
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
