@@ -39,9 +39,9 @@ from . ui.emtk_panel import VIEW3D_PT_emtk_panel
 from . ui.clusters_list_popup import EMTK_OT_clusters_list_popup
 
 # Modal input
-from modal_shortcuts operators import EMTK_OT_start_editing_modal_shortcut
-from modal_shortcuts operators import EMTK_OT_add_or_update_modal_shortcut
-from modal_shortcuts operators import EMTK_OT_reparse_default_modifiers_props_kbs
+from modal_shortcuts.operators import EMTK_OT_start_editing_modal_shortcut
+from modal_shortcuts.operators import EMTK_OT_add_or_update_modal_shortcut
+from modal_shortcuts.operators import EMTK_OT_reparse_default_modifiers_props_kbs
 
 # Class variables editor
 from class_variables_editor_ui.operators import EMTK_OT_emtk_invoke_operator_func
