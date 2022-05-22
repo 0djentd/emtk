@@ -15,6 +15,8 @@ functionality as well.
 
 EMTK uses libemtk, modal_shortcuts and class_variables_editor_ui as python modules.
 
+To learn more about EMTK concepts, such as modifiers clusters, clusters layers and modifiers reparse check out [libemtk readme](https://github.com/0djentd/libemtk/blob/master/README.md).
+
 ## Installation
 Linux:
 ```
