@@ -28,6 +28,7 @@ class VIEW3D_MT_PIE_emtk_pie_1(Menu):
         layout = self.layout
         pie = layout.menu_pie()
         pie.operator("emtk.emtkm", text="EMTKM", icon="CUBE")
-        pie.operator("emtk.add_modifiers", text="Add modifier", icon="MOD_BEVEL")
+        pie.operator("emtk.add_modifiers",
+                     text="Add modifier", icon="MOD_BEVEL")
         pie.operator("emtk.clusters_list_popup",
                      text="Clusters list", icon="CUBE")
