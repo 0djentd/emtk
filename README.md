@@ -13,7 +13,7 @@ all editable properties of all Blender modifiers.
 There is a few operators that invoke UI popups with similar or extended
 functionality as well.
 
-EMTK uses libemtk, modal_shortcuts and class_variables_editor_ui as python modules.
+EMTK uses [libemtk](https://github.com/0djentd/libemtk), [modal_shortcuts](https://github.com/0djentd/modal_shortcuts) and [class_variables_editor_ui](https://github.com/0djentd/class_variables_editor_ui) as python modules.
 
 To learn more about EMTK concepts, such as modifiers clusters, clusters layers and modifiers reparse check out [libemtk readme](https://github.com/0djentd/libemtk/blob/master/README.md).
 
