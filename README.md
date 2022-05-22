@@ -1,3 +1,5 @@
+[![Pylint](https://github.com/0djentd/emtk/actions/workflows/pylint.yml/badge.svg)](https://github.com/0djentd/emtk/actions/workflows/pylint.yml)
+
 EMTK Extended Modifiers Tool Kit
 =======
 
