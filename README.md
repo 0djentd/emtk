@@ -22,8 +22,9 @@ To learn more about EMTK concepts, such as modifiers clusters, clusters layers a
 ## Installation
 Linux:
 ```
-mkdir -p ~/.config/blender/3.1/scripts/addons
-cp -r emtk ~/.config/blender/3.1/scripts/addons/
+mkdir -p ~/.config/blender/3.1/scripts/addons/
+cd ~/.config/blender/3.1/scripts/addons/
+git clone https://github.com/0djentd/emtk.git
 ```
 
 Windows:
