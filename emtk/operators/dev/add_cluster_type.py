@@ -19,8 +19,8 @@
 
 import json
 
-from bpy.types import Operator
 from bpy.props import StringProperty
+from bpy.types import Operator
 
 
 class EMTK_OT_add_cluster_type_object(Operator):

@@ -22,8 +22,8 @@ import logging
 from bpy.types import Operator
 
 from ..classes.modal_clusters_operator import ModalClustersOperator
-from ..ui.emtk_ui import EMTKUi
 from ..editors.adaptive import AdaptiveModalEditor
+from ..ui.emtk_ui import EMTKUi
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

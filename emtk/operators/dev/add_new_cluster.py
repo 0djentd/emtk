@@ -17,9 +17,8 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-from bpy.types import Operator
 from bpy.props import FloatProperty, StringProperty
-
+from bpy.types import Operator
 from libemtk.modifiers_operator import ModifiersOperator
 
 

@@ -17,21 +17,18 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-import logging
-import string
-import re
-import math
 import cProfile
+import logging
+import math
+import re
+import string
 
 import bpy
-
-from bpy.props import BoolProperty, IntProperty, FloatProperty, StringProperty
+from bpy.props import BoolProperty, FloatProperty, IntProperty, StringProperty
 from bpy.types import Operator
-
+from class_variables_editor_ui.panel import UIClassVariablesEditor
 from libemtk.modifiers_operator import ModifiersOperator
 from libemtk.utils.modifier_prop_types import get_all_editable_props
-
-from class_variables_editor_ui.panel import UIClassVariablesEditor
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)

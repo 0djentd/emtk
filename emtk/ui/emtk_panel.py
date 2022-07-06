@@ -18,9 +18,7 @@
 # ##### END GPL LICENSE BLOCK #####
 
 from bpy.types import Panel
-
 from libemtk.utils.modifier_prop_types import get_all_editable_props
-
 
 """
 Panels instancing cache workarounds.

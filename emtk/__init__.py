@@ -17,43 +17,38 @@
 #
 # ##### END GPL LICENSE BLOCK #####
 
-import re
-import logging
 import json
+import logging
+import re
 
 import bpy
-
-# Modal operators
-from . operators.emtkm import EMTK_OT_emtkm
-from . operators.dev.add_modifiers import EMTK_OT_add_modifiers
-
-# Operators
-from . operators.dev.add_new_cluster import EMTK_OT_add_new_cluster
-
-# Preferences
-from . preferences import EMTKPreferences
-
-# UI
-from . ui.pie_menus import VIEW3D_MT_PIE_emtk_pie_1
-from . ui.emtk_panel import VIEW3D_PT_emtk_panel
-from . ui.clusters_list_popup import EMTK_OT_clusters_list_popup
-
-# Modal input
-from modal_shortcuts.operators import EMTK_OT_start_editing_modal_shortcut
-from modal_shortcuts.operators import EMTK_OT_add_or_update_modal_shortcut
-from modal_shortcuts.operators import EMTK_OT_reparse_default_modifiers_props_kbs
-
 # Class variables editor
-from class_variables_editor_ui.operators import EMTK_OT_emtk_invoke_operator_func
-from class_variables_editor_ui.panel import UIClassVariablesEditorCache
-from class_variables_editor_ui.panel import UIClassVariablesEditor
-from class_variables_editor_ui.panel import get_prop_group_name
+from class_variables_editor_ui.operators import \
+    EMTK_OT_emtk_invoke_operator_func
+from class_variables_editor_ui.panel import (UIClassVariablesEditor,
+                                             UIClassVariablesEditorCache,
+                                             get_prop_group_name)
+# Modal input
+from modal_shortcuts.operators import (
+    EMTK_OT_add_or_update_modal_shortcut,
+    EMTK_OT_reparse_default_modifiers_props_kbs,
+    EMTK_OT_start_editing_modal_shortcut)
 
 # Dev
-from . operators.dev.add_all_modifiers import EMTK_OT_add_all_modifiers
-from . operators.dev.add_all_modifiers import\
-    EMTK_OT_add_all_modifiers_and_dump_props
-from . operators.dev.add_cluster_type import EMTK_OT_add_cluster_type_object
+from .operators.dev.add_all_modifiers import (
+    EMTK_OT_add_all_modifiers, EMTK_OT_add_all_modifiers_and_dump_props)
+from .operators.dev.add_cluster_type import EMTK_OT_add_cluster_type_object
+from .operators.dev.add_modifiers import EMTK_OT_add_modifiers
+# Operators
+from .operators.dev.add_new_cluster import EMTK_OT_add_new_cluster
+# Modal operators
+from .operators.emtkm import EMTK_OT_emtkm
+# Preferences
+from .preferences import EMTKPreferences
+from .ui.clusters_list_popup import EMTK_OT_clusters_list_popup
+from .ui.emtk_panel import VIEW3D_PT_emtk_panel
+# UI
+from .ui.pie_menus import VIEW3D_MT_PIE_emtk_pie_1
 
 bl_info = {
     "name": "EMTK",

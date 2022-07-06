@@ -20,9 +20,8 @@
 import json
 
 import bpy
-
-from libemtk.utils.modifier_prop_types import get_all_editable_props
-from libemtk.utils.modifier_prop_types import MODIFIER_TYPES
+from libemtk.utils.modifier_prop_types import (MODIFIER_TYPES,
+                                               get_all_editable_props)
 
 
 class EMTK_OT_add_all_modifiers(bpy.types.Operator):

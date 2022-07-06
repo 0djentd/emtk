@@ -20,10 +20,10 @@
 import logging
 
 import bpy
-
 from libemtk.modifiers_operator import ModifiersOperator
-from ..ui.emtk_ui import emtk_modifier_ui_draw
 from modal_shortcuts.object import ModalInputOperator
+
+from ..ui.emtk_ui import emtk_modifier_ui_draw
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)

@@ -18,7 +18,6 @@
 # ##### END GPL LICENSE BLOCK #####
 
 from bpy.types import Operator
-
 from libemtk.modifiers_operator import ModifiersOperator
 from libemtk.utils.modifiers import get_modifier_state
 
