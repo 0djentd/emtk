@@ -4,3 +4,4 @@ unittest_result
 build/
 .mypy_cache/
 .venv/
+dist/
