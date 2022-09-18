@@ -39,7 +39,7 @@ from modal_shortcuts.shortcuts import (ModalShortcutsGroup,
 from ..classes.editor import ModalClustersEditor
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.ERROR)
+logger.setLevel(logging.DEBUG)
 # logger.setLevel(logging.DEBUG)
 
 # TODO: add modifiers types switcher.
@@ -244,7 +244,7 @@ class AdaptiveModalEditor(ModalClustersEditor):
         for x in props:
             for y in props[x]:
                 if not s.find_by_shortcut_id(y):
-                    new_props.append(x)
+                    new_props.append(y)
         for x in new_props:
             s.add(generate_new_shortcut(x, s.shortcuts))
 
